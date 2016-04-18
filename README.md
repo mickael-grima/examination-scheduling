@@ -18,8 +18,8 @@ Then search for this project writing its name in the search bar
 Above right click on Fork  
   
 clone the repository into your computer:  
-$ cd <folder path>  
-$ git clone https://github.com/<username>/examination-scheduling.git  
+$ cd folder_path  
+$ git clone https://github.com/username/examination-scheduling.git  
 $ git init  
   
 # Use github
