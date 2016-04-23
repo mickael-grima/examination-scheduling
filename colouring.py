@@ -13,7 +13,7 @@ m = len(all_colours)
 class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "plots/"
-        self.NAME = "graphcolouring"
+
         self.graph = nx.Graph()
         self.colours = {}
         self.incidence_matrix = None
@@ -50,8 +50,7 @@ class ColorGraph(object):
     def get_degree(self):
         """ return a dictionnary {node: degree}
         """
-        incidence_matrix = self.get_incidence_matrix()
-        degree = {node: sum(list(incidence_matrix[node])) for node in self.graph.nodes()}
+        degree = {node: len(self.graph.neighbors(node)) for node in self.graph.nodes()}
         return degree
 
     def check_neighbours(self, node, colour):
@@ -65,11 +64,11 @@ class ColorGraph(object):
                 return(False)
         return(True)
 
-    def draw(self, save=False, ind=0):
+    def draw(self, name, save=False, ind=0):
         colours = [colour for _, colour in self.colours.iteritems()]
         nx.draw_shell(self.graph, node_color=colours)
         if save:
-            filename = self.DIRECTORY + self.NAME
+            filename = self.DIRECTORY + name
             if(ind < 10):
                 filename = filename + '00'
             elif(ind < 100):
@@ -87,40 +86,54 @@ class ColorGraph(object):
                 rands[j, i] = rands[i, j]
         # make edges
         for i in range(nb_nodes):
+            self.add_node(i)
             for j in range(i + 1, nb_nodes):
                 if(rands[i, j]):
                     self.add_edge(i, j)
         self.incidence_matrix = rands
 
+    def color_node(self, node):
+        """ Check the colors of the neighbors, and color the node with a different color
+        """
+        for col in all_colours:
+            if self.check_neighbours(node, col):
+                self.colours[node] = col
+                break
+
     def color_graph(self, save=False):
         degree = self.get_degree()
-        # degree = [self.incidence_matrix[i, range(n)].sum() - 1 for i in range(n)]
         # sort by degree
-        # sl = sorted(zip(degree, range(n)))
         sl = sorted([(dg, node) for node, dg in degree.iteritems()])
         lookup_order = [x[1] for x in sl]
         # revert??
         lookup_order = reversed(lookup_order)
 
-        counter = 1
-        for node in lookup_order:
-            for col in all_colours:
-                if self.check_neighbours(node, col):
-                    self.colours[node] = col
-                    self.draw(save=save, ind=counter)
-                    counter += 1
-                    break
+        fig, ax = plt.subplots()
 
+        counter, counter_colors = 1, {color: 0 for color in all_colours}
+        for node in lookup_order:
+            self.color_node(node)
+            color_ind = [i for i in range(len(all_colours)) if all_colours[i] == self.colours[node]][0]
+            ax.bar(color_ind * 100, 40, width=100, bottom=counter_colors[self.colours[node]] * 50,
+                   color=self.colours[node])
+
+            # Save the pictures
+            self.draw("graphcolouring", save=save, ind=counter)
+
+            counter_colors[self.colours[node]] += 1
+            counter += 1
+
+        fig.savefig("%scalendar.jpg" % self.DIRECTORY)
         return self.colours
 
 
 n = 16
 G = ColorGraph()
 G.build_rand_graph(nb_nodes=n)
-G.draw(save=True, ind=0)
+G.draw("graphcolouring", save=True, ind=0)
 G.color_graph(save=True)
 
 print(G.colours)
 
 # convert to animation
-os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+os.system("convert -delay 70 -loop 0 plots/graphcolouring*.jpg animated.gif")
