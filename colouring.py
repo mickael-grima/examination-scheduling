@@ -110,21 +110,27 @@ class ColorGraph(object):
 
         fig, ax = plt.subplots()
 
-        counter, counter_colors = 1, {color: 0 for color in all_colours}
+        counter = 1
         for node in lookup_order:
             self.color_node(node)
+            # Save the pictures
+            self.draw("graphcolouring", save=save, ind=counter)
+            counter += 1
+
+        return self.colours
+
+    def draw_calendar(self, save=False):
+        counter_colors = {color: 0 for color in all_colours}
+        fig, ax = plt.subplots()
+        for node in self.graph.nodes():
             color_ind = [i for i in range(len(all_colours)) if all_colours[i] == self.colours[node]][0]
             ax.bar(color_ind * 100, 40, width=100, bottom=counter_colors[self.colours[node]] * 50,
                    color=self.colours[node])
-
-            # Save the pictures
-            self.draw("graphcolouring", save=save, ind=counter)
-
             counter_colors[self.colours[node]] += 1
-            counter += 1
-
-        fig.savefig("%scalendar.jpg" % self.DIRECTORY)
-        return self.colours
+        if save:
+            fig.savefig("%scalendar.jpg" % self.DIRECTORY)
+        else:
+            plt.show()
 
 
 n = 16
@@ -132,6 +138,7 @@ G = ColorGraph()
 G.build_rand_graph(nb_nodes=n)
 G.draw("graphcolouring", save=True, ind=0)
 G.color_graph(save=True)
+G.draw_calendar(save=True)
 
 print(G.colours)
 
