@@ -13,6 +13,17 @@ name = "graphcolouring"
 if not os.path.exists(directory):
     os.makedirs(directory)
 
+# plotting device 
+def plot_graph(graph, colours, counter, directory, name):
+    nx.draw_shell(graph, node_color = colours)
+    filename = directory + name
+    if(counter < 10) :
+        filename = filename + '00'
+    elif(counter < 100) :
+        filename = filename + '0'
+    plt.savefig(filename + '%d.jpg' % (counter))
+            
+            
 # fix total number of nodes
 n = 16
 G = nx.Graph()
@@ -32,13 +43,13 @@ for i in range(n):
         if(rands[i,j]):
             G.add_edge(i,j)
 
-all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan"]
+
+all_colours = ["blue", "red", "yellow", "cyan", "orange", "green", "purple", "grey"]
 m = len(all_colours)
 
 # print start configuration
 colours = ["white"] * n
-nx.draw_shell(G, node_color = colours)
-plt.savefig(directory + name + "000.jpg")
+plot_graph(G, colours, 0, directory, name)
     
 # graph colouring greedy algorithm with degree heuristic
 # see here: https://en.wikipedia.org/wiki/Greedy_coloring
@@ -64,17 +75,9 @@ for i in lookup_order:
     for col in all_colours:
         if check_neighbours(G, i, col, colours):
             colours[i] = col
-            nx.draw_shell(G, node_color = colours)
-            filename = directory + name
-            if(counter < 10) :
-                filename = filename + '00'
-            elif(counter < 100) :
-                filename = filename + '0'
-            plt.savefig(filename + '%d.jpg' % (counter))
+            plot_graph(G, colours, counter, directory, name)
             counter += 1
             break
-
-print(colours)
 
 # convert to animation
 os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
