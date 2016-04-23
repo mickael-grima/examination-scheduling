@@ -9,7 +9,7 @@ import logging
 
 class Instance(object):
     def __init__(self, logger=None):
-        self.logger = logger or logging  # To savethe logs
+        self.logger = logger or logging  # To save the logs
 
     def build_from_data_file(self, source):
         """ @ param source: the location of the file to read, as a string
@@ -18,6 +18,7 @@ class Instance(object):
         try:
             with open(source, 'r') as src:
                 # TODO instancie the parameters of the class from the data
+                pass
         except Exception as e:
             # If an error occurs we send an exception
             self.logger.exception("%s: Build class parameters from data file failed: %s"
