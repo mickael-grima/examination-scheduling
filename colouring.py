@@ -13,8 +13,7 @@ name = "graphcolouring"
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-
-# number of nodes
+# fix total number of nodes
 n = 16
 G = nx.Graph()
 
@@ -42,30 +41,28 @@ nx.draw_shell(G, node_color = colours)
 plt.savefig(directory + name + "000.jpg")
     
 # graph colouring greedy algorithm with degree heuristic
-degree = [ rands[i,range(n)].sum() - 1 for i in range(n) ]
+# see here: https://en.wikipedia.org/wiki/Greedy_coloring
+revert = False
 
 # sort by degree
+degree = [ rands[i,range(n)].sum() - 1 for i in range(n) ]
 sl = sorted( zip(degree, range(n)))
 lookup_order = [ x[1] for x in sl ]
+if revert:
+    lookup_order = reversed(lookup_order)
 
-# revert??
-lookup_order = reversed(lookup_order)
-
-def check_neighbours(node, matrix, colour, colours):
-    n = np.shape(matrix)[0]
-    assert(len(colours) >= n)
-    assert(node < n)
-    assert(n >= 0)
-    
-    for j in range(n):
-        if matrix[i,j] & (colours[j] == colour):
+# the function which checks if the colour has already been used for the neighbouring nodes
+def check_neighbours(graph, node, colour, colours):
+    for j in [x[1] for x in graph.edges(node)]:
+        if colours[j] == colour:
             return(False)
     return(True)
         
+# start greedy algorithm
 counter = 1
 for i in lookup_order:
     for col in all_colours:
-        if check_neighbours(i, rands, col, colours):
+        if check_neighbours(G, i, col, colours):
             colours[i] = col
             nx.draw_shell(G, node_color = colours)
             filename = directory + name
