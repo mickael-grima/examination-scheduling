@@ -18,18 +18,27 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+import os 
+
+# names for saving
+directory = "plots/"
+name = "graphcolouring"
+print(os.path.exists(directory))
+if not os.path.exists(directory):
+    os.makedirs(directory)
+
 all_colours = ["red", "blue", "green", "yellow", "purple", "orange", "grey", "cyan"]
 m = len(all_colours)
 
 colours = ["white"] * n
 print(colours)
 nx.draw_shell(G, node_color = colours)
-plt.savefig('plots/myfig000.jpg')
+plt.savefig(directory + name + "000.jpg")
     
 for i in range(0,n):
     colours[i] = all_colours[rd.randint(0,m-1)]
     nx.draw_shell(G, node_color = colours)
-    filename = 'plots/myfig'
+    filename = directory + name
     if(i < 9) :
         filename = filename + '00'
     elif(i < 99) :
@@ -37,6 +46,4 @@ for i in range(0,n):
     plt.savefig(filename + '%d.jpg' % (i+1))
 
 # convert to animation
-import imageio
-import os 
 os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")

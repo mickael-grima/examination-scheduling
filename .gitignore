@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# plots
+plots/
+
 # Distribution / packaging
 .Python
 env/
