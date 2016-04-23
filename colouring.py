@@ -75,6 +75,11 @@ class ColorGraph(object):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
 
+    def reinitialized(self):
+        """ reinitialized all colour to 'white'
+        """
+        self.colours = {node: 'white' for node in self.colours.iterkeys()}
+
     def build_rand_graph(self, nb_nodes=16):
         # construct random node-node-incidence matrix
         rands = np.matrix([[rd.randint(0, 2) < 1 for i in range(nb_nodes)]
@@ -119,6 +124,61 @@ class ColorGraph(object):
 
         return self.colours
 
+    def color_graph_rand(self, save=False):
+        """ @ param max_room: max number of room. If -1 then we can take as many rooms as we want
+        We color the graph choosing randomly a node at each step
+        """
+        degree = self.get_degree()
+        # sort by degree
+        sl = sorted([(dg, node) for node, dg in degree.iteritems()])
+        lookup_order = [x[1] for x in sl]
+        degree = [x[0] for x in sl]
+        # revert??
+        lookup_order = list(reversed(lookup_order))
+
+        fig, ax = plt.subplots()
+
+        while lookup_order:
+            rand, n, ind = rd.randint(0, sum(degree)), 0, 0
+            while ind < len(degree):
+                n += degree[ind]
+                if n >= rand:
+                    break
+                ind += 1
+            counter, node = 1, lookup_order[ind]
+            self.color_node(node)
+            # Save the pictures
+            if save:
+                self.draw("graphcolouring", save=save, ind=counter)
+            counter += 1
+            del lookup_order[ind]
+            del degree[ind]
+
+        return self.colours
+
+    def color_graph_rand_iter(self, max_room=-1, it=10, save=False):
+        """ @ param max_room: max number of room. If -1 then we can take as many rooms as we want
+        We color the graph choosing randomly a node at each step
+        We do the coloration it times, and we keep the graph wich has not more rooms than max_room, and with
+        the minimum number of color
+        """
+        colours = {}
+        for i in range(it):
+            self.reinitialized()
+            cols = self.color_graph_rand(save=save)
+            max_ind_set = max([len([node for node, colour in cols.iteritems() if colour == col])
+                              for col in all_colours])
+            nb_color = len(set([color for node, color in cols.iteritems()]))
+            # If too many rooms
+            if max_room >= 0 and max_ind_set > max_room:
+                continue
+            # If the number of periods is larger
+            if colours and nb_color >= len(set([color for node, color in colours.iteritems()])):
+                continue
+            colours = cols
+        self.colours = colours
+        return colours
+
     def draw_calendar(self, save=False):
         counter_colors = {color: 0 for color in all_colours}
         fig, ax = plt.subplots()
@@ -136,7 +196,7 @@ class ColorGraph(object):
 n = 16
 G = ColorGraph()
 G.build_rand_graph(nb_nodes=n)
-G.draw("graphcolouring", save=True, ind=0)
+# G.color_graph_rand_iter(save=False)
 G.color_graph(save=True)
 G.draw_calendar(save=True)
 
