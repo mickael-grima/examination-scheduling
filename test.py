@@ -56,5 +56,19 @@ class TestColouring(unittest.TestCase):
                     is_correct = False
             self.assertTrue(is_correct)
 
+    def testColorGraphRand(self):
+        """ We check if two neighbors don't have the same color for the rand algorithm
+        """
+        n = 16
+        for i in range(n):
+            cgraph = ColorGraph()
+            cgraph.build_rand_graph(nb_nodes=n)
+            cgraph.color_graph_rand_iter(it=10, save=False)
+            is_correct = True
+            for edge in cgraph.graph.edges():
+                if cgraph.colours[edge[0]] == cgraph.colours[edge[1]]:
+                    is_correct = False
+            self.assertTrue(is_correct)
+
 if __name__ == "__main__":
     unittest.main()
