@@ -12,6 +12,7 @@ m = len(all_colours)
 class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "plots/"
+        self.plotname = "graphcolouring"
 
         self.graph = nx.Graph()
         self.colours = {}
@@ -46,11 +47,7 @@ class ColorGraph(object):
     def get_degree(self):
         """ return a dictionnary {node: degree}
         """
-<<<<<<< HEAD
-        degree = {node: len(self.graph.edges(node)) for node in self.graph.nodes()}
-=======
         degree = {node: len(self.graph.neighbors(node)) for node in self.graph.nodes()}
->>>>>>> a8f6eca8b6a72c99094d617c3071c5e390b17ccc
         return degree
     
     def get_chromatic_number(self):
@@ -63,11 +60,11 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    def draw(self, name, save=False, ind=0):
+    def draw(self, save=False, ind=0):
         colours = [colour for _, colour in self.colours.iteritems()]
         nx.draw_shell(self.graph, node_color=colours)
         if save:
-            filename = self.DIRECTORY + name
+            filename = self.DIRECTORY + self.plotname
             if(ind < 10):
                 filename = filename + '00'
             elif(ind < 100):
@@ -90,7 +87,6 @@ class ColorGraph(object):
             for j in range(i + 1, nb_nodes):
                 if(rands[counter]):
                     self.add_edge(i, j)
-<<<<<<< HEAD
                 counter += 1
 
     def build_sudoku_graph(self):
@@ -113,10 +109,6 @@ class ColorGraph(object):
         self.add_edge(2*4+2, (3)*4+3)
         self.add_edge(3*4+2, (2)*4+3)
         
-    def color_graph(self, save=False):
-        degree = self.get_degree()
-=======
-        self.incidence_matrix = rands
 
     def color_node(self, node):
         """ Check the colors of the neighbors, and color the node with a different color
@@ -128,8 +120,8 @@ class ColorGraph(object):
 
     def color_graph(self, save=False):
         degree = self.get_degree()
+
         # sort by degree
->>>>>>> a8f6eca8b6a72c99094d617c3071c5e390b17ccc
         sl = sorted([(dg, node) for node, dg in degree.iteritems()])
         lookup_order = [x[1] for x in sl]
         if self.revert:
@@ -139,27 +131,21 @@ class ColorGraph(object):
 
         counter = 1
         for node in lookup_order:
-<<<<<<< HEAD
-            
+
             # respect initial condition
             if self.colours[node] != 'white':
                 continue
-            
-            for col in all_colours:
-                if self.check_neighbours(node, col):
-                    self.colours[node] = col
-                    self.draw(save=save, ind=counter)
-                    counter += 1
-                    break
+
+            self.color_node(node)
+
+            # Save the pictures
+            self.draw(save=save, ind=counter)
+            counter += 1
                 
         self.draw(save=True, ind=counter)
-=======
-            self.color_node(node)
-            # Save the pictures
-            self.draw("graphcolouring", save=save, ind=counter)
-            counter += 1
-
+        
         return self.colours
+
 
     def color_graph_rand(self, save=False):
         """ @ param max_room: max number of room. If -1 then we can take as many rooms as we want
@@ -186,12 +172,11 @@ class ColorGraph(object):
             self.color_node(node)
             # Save the pictures
             if save:
-                self.draw("graphcolouring", save=save, ind=counter)
+                self.draw(save=save, ind=counter)
             counter += 1
             del lookup_order[ind]
             del degree[ind]
 
->>>>>>> a8f6eca8b6a72c99094d617c3071c5e390b17ccc
         return self.colours
 
     def color_graph_rand_iter(self, max_room=-1, it=10, save=False):
@@ -231,34 +216,28 @@ class ColorGraph(object):
             plt.show()
 
 
-# TODO: Recognice if we run out of colour!!!
-n = 16
-G = ColorGraph()
-G.revert = False
-G.build_rand_graph(nb_nodes=n)
-<<<<<<< HEAD
-G.color_graph(save=False)
-print(G.get_chromatic_number())
+colouring_file_test = False
 
-G = ColorGraph()
-G.build_sudoku_graph()
-G.draw(save=True, ind=0)
-G.color_graph(save=True)
-print(G.get_chromatic_number())
+if colouring_file_test:
+    n = 4
 
-print(G.colours)
+    G = ColorGraph()
+    G.revert = False
+    G.build_rand_graph(nb_nodes=n)
+    G.color_graph(save=False)
+    print(G.get_chromatic_number())
 
-# convert to animation        
-import time
-time.sleep(1) # delays for 5 seconds
-os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
-=======
-# G.color_graph_rand_iter(save=False)
-G.color_graph(save=True)
-G.draw_calendar(save=True)
+    G = ColorGraph()
+    G.build_sudoku_graph()
+    G.draw(save=True, ind=0)
+    G.color_graph(save=True)
+    print(G.get_chromatic_number())
 
-print(G.colours)
+    G.draw_calendar(save=True)
 
-# convert to animation
-os.system("convert -delay 70 -loop 0 plots/graphcolouring*.jpg animated.gif")
->>>>>>> a8f6eca8b6a72c99094d617c3071c5e390b17ccc
+    # convert to animation        
+    import time
+    time.sleep(1) # delays for 5 seconds
+    os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+
+    print(G.colours)
