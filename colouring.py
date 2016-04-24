@@ -3,8 +3,9 @@ import random as rd
 import os, glob
 
 import matplotlib
-import matplotlib.pyplot as plt
 matplotlib.use('Agg')  # for not popping up windows
+import matplotlib.pyplot as plt
+
 all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan", "pink", "black"]
 m = len(all_colours)
 
@@ -76,9 +77,9 @@ class ColorGraph(object):
         """
         self.colours = {node: 'white' for node in self.colours.iterkeys()}
 
-    def build_rand_graph(self, nb_nodes=16):
+    def build_rand_graph(self, nb_nodes=16, probability=0.5):
         # construct random node-node-incidence matrix
-        rands = [rd.randint(0, 2) < 1 for i in range(int(1 + 0.5 * nb_nodes * (nb_nodes - 1)))]
+        rands = [rd.random() < probability for i in range(int(1 + 0.5 * nb_nodes * (nb_nodes - 1)))]
 
         # make edges
         counter = 0
@@ -137,10 +138,12 @@ class ColorGraph(object):
             self.color_node(node)
 
             # Save the pictures
-            self.draw(save=save, ind=counter)
+            if save:
+                self.draw(save=save, ind=counter)
             counter += 1
 
-        self.draw(save=True, ind=counter)
+        if save:
+            self.draw(save=True, ind=counter)
 
         return self.colours
 
@@ -156,7 +159,8 @@ class ColorGraph(object):
         # revert??
         lookup_order = list(reversed(lookup_order))
 
-        fig, ax = plt.subplots()
+        if save:
+            fig, ax = plt.subplots()
 
         while lookup_order:
             rand, n, ind = rd.randint(0, sum(degree)), 0, 0
@@ -182,13 +186,14 @@ class ColorGraph(object):
         We do the coloration it times, and we keep the graph wich has not more rooms than max_room, and with
         the minimum number of color
         """
-        colours = {}
+        colours, min_chromatic_number = {}, []
         for i in range(it):
             self.reset_colours()
             cols = self.color_graph_rand(save=save)
             max_ind_set = max([len([node for node, colour in cols.iteritems() if colour == col])
                               for col in all_colours])
             nb_color = len(set([color for node, color in cols.iteritems()]))
+            min_chromatic_number.append(len(set([color for node, color in colours.iteritems()])))
             # If too many rooms
             if max_room >= 0 and max_ind_set > max_room:
                 continue
@@ -238,3 +243,10 @@ if colouring_file_test:
     os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
 
     print(G.colours)
+
+    G = ColorGraph()
+    G.build_rand_graph(nb_nodes=50, probability=0.95)
+    G.color_graph_rand_iter(it=100)
+    G.reset_colours()
+    G.color_graph()
+    print G.get_chromatic_number()
