@@ -1,26 +1,30 @@
 import networkx as nx
 import random as rd
 import numpy as np
-import os
+import os, glob
 
 import matplotlib
-import matplotlib.pyplot as plt
 matplotlib.use('Agg')  # for not popping up windows
-all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan"]
+import matplotlib.pyplot as plt
+all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan", "pink", "black"]
 m = len(all_colours)
-
 
 class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "plots/"
+        self.plotname = "graphcolouring"
 
         self.graph = nx.Graph()
         self.colours = {}
-        self.incidence_matrix = None
+        self.revert = True
 
         if not os.path.exists(self.DIRECTORY):
             os.makedirs(self.DIRECTORY)
-
+            
+        # clear plot directory
+        for f in glob.glob(self.DIRECTORY+"*"):
+            os.remove(f)
+    
     def add_node(self, node):
         self.graph.add_node(node)
         self.colours.setdefault(node, 'white')
@@ -30,45 +34,37 @@ class ColorGraph(object):
         self.colours.setdefault(node1, 'white')
         self.colours.setdefault(node2, 'white')
 
+    def reset_colours(self):
+        for col in self.colours:
+            self.colours[col] = 'white'
+            
     def update_color(self, node, color):
         if self.colours.get(node) is None:
             return False
         self.colours[node] = color
         return True
 
-    def get_incidence_matrix(self):
-        """ Return the node-node-incidence matrix as a dct
-        """
-        incidence_matrix = {}
-        for edge in self.graph.edges():
-            incidence_matrix.setdefault(edge[0], set())
-            incidence_matrix.setdefault(edge[1], set())
-            incidence_matrix[edge[0]].add(edge[1])
-            incidence_matrix[edge[1]].add(edge[0])
-        return incidence_matrix
-
     def get_degree(self):
         """ return a dictionnary {node: degree}
         """
         degree = {node: len(self.graph.neighbors(node)) for node in self.graph.nodes()}
         return degree
+    
+    def get_chromatic_number(self):
+        """ return the number of colours used
+        """
+        return len(set([self.colours[x] for x in self.colours]))
 
     def check_neighbours(self, node, colour):
-        n = len(self.graph.nodes())
-        assert(len(self.colours) >= n)
-        assert(node in self.graph.nodes())
-        assert(n >= 0)
-
-        for j in self.graph.nodes():
-            if ((node, j) in self.graph.edges() or (j, node) in self.graph.edges()) & (self.colours[j] == colour):
-                return(False)
+        if colour in [self.colours[x[1]] for x in self.graph.edges(node) ]:
+            return(False)
         return(True)
 
-    def draw(self, name, save=False, ind=0):
+    def draw(self, save=False, ind=0):
         colours = [colour for _, colour in self.colours.iteritems()]
         nx.draw_shell(self.graph, node_color=colours)
         if save:
-            filename = self.DIRECTORY + name
+            filename = self.DIRECTORY + self.plotname
             if(ind < 10):
                 filename = filename + '00'
             elif(ind < 100):
@@ -82,20 +78,37 @@ class ColorGraph(object):
 
     def build_rand_graph(self, nb_nodes=16):
         # construct random node-node-incidence matrix
-        rands = np.matrix([[rd.randint(0, 2) < 1 for i in range(nb_nodes)]
-                          for j in range(nb_nodes)])
-        # make the matrix symmetric
-        for i in range(nb_nodes):
-            rands[i, i] = True
-            for j in range(i + 1, nb_nodes):
-                rands[j, i] = rands[i, j]
+        rands = [rd.randint(0, 2) < 1 for i in range(int(1+0.5*nb_nodes*(nb_nodes-1)))]
+
         # make edges
+        counter = 0
         for i in range(nb_nodes):
             self.add_node(i)
             for j in range(i + 1, nb_nodes):
-                if(rands[i, j]):
+                if(rands[counter]):
                     self.add_edge(i, j)
-        self.incidence_matrix = rands
+                counter += 1
+
+    def build_sudoku_graph(self):
+        nb_nodes=16
+        if nb_nodes != 16:
+            print("Sorry, currently only 4x4 sudoku is supported!")
+            nb_nodes = 16
+            
+        for i in range(4):
+            for j in range(4):
+                for k in range(4):
+                    self.add_edge(i*4+j, i*4+k)
+                    self.add_edge(i*4+j, k*4+j)
+        self.add_edge(0*4, (1)*4+1)
+        self.add_edge(1*4, (0)*4+1)
+        self.add_edge(0*4+2, (1)*4+3)
+        self.add_edge(1*4+2, (0)*4+3)
+        self.add_edge(2*4, (3)*4+1)
+        self.add_edge(3*4, (2)*4+1)
+        self.add_edge(2*4+2, (3)*4+3)
+        self.add_edge(3*4+2, (2)*4+3)
+        
 
     def color_node(self, node):
         """ Check the colors of the neighbors, and color the node with a different color
@@ -107,21 +120,30 @@ class ColorGraph(object):
 
     def color_graph(self, save=False):
         degree = self.get_degree()
+
         # sort by degree
         sl = sorted([(dg, node) for node, dg in degree.iteritems()])
         lookup_order = [x[1] for x in sl]
-        # revert??
-        lookup_order = reversed(lookup_order)
+        if self.revert:
+            lookup_order = reversed(lookup_order)
 
         fig, ax = plt.subplots()
 
         counter = 1
         for node in lookup_order:
-            self.color_node(node)
-            # Save the pictures
-            self.draw("graphcolouring", save=save, ind=counter)
-            counter += 1
 
+            # respect initial condition
+            if self.colours[node] != 'white':
+                continue
+
+            self.color_node(node)
+
+            # Save the pictures
+            self.draw(save=save, ind=counter)
+            counter += 1
+                
+        self.draw(save=True, ind=counter)
+        
         return self.colours
 
     def color_graph_rand(self, save=False):
@@ -149,7 +171,7 @@ class ColorGraph(object):
             self.color_node(node)
             # Save the pictures
             if save:
-                self.draw("graphcolouring", save=save, ind=counter)
+                self.draw(save=save, ind=counter)
             counter += 1
             del lookup_order[ind]
             del degree[ind]
@@ -193,14 +215,28 @@ class ColorGraph(object):
             plt.show()
 
 
-n = 16
-G = ColorGraph()
-G.build_rand_graph(nb_nodes=n)
-# G.color_graph_rand_iter(save=False)
-G.color_graph(save=True)
-G.draw_calendar(save=True)
+colouring_file_test = False
 
-print(G.colours)
+if colouring_file_test:
+    n = 4
 
-# convert to animation
-os.system("convert -delay 70 -loop 0 plots/graphcolouring*.jpg animated.gif")
+    G = ColorGraph()
+    G.revert = False
+    G.build_rand_graph(nb_nodes=n)
+    G.color_graph(save=False)
+    print(G.get_chromatic_number())
+
+    G = ColorGraph()
+    G.build_sudoku_graph()
+    G.draw(save=True, ind=0)
+    G.color_graph(save=True)
+    print(G.get_chromatic_number())
+
+    G.draw_calendar(save=True)
+
+    # convert to animation        
+    import time
+    time.sleep(1) # delays for 5 seconds
+    os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+
+    print(G.colours)
