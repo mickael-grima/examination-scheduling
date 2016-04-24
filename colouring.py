@@ -146,7 +146,6 @@ class ColorGraph(object):
         
         return self.colours
 
-
     def color_graph_rand(self, save=False):
         """ @ param max_room: max number of room. If -1 then we can take as many rooms as we want
         We color the graph choosing randomly a node at each step
