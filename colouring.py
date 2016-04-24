@@ -107,7 +107,6 @@ class ColorGraph(object):
         return self.colours
 
 
-# TODO: Recognice if we run out of colour!!!
 n = 16
 G = ColorGraph()
 G.revert = False
