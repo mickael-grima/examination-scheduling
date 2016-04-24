@@ -82,6 +82,26 @@ class ColorGraph(object):
                     self.add_edge(i, j)
                 counter += 1
 
+    def build_sudoku_graph(self):
+        nb_nodes=16
+        if nb_nodes != 16:
+            print("Sorry, currently only 4x4 sudoku is supported!")
+            nb_nodes = 16
+            
+        for i in range(4):
+            for j in range(4):
+                for k in range(4):
+                    self.add_edge(i*4+j, i*4+k)
+                    self.add_edge(i*4+j, k*4+j)
+        self.add_edge(0*4, (1)*4+1)
+        self.add_edge(1*4, (0)*4+1)
+        self.add_edge(0*4+2, (1)*4+3)
+        self.add_edge(1*4+2, (0)*4+3)
+        self.add_edge(2*4, (3)*4+1)
+        self.add_edge(3*4, (2)*4+1)
+        self.add_edge(2*4+2, (3)*4+3)
+        self.add_edge(3*4+2, (2)*4+3)
+        
     def color_graph(self, save=False):
         degree = self.get_degree()
         sl = sorted([(dg, node) for node, dg in degree.iteritems()])
@@ -112,12 +132,12 @@ n = 16
 G = ColorGraph()
 G.revert = False
 G.build_rand_graph(nb_nodes=n)
-G.draw(save=True, ind=0)
 G.color_graph(save=False)
 print(G.get_chromatic_number())
 
-G.reset_colours()
-G.revert = True
+G = ColorGraph()
+G.build_sudoku_graph()
+G.draw(save=True, ind=0)
 G.color_graph(save=True)
 print(G.get_chromatic_number())
 
