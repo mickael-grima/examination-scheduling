@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from utils.tools import get_closest_dividers
+from utils.tools import get_closest_dividers, check_sudoku_groups
 
 
 class Sudoku(object):
@@ -29,11 +29,11 @@ class Sudoku(object):
                 self.grill[i].append(None)
 
     def set_groups(self, groups):
-        groups_ids = set([group for _, group in groups.iteritems()])
-        if groups_ids != set(range(self.size)):
+        if not check_sudoku_groups(self.size, groups):
             self.logger.warning("Sudoku: invalid groups to set. Groups must contains every index between 0 and %s"
                                 % len(groups))
-        self.groups = groups
+        else:
+            self.groups = groups
 
     def build_groups(self):
         """ construct groups using the symetry
