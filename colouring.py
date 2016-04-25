@@ -18,6 +18,7 @@ class ColorGraph(object):
         self.graph = nx.Graph()
         self.colours = {}
         self.revert = True
+        self.history = {}
 
         if not os.path.exists(self.DIRECTORY):
             os.makedirs(self.DIRECTORY)
@@ -71,6 +72,12 @@ class ColorGraph(object):
             elif(ind < 100):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
+
+	def plot_colouring_steps(self, save=True):
+		fig, ax = plt.subplots(1,1,1)
+		for step in self.history:
+			self.colours = self.history[step]
+			self.draw(save=save, ind=step)
 
     def reinitialized(self):
         """ reinitialized all colour to 'white'
@@ -126,9 +133,11 @@ class ColorGraph(object):
         if self.revert:
             lookup_order = reversed(lookup_order)
 
-        fig, ax = plt.subplots()
+		# Save the state
+        if save:
+        	self.history[0] = self.colours
 
-        counter = 1
+        counter = 1	
         for node in lookup_order:
 
             # respect initial condition
@@ -137,13 +146,11 @@ class ColorGraph(object):
 
             self.color_node(node)
 
-            # Save the pictures
+            # Save the state
             if save:
-                self.draw(save=save, ind=counter)
-            counter += 1
+	        	self.history[counter] = self.colours
 
-        if save:
-            self.draw(save=True, ind=counter)
+            counter += 1
 
         return self.colours
 
@@ -159,8 +166,10 @@ class ColorGraph(object):
         # revert??
         lookup_order = list(reversed(lookup_order))
 
+        # Save the state
         if save:
-            fig, ax = plt.subplots()
+        	self.history[counter] = self.colours
+
 
         while lookup_order:
             rand, n, ind = rd.randint(0, sum(degree)), 0, 0
@@ -171,9 +180,10 @@ class ColorGraph(object):
                 ind += 1
             counter, node = 1, lookup_order[ind]
             self.color_node(node)
-            # Save the pictures
+            # Save the state
             if save:
-                self.draw(save=save, ind=counter)
+	        	self.history[counter] = self.colours
+
             counter += 1
             del lookup_order[ind]
             del degree[ind]
@@ -218,35 +228,49 @@ class ColorGraph(object):
             plt.show()
 
 
-colouring_file_test = True
 
-if colouring_file_test:
-    n = 16
 
-    G = ColorGraph()
-    G.build_sudoku_graph()
-    G.draw(save=True, ind=0)
-    G.color_graph(save=True)
-    print(G.get_chromatic_number())
+import sys
+import time
+if __name__ == "__main__":
+	if len(sys.argv) <= 1:
+		print("Please specify one: rand | sudoku | solver!\n")
+		exit(0)
+	elif sys.argv[1] == "rand":
+		n = 16
+		G = ColorGraph()
+		G.revert = False
+		G.build_rand_graph(nb_nodes=n)
+		G.color_graph(save=True)
+		print(G.get_chromatic_number())
+		
+		G.plot_colouring_steps(save=True)
+		G.draw_calendar(save=True)
+		time.sleep(1) 
+		os.system("convert -delay 70 -loop 0 plots/*jpg rand.gif")
+	elif sys.argv[1] == "sudoku":
+		G = ColorGraph()
+		G.build_sudoku_graph()
+		G.draw(save=True, ind=0)
+		G.color_graph(save=True)
+		print(G.get_chromatic_number())
+		
+		G.plot_colouring_steps(save=True)
+		os.system("convert -delay 70 -loop 0 plots/*jpg sudoku.gif")
+	elif sys.argv[1] == "solver":
+		G = ColorGraph()
+		G.build_rand_graph(nb_nodes=50, probability=0.95)
+		G.color_graph_rand_iter(it=100)
+		G.reset_colours()
+		G.color_graph()
+		print G.get_chromatic_number()
+		
+	else: 
+		print("Please specify one: rand | sudoku | solver!\n")
 
-    G = ColorGraph()
-    G.revert = False
-    G.build_rand_graph(nb_nodes=n)
-    G.color_graph(save=False)
-    print(G.get_chromatic_number())
 
-    G.draw_calendar(save=True)
 
-    # convert to animation
-    import time
-    time.sleep(1)  # delays for 5 seconds
-    os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
 
-    print(G.colours)
 
-    # G = ColorGraph()
-    # G.build_rand_graph(nb_nodes=50, probability=0.95)
-    # G.color_graph_rand_iter(it=100)
-    # G.reset_colours()
-    # G.color_graph()
-    # print G.get_chromatic_number()
+
+
