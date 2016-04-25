@@ -218,21 +218,21 @@ class ColorGraph(object):
             plt.show()
 
 
-colouring_file_test = False
+colouring_file_test = True
 
 if colouring_file_test:
-    n = 4
-
-    G = ColorGraph()
-    G.revert = False
-    G.build_rand_graph(nb_nodes=n)
-    G.color_graph(save=False)
-    print(G.get_chromatic_number())
+    n = 16
 
     G = ColorGraph()
     G.build_sudoku_graph()
     G.draw(save=True, ind=0)
     G.color_graph(save=True)
+    print(G.get_chromatic_number())
+
+    G = ColorGraph()
+    G.revert = False
+    G.build_rand_graph(nb_nodes=n)
+    G.color_graph(save=False)
     print(G.get_chromatic_number())
 
     G.draw_calendar(save=True)
@@ -244,9 +244,9 @@ if colouring_file_test:
 
     print(G.colours)
 
-    G = ColorGraph()
-    G.build_rand_graph(nb_nodes=50, probability=0.95)
-    G.color_graph_rand_iter(it=100)
-    G.reset_colours()
-    G.color_graph()
-    print G.get_chromatic_number()
+    # G = ColorGraph()
+    # G.build_rand_graph(nb_nodes=50, probability=0.95)
+    # G.color_graph_rand_iter(it=100)
+    # G.reset_colours()
+    # G.color_graph()
+    # print G.get_chromatic_number()
