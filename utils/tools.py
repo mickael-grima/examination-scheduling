@@ -17,17 +17,6 @@ def get_closest_dividers(number):
     return width, length
 
 
-def reverse_dct(dct):
-    """ @param dct
-        @return: dct which value of dct as key and asoociated to these keys the list of key of dct
-    """
-    res = {}
-    for key, value in dct.iteritems():
-        res.setdefault(value, set())
-        res[value].add(key)
-    return res
-
-
 def check_sudoku_groups(size, groups):
     """ @param size: a positive int
         @param groups: a dictionnary of integer associated to 2-tuple: 2-tuple represent sudoku cases, integer groups
@@ -36,7 +25,10 @@ def check_sudoku_groups(size, groups):
         check if for each value, the number of cases belonging to this group is exactly size
     """
     res = True
-    reversed_groups = reverse_dct(groups)
+    reversed_groups = {}
+    for key, value in groups.iteritems():
+        reversed_groups.setdefault(value, set())
+        reversed_groups[value].add(key)
     res = (set(reversed_groups.iterkeys()) == set(range(size)))
     res = (set([len(reversed_groups[key]) for key in reversed_groups.iterkeys()]) == set([size]))
     return res

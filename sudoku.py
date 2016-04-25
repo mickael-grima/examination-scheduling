@@ -15,8 +15,9 @@ class Sudoku(object):
         self.size = size  # Size of the square that represents the sudoku
         self.groups = {}  # Represents the subgroups: list of list of tuple. Reqiure exactly size subgroups
         self.grill = []  # The sudoku grill: None is no value on the case
-        self.logger = logging
+        self.logger = logging  # to save the logs
 
+        # We build the sudoku function of the size
         self.build_sudoku()
         self.build_groups()
 
@@ -34,6 +35,16 @@ class Sudoku(object):
                                 % len(groups))
         else:
             self.groups = groups
+
+    def get_groups(self):
+        """ @return: a dictionnary with set of case associated to integer
+        integers are the groups, the set the cases associated to this group
+        """
+        res = {}
+        for key, value in self.groups.iteritems():
+            res.setdefault(value, set())
+            res[value].add(key)
+        return res
 
     def build_groups(self):
         """ construct groups using the symetry
@@ -66,12 +77,14 @@ class Sudoku(object):
                         for j in range(self.size):
                             self.groups[(i, j)] = ind
                         ind += 1
-                # elif self.size == 5:
-                    # self.groups.append([(0, 0), (0, 1), (0, 2), (1, 0), (1, 1)])
-                    # self.groups.append([(0, 3), (0, 4), (1, 3), (1, 4), (2, 4)])
-                    # self.groups.append([(2, 0), (3, 0), (3, 1), (4, 0), (4, 1)])
-                    # self.groups.append([(3, 3), (3, 4), (4, 2), (4, 3), (4, 4)])
-                    # self.groups.append([(1, 2), (2, 1), (2, 2), (2, 3), (3, 2)])
+                elif self.size == 5:
+                    self.groups = {
+                        (0, 0): 0, (0, 1): 0, (0, 2): 0, (1, 0): 0, (1, 1): 0,
+                        (0, 3): 1, (0, 4): 1, (1, 3): 1, (1, 4): 1, (2, 4): 1,
+                        (2, 0): 2, (3, 0): 2, (3, 1): 2, (4, 0): 2, (4, 1): 2,
+                        (3, 3): 3, (3, 4): 3, (4, 2): 3, (4, 3): 3, (4, 4): 3,
+                        (1, 2): 4, (2, 1): 4, (2, 2): 4, (2, 3): 4, (3, 2): 4
+                    }
                 else:
                     self.logger.warning("No groups implementation for the size %s yet" % self.size)
 
