@@ -8,7 +8,7 @@ __pycache__/
 
 # plots
 plots/
-animated.gif
+*.gif
 
 # Distribution / packaging
 .Python

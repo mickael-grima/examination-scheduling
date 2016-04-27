@@ -1,13 +1,14 @@
 import networkx as nx
 import random as rd
-import numpy as np
 import os, glob
 
 import matplotlib
 matplotlib.use('Agg')  # for not popping up windows
 import matplotlib.pyplot as plt
+
 all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan", "pink", "black"]
 m = len(all_colours)
+
 
 class ColorGraph(object):
     def __init__(self):
@@ -17,14 +18,15 @@ class ColorGraph(object):
         self.graph = nx.Graph()
         self.colours = {}
         self.revert = True
+        self.history = {}
 
         if not os.path.exists(self.DIRECTORY):
             os.makedirs(self.DIRECTORY)
-            
+
         # clear plot directory
-        for f in glob.glob(self.DIRECTORY+"*"):
+        for f in glob.glob(self.DIRECTORY + "*"):
             os.remove(f)
-    
+
     def add_node(self, node):
         self.graph.add_node(node)
         self.colours.setdefault(node, 'white')
@@ -37,7 +39,7 @@ class ColorGraph(object):
     def reset_colours(self):
         for col in self.colours:
             self.colours[col] = 'white'
-            
+
     def update_color(self, node, color):
         if self.colours.get(node) is None:
             return False
@@ -49,14 +51,14 @@ class ColorGraph(object):
         """
         degree = {node: len(self.graph.neighbors(node)) for node in self.graph.nodes()}
         return degree
-    
+
     def get_chromatic_number(self):
         """ return the number of colours used
         """
         return len(set([self.colours[x] for x in self.colours]))
 
     def check_neighbours(self, node, colour):
-        if colour in [self.colours[x[1]] for x in self.graph.edges(node) ]:
+        if colour in [self.colours[x[1]] for x in self.graph.edges(node)]:
             return(False)
         return(True)
 
@@ -71,14 +73,21 @@ class ColorGraph(object):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
 
+	def plot_colouring_steps(self, save=True):
+		fig, ax = plt.subplots(1,1,1)
+		for step in self.history:
+			self.colours = self.history[step]
+			self.draw(save=save, ind=step)
+
     def reinitialized(self):
         """ reinitialized all colour to 'white'
         """
         self.colours = {node: 'white' for node in self.colours.iterkeys()}
 
-    def build_rand_graph(self, nb_nodes=16):
+    def build_rand_graph(self, nb_nodes=16, probability=0.5):
         # construct random node-node-incidence matrix
-        rands = [rd.randint(0, 1) < 1 for i in range(int(1+0.5*nb_nodes*(nb_nodes-1)))]
+
+        rands = [rd.random() < probability for i in range(int(1 + 0.5 * nb_nodes * (nb_nodes - 1)))]
 
         # make edges
         counter = 0
@@ -89,12 +98,11 @@ class ColorGraph(object):
                     self.add_edge(i, j)
                 counter += 1
 
-    def build_sudoku_graph(self):
-        nb_nodes=16
+    def build_sudoku_graph(self, nb_nodes=16):
         if nb_nodes != 16:
             print("Sorry, currently only 4x4 sudoku is supported!")
             nb_nodes = 16
-            
+
         for i in range(4):
             for j in range(4):
                 for k in range(4):
@@ -108,7 +116,6 @@ class ColorGraph(object):
         self.add_edge(3*4, (2)*4+1)
         self.add_edge(2*4+2, (3)*4+3)
         self.add_edge(3*4+2, (2)*4+3)
-        
 
     def color_node(self, node):
         """ Check the colors of the neighbors, and color the node with a different color
@@ -127,9 +134,11 @@ class ColorGraph(object):
         if self.revert:
             lookup_order = reversed(lookup_order)
 
-        fig, ax = plt.subplots()
+		# Save the state
+        if save:
+        	self.history[0] = self.colours
 
-        counter = 1
+        counter = 1	
         for node in lookup_order:
 
             # respect initial condition
@@ -138,12 +147,12 @@ class ColorGraph(object):
 
             self.color_node(node)
 
-            # Save the pictures
-            self.draw(save=save, ind=counter)
+            # Save the state
+            if save:
+	        	self.history[counter] = self.colours
+
             counter += 1
-                
-        self.draw(save=True, ind=counter)
-        
+
         return self.colours
 
     def color_graph_rand(self, save=False):
@@ -158,7 +167,10 @@ class ColorGraph(object):
         # revert??
         lookup_order = list(reversed(lookup_order))
 
-        fig, ax = plt.subplots()
+        # Save the state
+        if save:
+        	self.history[counter] = self.colours
+
 
         while lookup_order:
             rand, n, ind = rd.randint(0, sum(degree)), 0, 0
@@ -169,9 +181,10 @@ class ColorGraph(object):
                 ind += 1
             counter, node = 1, lookup_order[ind]
             self.color_node(node)
-            # Save the pictures
+            # Save the state
             if save:
-                self.draw(save=save, ind=counter)
+	        	self.history[counter] = self.colours
+
             counter += 1
             del lookup_order[ind]
             del degree[ind]
@@ -184,13 +197,14 @@ class ColorGraph(object):
         We do the coloration it times, and we keep the graph wich has not more rooms than max_room, and with
         the minimum number of color
         """
-        colours = {}
+        colours, min_chromatic_number = {}, []
         for i in range(it):
-            self.reinitialized()
+            self.reset_colours()
             cols = self.color_graph_rand(save=save)
             max_ind_set = max([len([node for node, colour in cols.iteritems() if colour == col])
                               for col in all_colours])
             nb_color = len(set([color for node, color in cols.iteritems()]))
+            min_chromatic_number.append(len(set([color for node, color in colours.iteritems()])))
             # If too many rooms
             if max_room >= 0 and max_ind_set > max_room:
                 continue
@@ -215,21 +229,42 @@ class ColorGraph(object):
             plt.show()
 
 
-colouring_file_test = True
+import sys
+import time
+if __name__ == "__main__":
+	if len(sys.argv) <= 1:
+		print("Please specify one: rand | sudoku | solver!\n")
+		exit(0)
+	elif sys.argv[1] == "rand":
+		n = 16
+		G = ColorGraph()
+		G.revert = False
+		G.build_rand_graph(nb_nodes=n)
+		G.color_graph(save=True)
+		print(G.get_chromatic_number())
+		
+		G.plot_colouring_steps(save=True)
+		G.draw_calendar(save=True)
+		time.sleep(1) 
+		os.system("convert -delay 70 -loop 0 plots/*jpg rand.gif")
+	elif sys.argv[1] == "sudoku":
+		G = ColorGraph()
+		G.build_sudoku_graph()
+		G.draw(save=True, ind=0)
+		G.color_graph(save=True)
+		print(G.get_chromatic_number())
+		
+		G.plot_colouring_steps(save=True)
+		os.system("convert -delay 70 -loop 0 plots/*jpg sudoku.gif")
+	elif sys.argv[1] == "solver":
+		G = ColorGraph()
+		G.build_rand_graph(nb_nodes=50, probability=0.95)
+		G.color_graph_rand_iter(it=100)
+		G.reset_colours()
+		G.color_graph()
+		print G.get_chromatic_number()
+		
+	else: 
+		print("Please specify one: rand | sudoku | solver!\n")
 
-if colouring_file_test:
-    n = 12
-    G = ColorGraph()
-    G.revert = True
-    G.build_rand_graph(nb_nodes=n)
-    G.color_graph(save=True)
-    print(G.get_chromatic_number())
 
-    G.draw_calendar(save=True)
-
-    # convert to animation        
-    import time
-    time.sleep(1) # delays for 5 seconds
-    os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
-
-    print(G.colours)
