@@ -5,7 +5,7 @@
 # It should be runed after any completion of the code
 
 import unittest
-from colouring import ColorGraph
+from booth.colouring import ColorGraph
 
 
 class TestInstance(unittest.TestCase):
