@@ -1,7 +1,8 @@
 import networkx as nx
 import random as rd
-import os, glob
-from time import time
+import os
+import glob
+from time import time, strftime
 import pickle as pk
 from argparse import ArgumentParser
 
@@ -22,6 +23,7 @@ class ColorGraph(object):
         self.graph = nx.Graph()
         self.colours = {}
         self.revert = True
+        self.history = {}
 
         if not os.path.exists(self.DIRECTORY):
             os.makedirs(self.DIRECTORY)
@@ -31,6 +33,9 @@ class ColorGraph(object):
             os.remove(f)
 
     def add_node(self, node):
+        """ @param node: node
+        Add node to self.graph
+        """
         self.graph.add_node(node)
         self.colours.setdefault(node, 'white')
 
@@ -40,10 +45,16 @@ class ColorGraph(object):
         self.colours.setdefault(node2, 'white')
 
     def reset_colours(self):
+        """ Reset all the colours to white
+        """
         for col in self.colours:
             self.colours[col] = 'white'
 
     def update_color(self, node, color):
+        """ @param node: node to consider in self.graph
+            @param color: color to set to this node
+            Set color to node in self.colours
+        """
         if self.colours.get(node) is None:
             return False
         self.colours[node] = color
@@ -61,11 +72,21 @@ class ColorGraph(object):
         return len(set([self.colours[x] for x in self.colours]))
 
     def check_neighbours(self, node, colour):
+        """ @param node: node to consider
+            @param colour: colour to check
+            We check for every neighbor of node if it has colour as colour
+            If not we return true, else we return false
+        """
         if colour in [self.colours[x[1]] for x in self.graph.edges(node)]:
             return(False)
         return(True)
 
     def draw(self, save=False, with_labels=False, ind=0):
+        """ @param save: do we save the picture
+            @param with_labels: do we write the labels of the nodes on the picture
+            @param ind: index of the picture
+            Draw the graph with the self.colours and save it if save==true
+        """
         colours = [colour for _, colour in self.colours.iteritems()]
         nx.draw_shell(self.graph, node_color=colours, with_labels=with_labels)
         if save:
@@ -76,7 +97,13 @@ class ColorGraph(object):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
 
-    def draw_calendar(self, save=False, ind=0):
+    def draw_calendar(self, save=False, with_labels=False, ind=0):
+        """ @param save: do we save the picture?
+            @param with_labels: Do we add labels of the node on the picture?
+            @param ind: index of the picture
+            We draw the graph as a calendar: each color has a given x coordinate
+            We save it if save==True
+        """
         counter_colors = {color: 0 for color in all_colours}
         fig, ax = plt.subplots()
         for node in self.graph.nodes():
@@ -85,11 +112,7 @@ class ColorGraph(object):
                    color=self.colours[node])
             counter_colors[self.colours[node]] += 1
         if save:
-            fig.savefig("%scalendar.jpg" % self.DIRECTORY)
-        else:
-            plt.show()
-        if save:
-            filename = self.DIRECTORY + 'calendar'
+            filename = '%scalendar-%s-' % (self.DIRECTORY, strftime("%Y%m%d"))
             if(ind < 10):
                 filename = filename + '00'
             elif(ind < 100):
@@ -105,6 +128,10 @@ class ColorGraph(object):
             self.draw_calendar(save=True, ind=step)
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
+        """ @param nb_nodes: number of nodes of the constructed graph
+            @param probability: the ratio of edge we want in expectation
+            We build a graph with exactly nb_nodes and approximately #possible_edges*probability
+        """
         # construct random node-node-incidence matrix
         rands = [rd.random() < probability for i in range(int(1 + 0.5 * nb_nodes * (nb_nodes - 1)))]
 
@@ -118,6 +145,10 @@ class ColorGraph(object):
                 counter += 1
 
     def build_sudoku_graph(self, nb_nodes=16):
+        """ @param nb_nodes: number of cases in sudoku
+            We create a graph representing a sudoku: each node is a case and an edge represent the fact that
+            two nodes are neighbor in the sudoku
+        """
         if nb_nodes != 16:
             print("Sorry, currently only 4x4 sudoku is supported!")
             nb_nodes = 16
@@ -145,6 +176,11 @@ class ColorGraph(object):
                 break
 
     def color_graph(self, save=False):
+        """ @param save: do we save the sequence?
+            We solve the colouring graph problem with a greedy algorithm
+            We take the node from the biggest degree to the lowest and we color them to have no conflict
+            We try to have as little colours as possible
+        """
         degree = self.get_degree()
 
         # sort by degree
@@ -176,7 +212,7 @@ class ColorGraph(object):
 
     def color_graph_rand(self, save=False):
         """ @ param max_room: max number of room. If -1 then we can take as many rooms as we want
-        We color the graph choosing randomly a node at each step
+            We color the graph choosing randomly a node at each step
         """
         degree = self.get_degree()
         # sort by degree
