@@ -104,11 +104,6 @@ class ColorGraph(object):
             self.colours = colours
             self.draw_calendar(save=True, ind=step)
 
-    def reinitialized(self):
-        """ reinitialized all colour to 'white'
-        """
-        self.colours = {node: 'white' for node in self.colours.iterkeys()}
-
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         # construct random node-node-incidence matrix
         rands = [rd.random() < probability for i in range(int(1 + 0.5 * nb_nodes * (nb_nodes - 1)))]
