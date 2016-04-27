@@ -65,9 +65,9 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    def draw(self, save=False, ind=0):
+    def draw(self, save=False, with_labels=False, ind=0):
         colours = [colour for _, colour in self.colours.iteritems()]
-        nx.draw_shell(self.graph, node_color=colours)
+        nx.draw_shell(self.graph, node_color=colours, with_labels=with_labels)
         if save:
             filename = self.DIRECTORY + self.plotname
             if(ind < 10):
@@ -75,6 +75,34 @@ class ColorGraph(object):
             elif(ind < 100):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
+
+    def draw_calendar(self, save=False, ind=0):
+        counter_colors = {color: 0 for color in all_colours}
+        fig, ax = plt.subplots()
+        for node in self.graph.nodes():
+            color_ind = [i for i in range(len(all_colours)) if all_colours[i] == self.colours[node]][0]
+            ax.bar(color_ind * 100, 40, width=100, bottom=counter_colors[self.colours[node]] * 50,
+                   color=self.colours[node])
+            counter_colors[self.colours[node]] += 1
+        if save:
+            fig.savefig("%scalendar.jpg" % self.DIRECTORY)
+        else:
+            plt.show()
+        if save:
+            filename = self.DIRECTORY + 'calendar'
+            if(ind < 10):
+                filename = filename + '00'
+            elif(ind < 100):
+                filename = filename + '0'
+            plt.savefig("%s%d.jpg" % (filename, ind))
+
+    def get_calendar_simulation_files(self, save=False):
+        """ @param history: dictionnary of key: value. key = step, value = list of colours
+            if save,we save the different steps in self.DIRECTORY
+        """
+        for step, colours in self.history.iteritems():
+            self.colours = colours
+            self.draw_calendar(save=True, ind=step)
 
     def reinitialized(self):
         """ reinitialized all colour to 'white'
@@ -208,19 +236,6 @@ class ColorGraph(object):
         self.colours = colours
         return colours
 
-    def draw_calendar(self, save=False):
-        counter_colors = {color: 0 for color in all_colours}
-        fig, ax = plt.subplots()
-        for node in self.graph.nodes():
-            color_ind = [i for i in range(len(all_colours)) if all_colours[i] == self.colours[node]][0]
-            ax.bar(color_ind * 100, 40, width=100, bottom=counter_colors[self.colours[node]] * 50,
-                   color=self.colours[node])
-            counter_colors[self.colours[node]] += 1
-        if save:
-            fig.savefig("%scalendar.jpg" % self.DIRECTORY)
-        else:
-            plt.show()
-
 
 def find_bad_greedy_algorithm_graph(nb_it=50):
     graphs = {}  # key = nb_node, value = graph
@@ -232,7 +247,7 @@ def find_bad_greedy_algorithm_graph(nb_it=50):
         print "Number of nodes: %s" % n
         for it in range(nb_it):
             G = ColorGraph()
-            G.build_rand_graph(nb_nodes=n)
+            G.build_rand_graph(nb_nodes=n, probability=0.3)
             # greedy algorithm
             G.color_graph(save=False)
             n_greedy = G.get_chromatic_number()
