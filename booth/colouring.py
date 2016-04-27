@@ -1,6 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+import os
+PATHS = os.getcwd().split('/')
+PATH = ''
+for p in PATHS:
+    PATH += '%s/' % p
+    if p == 'examination-scheduling':
+        break
+sys.path.append(PATH)
+
 import networkx as nx
 import random as rd
-import os
 import glob
 from time import time, strftime
 import pickle as pk
@@ -16,7 +28,7 @@ m = len(all_colours)
 
 class ColorGraph(object):
     def __init__(self):
-        self.DIRECTORY = "plots/"
+        self.DIRECTORY = "%sbooth/plots/" % PATH
         self.plotname = "graphcolouring"
         self.ALL_COLOURS = [str(i) for i in range(20)]
 
@@ -27,10 +39,6 @@ class ColorGraph(object):
 
         if not os.path.exists(self.DIRECTORY):
             os.makedirs(self.DIRECTORY)
-
-        # clear plot directory
-        for f in glob.glob(self.DIRECTORY + "*"):
-            os.remove(f)
 
     def add_node(self, node):
         """ @param node: node
