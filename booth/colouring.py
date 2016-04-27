@@ -134,12 +134,12 @@ class ColorGraph(object):
                     self.add_edge(i * 4 + j, k * 4 + j)
         self.add_edge(0 * 4, (1) * 4 + 1)
         self.add_edge(1 * 4, (0) * 4 + 1)
-        self.add_edge(0*4+2, (1)*4+3)
-        self.add_edge(1*4+2, (0)*4+3)
-        self.add_edge(2*4, (3)*4+1)
-        self.add_edge(3*4, (2)*4+1)
-        self.add_edge(2*4+2, (3)*4+3)
-        self.add_edge(3*4+2, (2)*4+3)
+        self.add_edge(0 * 4 + 2, (1) * 4 + 3)
+        self.add_edge(1 * 4 + 2, (0) * 4 + 3)
+        self.add_edge(2 * 4, (3) * 4 + 1)
+        self.add_edge(3 * 4, (2) * 4 + 1)
+        self.add_edge(2 * 4 + 2, (3) * 4 + 3)
+        self.add_edge(3 * 4 + 2, (2) * 4 + 3)
 
     def color_node(self, node):
         """ Check the colors of the neighbors, and color the node with a different color
@@ -237,7 +237,12 @@ class ColorGraph(object):
         return colours
 
 
-def find_bad_greedy_algorithm_graph(nb_it=50):
+def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
+    """ @param nb_it: for each number of nodes we do nb_ititerations
+        @param min_colour: how many colours we want at least
+        We try to construct a graph with a specific number of nodes (all nodes between 5 and 20)
+        where the greedy algorithm is as bad as possible
+    """
     graphs = {}  # key = nb_node, value = graph
     node_min, node_max = 5, 20
     print "----------- Start ---------------"
@@ -257,7 +262,7 @@ def find_bad_greedy_algorithm_graph(nb_it=50):
             n_rand = G.get_chromatic_number()
             # We compare the solutions
             delta_n = n_greedy - n_rand
-            if delta_n > diff:
+            if delta_n > diff and min(n_greedy, n_rand) >= min_colour:
                 diff = delta_n
                 graphs[n] = (G, diff)
     print "Job completed after %s sec" % (time() - t)
@@ -307,7 +312,7 @@ def main():
                    help='<Required> enter the number of iterations you want to do for each number of nodes')
     args = p.parse_args()
 
-    find_bad_greedy_algorithm_graph(nb_it=args.it)
+    find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
 
 if __name__ == '__main__':
     main()
