@@ -78,7 +78,7 @@ class ColorGraph(object):
 
     def build_rand_graph(self, nb_nodes=16):
         # construct random node-node-incidence matrix
-        rands = [rd.randint(0, 2) < 1 for i in range(int(1+0.5*nb_nodes*(nb_nodes-1)))]
+        rands = [rd.randint(0, 1) < 1 for i in range(int(1+0.5*nb_nodes*(nb_nodes-1)))]
 
         # make edges
         counter = 0
@@ -215,20 +215,13 @@ class ColorGraph(object):
             plt.show()
 
 
-colouring_file_test = False
+colouring_file_test = True
 
 if colouring_file_test:
-    n = 4
-
+    n = 12
     G = ColorGraph()
-    G.revert = False
+    G.revert = True
     G.build_rand_graph(nb_nodes=n)
-    G.color_graph(save=False)
-    print(G.get_chromatic_number())
-
-    G = ColorGraph()
-    G.build_sudoku_graph()
-    G.draw(save=True, ind=0)
     G.color_graph(save=True)
     print(G.get_chromatic_number())
 
