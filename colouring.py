@@ -1,6 +1,9 @@
 import networkx as nx
 import random as rd
 import os, glob
+from time import time
+import pickle as pk
+from argparse import ArgumentParser
 
 import matplotlib
 matplotlib.use('Agg')  # for not popping up windows
@@ -14,6 +17,7 @@ class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "plots/"
         self.plotname = "graphcolouring"
+        self.ALL_COLOURS = [str(i) for i in range(20)]
 
         self.graph = nx.Graph()
         self.colours = {}
@@ -98,10 +102,10 @@ class ColorGraph(object):
         for i in range(4):
             for j in range(4):
                 for k in range(4):
-                    self.add_edge(i*4+j, i*4+k)
-                    self.add_edge(i*4+j, k*4+j)
-        self.add_edge(0*4, (1)*4+1)
-        self.add_edge(1*4, (0)*4+1)
+                    self.add_edge(i * 4 + j, i * 4 + k)
+                    self.add_edge(i * 4 + j, k * 4 + j)
+        self.add_edge(0 * 4, (1) * 4 + 1)
+        self.add_edge(1 * 4, (0) * 4 + 1)
         self.add_edge(0*4+2, (1)*4+3)
         self.add_edge(1*4+2, (0)*4+3)
         self.add_edge(2*4, (3)*4+1)
@@ -218,35 +222,77 @@ class ColorGraph(object):
             plt.show()
 
 
-colouring_file_test = True
+def find_bad_greedy_algorithm_graph(nb_it=50):
+    graphs = {}  # key = nb_node, value = graph
+    node_min, node_max = 5, 20
+    print "----------- Start ---------------"
+    t = time()
+    for n in range(node_min, node_max + 1):
+        diff = 0
+        print "Number of nodes: %s" % n
+        for it in range(nb_it):
+            G = ColorGraph()
+            G.build_rand_graph(nb_nodes=n)
+            # greedy algorithm
+            G.color_graph(save=False)
+            n_greedy = G.get_chromatic_number()
+            # rand algorithm
+            G.reset_colours()
+            G.color_graph_rand_iter(it=20, save=False)
+            n_rand = G.get_chromatic_number()
+            # We compare the solutions
+            delta_n = n_greedy - n_rand
+            if delta_n > diff:
+                diff = delta_n
+                graphs[n] = (G, diff)
+    print "Job completed after %s sec" % (time() - t)
+    print "----------- Done ---------------"
+    pk.dump(graphs, open('files/relevant_graphs', 'wb'))
+    return graphs
 
-if colouring_file_test:
-    n = 16
 
-    G = ColorGraph()
-    G.build_sudoku_graph()
-    G.draw(save=True, ind=0)
-    G.color_graph(save=True)
-    print(G.get_chromatic_number())
+def test():
+    colouring_file_test = True
 
-    G = ColorGraph()
-    G.revert = False
-    G.build_rand_graph(nb_nodes=n)
-    G.color_graph(save=False)
-    print(G.get_chromatic_number())
+    if colouring_file_test:
+        n = 16
 
-    G.draw_calendar(save=True)
+        G = ColorGraph()
+        G.build_sudoku_graph()
+        G.draw(save=True, ind=0)
+        G.color_graph(save=True)
+        print(G.get_chromatic_number())
 
-    # convert to animation
-    import time
-    time.sleep(1)  # delays for 5 seconds
-    os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+        G = ColorGraph()
+        G.revert = False
+        G.build_rand_graph(nb_nodes=n)
+        G.color_graph(save=True)
+        print(G.get_chromatic_number())
 
-    print(G.colours)
+        G.draw_calendar(save=True)
 
-    # G = ColorGraph()
-    # G.build_rand_graph(nb_nodes=50, probability=0.95)
-    # G.color_graph_rand_iter(it=100)
-    # G.reset_colours()
-    # G.color_graph()
-    # print G.get_chromatic_number()
+        # convert to animation
+        import time
+        time.sleep(1)  # delays for 5 seconds
+        os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+
+        print(G.colours)
+
+        # G = ColorGraph()
+        # G.build_rand_graph(nb_nodes=50, probability=0.95)
+        # G.color_graph_rand_iter(it=100)
+        # G.reset_colours()
+        # G.color_graph()
+        # print G.get_chromatic_number()
+
+
+def main():
+    p = ArgumentParser()
+    p.add_argument('-i', '--it', required=True, type=int,
+                   help='<Required> enter the number of iterations you want to do for each number of nodes')
+    args = p.parse_args()
+
+    find_bad_greedy_algorithm_graph(nb_it=args.it)
+
+if __name__ == '__main__':
+    main()
