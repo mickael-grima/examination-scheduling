@@ -10,6 +10,7 @@ for p in PATHS:
     if p == 'examination-scheduling':
         break
 sys.path.append(PATH)
+print PATH
 
 import networkx as nx
 import random as rd
@@ -31,9 +32,7 @@ def complete_string_to_length(st, lgt):
         Add space to the right and the left in order thath st has the length lgt
     """
     while(len(st) < lgt):
-        st = ' %s ' % st
-    if len(st) > lgt:
-        st = st[1:]
+        st = '%s ' % st
     return st
 
 
@@ -115,7 +114,7 @@ class ColorGraph(object):
                 filename = filename + '00'
             elif(ind < 100):
                 filename = filename + '0'
-            plt.savefig("%s%d.jpg" % (filename, ind))
+            plt.savefig("%s%s.jpg" % (filename, ind))
         if clf:
             plt.clf()
 
@@ -140,7 +139,7 @@ class ColorGraph(object):
                 filename = filename + '00'
             elif(ind < 100):
                 filename = filename + '0'
-            plt.savefig("%s%d.jpg" % (filename, ind))
+            plt.savefig("%s%s.jpg" % (filename, ind))
         if clf:
             plt.clf()
 
@@ -158,13 +157,13 @@ class ColorGraph(object):
         lines = [[' Examination ', ' Overlapping ']]
         lens = [len(lines[0][0]), len(lines[0][1])]
         for node in self.graph.nodes():
-            c0 = complete_string_to_length(str(node), lens[0])
+            c0 = complete_string_to_length(' %s' % str(node), lens[0])
             c1 = ', '.join([str(neigh) for neigh in self.graph.neighbors(node)])
             if len(c1) > lens[1]:
                 lines[0][1] = complete_string_to_length(lines[0][1], len(c1))
                 lens[1] = len(c1)
             else:
-                c1 = complete_string_to_length(c1, lens[1])
+                c1 = complete_string_to_length(' %s' % c1, lens[1])
             lines.append([c0, c1])
         lines.insert(1, ['-%s' % '-'.join(['' for i in range(lens[0])]),
                          '-%s' % '-'.join(['' for i in range(lens[1])])])
@@ -353,6 +352,24 @@ def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
     return graphs
 
 
+def generate_plots_from_file():
+    """
+        We load the pickle file and we generate the plot for heuristics, exact solution, both calendar
+        and graph, and the schedule plan
+    """
+    graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
+    for nb_nodes, graph in graphs.iteritems():
+        if PATH not in graph[0].DIRECTORY:
+            graph[0].DIRECTORY = '%sbooth/%s' % (PATH, graph[0].DIRECTORY)
+        graph[0].draw(save=True, ind='graph-exact-%s' % nb_nodes, clf=True)
+        graph[0].draw_calendar(save=True, ind='calendar-exact-%s' % nb_nodes, clf=True)
+        graph[0].reset_colours()
+        graph[0].color_graph()
+        graph[0].draw(save=True, ind='graph-heuristic-%s' % nb_nodes, clf=True)
+        graph[0].draw_calendar(save=True, ind='calendar-heuristic-%s' % nb_nodes, clf=True)
+        graph[0].convert_to_schedule_plan(ind='schedule-plan-%s' % nb_nodes)
+
+
 def test():
     colouring_file_test = True
 
@@ -397,4 +414,4 @@ def main():
     find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
 
 if __name__ == '__main__':
-    main()
+    generate_plots_from_file()
