@@ -1,23 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# This class contains all the tests methods
-# It should be runed after any completion of the code
-
+import sys
+import os
+paths = os.getcwd().split('/')
+path = ''
+for p in paths:
+    path += '%s/' % p
+    if p == 'examination-scheduling':
+        break
+sys.path.append(path)
 import unittest
-from colouring import ColorGraph
-
-
-class TestInstance(unittest.TestCase):
-    """ Test used to test examination_instance script
-    """
-    pass
-
-
-class TestGraphicer(unittest.TestCase):
-    """ Test used to test graphicer script
-    """
-    pass
+from booth.colouring import ColorGraph
 
 
 class TestColouring(unittest.TestCase):
