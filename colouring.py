@@ -261,9 +261,7 @@ def draw_calendar(colours, ax) :
 
 # animation for booth
 # plotting guide: http://matplotlib.org/users/tight_layout_guide.html
-from scipy.misc import lena
 def plot_history(graph, hist_greedy, hist_opt):
-    
     # make dicitionaries same length
     hist_greedy, hist_opt = extend_shorter_hist(hist_greedy, hist_opt)
     

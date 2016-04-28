@@ -18,6 +18,7 @@ import glob
 from time import time, strftime
 import pickle as pk
 from argparse import ArgumentParser
+from copy import deepcopy
 
 import matplotlib
 matplotlib.use('Agg')  # for not popping up windows
@@ -115,15 +116,16 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    def draw(self, save=False, with_labels=False, ind=0, clf=False):
+    def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colours=None):
         """ @param save: do we save the picture
             @param with_labels: do we write the labels of the nodes on the picture
             @param ind: index of the picture
+            @param ax: if we have an ax we draw on it
             @param clf: after saving we clean the figure if clf==True
             Draw the graph with the self.colours and save it if save==true
         """
-        colours = [colour for _, colour in self.colours.iteritems()]
-        nx.draw_shell(self.graph, node_color=colours, with_labels=with_labels)
+        cols = [colour for _, colour in colours.iteritems()] or [colour for _, colour in self.colours.iteritems()]
+        nx.draw_shell(self.graph, node_color=cols, with_labels=with_labels, ax=ax)
         if save:
             filename = self.DIRECTORY + self.plotname
             if(ind < 10):
@@ -134,7 +136,7 @@ class ColorGraph(object):
         if clf:
             plt.clf()
 
-    def draw_calendar(self, save=False, with_labels=False, ind=0, clf=False):
+    def draw_calendar(self, save=False, with_labels=False, ind=0, clf=False, ax=None, colours=None):
         """ @param save: do we save the picture?
             @param with_labels: Do we add labels of the node on the picture?
             @param ind: index of the picture
@@ -143,12 +145,18 @@ class ColorGraph(object):
             We save it if save==True
         """
         counter_colors = {color: 0 for color in all_colours}
-        fig, ax = plt.subplots()
+        cols = colours or self.colours
+        if ax is None:
+            fig, ax = plt.subplots()
         for node in self.graph.nodes():
-            color_ind = [i for i in range(len(all_colours)) if all_colours[i] == self.colours[node]][0]
+            color_ind = [i for i in range(len(all_colours)) if all_colours[i] == cols[node]]
+            if color_ind:
+                color_ind = color_ind[0]
+            else:
+                continue
             ax.bar(color_ind * 100, 40, width=100, bottom=counter_colors[self.colours[node]] * 50,
-                   color=self.colours[node])
-            counter_colors[self.colours[node]] += 1
+                   color=cols[node])
+            counter_colors[cols[node]] += 1
         if save:
             filename = '%scalendar-%s-' % (self.DIRECTORY, strftime("%Y%m%d"))
             if(ind < 10):
@@ -159,15 +167,7 @@ class ColorGraph(object):
         if clf:
             plt.clf()
 
-    def get_calendar_simulation_files(self, save=False):
-        """ @param history: dictionnary of key: value. key = step, value = list of colours
-            if save,we save the different steps in self.DIRECTORY
-        """
-        for step, colours in self.history.iteritems():
-            self.colours = colours
-            self.draw_calendar(save=True, ind=step)
-
-    def convert_to_schedule_plan(self, ind=0):
+    def draw_schedule_plan(self, ind=0):
         """ From the graph create a tschedule plan like the poster
         """
         lines = [[' Examination ', ' Overlapping ']]
@@ -192,6 +192,58 @@ class ColorGraph(object):
         filename += "%s.txt" % ind
         with open(filename, 'wb') as src:
             src.write(text)
+
+    def draw_simulation(self, save=True, name='', clf=True, axarr=None, line=0):
+        """ @param save: do we save the picture?
+            @param name: name of the picture
+            @param clf: after saving we clean the figure if clf==True
+            @param axarr: list of axes where to plot
+            @param line: line of the axarr where to plot
+            Draw for both heuristics and exact solution the calendar and the graph
+        """
+        if axarr is None:
+            fig, axarr = plt.subplots(1, 2)
+            line = 0
+        self.draw(save=False, ind=name, clf=clf, ax=axarr[line, 0])
+        self.draw_calendar(save=False, ind=name, clf=clf, ax=axarr[line, 1])
+        if save:
+            filename = '%ssimulation-%s-%s.jpg' % (self.DIRECTORY, strftime("%Y%m%d"), name)
+            plt.savefig(filename)
+
+    def draw_heuristics_and_exact(self, directory, save=False):
+        """ @param dir: the directory where to save the files
+            We draw together the heuristics and exact solution (calendar and graph) in the same plot
+        """
+        # We copy the graph and let run the heuristic
+        graph_heur = deepcopy(self)
+        graph_heur.reset()
+        graph_heur.color_graph()
+
+        # for each step of the history we save a file in dir
+        steps = list(set(self.history.iterkeys()).union(set(graph_heur.history.iterkeys())))
+        steps.sort()
+        for step in steps:
+            fig, axarr = plt.subplots(2, 2)
+            self.draw(save=False, clf=False, ax=axarr[0, 0],
+                      colours=self.history.get(step))
+            self.draw_calendar(save=False, clf=False, ax=axarr[0, 1],
+                               colours=self.history.get(step))
+            graph_heur.draw(save=False, clf=False, ax=axarr[1, 0],
+                            colours=graph_heur.history.get(step))
+            graph_heur.draw_calendar(save=False, clf=False, ax=axarr[1, 1],
+                                     colours=graph_heur.history.get(step))
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            plt.savefig('%ssimulation-%s.jpg' % (directory, step))
+            plt.clf()
+
+    def get_calendar_simulation_files(self, save=False):
+        """ @param history: dictionnary of key: value. key = step, value = list of colours
+            if save,we save the different steps in self.DIRECTORY
+        """
+        for step, colours in self.history.iteritems():
+            self.colours = colours
+            self.draw_calendar(save=True, ind=step)
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         """ @param nb_nodes: number of nodes of the constructed graph
@@ -241,7 +293,7 @@ class ColorGraph(object):
                 self.colours[node] = col
                 break
 
-    def color_graph(self, save=False):
+    def color_graph(self):
         """ @param save: do we save the sequence?
             We solve the colouring graph problem with a greedy algorithm
             We take the node from the biggest degree to the lowest and we color them to have no conflict
@@ -256,8 +308,7 @@ class ColorGraph(object):
             lookup_order = reversed(lookup_order)
 
         # Save the state
-        if save:
-            self.history[0] = self.colours
+        self.history[0] = deepcopy(self.colours)
 
         counter = 1
         for node in lookup_order:
@@ -269,16 +320,15 @@ class ColorGraph(object):
             self.color_node(node)
 
             # Save the state
-            if save:
-                self.history[counter] = self.colours
+            self.history[counter] = deepcopy(self.colours)
 
             counter += 1
 
         return self.colours
 
-    def color_graph_rand(self, save=False):
+    def color_graph_rand(self):
         """ @ param max_room: max number of room. If -1 then we can take as many rooms as we want
-        We color the graph choosing randomly a node at each step
+            We color the graph choosing randomly a node at each step
         """
         degree = self.get_degree()
         # sort by degree
@@ -289,9 +339,9 @@ class ColorGraph(object):
         lookup_order = list(reversed(lookup_order))
 
         # Save the state
-        if save:
-            self.history[0] = self.colours
+        self.history[0] = deepcopy(self.colours)
 
+        counter = 1
         while lookup_order:
             rand, n, ind = rd.randint(0, sum(degree)), 0, 0
             while ind < len(degree):
@@ -299,11 +349,10 @@ class ColorGraph(object):
                 if n >= rand:
                     break
                 ind += 1
-            counter, node = 1, lookup_order[ind]
+            node = lookup_order[ind]
             self.color_node(node)
             # Save the state
-            if save:
-                self.history[counter] = self.colours
+            self.history[counter] = deepcopy(self.colours)
 
             counter += 1
             del lookup_order[ind]
@@ -320,7 +369,7 @@ class ColorGraph(object):
         colours, history, min_chromatic_number = {}, {}, []
         for i in range(it):
             self.reset()
-            cols = self.color_graph_rand(save=save)
+            cols = self.color_graph_rand()
             max_ind_set = max([len([node for node, colour in cols.iteritems() if colour == col])
                               for col in all_colours])
             nb_color = len(set([color for node, color in cols.iteritems()]))
@@ -332,7 +381,7 @@ class ColorGraph(object):
             if colours and nb_color >= len(set([color for node, color in colours.iteritems()])):
                 continue
             colours = cols
-            history = self.history
+            history = deepcopy(self.history)
         self.colours = colours
         self.history = history
         return colours
@@ -355,11 +404,11 @@ def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
             G = ColorGraph()
             G.build_rand_graph(nb_nodes=n, probability=0.3)
             # greedy algorithm
-            G.color_graph(save=False)
+            G.color_graph()
             n_greedy = G.get_chromatic_number()
             # rand algorithm
-            G.reset_colours()
-            G.color_graph_rand_iter(it=20, save=False)
+            G.reset()
+            G.color_graph_rand_iter(it=20)
             n_rand = G.get_chromatic_number()
             # We compare the solutions
             delta_n = n_greedy - n_rand
@@ -368,7 +417,7 @@ def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
                 graphs[n] = (G, diff)
     print "Job completed after %s sec" % (time() - t)
     print "----------- Done ---------------"
-    pk.dump(graphs, open('files/relevant_graphs', 'wb'))
+    pk.dump(graphs, open('%sbooth/files/relevant_graphs_bis' % PATH, 'wb'))
     return graphs
 
 
@@ -379,15 +428,26 @@ def generate_plots_from_file():
     """
     graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
+        fig, axarr = plt.subplots(2, 2)
         if PATH not in graph[0].DIRECTORY:
             graph[0].DIRECTORY = '%sbooth/%s' % (PATH, graph[0].DIRECTORY)
-        graph[0].draw(save=True, ind='graph-exact-%s' % nb_nodes, clf=True)
-        graph[0].draw_calendar(save=True, ind='calendar-exact-%s' % nb_nodes, clf=True)
+        graph[0].draw_simulation(save=False, name='exact-simulation-%s' % nb_nodes, clf=False, axarr=axarr, line=0)
         graph[0].reset_colours()
         graph[0].color_graph()
-        graph[0].draw(save=True, ind='graph-heuristic-%s' % nb_nodes, clf=True)
-        graph[0].draw_calendar(save=True, ind='calendar-heuristic-%s' % nb_nodes, clf=True)
-        graph[0].convert_to_schedule_plan(ind='schedule-plan-%s' % nb_nodes)
+        graph[0].draw_simulation(save=False, name='heuristics-simulation-%s' % nb_nodes, clf=False, axarr=axarr, line=1)
+        filename = '%ssimulation-%s.jpg' % (graph[0].DIRECTORY, nb_nodes)
+        plt.savefig(filename)
+        plt.clf()
+
+
+def generate_plot_simulation_from_file():
+    """
+        We load the pickle file and we generate the plot for heuristics, exact solution, both calendar
+        and graph, for all step of the resolution
+    """
+    graphs = pk.load(open('%s/booth/files/relevant_graphs_bis' % PATH, 'rb'))
+    for nb_nodes, graph in graphs.iteritems():
+        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PATH, nb_nodes))
 
 
 def test():
@@ -434,4 +494,4 @@ def main():
     find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
 
 if __name__ == '__main__':
-    generate_plots_from_file()
+    generate_plot_simulation_from_file()
