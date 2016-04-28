@@ -62,11 +62,22 @@ class ColorGraph(object):
         self.colours.setdefault(node1, 'white')
         self.colours.setdefault(node2, 'white')
 
+    def reset_history(self):
+        """ reinitialized self.history to an empty dictionnary
+        """
+        self.history = {}
+
     def reset_colours(self):
         """ Reset all the colours to white
         """
         for col in self.colours:
             self.colours[col] = 'white'
+
+    def reset(self):
+        """ do both reset_colours and reset_history
+        """
+        self.reset_colours()
+        self.reset_history()
 
     def update_color(self, node, color):
         """ @param node: node to consider in self.graph
@@ -77,6 +88,11 @@ class ColorGraph(object):
             return False
         self.colours[node] = color
         return True
+
+    def plot_history(self, save=True):
+        for step in self.history:
+            self.colours = self.history[step]
+            self.draw(save=save, ind=step)
 
     def get_degree(self):
         """ return a dictionnary {node: degree}
@@ -239,7 +255,9 @@ class ColorGraph(object):
         if self.revert:
             lookup_order = reversed(lookup_order)
 
-        fig, ax = plt.subplots()
+        # Save the state
+        if save:
+            self.history[0] = self.colours
 
         counter = 1
         for node in lookup_order:
@@ -250,19 +268,17 @@ class ColorGraph(object):
 
             self.color_node(node)
 
-            # Save the pictures
+            # Save the state
             if save:
-                self.draw(save=save, ind=counter)
-            counter += 1
+                self.history[counter] = self.colours
 
-        if save:
-            self.draw(save=True, ind=counter)
+            counter += 1
 
         return self.colours
 
     def color_graph_rand(self, save=False):
         """ @ param max_room: max number of room. If -1 then we can take as many rooms as we want
-            We color the graph choosing randomly a node at each step
+        We color the graph choosing randomly a node at each step
         """
         degree = self.get_degree()
         # sort by degree
@@ -272,8 +288,9 @@ class ColorGraph(object):
         # revert??
         lookup_order = list(reversed(lookup_order))
 
+        # Save the state
         if save:
-            fig, ax = plt.subplots()
+            self.history[0] = self.colours
 
         while lookup_order:
             rand, n, ind = rd.randint(0, sum(degree)), 0, 0
@@ -284,9 +301,10 @@ class ColorGraph(object):
                 ind += 1
             counter, node = 1, lookup_order[ind]
             self.color_node(node)
-            # Save the pictures
+            # Save the state
             if save:
-                self.draw(save=save, ind=counter)
+                self.history[counter] = self.colours
+
             counter += 1
             del lookup_order[ind]
             del degree[ind]
@@ -299,9 +317,9 @@ class ColorGraph(object):
         We do the coloration it times, and we keep the graph wich has not more rooms than max_room, and with
         the minimum number of color
         """
-        colours, min_chromatic_number = {}, []
+        colours, history, min_chromatic_number = {}, {}, []
         for i in range(it):
-            self.reset_colours()
+            self.reset()
             cols = self.color_graph_rand(save=save)
             max_ind_set = max([len([node for node, colour in cols.iteritems() if colour == col])
                               for col in all_colours])
@@ -314,7 +332,9 @@ class ColorGraph(object):
             if colours and nb_color >= len(set([color for node, color in colours.iteritems()])):
                 continue
             colours = cols
+            history = self.history
         self.colours = colours
+        self.history = history
         return colours
 
 
