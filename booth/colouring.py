@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#Test
-#more Testing
-
 import sys
 import os
 PATHS = os.getcwd().split('/')
