@@ -26,6 +26,17 @@ all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cy
 m = len(all_colours)
 
 
+def complete_string_to_length(st, lgt):
+    """ @param st: string
+        Add space to the right and the left in order thath st has the length lgt
+    """
+    while(len(st) < lgt):
+        st = ' %s ' % st
+    if len(st) > lgt:
+        st = st[1:]
+    return st
+
+
 class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "%sbooth/plots/" % PATH
@@ -89,10 +100,11 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    def draw(self, save=False, with_labels=False, ind=0):
+    def draw(self, save=False, with_labels=False, ind=0, clf=False):
         """ @param save: do we save the picture
             @param with_labels: do we write the labels of the nodes on the picture
             @param ind: index of the picture
+            @param clf: after saving we clean the figure if clf==True
             Draw the graph with the self.colours and save it if save==true
         """
         colours = [colour for _, colour in self.colours.iteritems()]
@@ -104,11 +116,14 @@ class ColorGraph(object):
             elif(ind < 100):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
+        if clf:
+            plt.clf()
 
-    def draw_calendar(self, save=False, with_labels=False, ind=0):
+    def draw_calendar(self, save=False, with_labels=False, ind=0, clf=False):
         """ @param save: do we save the picture?
             @param with_labels: Do we add labels of the node on the picture?
             @param ind: index of the picture
+            @param clf: after saving we clean the figure if clf==True
             We draw the graph as a calendar: each color has a given x coordinate
             We save it if save==True
         """
@@ -126,6 +141,8 @@ class ColorGraph(object):
             elif(ind < 100):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
+        if clf:
+            plt.clf()
 
     def get_calendar_simulation_files(self, save=False):
         """ @param history: dictionnary of key: value. key = step, value = list of colours
@@ -134,6 +151,32 @@ class ColorGraph(object):
         for step, colours in self.history.iteritems():
             self.colours = colours
             self.draw_calendar(save=True, ind=step)
+
+    def convert_to_schedule_plan(self, ind=0):
+        """ From the graph create a tschedule plan like the poster
+        """
+        lines = [[' Examination ', ' Overlapping ']]
+        lens = [len(lines[0][0]), len(lines[0][1])]
+        for node in self.graph.nodes():
+            c0 = complete_string_to_length(str(node), lens[0])
+            c1 = ', '.join([str(neigh) for neigh in self.graph.neighbors(node)])
+            if len(c1) > lens[1]:
+                lines[0][1] = complete_string_to_length(lines[0][1], len(c1))
+                lens[1] = len(c1)
+            else:
+                c1 = complete_string_to_length(c1, lens[1])
+            lines.append([c0, c1])
+        lines.insert(1, ['-%s' % '-'.join(['' for i in range(lens[0])]),
+                         '-%s' % '-'.join(['' for i in range(lens[1])])])
+        text = '\n'.join(['%s | %s' % (line[0], line[1]) for line in lines])
+        filename = '%sschedule-plan-%s-' % (self.DIRECTORY, strftime("%Y%m%d"))
+        if(ind < 10):
+            filename = filename + '00'
+        elif(ind < 100):
+            filename = filename + '0'
+        filename += "%s.txt" % ind
+        with open(filename, 'wb') as src:
+            src.write(text)
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         """ @param nb_nodes: number of nodes of the constructed graph
