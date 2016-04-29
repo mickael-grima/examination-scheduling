@@ -80,6 +80,12 @@ class ColorGraph(object):
         self.reset_colours()
         self.reset_history()
 
+    def reinitialize(self):
+        """ reinitialize everything
+        """
+        self.reset()
+        self.graph = nx.Graph()
+
     def update_color(self, node, color):
         """ @param node: node to consider in self.graph
             @param color: color to set to this node
@@ -105,6 +111,13 @@ class ColorGraph(object):
         """ return the number of colours used
         """
         return len(set([self.colours[x] for x in self.colours]))
+
+    def get_max_ind_set(self):
+        """ for the given colouring give the maximum independant set size
+        """
+        cols = {colour: len([node for node in self.graph.nodes() if self.colours[node] == colour])
+                for colour in set([col for _, col in self.colours.iteritems()])}
+        return max([value for _, value in cols.iteritems()])
 
     def check_neighbours(self, node, colour):
         """ @param node: node to consider
@@ -147,7 +160,7 @@ class ColorGraph(object):
         counter_colors = {color: 0 for color in all_colours}
         cols = colours or self.colours
         if ax is None:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplot()
         for node in self.graph.nodes():
             color_ind = [i for i in range(len(all_colours)) if all_colours[i] == cols[node]]
             if color_ind:
@@ -218,12 +231,18 @@ class ColorGraph(object):
         graph_heur = deepcopy(self)
         graph_heur.reset()
         graph_heur.color_graph()
+        height = max(graph_heur.get_max_ind_set(), self.get_max_ind_set()) * 50
+        width = max(graph_heur.get_chromatic_number(), self.get_chromatic_number()) * 100
 
         # for each step of the history we save a file in dir
         steps = list(set(self.history.iterkeys()).union(set(graph_heur.history.iterkeys())))
         steps.sort()
         for step in steps:
-            fig, axarr = plt.subplots(2, 2)
+            fig, axarr = plt.subplots(2, 2, figsize=(10, 10))
+            axarr[0, 1].set_xlim(width)
+            axarr[0, 1].set_ylim(height)
+            axarr[1, 1].set_xlim(width)
+            axarr[1, 1].set_ylim(height)
             self.draw(save=False, clf=False, ax=axarr[0, 0],
                       colours=self.history.get(step))
             self.draw_calendar(save=False, clf=False, ax=axarr[0, 1],
@@ -234,7 +253,10 @@ class ColorGraph(object):
                                      colours=graph_heur.history.get(step))
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            plt.savefig('%ssimulation-%s.jpg' % (directory, step))
+            ind = '%s' % step
+            if len(ind) == 1:
+                ind = '0%s' % ind
+            plt.savefig('%ssimulation-%s.jpg' % (directory, ind))
             plt.clf()
 
     def get_calendar_simulation_files(self, save=False):
@@ -369,7 +391,7 @@ class ColorGraph(object):
         colours, history, min_chromatic_number = {}, {}, []
         for i in range(it):
             self.reset()
-            cols = self.color_graph_rand()
+            cols = deepcopy(self.color_graph_rand())
             max_ind_set = max([len([node for node, colour in cols.iteritems() if colour == col])
                               for col in all_colours])
             nb_color = len(set([color for node, color in cols.iteritems()]))
