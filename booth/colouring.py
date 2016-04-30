@@ -417,7 +417,7 @@ def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
     """
     graphs = {}  # key = nb_node, value = graph
     node_min, node_max = 5, 20
-    print "----------- Start ---------------"
+    print "----------- Start creating graphs ---------------"
     t = time()
     for n in range(node_min, node_max + 1):
         diff = 0
@@ -439,7 +439,7 @@ def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
                 graphs[n] = (G, diff)
     print "Job completed after %s sec" % (time() - t)
     print "----------- Done ---------------"
-    pk.dump(graphs, open('%sbooth/files/relevant_graphs_bis' % PATH, 'wb'))
+    pk.dump(graphs, open('%sbooth/files/relevant_graphs' % PATH, 'wb'))
     return graphs
 
 
@@ -448,6 +448,7 @@ def generate_plots_from_file():
         We load the pickle file and we generate the plot for heuristics, exact solution, both calendar
         and graph, and the schedule plan
     """
+    print "-------- Start generating plots ---------------"
     graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
         fig, axarr = plt.subplots(2, 2)
@@ -459,7 +460,9 @@ def generate_plots_from_file():
         graph[0].draw_simulation(save=False, name='heuristics-simulation-%s' % nb_nodes, clf=False, axarr=axarr, line=1)
         filename = '%ssimulation-%s.jpg' % (graph[0].DIRECTORY, nb_nodes)
         plt.savefig(filename)
+        print "Plot simulation-%s.jpg saved" % nb_nodes
         plt.clf()
+    print "------------- Done -------------"
 
 
 def generate_plot_simulation_from_file():
@@ -467,9 +470,28 @@ def generate_plot_simulation_from_file():
         We load the pickle file and we generate the plot for heuristics, exact solution, both calendar
         and graph, for all step of the resolution
     """
-    graphs = pk.load(open('%s/booth/files/relevant_graphs_bis' % PATH, 'rb'))
+    print "-------- Start generating plots ---------------"
+    graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
         graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PATH, nb_nodes))
+
+
+def generate_gif_from_plots():
+    """ After having generated the jpg files, we generate the gif file in plots/gif/
+    """
+    print "-------- Start creating gif ---------------"
+    plots_directory = '%sbooth/plots/' % PATH
+    if os.path.exists(plots_directory):
+        if not os.path.exists("%sgif/" % plots_directory):
+            os.makedirs("%sgif/" % plots_directory)
+        for subdir, dirs, files in os.walk(plots_directory):
+            st = subdir.split('/')
+            if len(st) > 1 and st[-2] == 'plots' and st[-1] not in ['gif', '']:
+                name = st[-1]
+                print "creating gif simulation-%s.gif" % name
+                os.system("convert -delay 70 -loop 0 %s%s/simulation-*.jpg %s/gif/simulation-%s.gif"
+                          % (plots_directory, name, plots_directory, name))
+    print "------------- Done -------------"
 
 
 def test():
@@ -511,9 +533,16 @@ def main():
     p = ArgumentParser()
     p.add_argument('-i', '--it', required=True, type=int,
                    help='<Required> enter the number of iterations you want to do for each number of nodes')
+    p.add_argument('-n', '--new', default=False, type=bool,
+                   help='<Default: False> Do we generate new graphs?')
     args = p.parse_args()
 
-    find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
+    os.system("rm -rf %sbooth/plots/" % PATH)
+    os.makedirs("%sbooth/plots/" % PATH)
+    if not os.path.exists("%sbooth/files/relevant_graphs") or args.new:
+        find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
+    generate_plot_simulation_from_file()
+    generate_gif_from_plots()
 
 if __name__ == '__main__':
-    generate_plot_simulation_from_file()
+    main()
