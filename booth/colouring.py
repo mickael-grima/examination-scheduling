@@ -256,7 +256,8 @@ class ColorGraph(object):
             ind = '%s' % step
             if len(ind) == 1:
                 ind = '0%s' % ind
-            plt.savefig('%ssimulation-%s.jpg' % (directory, ind))
+            if save:
+                plt.savefig('%ssimulation-%s.jpg' % (directory, ind))
             plt.clf()
 
     def get_calendar_simulation_files(self, save=False):
@@ -473,7 +474,9 @@ def generate_plot_simulation_from_file():
     print "-------- Start generating plots ---------------"
     graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
-        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PATH, nb_nodes))
+        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PATH, nb_nodes), save=True)
+        print "Plots directory %s/ created" % nb_nodes
+    print "---------- Done -------------"
 
 
 def generate_gif_from_plots():
@@ -539,7 +542,7 @@ def main():
 
     os.system("rm -rf %sbooth/plots/" % PATH)
     os.makedirs("%sbooth/plots/" % PATH)
-    if not os.path.exists("%sbooth/files/relevant_graphs") or args.new:
+    if not os.path.exists("%sbooth/files/relevant_graphs" % PATH) or args.new:
         find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
     generate_plot_simulation_from_file()
     generate_gif_from_plots()
