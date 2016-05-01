@@ -412,6 +412,42 @@ class ColorGraph(object):
         self.history = history
         return colours
 
+    def color_backtracking_rec(self, node, colours={}, history={}, step=0):
+        """ Intermediate step of the backtracking algorithm
+        """
+        cols = deepcopy(colours)
+        hist = deepcopy(history)
+
+        self.color_node(node)
+        cols[node] = self.colours[node]
+        hist[step] = deepcopy(self.colours)
+        white_nodes = [node for node, colour in colours.iteritems() if colour == 'white']
+        if len(white_nodes) == 0:
+            return colours, {step: colours}
+        for nod in white_nodes:
+            cs, hst = self.color_backtracking_rec(nod, colours=colours, step=step + 1)
+            if len(set([colour for colour in cs.iteritems()])) < len(set([colour for colour in cols.iteritems()])):
+                cols, hist = cs, hst
+        self.colours[node] = 'white'
+        del self.history[step]
+
+        return cols, hist
+
+    def color_backtracking(self):
+        """ We color the graph thanks to a backtracking algorithm
+        """
+        # First reset the graph
+        self.reset()
+        colours, history = {}, {}
+        for node in self.graph.nodes():
+            self.color_backtracking_rec(node, colours=colours, history=history, step=0)
+            if not colours or self.get_chromatic_number() < len(set([colour for _, colour in colours.iteritems()])):
+                colours = deepcopy(self.colours)
+                history = deepcopy(self.history)
+            self.reset()
+        self.colours = colours
+        self.history = history
+
 
 def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
     """ @param nb_it: for each number of nodes we do nb_ititerations
