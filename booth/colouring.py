@@ -167,7 +167,7 @@ class ColorGraph(object):
                 color_ind = color_ind[0]
             else:
                 continue
-            ax.bar(color_ind * 100, 40, width=100, bottom=counter_colors[self.colours[node]] * 50,
+            ax.bar(counter_colors[self.colours[node]] * 50, 100, bottom=color_ind * 100, width=40,
                    color=cols[node])
             counter_colors[cols[node]] += 1
         if save:
@@ -231,14 +231,17 @@ class ColorGraph(object):
         graph_heur = deepcopy(self)
         graph_heur.reset()
         graph_heur.color_graph()
-        height = max(graph_heur.get_max_ind_set(), self.get_max_ind_set()) * 50
-        width = max(graph_heur.get_chromatic_number(), self.get_chromatic_number()) * 100
+        width = max(graph_heur.get_max_ind_set(), self.get_max_ind_set()) * 50
+        height = max(graph_heur.get_chromatic_number(), self.get_chromatic_number()) * 100
 
         # for each step of the history we save a file in dir
         steps = list(set(self.history.iterkeys()).union(set(graph_heur.history.iterkeys())))
         steps.sort()
         for step in steps:
             fig, axarr = plt.subplots(2, 2, figsize=(10, 10))
+            fig.set_facecolor('black')
+            plt.tight_layout()
+
             axarr[0, 1].set_xlim(width)
             axarr[0, 1].set_ylim(height)
             axarr[1, 1].set_xlim(width)
@@ -483,7 +486,7 @@ def generate_gif_from_plots():
     """ After having generated the jpg files, we generate the gif file in plots/gif/
     """
     print "-------- Start creating gif ---------------"
-    plots_directory = '%sbooth/plots/' % PATH
+    plots_directory = '%sbooth/' % PATH
     if os.path.exists(plots_directory):
         if not os.path.exists("%sgif/" % plots_directory):
             os.makedirs("%sgif/" % plots_directory)
@@ -492,7 +495,7 @@ def generate_gif_from_plots():
             if len(st) > 1 and st[-2] == 'plots' and st[-1] not in ['gif', '']:
                 name = st[-1]
                 print "creating gif simulation-%s.gif" % name
-                os.system("convert -delay 70 -loop 0 %s%s/simulation-*.jpg %s/gif/simulation-%s.gif"
+                os.system("convert -delay 70 -loop 0 %splots/%s/simulation-*.jpg %s/gif/simulation-%s.gif"
                           % (plots_directory, name, plots_directory, name))
     print "------------- Done -------------"
 
@@ -541,7 +544,9 @@ def main():
     args = p.parse_args()
 
     os.system("rm -rf %sbooth/plots/" % PATH)
+    os.system("rm -rf %sbooth/gif/" % PATH)
     os.makedirs("%sbooth/plots/" % PATH)
+    os.makedirs("%sbooth/gif/" % PATH)
     if not os.path.exists("%sbooth/files/relevant_graphs" % PATH) or args.new:
         find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
     generate_plot_simulation_from_file()
