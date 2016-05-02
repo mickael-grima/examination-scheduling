@@ -121,6 +121,18 @@ class ColorGraph(object):
                 for colour in set([col for _, col in self.colours.iteritems()])}
         return max([value for _, value in cols.iteritems()])
 
+    def get_schedule_plan(self):
+        """ Return a dictionnary of dependencies for each node
+            e.g.: {1: [2, 3], 2: [1,4], 3: [1], 4: [2], 5: []}
+        """
+        schedule_plan = {}
+        for edge in self.graph.edges():
+            schedule_plan.setdefault(edge[0], {})
+            schedule_plan[edge[0]].setdefault('S%s' % edge[0], edge[1])
+            schedule_plan.setdefault(edge[1], {})
+            schedule_plan[edge[1]].setdefault('S%s' % edge[1], edge[0])
+        return schedule_plan
+
     def check_neighbours(self, node, colour):
         """ @param node: node to consider
             @param colour: colour to check
@@ -185,20 +197,16 @@ class ColorGraph(object):
     def draw_schedule_plan(self, ind=0):
         """ From the graph create a tschedule plan like the poster
         """
-        lines = [[' Examination ', ' Overlapping ']]
-        lens = [len(lines[0][0]), len(lines[0][1])]
-        for node in self.graph.nodes():
-            c0 = complete_string_to_length(' %s' % str(node), lens[0])
-            c1 = ', '.join([str(neigh) for neigh in self.graph.neighbors(node)])
-            if len(c1) > lens[1]:
-                lines[0][1] = complete_string_to_length(lines[0][1], len(c1))
-                lens[1] = len(c1)
-            else:
-                c1 = complete_string_to_length(' %s' % c1, lens[1])
-            lines.append([c0, c1])
-        lines.insert(1, ['-%s' % '-'.join(['' for i in range(lens[0])]),
-                         '-%s' % '-'.join(['' for i in range(lens[1])])])
-        text = '\n'.join(['%s | %s' % (line[0], line[1]) for line in lines])
+        schedule_plan = self.get_schedule_plan()
+        text = '   | %s \n' % ' | '.join(['S%s' % node for node in self.graph.nodes()])
+        for node, dependencies in schedule_plan.iteritems():
+            tab = ['P%s' % node]
+            for nod in self.graph.nodes():
+                if node in schedule_plan[nod]:
+                    tab.append('x')
+                else:
+                    tab.append(' ')
+            text += ' %s \n' % ' | '.join(tab)
         filename = '%sschedule-plan-%s-' % (self.DIRECTORY, strftime("%Y%m%d"))
         if(ind < 10):
             filename = filename + '00'
