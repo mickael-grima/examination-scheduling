@@ -6,13 +6,12 @@
 import sys
 import os
 PATHS = os.getcwd().split('/')
-PATH = ''
+PROJECT_PATH = ''
 for p in PATHS:
-    PATH += '%s/' % p
+    PROJECT_PATH += '%s/' % p
     if p == 'examination-scheduling':
         break
-sys.path.append(PATH)
-print PATH
+sys.path.append(PROJECT_PATH)
 
 import networkx as nx
 import random as rd
@@ -43,7 +42,7 @@ def complete_string_to_length(st, lgt):
 
 class ColorGraph(object):
     def __init__(self):
-        self.DIRECTORY = "%sbooth/plots/" % PATH
+        self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
         self.ALL_COLOURS = [str(i) for i in range(20)]
 
@@ -496,7 +495,10 @@ def create_alex_graph(special_edge=False):
     G.color_graph_rand_iter(it=20)
     print G.get_chromatic_number()
 
-    G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PATH, save=True, with_labels=True)
+    G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PROJECT_PATH, save=True, with_labels=True)
+
+    os.system("convert -delay 70 -loop 0 %s/booth/alex/plots/simulation-*.jpg %s/booth/alex/gif/animated.gif"
+              % PROJECT_PATH)
 
 
 def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
@@ -529,7 +531,7 @@ def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
                 graphs[n] = (G, diff)
     print "Job completed after %s sec" % (time() - t)
     print "----------- Done ---------------"
-    pk.dump(graphs, open('%sbooth/files/relevant_graphs' % PATH, 'wb'))
+    pk.dump(graphs, open('%sbooth/files/relevant_graphs' % PROJECT_PATH, 'wb'))
     return graphs
 
 
@@ -539,11 +541,11 @@ def generate_plots_from_file():
         and graph, and the schedule plan
     """
     print "-------- Start generating plots ---------------"
-    graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
+    graphs = pk.load(open('%s/booth/files/relevant_graphs' % PROJECT_PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
         fig, axarr = plt.subplots(2, 2)
-        if PATH not in graph[0].DIRECTORY:
-            graph[0].DIRECTORY = '%sbooth/%s' % (PATH, graph[0].DIRECTORY)
+        if PROJECT_PATH not in graph[0].DIRECTORY:
+            graph[0].DIRECTORY = '%sbooth/%s' % (PROJECT_PATH, graph[0].DIRECTORY)
         graph[0].draw_simulation(save=False, name='exact-simulation-%s' % nb_nodes, clf=False, axarr=axarr, line=0)
         graph[0].reset_colours()
         graph[0].color_graph()
@@ -561,9 +563,9 @@ def generate_plot_simulation_from_file():
         and graph, for all step of the resolution
     """
     print "-------- Start generating plots ---------------"
-    graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
+    graphs = pk.load(open('%s/booth/files/relevant_graphs' % PROJECT_PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
-        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PATH, nb_nodes), save=True, with_labels=True)
+        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PROJECT_PATH, nb_nodes), save=True, with_labels=True)
         print "Plots directory %s/ created" % nb_nodes
     print "---------- Done -------------"
 
@@ -572,7 +574,7 @@ def generate_gif_from_plots():
     """ After having generated the jpg files, we generate the gif file in plots/gif/
     """
     print "-------- Start creating gif ---------------"
-    plots_directory = '%sbooth/' % PATH
+    plots_directory = '%sbooth/' % PROJECT_PATH
     if os.path.exists(plots_directory):
         if not os.path.exists("%sgif/" % plots_directory):
             os.makedirs("%sgif/" % plots_directory)
@@ -629,11 +631,11 @@ def main():
                    help='<Default: False> Do we generate new graphs?')
     args = p.parse_args()
 
-    os.system("rm -rf %sbooth/plots/" % PATH)
-    os.system("rm -rf %sbooth/gif/" % PATH)
-    os.makedirs("%sbooth/plots/" % PATH)
-    os.makedirs("%sbooth/gif/" % PATH)
-    if not os.path.exists("%sbooth/files/relevant_graphs" % PATH) or args.new:
+    os.system("rm -rf %sbooth/plots/" % PROJECT_PATH)
+    os.system("rm -rf %sbooth/gif/" % PROJECT_PATH)
+    os.makedirs("%sbooth/plots/" % PROJECT_PATH)
+    os.makedirs("%sbooth/gif/" % PROJECT_PATH)
+    if not os.path.exists("%sbooth/files/relevant_graphs" % PROJECT_PATH) or args.new:
         find_bad_greedy_algorithm_graph(nb_it=args.it, min_colour=3)
     generate_plot_simulation_from_file()
     generate_gif_from_plots()
