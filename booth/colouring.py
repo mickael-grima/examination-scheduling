@@ -29,6 +29,8 @@ import matplotlib.pyplot as plt
 all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan", "pink", "black"]
 m = len(all_colours)
 
+plt.axis('off')
+
 
 def complete_string_to_length(st, lgt):
     """ @param st: string
@@ -175,15 +177,26 @@ class ColorGraph(object):
         cols = colours or self.colours
         if ax is None:
             fig, ax = plt.subplot()
+        # Axis parameters
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.axes.get_yaxis().set_visible(False)
+        ax.axes.get_xaxis().set_visible(False)
+        ax.axes.xaxis.set_label('Räume')
+        ax.axes.yaxis.set_label('Zeit')
         for node in self.graph.nodes():
             color_ind = [i for i in range(len(all_colours)) if all_colours[i] == cols[node]]
             if color_ind:
                 color_ind = color_ind[0]
             else:
                 continue
-            ax.bar(counter_colors[self.colours[node]] * 50, 100, bottom=color_ind * 100, width=40,
+            ax.bar(counter_colors[self.colours[node]] * 50, 80, bottom=color_ind * 100, width=40,
                    color=cols[node])
             counter_colors[cols[node]] += 1
+            # Add text labels
+            if with_labels:
+                ax.text(counter_colors[self.colours[node]] * 50 - 30, color_ind * 100 + 40, 'P%s' % node,
+                        ha='right', fontsize=16)
         if save:
             filename = '%scalendar-%s-' % (self.DIRECTORY, strftime("%Y%m%d"))
             if(ind < 10):
@@ -195,7 +208,7 @@ class ColorGraph(object):
             plt.clf()
 
     def draw_schedule_plan(self, ind=0):
-        """ From the graph create a tschedule plan like the poster
+        """ From the graph create a schedule plan like the poster
         """
         schedule_plan = self.get_schedule_plan()
         text = '   | %s \n' % ' | '.join(['S%s' % node for node in self.graph.nodes()])
@@ -233,7 +246,7 @@ class ColorGraph(object):
             filename = '%ssimulation-%s-%s.jpg' % (self.DIRECTORY, strftime("%Y%m%d"), name)
             plt.savefig(filename)
 
-    def draw_heuristics_and_exact(self, directory, save=False):
+    def draw_heuristics_and_exact(self, directory, save=False, with_labels=False):
         """ @param dir: the directory where to save the files
             We draw together the heuristics and exact solution (calendar and graph) in the same plot
         """
@@ -252,18 +265,18 @@ class ColorGraph(object):
             fig.set_facecolor('black')
             plt.tight_layout()
 
-            axarr[0, 1].set_xlim(width)
-            axarr[0, 1].set_ylim(height)
-            axarr[1, 1].set_xlim(width)
-            axarr[1, 1].set_ylim(height)
+            axarr[0, 1].set_xlim(0, width)
+            axarr[0, 1].set_ylim(0, height)
+            axarr[1, 1].set_xlim(0, width)
+            axarr[1, 1].set_ylim(0, height)
             self.draw(save=False, clf=False, ax=axarr[0, 0],
-                      colours=self.history.get(step))
+                      colours=self.history.get(step), with_labels=with_labels)
             self.draw_calendar(save=False, clf=False, ax=axarr[0, 1],
-                               colours=self.history.get(step))
+                               colours=self.history.get(step), with_labels=with_labels)
             graph_heur.draw(save=False, clf=False, ax=axarr[1, 0],
-                            colours=graph_heur.history.get(step))
+                            colours=graph_heur.history.get(step), with_labels=with_labels)
             graph_heur.draw_calendar(save=False, clf=False, ax=axarr[1, 1],
-                                     colours=graph_heur.history.get(step))
+                                     colours=graph_heur.history.get(step), with_labels=with_labels)
             if not os.path.exists(directory):
                 os.makedirs(directory)
             ind = '%s' % step
@@ -459,6 +472,33 @@ class ColorGraph(object):
         self.history = history
 
 
+def create_alex_graph(special_edge=False):
+    G = ColorGraph()
+    for i in range(9):
+        G.graph.add_node(i)
+    G.graph.add_edge(0, 1)
+    G.graph.add_edge(0, 2)
+    G.graph.add_edge(0, 3)
+    G.graph.add_edge(0, 6)
+    G.graph.add_edge(2, 4)
+    G.graph.add_edge(3, 5)
+    G.graph.add_edge(4, 8)
+    G.graph.add_edge(5, 8)
+    G.graph.add_edge(6, 7)
+    G.graph.add_edge(7, 8)
+    if special_edge:
+        G.graph.add_edge(2, 5)
+    G.colours = {node: 'white' for node in G.graph.nodes()}
+
+    G.color_graph()
+    print G.get_chromatic_number()
+    G.reset()
+    G.color_graph_rand_iter(it=20)
+    print G.get_chromatic_number()
+
+    G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PATH, save=True, with_labels=True)
+
+
 def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
     """ @param nb_it: for each number of nodes we do nb_ititerations
         @param min_colour: how many colours we want at least
@@ -523,7 +563,7 @@ def generate_plot_simulation_from_file():
     print "-------- Start generating plots ---------------"
     graphs = pk.load(open('%s/booth/files/relevant_graphs' % PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
-        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PATH, nb_nodes), save=True)
+        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PATH, nb_nodes), save=True, with_labels=True)
         print "Plots directory %s/ created" % nb_nodes
     print "---------- Done -------------"
 
