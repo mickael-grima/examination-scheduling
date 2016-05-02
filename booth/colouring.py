@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Tessstststs
+
 import sys
 import os
 PATHS = os.getcwd().split('/')
@@ -531,7 +533,7 @@ def generate_gif_from_plots():
             if len(st) > 1 and st[-2] == 'plots' and st[-1] not in ['gif', '']:
                 name = st[-1]
                 print "creating gif simulation-%s.gif" % name
-                os.system("convert -delay 70 -loop 0 %splots/%s/simulation-*.jpg %s/gif/simulation-%s.gif"
+                os.system("convert -delay 200 -loop 0 %splots/%s/simulation-*.jpg %s/gif/simulation-%s.gif"
                           % (plots_directory, name, plots_directory, name))
     print "------------- Done -------------"
 
