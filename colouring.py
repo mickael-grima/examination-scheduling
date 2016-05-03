@@ -18,6 +18,7 @@ class ColorGraph(object):
         self.graph = nx.Graph()
         self.colours = {}
         self.revert = True
+        self.history = {}
 
         if not os.path.exists(self.DIRECTORY):
             os.makedirs(self.DIRECTORY)
@@ -72,6 +73,11 @@ class ColorGraph(object):
                 filename = filename + '0'
             plt.savefig("%s%d.jpg" % (filename, ind))
 
+    def plot_history(self, save=True):
+        for step in self.history:
+            self.colours = self.history[step]
+            self.draw(save=save, ind=step)
+
     def reinitialized(self):
         """ reinitialized all colour to 'white'
         """
@@ -79,6 +85,7 @@ class ColorGraph(object):
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         # construct random node-node-incidence matrix
+
         rands = [rd.random() < probability for i in range(int(1 + 0.5 * nb_nodes * (nb_nodes - 1)))]
 
         # make edges
@@ -126,9 +133,11 @@ class ColorGraph(object):
         if self.revert:
             lookup_order = reversed(lookup_order)
 
-        fig, ax = plt.subplots()
+        # Save the state
+        if save:
+            self.history[0] = self.colours
 
-        counter = 1
+        counter = 1    
         for node in lookup_order:
 
             # respect initial condition
@@ -137,13 +146,11 @@ class ColorGraph(object):
 
             self.color_node(node)
 
-            # Save the pictures
+            # Save the state
             if save:
-                self.draw(save=save, ind=counter)
-            counter += 1
+                self.history[counter] = self.colours
 
-        if save:
-            self.draw(save=True, ind=counter)
+            counter += 1
 
         return self.colours
 
@@ -159,8 +166,10 @@ class ColorGraph(object):
         # revert??
         lookup_order = list(reversed(lookup_order))
 
+        # Save the state
         if save:
-            fig, ax = plt.subplots()
+            self.history[counter] = self.colours
+
 
         while lookup_order:
             rand, n, ind = rd.randint(0, sum(degree)), 0, 0
@@ -171,9 +180,10 @@ class ColorGraph(object):
                 ind += 1
             counter, node = 1, lookup_order[ind]
             self.color_node(node)
-            # Save the pictures
+            # Save the state
             if save:
-                self.draw(save=save, ind=counter)
+                self.history[counter] = self.colours
+
             counter += 1
             del lookup_order[ind]
             del degree[ind]
@@ -218,35 +228,118 @@ class ColorGraph(object):
             plt.show()
 
 
-colouring_file_test = False
+########################
+######################## Booth
+########################
 
-if colouring_file_test:
-    n = 4
+def extend_shorter_hist(hist1, hist2):
+    # extend shorter history
+    lendist = len(hist1) - len(hist2)
+    if lendist > 0:
+        final = hist2[len(hist2)]
+        for i in range(len(hist1) - lendist, len(hist1)):
+            hist2[i] = final
+    elif lendist < 0:
+        final = hist1[len(hist1)]
+        for i in range(len(hist2) - lendist, len(hist2)):
+            hist1[i] = final
+    return hist1, hist2
 
-    G = ColorGraph()
-    G.revert = False
-    G.build_rand_graph(nb_nodes=n)
-    G.color_graph(save=False)
-    print(G.get_chromatic_number())
+# format filename
+def format_filnename_plot( graph, index ):
+        filename = graph.DIRECTORY + graph.plotname
+        if(index < 10):
+            filename = filename + '00'
+        elif(index < 100):
+            filename = filename + '0'
+        filename = filename + "%d" %index
+        return(filename)
+  
+# TODO: Implement calendar functionality here
+def draw_calendar(colours, ax) :
+    pass
 
-    G = ColorGraph()
-    G.build_sudoku_graph()
-    G.draw(save=True, ind=0)
-    G.color_graph(save=True)
-    print(G.get_chromatic_number())
+# animation for booth
+# plotting guide: http://matplotlib.org/users/tight_layout_guide.html
+def plot_history(graph, hist_greedy, hist_opt):
+    # make dicitionaries same length
+    hist_greedy, hist_opt = extend_shorter_hist(hist_greedy, hist_opt)
+    
+    plt.close('all')
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2)
+    fig.set_facecolor('black')
+    plt.tight_layout()
+    
+    for i in range(len(hist_greedy)):
+        colours1 = hist_greedy[i]
+        colours2 = hist_opt[i]
+        nx.draw_shell(graph.graph, node_color=[colours1[c] for c in colours1], ax=ax1, edge_color='r')
+        nx.draw_shell(graph.graph, node_color=[colours2[c] for c in colours2], ax=ax3, edge_color='r')
+        
+        #### TODO: Fill functions
+        draw_calendar(colours1, ax2)
+        draw_calendar(colours2, ax4)
+        
+        # save file
+        
+        plt.savefig("%s.jpg" % format_filnename_plot(graph, i))
+        
+        
+import sys
+import time
+if __name__ == "__main__":
+    
+    possible_args = ["rand", "sudoku", "solver", "booth"]
+    argsmessage = "Please specify one: " + reduce(lambda x, y: x + " | " + y, possible_args) + "\n"
+    
+    if len(sys.argv) <= 1:
+        print(argsmessage)
+        exit(0)
+    
+    elif sys.argv[1] == "rand":
+        n = 16
+        G = ColorGraph()
+        G.revert = False
+        G.build_rand_graph(nb_nodes=n)
+        G.color_graph(save=True)
+        print(G.get_chromatic_number())
+        
+        G.plot_history(save=True)
+        G.draw_calendar(save=True)
+        time.sleep(1) 
+        os.system("convert -delay 70 -loop 0 plots/*jpg rand.gif")
+        
+    elif sys.argv[1] == "sudoku":
+        G = ColorGraph()
+        G.build_sudoku_graph()
+        G.draw(save=True, ind=0)
+        G.color_graph(save=True)
+        print(G.get_chromatic_number())
+        
+        G.plot_history(save=True)
+        os.system("convert -delay 70 -loop 0 plots/*jpg sudoku.gif")
+    elif sys.argv[1] == "solver":
+        G = ColorGraph()
+        G.build_rand_graph(nb_nodes=50, probability=0.95)
+        G.color_graph_rand_iter(it=100)
+        G.reset_colours()
+        G.color_graph()
+        print G.get_chromatic_number()
+    elif sys.argv[1] == "booth":
+        n = 5
+        G = ColorGraph()
+        G.build_rand_graph(nb_nodes=n)
+        G.color_graph(save=True)
+        print(G.get_chromatic_number())
+        
+        plot_history(G, G.history, G.history)
+ 
+        time.sleep(1) 
+        os.system("convert -delay 70 -loop 0 plots/*jpg rand.gif")
+        
 
-    G.draw_calendar(save=True)
 
-    # convert to animation
-    import time
-    time.sleep(1)  # delays for 5 seconds
-    os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+    else: 
+        print(argsmessage)
 
-    print(G.colours)
-
-    G = ColorGraph()
-    G.build_rand_graph(nb_nodes=50, probability=0.95)
-    G.color_graph_rand_iter(it=100)
-    G.reset_colours()
-    G.color_graph()
-    print G.get_chromatic_number()
+        
