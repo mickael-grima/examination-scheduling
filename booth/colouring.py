@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#TESTING The TEST
-
 import sys
 import os
 PATHS = os.getcwd().split('/')
@@ -20,24 +18,26 @@ from time import time, strftime
 import pickle as pk
 from argparse import ArgumentParser
 from copy import deepcopy
+import gtk
 
 import matplotlib
 matplotlib.use('Agg')  # for not popping up windows
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
-all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan", "pink", "black"]
+all_colours = ["green", "red", "yellow", "cyan", "orange", "blue", "grey", "purple", "pink", "black"]
 m = len(all_colours)
 
 plt.axis('off')
 
 
-def complete_string_to_length(st, lgt):
-    """ @param st: string
-        Add space to the right and the left in order thath st has the length lgt
+def get_screen_size():
+    """ return a tuple with the width and the length of the screen siye in inches
     """
-    while(len(st) < lgt):
-        st = '%s ' % st
-    return st
+    screen = gtk.Window().get_screen()
+    resolution = screen.get_resolution()
+    size = (screen.get_width(), screen.get_height())
+    return size[0] / resolution, size[1] / resolution
 
 
 class ColorGraph(object):
@@ -172,30 +172,38 @@ class ColorGraph(object):
             We draw the graph as a calendar: each color has a given x coordinate
             We save it if save==True
         """
+        # How many nodes with a given color did we already draw
+        periods = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
         counter_colors = {color: 0 for color in all_colours}
         cols = colours or self.colours
         if ax is None:
             fig, ax = plt.subplot()
-        # Axis parameters
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-        ax.axes.get_yaxis().set_visible(False)
-        ax.axes.get_xaxis().set_visible(False)
-        ax.axes.xaxis.set_label('Räume')
-        ax.axes.yaxis.set_label('Zeit')
+        xticklabels, yticklabels = {}, {}
         for node in self.graph.nodes():
+            # The indice of the colour given to node in all_colours
             color_ind = [i for i in range(len(all_colours)) if all_colours[i] == cols[node]]
             if color_ind:
                 color_ind = color_ind[0]
             else:
                 continue
+            xticklabels.setdefault(counter_colors[self.colours[node]] * 50 + 20,
+                                   'Raum %s' % (counter_colors[self.colours[node]] + 1))
+            yticklabels.setdefault(color_ind * 100 + 40, periods[color_ind])
             ax.bar(counter_colors[self.colours[node]] * 50, 80, bottom=color_ind * 100, width=40,
                    color=cols[node])
             counter_colors[cols[node]] += 1
             # Add text labels
             if with_labels:
-                ax.text(counter_colors[self.colours[node]] * 50 - 30, color_ind * 100 + 40, 'P%s' % node,
-                        ha='right', fontsize=16)
+                ax.text(counter_colors[self.colours[node]] * 50 - 15, color_ind * 100 + 40, 'P%s' % node,
+                        ha='right', fontsize=12)
+        # Axis parameters
+        ax.set_title('Kalendar')
+        ax.set_xticks(list(xticklabels.iterkeys()))
+        ax.set_xticklabels(list(xticklabels.itervalues()), fontsize=12)
+        ax.set_yticks(list(yticklabels.iterkeys()))
+        ax.set_yticklabels(list(yticklabels.itervalues()), fontsize=12)
+        ax.axes.xaxis.set_label('Räume')
+        ax.axes.yaxis.set_label('Perioden')
         if save:
             filename = '%scalendar-%s-' % (self.DIRECTORY, strftime("%Y%m%d"))
             if(ind < 10):
@@ -259,15 +267,13 @@ class ColorGraph(object):
         # for each step of the history we save a file in dir
         steps = list(set(self.history.iterkeys()).union(set(graph_heur.history.iterkeys())))
         steps.sort()
+        screen_size = get_screen_size()
         for step in steps:
-            fig, axarr = plt.subplots(2, 2, figsize=(10, 10))
-            fig.set_facecolor('black')
-            plt.tight_layout()
-
+            fig, axarr = plt.subplots(2, 2, figsize=screen_size)
             axarr[0, 1].set_xlim(0, width)
-            axarr[0, 1].set_ylim(0, height)
+            axarr[0, 1].set_ylim(height, 0)
             axarr[1, 1].set_xlim(0, width)
-            axarr[1, 1].set_ylim(0, height)
+            axarr[1, 1].set_ylim(height, 0)
             self.draw(save=False, clf=False, ax=axarr[0, 0],
                       colours=self.history.get(step), with_labels=with_labels)
             self.draw_calendar(save=False, clf=False, ax=axarr[0, 1],
@@ -498,7 +504,7 @@ def create_alex_graph(special_edge=False):
     G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PROJECT_PATH, save=True, with_labels=True)
 
     os.system("convert -delay 70 -loop 0 %s/booth/alex/plots/simulation-*.jpg %s/booth/alex/gif/animated.gif"
-              % PROJECT_PATH)
+              % (PROJECT_PATH, PROJECT_PATH))
 
 
 def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
@@ -641,4 +647,5 @@ def main():
     generate_gif_from_plots()
 
 if __name__ == '__main__':
-    main()
+    # main()
+    create_alex_graph()
