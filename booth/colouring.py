@@ -25,7 +25,8 @@ matplotlib.use('Agg')  # for not popping up windows
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-all_colours = ["green", "red", "yellow", "cyan", "orange", "blue", "grey", "purple", "pink", "black"]
+all_colours = ["#00B1EB", "#E51C39", "#FCEA10", "green", "red", "yellow", "cyan", "orange",
+               "blue", "grey", "purple", "pink", "black"]
 m = len(all_colours)
 
 plt.axis('off')
@@ -153,7 +154,8 @@ class ColorGraph(object):
             Draw the graph with the self.colours and save it if save==true
         """
         cols = [colour for _, colour in colours.iteritems()] or [colour for _, colour in self.colours.iteritems()]
-        nx.draw_shell(self.graph, node_color=cols, with_labels=with_labels, ax=ax)
+        nx.draw_shell(self.graph, node_color=cols, with_labels=with_labels,
+                      ax=ax, node_size=1500, labels={node: "P%s" % node for node in self.graph.nodes()}, font_size=16)
         if save:
             filename = self.DIRECTORY + self.plotname
             if(ind < 10):
@@ -173,7 +175,7 @@ class ColorGraph(object):
             We save it if save==True
         """
         # How many nodes with a given color did we already draw
-        periods = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
+        periods = ['9:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00']
         counter_colors = {color: 0 for color in all_colours}
         cols = colours or self.colours
         if ax is None:
@@ -188,14 +190,14 @@ class ColorGraph(object):
                 continue
             xticklabels.setdefault(counter_colors[self.colours[node]] * 50 + 20,
                                    'Raum %s' % (counter_colors[self.colours[node]] + 1))
-            yticklabels.setdefault(color_ind * 100 + 40, periods[color_ind])
             ax.bar(counter_colors[self.colours[node]] * 50, 80, bottom=color_ind * 100, width=40,
                    color=cols[node])
             counter_colors[cols[node]] += 1
             # Add text labels
             if with_labels:
                 ax.text(counter_colors[self.colours[node]] * 50 - 15, color_ind * 100 + 40, 'P%s' % node,
-                        ha='right', fontsize=12)
+                        ha='right', fontsize=16)
+        yticklabels = {80 * i + 20: periods[i] for i in range(len(set(self.colours.itervalues())) + 1)}
         # Axis parameters
         ax.set_title('Kalendar')
         ax.set_xticks(list(xticklabels.iterkeys()))
@@ -503,7 +505,7 @@ def create_alex_graph(special_edge=False):
 
     G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PROJECT_PATH, save=True, with_labels=True)
 
-    os.system("convert -delay 70 -loop 0 %s/booth/alex/plots/simulation-*.jpg %s/booth/alex/gif/animated.gif"
+    os.system("convert -delay 200 -loop 0 %s/booth/alex/plots/simulation-*.jpg %s/booth/alex/gif/animated.gif"
               % (PROJECT_PATH, PROJECT_PATH))
 
 
