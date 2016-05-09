@@ -94,5 +94,10 @@ class TestColouring(unittest.TestCase):
                     is_correct = False
             self.assertTrue(is_correct)
 
+    def testSortedNodeHistory(self):
+        """ We check if the returned list has all the nodes only one time
+        """
+        pass
+
 if __name__ == "__main__":
     unittest.main()

@@ -145,7 +145,17 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colours=None):
+    def get_history_node_ordered(self):
+        """ Give the list of node sorted such that first node was coloured first, ans so on
+        """
+        res = []
+        for step, history in self.history.iteritems():
+            for node, colour in history.iteritems():
+                if colour != 'white' and node not in res:
+                    res.append(node)
+        return res
+
+    def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colours=None, pos={}):
         """ @param save: do we save the picture
             @param with_labels: do we write the labels of the nodes on the picture
             @param ind: index of the picture
@@ -154,8 +164,8 @@ class ColorGraph(object):
             Draw the graph with the self.colours and save it if save==true
         """
         cols = [colour for _, colour in colours.iteritems()] or [colour for _, colour in self.colours.iteritems()]
-        nx.draw_shell(self.graph, node_color=cols, with_labels=with_labels,
-                      ax=ax, node_size=1500, labels={node: "P%s" % node for node in self.graph.nodes()}, font_size=16)
+        nx.draw(self.graph, pos, node_color=cols, with_labels=with_labels, ax=ax, node_size=1500,
+                labels={node: "P%s" % node for node in self.graph.nodes()}, font_size=16)
         if save:
             filename = self.DIRECTORY + self.plotname
             if(ind < 10):
@@ -176,12 +186,14 @@ class ColorGraph(object):
         """
         # How many nodes with a given color did we already draw
         periods = ['9:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00']
+        periods_places = [i * 80 for i in range(len(periods))]
         counter_colors = {color: 0 for color in all_colours}
         cols = colours or self.colours
         if ax is None:
             fig, ax = plt.subplot()
         xticklabels, yticklabels = {}, {}
-        for node in self.graph.nodes():
+        node_list = self.get_history_node_ordered()
+        for node in node_list:
             # The indice of the colour given to node in all_colours
             color_ind = [i for i in range(len(all_colours)) if all_colours[i] == cols[node]]
             if color_ind:
@@ -190,14 +202,15 @@ class ColorGraph(object):
                 continue
             xticklabels.setdefault(counter_colors[self.colours[node]] * 50 + 20,
                                    'Raum %s' % (counter_colors[self.colours[node]] + 1))
-            ax.bar(counter_colors[self.colours[node]] * 50, 80, bottom=color_ind * 100, width=40,
+            ax.bar(counter_colors[self.colours[node]] * 50, 80, bottom=color_ind * 120, width=40,
                    color=cols[node])
             counter_colors[cols[node]] += 1
             # Add text labels
             if with_labels:
-                ax.text(counter_colors[self.colours[node]] * 50 - 15, color_ind * 100 + 40, 'P%s' % node,
+                ax.text(counter_colors[self.colours[node]] * 50 - 15, color_ind * 120 + 40, 'P%s' % node,
                         ha='right', fontsize=16)
-        yticklabels = {80 * i + 20: periods[i] for i in range(len(set(self.colours.itervalues())) + 1)}
+        nb_yticklabels = int(len(set(self.colours.itervalues())) * 120 / 80.) + 1
+        yticklabels = {periods_places[i]: periods[i] for i in range(nb_yticklabels)}
         # Axis parameters
         ax.set_title('Kalendar')
         ax.set_xticks(list(xticklabels.iterkeys()))
@@ -255,7 +268,7 @@ class ColorGraph(object):
             filename = '%ssimulation-%s-%s.jpg' % (self.DIRECTORY, strftime("%Y%m%d"), name)
             plt.savefig(filename)
 
-    def draw_heuristics_and_exact(self, directory, save=False, with_labels=False):
+    def draw_heuristics_and_exact(self, directory, save=False, with_labels=False, pos={}):
         """ @param dir: the directory where to save the files
             We draw together the heuristics and exact solution (calendar and graph) in the same plot
         """
@@ -277,11 +290,11 @@ class ColorGraph(object):
             axarr[1, 1].set_xlim(0, width)
             axarr[1, 1].set_ylim(height, 0)
             self.draw(save=False, clf=False, ax=axarr[0, 0],
-                      colours=self.history.get(step), with_labels=with_labels)
+                      colours=self.history.get(step), with_labels=with_labels, pos=pos)
             self.draw_calendar(save=False, clf=False, ax=axarr[0, 1],
                                colours=self.history.get(step), with_labels=with_labels)
             graph_heur.draw(save=False, clf=False, ax=axarr[1, 0],
-                            colours=graph_heur.history.get(step), with_labels=with_labels)
+                            colours=graph_heur.history.get(step), with_labels=with_labels, pos=pos)
             graph_heur.draw_calendar(save=False, clf=False, ax=axarr[1, 1],
                                      colours=graph_heur.history.get(step), with_labels=with_labels)
             if not os.path.exists(directory):
@@ -480,6 +493,7 @@ class ColorGraph(object):
 
 
 def create_alex_graph(special_edge=False):
+    # Build the Graph
     G = ColorGraph()
     for i in range(9):
         G.graph.add_node(i)
@@ -497,13 +511,26 @@ def create_alex_graph(special_edge=False):
         G.graph.add_edge(2, 5)
     G.colours = {node: 'white' for node in G.graph.nodes()}
 
+    # Build the position
+    pos = {
+        0: (0, 1),
+        1: (0, 0),
+        2: (1, 2),
+        3: (0, 3),
+        4: (2, 2),
+        5: (3, 3),
+        6: (2, 0),
+        7: (3, 0),
+        8: (3, 1)
+    }
+
     G.color_graph()
     print G.get_chromatic_number()
     G.reset()
     G.color_graph_rand_iter(it=20)
     print G.get_chromatic_number()
 
-    G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PROJECT_PATH, save=True, with_labels=True)
+    G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PROJECT_PATH, save=True, with_labels=True, pos=pos)
 
     os.system("convert -delay 200 -loop 0 %s/booth/alex/plots/simulation-*.jpg %s/booth/alex/gif/animated.gif"
               % (PROJECT_PATH, PROJECT_PATH))
@@ -573,7 +600,9 @@ def generate_plot_simulation_from_file():
     print "-------- Start generating plots ---------------"
     graphs = pk.load(open('%s/booth/files/relevant_graphs' % PROJECT_PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
-        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PROJECT_PATH, nb_nodes), save=True, with_labels=True)
+        pos = nx.spring_layout(graph[0].graph)
+        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PROJECT_PATH, nb_nodes), save=True,
+                                           with_labels=True, pos=pos)
         print "Plots directory %s/ created" % nb_nodes
     print "---------- Done -------------"
 
