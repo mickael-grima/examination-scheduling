@@ -9,6 +9,7 @@ __pycache__/
 # plots
 plots/
 *.gif
+booth/files/relevant_graphs
 
 # Distribution / packaging
 .Python
