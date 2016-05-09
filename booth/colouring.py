@@ -212,7 +212,7 @@ class ColorGraph(object):
         nb_yticklabels = int(len(set(self.colours.itervalues())) * 120 / 80.) + 1
         yticklabels = {periods_places[i]: periods[i] for i in range(nb_yticklabels)}
         # Axis parameters
-        ax.set_title('Kalendar')
+        ax.set_title('Kalender')
         ax.set_xticks(list(xticklabels.iterkeys()))
         ax.set_xticklabels(list(xticklabels.itervalues()), fontsize=12)
         ax.set_yticks(list(yticklabels.iterkeys()))
