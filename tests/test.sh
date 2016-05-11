@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-valid_test=(colouring)
+valid_test=(colouring solvers)
 param=`echo $1`
 
 DIR=""

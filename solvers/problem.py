@@ -6,10 +6,11 @@ import logging
 import csv
 
 
-class Constants(object):
+class Constants(dict):
     """ Contain all the constants concerning our problem
     """
     def __init__(self, nb_exams=0, nb_rooms=0, nb_periods=0):
+        super(Constants, self).__init__()
         self.n = nb_exams  # number of exams
         self.r = nb_rooms  # number of rooms
         self.p = nb_periods  # number of periods
@@ -23,6 +24,11 @@ class Constants(object):
         self.h = {l: 0 for l in range(self.p)}  # Number of hours from the beginning to the starting of period l
 
         self.logger = logging
+
+    def __getitem__(self, key):
+        res = None
+        exec("res = self.%s" % key)
+        return res
 
     def add_constant(self, name, rank, value):
         """ @param name: name of the constant. e.g.: 'Q', 'h', 's', ...
@@ -49,15 +55,42 @@ class Constants(object):
             We just verify that the given rank are the right one
         """
         if name == 's':
-            self.s = {i: data.get(i, 0) for i in range(self.n)}
+            for i in range(self.n):
+                try:
+                    self.s[i] = data[i]
+                except:
+                    self.logger.exception("%s: range %s doesn't exist for constant %s"
+                                          % (self.__class__.__name__, i, name))
         elif name == 'c':
-            self.c = {k: data.get(k, 0) for k in range(self.r)}
+            for k in range(self.r):
+                try:
+                    self.c[k] = data[k]
+                except:
+                    self.logger.exception("%s: range %s doesn't exist for constant %s"
+                                          % (self.__class__.__name__, k, name))
         elif name == 'Q':
-            self.Q = {(i, j): data.get((i, j), 0) for i in range(self.n) for j in range(self.n)}
+            for i in range(self.n):
+                for j in range(self.n):
+                    try:
+                        self.Q[i, j] = data[i][j]
+                    except:
+                        self.logger.exception("%s: range %s doesn't exist for constant %s"
+                                              % (self.__class__.__name__, repr((i, j)), name))
         elif name == 'T':
-            self.T = {(k, l): data.get((k, l), 0) for k in range(self.r) for l in range(self.p)}
+            for k in range(self.r):
+                for l in range(self.p):
+                    try:
+                        self.T[k, l] = data[k][l]
+                    except:
+                        self.logger.exception("%s: range %s doesn't exist for constant %s"
+                                              % (self.__class__.__name__, repr((k, l)), name))
         elif name == 'h':
-            self.h = {l: data.get(l, 0) for l in range(self.p)}
+            for l in range(self.p):
+                try:
+                    self.h[l] = data[l]
+                except:
+                    self.logger.exception("%s: range %s doesn't exist for constant %s"
+                                          % (self.__class__.__name__, l, name))
 
 
 class Problem(object):
@@ -91,12 +124,12 @@ class Problem(object):
         for i in range(n):
             for k in range(r):
                 # exam i in room k
-                self.vars['x'] = self.problem.add_variable('x[%s, %s]' % (i, k), 1, vtype='binary')
+                self.vars['x'][i, k] = self.problem.add_variable('x[%s, %s]' % (i, k), 1, vtype='binary')
             for l in range(p):
                 # exam i during period l
-                self.vars['y'] = self.problem.add_variable('y[%s, %s]' % (i, l), 1, vtype='binary')
+                self.vars['y'][i, l] = self.problem.add_variable('y[%s, %s]' % (i, l), 1, vtype='binary')
             for j in range(i + 1, n):
-                self.vars['z'] = self.problem.add_variable('y[%s, %s]' % (i, l), 1, vtype='integer')
+                self.vars['z'][i, j] = self.problem.add_variable('z[%s, %s]' % (i, j), 1, vtype='integer')
 
         # ----------- CONSTRAINTS -------------
         for i in range(n):
@@ -104,11 +137,11 @@ class Problem(object):
             constraint = (pic.sum([self.vars['y'][i, l] for l in range(p)]) <= 1)
             self.problem.add_constraint(constraint)
             # enough seats for each student for exam i
-            constraint = (pic.sum([self.vars['x'][i, k] * self.constants['c'][i, k]]) >= self.constants['s'][i])
+            constraint = (pic.sum([self.vars['x'][i, k] * self.constants['c'][k]]) >= self.constants['s'][i])
             self.problem.add_constraint(constraint)
             # No conflicts
             for l in range(p):
-                constrant = (pic.sum([self.vars['x'][j, l] for j in range(i + 1, n)]) <= (1 - self.vars['x'][i, l]) * n)
+                constrant = (pic.sum([self.vars['y'][j, l] for j in range(i + 1, n)]) <= (1 - self.vars['y'][i, l]) * n)
                 self.problem.add_constraint(constrant)
             for k in range(r):
                 for l in range(p):
@@ -127,13 +160,13 @@ class Problem(object):
                         self.problem.add_constraint(constraint)
                 # Criteria constraint for 'z'
                 constraint = (
-                    self.vars['z'][i, j] >= pic.sum([self.var['x'][i, l] * self.constants['h'][l] for l in range(p)]) -
-                    pic.sum([self.var['x'][j, l] * self.constants['h'][l] for l in range(p)])
+                    self.vars['z'][i, j] >= pic.sum([self.vars['y'][i, l] * self.constants['h'][l] for l in range(p)]) -
+                    pic.sum([self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)])
                 )
                 self.problem.add_constraint(constraint)
                 constraint = (
-                    self.vars['z'][i, j] >= pic.sum([self.var['x'][j, l] * self.constants['h'][l] for l in range(p)]) -
-                    pic.sum([self.var['x'][i, l] * self.constants['h'][l] for l in range(p)])
+                    self.vars['z'][i, j] >= pic.sum([self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) -
+                    pic.sum([self.vars['y'][i, l] * self.constants['h'][l] for l in range(p)])
                 )
                 self.problem.add_constraint(constraint)
 
@@ -143,6 +176,11 @@ class Problem(object):
             pic.sum([self.vars['z'][i, j] for i in range(n) for j in range(i + 1, n)])
         )
         self.problem.set_objective('min', crit)
+
+    def solve(self):
+        """ Solve the problem
+        """
+        self.problem.solve()
 
     def build_from_csv(self, input_file):
         """ load the data from input_file, build the data dictionnary and build the problem
@@ -162,3 +200,4 @@ class Problem(object):
                     colnum = 0
                     for col in row:
                         # TODO
+                        pass
