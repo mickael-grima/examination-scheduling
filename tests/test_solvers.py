@@ -24,28 +24,18 @@ class TestSolvers(unittest.TestCase):
             'n': 5,  # 5 exams
             'r': 3,  # 3 rooms
             'p': 3,  # 3 periods
-            's': [3, 2, 4, 2, 1],  # number of students per exams
-            'c': [5, 5, 5],  # number os seats per rooms
-            'Q': [[0, 1, 0, 0, 0],
-                  [1, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0]],  # Conflicts matrix
-            'T': [[1, 1, 1], [1, 1, 1], [1, 1, 0]],  # Opening times for rooms
+            's': [5, 3, 4, 2, 1],  # number of students per exams
+            'c': [5, 4, 1],  # number os seats per rooms
+            'Q': [[0, 0, 0, 1, 1],
+                  [0, 0, 0, 1, 0],
+                  [0, 0, 0, 1, 1],
+                  [1, 1, 1, 0, 1],
+                  [1, 0, 1, 1, 0]],  # Conflicts matrix
+            'T': [[1, 0, 1],
+                  [1, 1, 0],
+                  [1, 1, 0]],  # Opening times for rooms
             'h': [0, 2, 4]  # number of hours before period
         }
-        """
-        self.small_input = {
-            'n': 2,  # 5 exams
-            'r': 1,  # 3 rooms
-            'p': 2,  # 3 periods
-            's': [3, 4],  # number of students per exams
-            'c': [5],  # number os seats per rooms
-            'Q': [[0, 1], [1, 0]],  # Conflicts matrix
-            'T': [[1]],  # Opening times for rooms
-            'h': [0, 2]  # number of hours before period
-        }
-        """
         self.prob = pb.Problem()
 
     def testProblemBuild(self):

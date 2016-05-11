@@ -139,18 +139,24 @@ class Problem(object):
         # ----------- CONSTRAINTS -------------
         for i in range(n):
             # Each exam i is scheduled on exactly one period
-            constraint = (pic.sum([self.vars['y'][i, l] for l in range(p)]) <= 1)
+            constraint = (pic.sum([self.vars['y'][i, l] for l in range(p)]) == 1)
             self.problem.add_constraint(constraint)
             # enough seats for each student for exam i
-            constraint = (pic.sum([self.vars['x'][i, k] * self.constants['c'][k]]) >= self.constants['s'][i])
+            constraint = (
+                pic.sum([self.vars['x'][i, k] * self.constants['c'][k] for k in range(r)]) >=
+                self.constants['s'][i]
+            )
             self.problem.add_constraint(constraint)
             # No conflicts
             for l in range(p):
-                constrant = (pic.sum([self.vars['y'][j, l] for j in range(i + 1, n)]) <= (1 - self.vars['y'][i, l]) * n)
+                constrant = (
+                    pic.sum([self.vars['y'][j, l] * self.constants['Q'][i, j] for j in range(n) if j != i]) <=
+                    (1 - self.vars['y'][i, l]) * n
+                )
                 self.problem.add_constraint(constrant)
             for k in range(r):
                 for l in range(p):
-                    if not self.constants['T'][k, l]:
+                    if self.constants['T'][k, l] == 0:
                         # We use room k if and only if the room is open
                         constraint = (self.vars['x'][i, k] + self.vars['y'][i, l] <= 1)
                         self.problem.add_constraint(constraint)
