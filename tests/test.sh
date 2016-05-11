@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-valid_test=(colouring)
+valid_test=(colouring solvers)
 param=`echo $1`
 
 DIR=""
@@ -19,7 +19,7 @@ if [ -f $test_file ]; then
 fi
 
 if [ $param == "all" ]; then
-	for name in $valid_test; do
+	for name in ${valid_test[*]}; do
 		echo "Test "$name
 		echo `python $DIR"tests/test_"$name".py"`
 	done
