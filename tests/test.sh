@@ -19,7 +19,7 @@ if [ -f $test_file ]; then
 fi
 
 if [ $param == "all" ]; then
-	for name in $valid_test; do
+	for name in ${valid_test[*]}; do
 		echo "Test "$name
 		echo `python $DIR"tests/test_"$name".py"`
 	done

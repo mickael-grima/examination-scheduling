@@ -30,6 +30,11 @@ class Constants(dict):
         exec("res = self.%s" % key)
         return res
 
+    def __setitem__(self, key, value):
+        res = None
+        exec("res = self.%s" % key)
+        res = value
+
     def add_constant(self, name, rank, value):
         """ @param name: name of the constant. e.g.: 'Q', 'h', 's', ...
             @param rank: indexes
@@ -200,4 +205,5 @@ class Problem(object):
                     colnum = 0
                     for col in row:
                         # TODO
+                        colnum += 1
                         pass
