@@ -35,7 +35,7 @@ class Problem(BaseProblem):
 
     def build_constants(self, data):
         for name in self.available_constants:
-            self.constants[name] = data.get(name, {})
+            self.constants[name] = data.get(name, [])
 
     def build_variables(self):
         """ @param n, r, p: number of exams, rooms and periods

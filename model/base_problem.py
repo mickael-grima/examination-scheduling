@@ -8,6 +8,7 @@ import logging
 class BaseProblem(object):
     """ The base of every problems
     """
+
     def __init__(self):
         self.vars = {}
         self.constants = {}
@@ -53,3 +54,26 @@ class BaseProblem(object):
         """ Solve the problem
         """
         self.problem.solve()
+
+    def __str__(self):
+        # Dimensions
+        res = 'Dimensions: %s\n' % ', '.join('%s=%s' % (name, value)
+                                             for name, value in self.dimensions.iteritems())
+        # Variables
+        res += 'Variables: '
+        first = True
+        for name, varss in self.vars.iteritems():
+            if not first:
+                res += '\n           '
+            res += '%s=%s' % (name, str({key: str(value) if value.is_valued() else '0.0'
+                                         for key, value in varss.iteritems()}))
+            first = False
+        # Constants
+        res += '\nConstants: '
+        first = True
+        for name, consts in self.constants.iteritems():
+            if not first:
+                res += '\n           '
+            res += '%s=%s' % (name, str(consts))
+            first = False
+        return res
