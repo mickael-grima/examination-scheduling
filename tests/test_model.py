@@ -13,6 +13,7 @@ sys.path.append(path)
 
 import unittest
 from model import problem as pb
+from model import colouring_model as cpb
 
 
 class TestSolvers(unittest.TestCase):
@@ -37,6 +38,7 @@ class TestSolvers(unittest.TestCase):
             'h': [0, 2, 4]  # number of hours before period
         }
         self.prob = pb.Problem()
+        self.cProb = cpb.ColouringGraphProblem()
 
     def testProblemBuild(self):
         """ We test the builder, if we have enough variables, constants
@@ -68,6 +70,13 @@ class TestSolvers(unittest.TestCase):
         """
         self.prob.build_problem(self.small_input)
         self.prob.solve()
+
+    def testColouringProblem(self):
+        """ We test here the colouring ILP problem
+        """
+        self.cProb.build_problem(self.small_input)
+        self.assertEqual(len(self.cProb.colorGraph.graph.nodes()), self.cProb.dimensions['n'])
+        self.cProb.solve()
 
 
 if __name__ == "__main__":

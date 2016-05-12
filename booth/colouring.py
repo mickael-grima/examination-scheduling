@@ -97,7 +97,10 @@ class ColorGraph(object):
         """
         if self.colours.get(node) is None:
             return False
-        self.colours[node] = color
+        if type(color) == int:
+            self.colours[node] = all_colours[color]
+        else:
+            self.colours[node] = color
         return True
 
     def plot_history(self, save=True):
@@ -155,7 +158,7 @@ class ColorGraph(object):
                     res.append(node)
         return res
 
-    def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colours=None, pos={}):
+    def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colours={}, pos={}):
         """ @param save: do we save the picture
             @param with_labels: do we write the labels of the nodes on the picture
             @param ind: index of the picture
@@ -163,6 +166,8 @@ class ColorGraph(object):
             @param clf: after saving we clean the figure if clf==True
             Draw the graph with the self.colours and save it if save==true
         """
+        if not pos:
+            pos = nx.spring_layout(self.graph)
         cols = [colour for _, colour in colours.iteritems()] or [colour for _, colour in self.colours.iteritems()]
         nx.draw(self.graph, pos, node_color=cols, with_labels=with_labels, ax=ax, node_size=1500,
                 labels={node: "P%s" % node for node in self.graph.nodes()}, font_size=16)
@@ -173,6 +178,8 @@ class ColorGraph(object):
             elif(ind < 100):
                 filename = filename + '0'
             plt.savefig("%s%s.jpg" % (filename, ind))
+        else:
+            plt.show()
         if clf:
             plt.clf()
 
