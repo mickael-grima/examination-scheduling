@@ -35,7 +35,7 @@ class ColouringGraphProblem(BaseProblem):
         for i in range(data.get('n', 0)):
             for j in range(data.get('n', 0)):
                 if data['Q'][i][j] >= 1:
-                    self.colorGraph.add_edge(i, j) 
+                    self.colorGraph.add_edge(i, j)
 
     def build_dimensions(self, data):
         self.dimensions['n'] = data.get('n', 0)  # number of nodes

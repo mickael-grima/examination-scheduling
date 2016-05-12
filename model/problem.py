@@ -14,6 +14,7 @@ sys.path.append(PROJECT_PATH)
 import picos as pic
 import csv
 from model.base_problem import BaseProblem
+from utils.tools import convert_to_table
 
 
 class Problem(BaseProblem):
@@ -52,7 +53,7 @@ class Problem(BaseProblem):
                 # exam i during period l
                 self.vars['y'][i, l] = self.problem.add_variable('y[%s, %s]' % (i, l), 1, vtype='binary')
             self.vars.setdefault('z', {})
-            for j in range(i + 1, n):
+            for j in range(n):
                 self.vars['z'][i, j] = self.problem.add_variable('z[%s, %s]' % (i, j), 1, vtype='integer')
 
     def build_constraints(self):
@@ -115,23 +116,24 @@ class Problem(BaseProblem):
         )
         self.problem.set_objective('min', crit)
 
-    def build_from_csv(self, input_file):
-        """ load the data from input_file, build the data dictionnary and build the problem
-        """
-        with open(input_file, "rb") as src:
-            reader = csv.reader(src)
-            data = {}
-            first, header = True, []
-            for row in reader:
-                # Save header row.
-                if first:
-                    header = row
-                    first = False
-                    for col in header:
-                        data.setdefault(data, {})
-                else:
-                    colnum = 0
-                    for col in row:
-                        # TODO
-                        colnum += 1
-                        pass
+    def __str__(self):
+        # Dimensions
+        res = 'DIMENSIONS: %s\n' % ', '.join('%s=%s' % (name, value)
+                                             for name, value in self.dimensions.iteritems())
+        # Variables
+        res += 'VARIABLES: \n'
+        # ----- x -------
+        res += '-------- x --------  lines=rooms, columns=exams\n'
+        res += convert_to_table(self.vars['x'], self.dimensions['n'], self.dimensions['r'])
+        # ----- y -------
+        res += '-------- y --------  lines=periods, columns=exams\n'
+        res += convert_to_table(self.vars['y'], self.dimensions['n'], self.dimensions['p'])
+        # Constants
+        res += '\nConstants: '
+        first = True
+        for name, consts in self.constants.iteritems():
+            if not first:
+                res += '\n           '
+            res += '%s=%s' % (name, str(consts))
+            first = False
+        return res
