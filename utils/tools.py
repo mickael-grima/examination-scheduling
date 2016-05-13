@@ -1,34 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import math
 
-
-def get_closest_dividers(number):
-    """ Find two dividers of number, and take two whose euclidian norm is minimal
+def convert_to_table(var, *dim):
+    """ @param var: dictionnary of variables
+        @param dim: dimension of var
+        convert it to a string that represent a tabel
     """
-    width, length = 1, number
-    crit = length - width
-    for i in range(2, int(math.sqrt(number) + 1)):
-        if i * (number / i) == number and math.fabs((i - (number / i))) <= crit:
-            length = max(i, number / i)
-            width = min(i, number / i)
-            crit = length - width
-    return width, length
-
-
-def check_sudoku_groups(size, groups):
-    """ @param size: a positive int
-        @param groups: a dictionnary of integer associated to 2-tuple: 2-tuple represent sudoku cases, integer groups
-        @return: boolean
-        Check if value of grops are exactly the integer between 0 and size - 1
-        check if for each value, the number of cases belonging to this group is exactly size
-    """
-    res = True
-    reversed_groups = {}
-    for key, value in groups.iteritems():
-        reversed_groups.setdefault(value, set())
-        reversed_groups[value].add(key)
-    res = (set(reversed_groups.iterkeys()) == set(range(size)))
-    res = (set([len(reversed_groups[key]) for key in reversed_groups.iterkeys()]) == set([size]))
+    res = '     |  %s\n' % '  |  '.join([str(i) for i in range(dim[0])])
+    res += '%s\n' % '|'.join(['-----' for i in range(dim[0] + 1)])
+    if len(dim) > 1:
+        for j in range(dim[1]):
+            res += '  %s  | %s\n' % (j, ' | '.join([str(var[i, j]) if var[i, j].is_valued() else '0.0'
+                                                    for i in range(dim[0])]))
+            res += '%s\n' % '|'.join(['-----' for i in range(dim[0] + 1)])
+    else:
+        res += '  1  | %s\n' % ' | '.join([str(var[i]) if var[i].is_valued() else '0.0'
+                                           for i in range(dim[0])])
+        res += '%s\n' % '|'.join(['-----' for i in range(dim[0] + 1)])
     return res
