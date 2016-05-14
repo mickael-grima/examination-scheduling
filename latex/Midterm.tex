@@ -140,7 +140,7 @@
                 \ea
                \item Konfliktvermeidung
                 \ba
-                    \sum_{i=1, j > i}^n q_{i,j} x_{i,k} x_{j,k} = 0 \;\;\;\forall k \in [r]
+                    \sum_{i=1, j > i}^n q_{i,j} y_{i,l} y_{j,l} = 0 \;\;\;\forall l \in [p]
                 \ea
              \end{enumerate}
         \end{frame}
@@ -165,35 +165,12 @@
                 \ea
                \item Konfliktvermeidung
                 \ba
-                    \sum_{j= 1, j \neq i}^n q_{i,j} x_{j,k} \leq (1 - x_{i,k}) ||Q||_2^2 \;\;\;\forall k \in [r] \forall i \in [n]
+                    \sum_{j= 1, j \neq i}^n q_{i,j} y_{j,l} \leq (1 - y_{i,l}) ||Q||_2^2 \;\;\;\forall l \in [p] \forall i \in [n]
                 \ea
              \end{enumerate}
         \end{frame}
   
 
-  
-  
-  \begin{frame}
-               {Complete Model}
-               \ba
-               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i}^n q_{i,j} z_{i,j} \\
-               s.t. \;\; 
-               z_{i,j} &\leq \Delta_{i,j} + \delta_{i,j} (h_p - h_1) \\
-               z_{i,j} &\leq -\Delta_{i,j} + (1-\delta_{i,j}) (h_p - h_1) \\
-               z_{i,j} &\leq \Delta_{i,j} \\
-               -z_{i,j} &\leq \Delta_{i,j} \\
-                \sum_{l=1}^p y_{i,l} &= 1 \;\;\;\forall i \in [n] \\
-                \sum_{k=1}^r c_k x_{i,k} &\geq s_i \;\;\;\forall i \in [n] \\
-                x_{i,k} + y_{i,l} + x_{j,k} + y_{j,l} &\leq 3 , \;\; \forall i,j\in[n], j > i \forall k \forall l \\
-                x_{i,k} + y_{i,l} &\leq 1,\;\; \forall i \in [n] \forall k,l \;\;\;\text{such that } t_{k,l} = 0 \\
-                \sum_{j= 1, j \neq i}^n q_{i,j} x_{j,k} &\leq (1 - x_{i,k}) ||Q||_2^2 \;\;\;\forall k \in [r] \forall i \in [n]
-                \ea
-        \end{frame}
-  
-
-  
-  
-  
   
 \end{document}
 
