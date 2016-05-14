@@ -1,0 +1,156 @@
+\documentclass[11pt]{beamer}
+%\documentclass{article}
+\usetheme{Rochester}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+%\usepackage[german]{babel}
+\usepackage{indentfirst} % \and
+\usepackage{hyperref}
+\usepackage{multirow}
+
+\usepackage{amsmath}
+%\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{natbib}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{calc}
+\usepackage{ifthen}
+
+
+
+\newcommand{\R}{\mathds{R}}     
+\newcommand{\N}{\mathds{N}}
+\newcommand{\sU}{\mathcal{U}}
+
+
+\usetikzlibrary{arrows}
+
+%\usepackage{algorithm2e}
+%\usepackage{algorithmic}
+
+
+%% Custom commands
+\newcommand{\hide}[1]{}
+%\newcommand{\definition}[1]{\textbf{Definition: #1}}
+%\newcommand{\algorithm}[1]{\textbf{Algorithm: #1}}
+\def\ba#1\ea{\begin{align*}#1\end{align*}}
+\def\ban#1\ean{\begin{align}#1\end{align}}
+\newenvironment{abschnitt}{}{}
+
+\author{Alexander Eckl, Maximilian Fiedler, Mickael Grima, Roland Halbig}
+\title{Examination Scheduling}
+% \subtitle{subtitle}
+%\logo{}
+\institute{Technische Universität München}
+\date{March 21, 2016}
+%\subject{}
+%\setbeamercovered{transparent}
+\setbeamertemplate{navigation symbols}{}
+
+
+\begin{document}
+        
+        \maketitle
+        
+        \begin{frame}
+               {Konstanten}
+               \ba
+                    s_i &:= \text{Anzahl der Studenten, die für Prüfung $i$ angemeldet sind} \\
+                    c_k &:= \text{Anzahl der nutzbaren Sitzplätzein Raum $k$} \\
+                    Q   &:= \text{Kollisionsmatrix} \\
+                    q_{i,j} &:= \left\{ \begin{array}{cl} 0, & \mbox{falls Prüfung $i$ und $j$ gleichzeitig stattfinden können} \\ 
+                                                          1, & \mbox{sonst} \end{array} \right.  \\
+                    T  &:= \text{Sperrmatrix} \\
+                    t_{i,j} &:= \left\{ \begin{array}{cl} 1, & \mbox{falls Raum $k$ zum Zeitintervall $l$ geöffnet ist} \\ 
+                                                          0, & \mbox{sonst} \end{array} \right.  \\
+                    h_l &:= \text{Anzahl der Stunden von Periode $l$ nach Beginn des Prüfungszeitraumes}
+               \ea
+        \end{frame}
+  
+  \begin{frame}
+               {Variablen}
+               \ba
+               x_{i,k} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ im Raum $k$ stattfindet} \\ 
+                                                          0, & \mbox{sonst} \end{array} \right.  \\
+                y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ im Zeitinterval $l$ stattfindet} \\ 
+                                                        0, & \mbox{sonst} \end{array} \right.  \\
+               \ea
+               Dimensionen:
+              \ba
+              n&: Anzahl der Prüfungen \\
+              r&: Anzahl der Räume \\
+              p&: Anzahl der Zeitintervalle
+              \ea
+        \end{frame}
+       
+       
+       \begin{frame}
+               {Zielfunktion}
+               \ba
+               \min \sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} \left| \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m} \right|
+               \ea
+               Resolving the absolute value
+               \ba
+               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} z_{i,j} \\
+               s.t. \;\; 
+               &z \leq \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n] \\
+               &z \leq -\sum_{l=1}^p h_l y_{i,l} + \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n]
+               \ea
+        \end{frame}
+  
+  
+       
+       \begin{frame}
+               {Constraints}
+                \begin{enumerate} 
+                \item Jede Prüfung wird auf genau einem Zeitinterval eingeplant
+                \ba
+                    \sum_{l=1}^p y_{i,l} = 1 \;\;\;\forall i \in [n]
+                \ea
+                \item Alle Studierenden bekommen einen Platz
+                \ba
+                    \sum_{k=1}^r c_k x_{i,k} \geq s_i \;\;\;\forall i \in [n]
+                \ea
+               \item Jedem Raum wird je Zeit maximal eine Prüfung zugeteilt
+                \ba
+                    \sum_{i=1}^n x_{i,k} y_{i,l} \leq t_{k,l} \;\;\;\forall k \in [r], \forall l \in [p]
+                \ea
+               \item Konfliktvermeidung
+                \ba
+                    \sum_{i=1, j > i}^n q_{i,j} x_{i,k} x_{j,k} = 0 \;\;\;\forall k \in [r]
+                \ea
+             \end{enumerate}
+        \end{frame}
+        
+        
+        
+  \begin{frame}
+               {Linear Constraints}
+                \begin{enumerate} 
+                \item Jede Prüfung wird auf genau einem Zeitinterval eingeplant
+                \ba
+                    \sum_{l=1}^p y_{i,l} = 1 \;\;\;\forall i \in [n]
+                \ea
+                \item Alle Studierenden bekommen einen Platz
+                \ba
+                    \sum_{k=1}^r c_k x_{i,k} \geq s_i \;\;\;\forall i \in [n]
+                \ea
+               \item Jedem Raum wird je Zeit maximal eine Prüfung zugeteilt
+                \ba
+                    x_{i,k} + y_{i,l} + x_{j,k} + y_{j,l} \leq 3 , \;\; \forall i,j\in[n], j > i \forall k \forall l \\
+                    x_{i,k} + y_{i,l} \leq 1,\;\; \forall i \in [n] \forall k,l \;\;\;\text{such that } t_{k,l} = 0
+                \ea
+               \item Konfliktvermeidung
+                \ba
+                    \sum_{j= 1, j \neq i}^n q_{i,j} x_{j,k} \leq (1 - x_{i,k}) ||Q||_2^2 \;\;\;\forall k \in [r] \forall i \in [n]
+                \ea
+             \end{enumerate}
+        \end{frame}
+  
+
+\end{document}
+
