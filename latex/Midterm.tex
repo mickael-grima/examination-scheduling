@@ -91,11 +91,17 @@
        \begin{frame}
                {Zielfunktion}
                \ba
-               \min \sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} \left| \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m} \right|
+               \min \sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} q_{i,j} \left| \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m} \right|
                \ea
-               Resolving the absolute value
-                
-                Ich glaube nicht, dass das mit $\max |x|$ funktioniert...
+               Resolving the absolute value: Impossible for $\max |x|$. $\Rightarrow$ Quadratic Program
+               \ba
+               \min \sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} q_{i,j} \left( \sum_{l=1}^p h_l (y_{i,l} - y_{j,l}) \right)^2
+               \ea
+               Definiert man $\delta_{i,j} := \sum_{l=1}^p h_l (y_{i,l} - y_{j,l})$, bekommen wir
+               \ba
+               \min \sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} q_{i,j} \delta_{i,j}^2
+               \ea
+               
 %               \ba
 %               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} z_{i,j} \\
 %               s.t. \;\; 
