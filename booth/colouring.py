@@ -655,7 +655,7 @@ def test():
         # convert to animation
         import time
         time.sleep(1)  # delays for 5 seconds
-        os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+        os.system("convert -delay 120 -loop 0 plots/*jpg animation.gif")
 
         print(G.colours)
 
