@@ -1,14 +1,34 @@
 
 import itertools
+import random
 
 from gurobipy import *
 
 try:
 
     #Create constants
-    exams, examstudents = multidict({'Ana1': 100, 'Ana2': 79, 'Ana3': 14, 'Ana4': 34, 'Ana5': 300 ,'Ana6': 100, 'Ana7': 79, 'Ana8': 1004, 'Ana9': 304, 'Ana10': 300, 'Ana11': 100, 'Ana12': 79, 'Ana13': 14, 'Ana14': 30, 'Ana15': 300})
-    rooms, roomcapacity = multidict({'MI1': 100, 'MI2': 103,'MI3': 100, 'MI4': 100, 'MI5': 103,'MI6': 34, 'MI7': 100, 'MI8': 103,'MI9': 23, 'MI10': 100, 'MI11': 103,'MI12': 150})
-    hours = [0,2,4]
+
+    exams = []
+    examstudents = {}
+    for i in range(100):
+    	exams.extend(['Ana%s' % (i+1) ])
+    	examstudents.update({'Ana%s' % (i+1) : random.randint(20, 1000)})
+
+    rooms = []
+    roomcapacity = {}
+    for i in range(30):
+    	rooms.extend(['MI%s' % (i+1) ])
+    	roomcapacity.update({'MI%s' % (i+1) : random.randint(20, 350)})
+
+    hours = []
+    for i in range(30):
+    	hours.extend([i*2])
+
+   	
+
+    #exams, examstudents = multidict({'Ana1': 100, 'Ana2': 79, 'Ana3': 14, 'Ana4': 34, 'Ana5': 300 ,'Ana6': 100, 'Ana7': 79, 'Ana8': 1004, 'Ana9': 304, 'Ana10': 300, 'Ana11': 100, 'Ana12': 79, 'Ana13': 14, 'Ana14': 30, 'Ana15': 300})
+    #rooms, roomcapacity = multidict({'MI1': 100, 'MI2': 103,'MI3': 100, 'MI4': 100, 'MI5': 103,'MI6': 34, 'MI7': 100, 'MI8': 103,'MI9': 23, 'MI10': 100, 'MI11': 103,'MI12': 150})
+    #hours = [0,2,4]
     numberofperiods = len(hours)
 
     t = {}
