@@ -94,12 +94,14 @@
                \min \sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} \left| \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m} \right|
                \ea
                Resolving the absolute value
-               \ba
-               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} z_{i,j} \\
-               s.t. \;\; 
-               &z \leq \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n] \\
-               &z \leq -\sum_{l=1}^p h_l y_{i,l} + \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n]
-               \ea
+                
+                Ich glaube nicht, dass das mit $\max |x|$ funktioniert...
+%               \ba
+%               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} z_{i,j} \\
+%               s.t. \;\; 
+%               &z \leq \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n] \\
+%               &z \leq -\sum_{l=1}^p h_l y_{i,l} + \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n]
+%               \ea
         \end{frame}
   
   
