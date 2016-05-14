@@ -10,7 +10,7 @@ try:
 
     exams = []
     examstudents = {}
-    for i in range(100):
+    for i in range(50):
     	exams.extend(['Ana%s' % (i+1) ])
     	examstudents.update({'Ana%s' % (i+1) : random.randint(20, 1000)})
 
@@ -24,7 +24,6 @@ try:
     for i in range(30):
     	hours.extend([i*2])
 
-   	
 
     #exams, examstudents = multidict({'Ana1': 100, 'Ana2': 79, 'Ana3': 14, 'Ana4': 34, 'Ana5': 300 ,'Ana6': 100, 'Ana7': 79, 'Ana8': 1004, 'Ana9': 304, 'Ana10': 300, 'Ana11': 100, 'Ana12': 79, 'Ana13': 14, 'Ana14': 30, 'Ana15': 300})
     #rooms, roomcapacity = multidict({'MI1': 100, 'MI2': 103,'MI3': 100, 'MI4': 100, 'MI5': 103,'MI6': 34, 'MI7': 100, 'MI8': 103,'MI9': 23, 'MI10': 100, 'MI11': 103,'MI12': 150})
@@ -73,12 +72,12 @@ try:
 
     # Add constraint: There are no conflicts
     for l in range(numberofperiods):
-    	m.addQConstr( quicksum(y[examA,l]*y[examB,l]*k[("%s" % (examA),"%s" % (examB))] for examA, examB in itertools.combinations(exams,2) if examA != examB ) == 0,  "c3")
+    	m.addQConstr( quicksum(y[examA,l]*y[examB,l]*k[("%s" % (examA),"%s" % (examB))] for examA, examB in itertools.combinations(exams,2) ) == 0,  "c3")
 
 
 
     # Set objective
-    m.setObjective(quicksum(x[exam,room]*examstudents[exam] for exam,room in itertools.product(exams,rooms) )  , GRB.MINIMIZE)
+    m.setObjective(-1*quicksum(  k[examA,examB]*quicksum(y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods))^2 for examA, examB in itertools.combinations(exams,2))  +  quicksum(x[exam,room]*examstudents[exam] for exam,room in itertools.product(exams,rooms) )  , GRB.MINIMIZE)
 
     m.optimize()
 
