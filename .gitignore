@@ -9,6 +9,10 @@ __pycache__/
 # plots
 plots/
 *.gif
+booth/files/relevant_graphs
+
+# latex aux files
+*.toc *.aux *.log *.out *.snm *.nav *.blg *.bbl
 
 # Distribution / packaging
 .Python
