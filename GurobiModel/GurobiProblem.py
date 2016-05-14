@@ -77,8 +77,8 @@ try:
 
 
     # Set objective
-    m.setObjective(-1*quicksum(  k[examA,examB]*quicksum(y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods))^2 for examA, examB in itertools.combinations(exams,2))  +  quicksum(x[exam,room]*examstudents[exam] for exam,room in itertools.product(exams,rooms) )  , GRB.MINIMIZE)
-
+    m.setObjective(-1*quicksum(  k[examA,examB]*(quicksum( y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods)))*(quicksum( y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods))) for examA, examB in itertools.combinations(exams,2))  +  quicksum(x[exam,room]*examstudents[exam] for exam,room in itertools.product(exams,rooms) )  , GRB.MINIMIZE)
+ 
     m.optimize()
 
     for v in m.getVars():
