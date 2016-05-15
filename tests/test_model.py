@@ -12,8 +12,8 @@ for p in paths:
 sys.path.append(path)
 
 import unittest
-from model import problem as pb
-from model import colouring_model as cpb
+from model import linear_problem as lpb
+from model import colouring_problem as cpb
 
 
 class TestSolvers(unittest.TestCase):
@@ -37,39 +37,39 @@ class TestSolvers(unittest.TestCase):
                   [1, 1, 0]],  # Opening times for rooms
             'h': [0, 2, 4]  # number of hours before period
         }
-        self.prob = pb.Problem()
+        self.lprob = lpb.LinearProblem()
         self.cProb = cpb.ColouringGraphProblem()
 
     def testProblemBuild(self):
         """ We test the builder, if we have enough variables, constants
         """
-        self.prob.build_problem(self.small_input)
+        self.lprob.build_problem(self.small_input)
 
         # Tests
         # n, p and r
-        self.assertEqual(self.prob.dimensions['n'], self.small_input['n'])
-        self.assertEqual(self.prob.dimensions['r'], self.small_input['r'])
-        self.assertEqual(self.prob.dimensions['p'], self.small_input['p'])
+        self.assertEqual(self.lprob.dimensions['n'], self.small_input['n'])
+        self.assertEqual(self.lprob.dimensions['r'], self.small_input['r'])
+        self.assertEqual(self.lprob.dimensions['p'], self.small_input['p'])
         # Constants
-        self.assertEqual(len(self.prob.constants['s']), self.small_input['n'])
-        self.assertEqual(len(self.prob.constants['Q']), self.small_input['n'])
+        self.assertEqual(len(self.lprob.constants['s']), self.small_input['n'])
+        self.assertEqual(len(self.lprob.constants['Q']), self.small_input['n'])
         for i in range(self.small_input['n']):
-            self.assertEqual(len(self.prob.constants['Q'][i]), self.small_input['n'])
-        self.assertEqual(len(self.prob.constants['c']), self.small_input['r'])
-        self.assertEqual(len(self.prob.constants['h']), self.small_input['p'])
-        self.assertEqual(len(self.prob.constants['T']), self.small_input['r'])
+            self.assertEqual(len(self.lprob.constants['Q'][i]), self.small_input['n'])
+        self.assertEqual(len(self.lprob.constants['c']), self.small_input['r'])
+        self.assertEqual(len(self.lprob.constants['h']), self.small_input['p'])
+        self.assertEqual(len(self.lprob.constants['T']), self.small_input['r'])
         for i in range(self.small_input['r']):
-            self.assertEqual(len(self.prob.constants['T'][i]), self.small_input['p'])
+            self.assertEqual(len(self.lprob.constants['T'][i]), self.small_input['p'])
         # Variables
-        self.assertEqual(len(self.prob.vars['x']), self.small_input['n'] * self.small_input['r'])
-        self.assertEqual(len(self.prob.vars['y']), self.small_input['n'] * self.small_input['p'])
-        self.assertEqual(len(self.prob.vars['z']), self.small_input['n'] * (self.small_input['n'] - 1) / 2)
+        self.assertEqual(len(self.lprob.vars['x']), self.small_input['n'] * self.small_input['r'])
+        self.assertEqual(len(self.lprob.vars['y']), self.small_input['n'] * self.small_input['p'])
+        self.assertEqual(len(self.lprob.vars['z']), self.small_input['n'] ** 2)
 
     def testSolveProb(self):
         """ We test the solver on small_input
         """
-        self.prob.build_problem(self.small_input)
-        self.prob.solve()
+        self.lprob.build_problem(self.small_input)
+        self.lprob.solve()
 
     def testColouringProblem(self):
         """ We test here the colouring ILP problem

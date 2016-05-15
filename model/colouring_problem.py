@@ -11,14 +11,14 @@ for p in PATHS:
         break
 sys.path.append(PROJECT_PATH)
 
-import picos as pic
+import gurobipy as gb
 from booth.colouring import ColorGraph
 from model.base_problem import BaseProblem
 
 
 class ColouringGraphProblem(BaseProblem):
-    def __init__(self):
-        super(ColouringGraphProblem, self).__init__()
+    def __init__(self, name='ColouringProblem'):
+        super(ColouringGraphProblem, self).__init__(name=name)
         self.colorGraph = ColorGraph()
 
     def set_graph(self, graph):
@@ -60,35 +60,36 @@ class ColouringGraphProblem(BaseProblem):
         self.vars.setdefault('x', {})
         for node in range(self.dimensions['n']):
             for color in range(self.dimensions['c']):
-                self.vars['x'][node, color] = self.problem.add_variable('x[%s, %s]' % (node, color), 1, vtype='binary')
+                self.vars['x'][node, color] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s, %s]' % (node, color))
         # y[j] = 1 represents taht color j is used at least one time
         self.vars.setdefault('y', {})
         for color in range(self.dimensions['n']):
-            self.vars['y'][color] = self.problem.add_variable('y[%s]' % color, 1, vtype='binary')
+            self.vars['y'][color] = self.problem.addVar(vtype=gb.GRB.BINARY, name='y[%s]' % color)
+        self.problem.update()
 
     def build_constraints(self):
         # One color per node
         for node in range(self.dimensions['n']):
-            self.problem.add_constraint(pic.sum([self.vars['x'][node, c] for c in range(self.dimensions['c'])]) == 1)
+            self.problem.addConstr(gb.quicksum([self.vars['x'][node, c] for c in range(self.dimensions['c'])]) == 1)
         # two neighbors has different colors
         for node1 in range(self.dimensions['n']):
             for node2 in range(self.dimensions['n']):
                 for c in range(self.dimensions['c']):
-                    self.problem.add_constraint(self.vars['x'][node1, c] + self.vars['x'][node2, c] <=
-                                                2 - self.constants['e'][node1][node2])
+                    self.problem.addConstr(self.vars['x'][node1, c] + self.vars['x'][node2, c] <=
+                                           2 - self.constants['e'][node1][node2])
         # Color is said to be used if at least onenode is colored with this color
         for node in range(self.dimensions['n']):
             for c in range(self.dimensions['c']):
-                self.problem.add_constraint(self.vars['y'][c] >= 1 - self.vars['x'][node, c])
+                self.problem.addConstr(self.vars['y'][c] >= 1 - self.vars['x'][node, c])
 
     def build_objectif(self):
         # we minimize the number of used colors
-        crit = pic.sum(list(self.vars['y'].itervalues()))
-        self.problem.set_objective('min', crit)
+        crit = gb.quicksum(list(self.vars['y'].itervalues()))
+        self.problem.setObjective(crit, gb.GRB.MINIMIZE)
 
     def solve(self):
-        self.problem.solve()
+        self.problem.optimize()
         # We convert the solution to a graph
         for key, var in self.vars['x'].iteritems():
-            if float(str(var)) == 1.:
+            if var.Obj == 1.:
                 self.colorGraph.update_color(key[0], key[1])
