@@ -12,30 +12,15 @@ for p in PATHS:
 sys.path.append(PROJECT_PATH)
 
 import gurobipy as gb
-from model.base_problem import BaseProblem
+from model.main_problem import MainProblem
 import itertools
 
 
-class NonLinearProblem(BaseProblem):
+class NonLinearProblem(MainProblem):
     def __init__(self, name='ExaminationProblem'):
         super(NonLinearProblem, self).__init__(name=name)
         self.c = 0.5  # criteria factor
         self.available_constants = ['s', 'c', 'Q', 'T', 'h']  # every constants names have to be included in this list
-
-    def build_dimensions(self, data):
-        """ get the dimension from data
-        """
-        self.dimensions['n'] = data.get('n', 0)
-        self.dimensions['r'] = data.get('r', 0)
-        self.dimensions['p'] = data.get('p', 0)
-        if not self.dimensions['n'] or not self.dimensions['r'] or not self.dimensions['p']:
-            self.logger.warning("%s: at least one variable is missing" % self.__class__.__name__)
-            return False
-        return True
-
-    def build_constants(self, data):
-        for name in self.available_constants:
-            self.constants[name] = data.get(name, [])
 
     def build_variables(self):
         """ @param n, r, p: number of exams, rooms and periods
@@ -81,7 +66,7 @@ class NonLinearProblem(BaseProblem):
                 self.problem.addQConstr(constraint, "c2")
         # Add constraint: There are no conflicts
         for l in range(p):
-            constraint = (gb.quicksum(self.vars['y'][i, l] * self.vars['y'][j, l] * self.constants['Q'][i][j] for i, j in itertools.combinations(range(n),2) ) == 0)
+            constraint = (gb.quicksum(self.vars['y'][i, l] * self.vars['y'][j, l] * self.constants['Q'][i][j] for i, j in itertools.combinations(range(n), 2)) == 0)
             self.problem.addQConstr(constraint, "c3")
         return True
 
@@ -90,10 +75,10 @@ class NonLinearProblem(BaseProblem):
             Build the constants of the problem from the data
         """
         n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
-        obj1 = (gb.quicksum(self.vars['x'][i, k] * self.constants['s'][i] for i, k in itertools.product(range(n), range(r))))
-        obj21 = (gb.quicksum(self.constants['Q'][i][j] * (gb.quicksum(self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p))))
-        obj22 = (gb.quicksum(self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p))) for i, j in itertools.combinations(range(n), 2))
-        obj = obj1 - obj21 * obj22
+        obj1 = (gb.quicksum([self.vars['x'][i, k] * self.constants['s'][i] for i, k in itertools.product(range(n), range(r))]))
+        obj21 = [[gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) for i in range(n)] for j in range(n)]
+        obj22 = [[gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) for i in range(n)] for j in range(n)]
+        obj = obj1 - gb.quicksum([gb.quicksum([self.constants['Q'][i][j] * obj21[i][j] * obj22[i][j] for i, j in itertools.combinations(range(n), 2)])])
         self.problem.setObjective(obj, gb.GRB.MINIMIZE)
         self.problem.optimize()
         return True

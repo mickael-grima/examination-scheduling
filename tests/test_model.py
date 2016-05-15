@@ -14,6 +14,8 @@ sys.path.append(path)
 import unittest
 from model import linear_problem as lpb
 from model import colouring_problem as cpb
+from model import linear_one_variable_problem as lopb
+from model import non_linear_problem as nlpb
 
 
 class TestSolvers(unittest.TestCase):
@@ -38,10 +40,12 @@ class TestSolvers(unittest.TestCase):
             'h': [0, 2, 4]  # number of hours before period
         }
         self.lprob = lpb.LinearProblem()
-        self.cProb = cpb.ColouringGraphProblem()
+        self.cprob = cpb.ColouringGraphProblem()
+        self.loprob = lopb.LinearOneVariableProblem()
+        self.nlprob = nlpb.NonLinearProblem()
 
-    def testProblemBuild(self):
-        """ We test the builder, if we have enough variables, constants
+    def testLinearProblem(self):
+        """ We test the builder, if we have enough variables, constants for linear problem
         """
         self.lprob.build_problem(self.small_input)
 
@@ -65,18 +69,58 @@ class TestSolvers(unittest.TestCase):
         self.assertEqual(len(self.lprob.vars['y']), self.small_input['n'] * self.small_input['p'])
         self.assertEqual(len(self.lprob.vars['z']), self.small_input['n'] ** 2)
 
-    def testSolveProb(self):
-        """ We test the solver on small_input
+    def testLinearOneVariableProblem(self):
+        """ We test the builder, if we have enough variables, constants for linear problem with one variable
         """
-        self.lprob.build_problem(self.small_input)
-        self.lprob.solve()
+        self.loprob.build_problem(self.small_input)
+
+        # Tests
+        # n, p and r
+        self.assertEqual(self.loprob.dimensions['n'], self.small_input['n'])
+        self.assertEqual(self.loprob.dimensions['r'], self.small_input['r'])
+        self.assertEqual(self.loprob.dimensions['p'], self.small_input['p'])
+        # Constants
+        self.assertEqual(len(self.loprob.constants['s']), self.small_input['n'])
+        self.assertEqual(len(self.loprob.constants['Q']), self.small_input['n'])
+        for i in range(self.small_input['n']):
+            self.assertEqual(len(self.loprob.constants['Q'][i]), self.small_input['n'])
+        self.assertEqual(len(self.loprob.constants['c']), self.small_input['r'])
+        self.assertEqual(len(self.loprob.constants['h']), self.small_input['p'])
+        self.assertEqual(len(self.loprob.constants['T']), self.small_input['r'])
+        for i in range(self.small_input['r']):
+            self.assertEqual(len(self.loprob.constants['T'][i]), self.small_input['p'])
+        # Variables
+        self.assertEqual(len(self.loprob.vars['x']), self.small_input['n'] * self.small_input['r'] * self.small_input['p'])
+
+    def testNonLinearProblem(self):
+        """ We test the builder, if we have enough variables, constants for non linear problem
+        """
+        self.nlprob.build_problem(self.small_input)
+
+        # Tests
+        # n, p and r
+        self.assertEqual(self.nlprob.dimensions['n'], self.small_input['n'])
+        self.assertEqual(self.nlprob.dimensions['r'], self.small_input['r'])
+        self.assertEqual(self.nlprob.dimensions['p'], self.small_input['p'])
+        # Constants
+        self.assertEqual(len(self.nlprob.constants['s']), self.small_input['n'])
+        self.assertEqual(len(self.nlprob.constants['Q']), self.small_input['n'])
+        for i in range(self.small_input['n']):
+            self.assertEqual(len(self.nlprob.constants['Q'][i]), self.small_input['n'])
+        self.assertEqual(len(self.nlprob.constants['c']), self.small_input['r'])
+        self.assertEqual(len(self.nlprob.constants['h']), self.small_input['p'])
+        self.assertEqual(len(self.nlprob.constants['T']), self.small_input['r'])
+        for i in range(self.small_input['r']):
+            self.assertEqual(len(self.nlprob.constants['T'][i]), self.small_input['p'])
+        # Variables
+        self.assertEqual(len(self.nlprob.vars['x']), self.small_input['n'] * self.small_input['r'])
+        self.assertEqual(len(self.nlprob.vars['y']), self.small_input['n'] * self.small_input['p'])
 
     def testColouringProblem(self):
         """ We test here the colouring ILP problem
         """
-        self.cProb.build_problem(self.small_input)
-        self.assertEqual(len(self.cProb.colorGraph.graph.nodes()), self.cProb.dimensions['n'])
-        self.cProb.solve()
+        self.cprob.build_problem(self.small_input)
+        self.assertEqual(len(self.cprob.colorGraph.graph.nodes()), self.cprob.dimensions['n'])
 
 
 if __name__ == "__main__":
