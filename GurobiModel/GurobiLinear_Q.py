@@ -44,16 +44,6 @@ def build_model(data):
         for l in range(p):
             y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
     
-    # help variable z[i,j] and delta[i,j] for exam i and exam j
-    # we are only interested in those exams i and j which have a conflict!
-    z = {}
-    delta = {}
-    for i in range(n):
-        for j in range(i+1,n):
-            if Q[i][j] == 0:
-                continue
-            z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
-            delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
     
     # integrate new variables
     model.update() 
@@ -89,24 +79,15 @@ def build_model(data):
         for l in range(p):
             model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l ]) <= (1 - y[i, l])*r, "c6")
     
-    print("c7: resolving the absolute value")
-    for i in range(n):
-        for j in range(i+1,n):
-            if Q[i][j] == 0:
-                continue
-            model.addConstr( z[i, j] <= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
-            model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
-            model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
-            model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
-            
     print("OK")
 
     # objective: minimize number of used rooms and maximize the distance of exams
     print("Building Objective...")
     gamma = 1
     obj1 = quicksum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) ]) 
-    obj2 = -quicksum([ Q[i][j] * z[i,j] for i in range(n) for j in range(i+1,n) if Q[i][j] == 1])
-
+    obj2 = -quicksum([ Q[i][j] * quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) * quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) for i in range(n) for j in range(i+1,n) if Q[i][j] == 1])
+    
+    #obj2 = 1
     model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
     # Set Parameters
     print("Setting Parameters...")
@@ -140,7 +121,6 @@ if __name__ == "__main__":
         
         model.optimize()
 
-        
         for v in model.getVars():
             if v.x == 1 and ("x" in v.varName or "y" in v.varName): 
                 print('%s %g' % (v.varName, v.x))

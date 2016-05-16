@@ -28,7 +28,7 @@ def compare(data):
     # Select models to compare
     problems = {
                 'GurobiLinear': build_linear_model,
-#                'GurobiQ_neu': build_nonlinear_model, 
+                'GurobiQ_neu': build_nonlinear_model, 
  #               'non_linear_problem': NonLinearProblem, 
                 }
     
@@ -59,9 +59,10 @@ def compare(data):
 
 if __name__ == '__main__':
     
-    n = 20
-    r = 9
-    p = 3
+    n = 10
+    r = 5
+    p = 10   
+
     
     random.seed(42)
     
