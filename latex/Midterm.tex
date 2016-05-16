@@ -70,89 +70,52 @@
                     h_l &:= \text{Anzahl der Stunden von Periode $l$ nach Beginn des Prüfungszeitraumes}
                \ea
         \end{frame}
-  
-  \begin{frame}
-               {Variablen}
-               \ba
-               x_{i,k} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ im Raum $k$ stattfindet} \\ 
-                                                          0, & \mbox{sonst} \end{array} \right.  \\
-                y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ im Zeitinterval $l$ stattfindet} \\ 
-                                                        0, & \mbox{sonst} \end{array} \right.  \\
-               \ea
-               Dimensionen:
-              \ba
-              n&: Anzahl der Prüfungen \\
-              r&: Anzahl der Räume \\
-              p&: Anzahl der Zeitintervalle
-              \ea
-        \end{frame}
-       
-       
-       \begin{frame}
-               {Zielfunktion}
-               \ba
-               \min \sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} \left| \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m} \right|
-               \ea
-               Resolving the absolute value
-                
-                Ich glaube nicht, dass das mit $\max |x|$ funktioniert...
-%               \ba
-%               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i} z_{i,j} \\
-%               s.t. \;\; 
-%               &z \leq \sum_{l=1}^p h_l y_{i,l} - \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n] \\
-%               &z \leq -\sum_{l=1}^p h_l y_{i,l} + \sum_{m=1}^p h_m y_{j,m}, \;\; \forall i,j \in [n]
-%               \ea
-        \end{frame}
-  
-  
-       
-       \begin{frame}
-               {Constraints}
-                \begin{enumerate} 
-                \item Jede Prüfung wird auf genau einem Zeitinterval eingeplant
-                \ba
-                    \sum_{l=1}^p y_{i,l} = 1 \;\;\;\forall i \in [n]
-                \ea
-                \item Alle Studierenden bekommen einen Platz
-                \ba
-                    \sum_{k=1}^r c_k x_{i,k} \geq s_i \;\;\;\forall i \in [n]
-                \ea
-               \item Jedem Raum wird je Zeit maximal eine Prüfung zugeteilt
-                \ba
-                    \sum_{i=1}^n x_{i,k} y_{i,l} \leq t_{k,l} \;\;\;\forall k \in [r], \forall l \in [p]
-                \ea
-               \item Konfliktvermeidung
-                \ba
-                    \sum_{i=1, j > i}^n q_{i,j} x_{i,k} x_{j,k} = 0 \;\;\;\forall k \in [r]
-                \ea
-             \end{enumerate}
-        \end{frame}
         
-        
-        
-  \begin{frame}
-               {Linear Constraints}
-                \begin{enumerate} 
-                \item Jede Prüfung wird auf genau einem Zeitinterval eingeplant
-                \ba
-                    \sum_{l=1}^p y_{i,l} = 1 \;\;\;\forall i \in [n]
-                \ea
-                \item Alle Studierenden bekommen einen Platz
-                \ba
-                    \sum_{k=1}^r c_k x_{i,k} \geq s_i \;\;\;\forall i \in [n]
-                \ea
-               \item Jedem Raum wird je Zeit maximal eine Prüfung zugeteilt
-                \ba
-                    x_{i,k} + y_{i,l} + x_{j,k} + y_{j,l} \leq 3 , \;\; \forall i,j\in[n], j > i \forall k \forall l \\
-                    x_{i,k} + y_{i,l} \leq 1,\;\; \forall i \in [n] \forall k,l \;\;\;\text{such that } t_{k,l} = 0
-                \ea
-               \item Konfliktvermeidung
-                \ba
-                    \sum_{j= 1, j \neq i}^n q_{i,j} x_{j,k} \leq (1 - x_{i,k}) ||Q||_2^2 \;\;\;\forall k \in [r] \forall i \in [n]
-                \ea
-             \end{enumerate}
-        \end{frame}
+  \include{Model_nonlinear}
   
+  \include{Model_linear}
 
+  \begin{frame}
+                {Modellvergleich}
+                
+        \begin{center}
+        \begin{tabular}{ | l | l | l |}
+            \hline 
+            Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
+            \hline \hline
+            2D  & & \\ (mit abs)& $nr + np$ & $2n + rp + p$ \\ \hline
+            2D linear & & \\ (mit abs)& $nr + np + 2 n^2$ & $2n + \frac 1 2 nrp(n-1) + nT + np + 4 n^2$ \\ \hline
+            2D linear  & & \\ (ohne abs)& $nr + np$ & $2n + \frac 1 2 nrp(n-1) + nT + np $\\ \hline 
+            3D & & \\ (mit abs) & $nrp + 2rn^2$ & $2n + rp + nrp + nrp + 4rn^2$\\
+            \hline
+            3D  & & \\ (ohne abs)& $nrp$ & $2n + rp + nrp + nrp$ \\ \hline
+            
+        \end{tabular}
+        \end{center}
+    \end{frame}
+    \begin{frame}
+            {Modellvergleich - In Zahlen}
+       Problemdimensionen:
+        \begin{itemize}
+        \item $n \approx 1200$
+        \item $r \approx 70$
+        \item $p \approx 70$
+        \item $T \approx 400$
+        \end{itemize}
+        \begin{center}
+        \begin{tabular}{ | l | l | l |}
+            \hline 
+            Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
+            \hline \hline
+            2D (mit abs)& $0.17 \cdot 10^6$ & $7370$ \\ \hline
+            2D linear (mit abs)& $3 \cdot 10^6$ & $3.5 \cdot 10^9$ \\ \hline
+            2D linear (ohne abs)& $0.17 \cdot 10^6$ & $3.5 \cdot 10^9$\\ \hline 
+            3D (mit abs) & $207 \cdot 10^6$ & $415 \cdot 10^6$\\
+            \hline
+            3D (ohne abs)& $6 \cdot 10^6$ & $12 \cdot 10^6$ \\ \hline
+        \end{tabular}
+        \end{center}
+  \end{frame}
+  
 \end{document}
 
