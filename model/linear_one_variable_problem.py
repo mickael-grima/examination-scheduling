@@ -35,10 +35,10 @@ class LinearOneVariableProblem(MainProblem):
             for k in range(r):
                 for l in range(p):
                     self.vars['x'][i, k, l] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s,%s,%s]' % (i, k, l))
-        self.vars.setdefault('eta', {})
+        self.vars.setdefault('y', {})
         for i in range(n):
             for l in range(p):
-                self.vars['eta'][i, l] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s,%s]' % (i, l))
+                self.vars['y'][i, l] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s,%s]' % (i, l))
         return True
 
 
@@ -86,23 +86,23 @@ class LinearOneVariableProblem(MainProblem):
         # eine Prüfung, die in mehreren Räumen abgehalten wird, findet nur zu einem Zeitpunkt statt
         for i in range(n):
             for l in range(p):
-                constraint = (gb.quicksum([self.vars['x'][i, k, l] for k in range(r)]) <= r*self.vars['eta'][i, l])
+                constraint = (gb.quicksum([self.vars['x'][i, k, l] for k in range(r)]) <= r*self.vars['y'][i, l])
                 self.problem.addConstr(constraint, "c3")
         print("built constraint c3")
+        
         for i in range(n):
             for l in range(p):
-                constraint = (gb.quicksum([self.vars['x'][i, k, m] for k in range(r) for m in range(p) if m != l]) <= r*(1-self.vars['eta'][i, l]))
+                constraint = (gb.quicksum([self.vars['x'][i, k, m] for k in range(r) for m in range(p) if m != l]) <= r*(1-self.vars['y'][i, l]))
                 self.problem.addConstr(constraint, "c4")
         print("built constraint c4")
          
         # No conflicts
         for i in range(n):
-            for k in range(r):
-                for l in range(p):
-                    constraint = (
-                        gb.quicksum([self.constants['Q'][i][j] * self.vars['x'][j, k, l] for j in range(n) if j != i]) <=
-                        (1 - self.vars['x'][i, k, l]) * sum(self.constants['Q'][i])
-                    )
-                    self.problem.addConstr(constraint, "c5")
-        print("built constraint c5")
+            for l in range(p):
+                constraint = (
+                    gb.quicksum([self.constants['Q'][i][j] * self.vars['x'][j, k, l] for k in range(r) for j in range(i+1,n)]) <=
+                    (1 - self.vars['y'][i, l]) * sum(self.constants['Q'][i])
+                )
+                self.problem.addConstr(constraint, "c5")
+        print("built constraint c6")
         print("OK")
