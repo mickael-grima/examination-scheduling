@@ -27,16 +27,16 @@ class LinearProblem(MainProblem):
             Build the variables of the problem from the data
         """
         n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
+        self.vars.setdefault('x', {})
+        self.vars.setdefault('y', {})
+        self.vars.setdefault('z', {})
         for i in range(n):
-            self.vars.setdefault('x', {})
             for k in range(r):
                 # exam i in room k
                 self.vars['x'][i, k] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s, %s]' % (i, k))
-            self.vars.setdefault('y', {})
             for l in range(p):
                 # exam i during period l
                 self.vars['y'][i, l] = self.problem.addVar(vtype=gb.GRB.BINARY, name='y[%s, %s]' % (i, l))
-            self.vars.setdefault('z', {})
             for j in range(n):
                 self.vars['z'][i, j] = self.problem.addVar(vtype=gb.GRB.INTEGER, name='z[%s, %s]' % (i, j))
         return True
