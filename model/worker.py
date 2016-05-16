@@ -21,23 +21,20 @@ from time import time
 def compare_time(data):
     """ we compare for some problems how many time we need to solve each problem
     """
-    lprob = LinearProblem()
-    nlprob = NonLinearProblem()
-    loprob = LinearOneVariableProblem()
+    lprob = LinearProblem(data)
+    nlprob = NonLinearProblem(data)
+    loprob = LinearOneVariableProblem(data)
     times = {'linear': 0, 'non_linear': 0, 'linear_one_variable': 0}
     # linear problem
     t = time()
-    lprob.build_problem(data)
     lprob.solve()
     times['linear'] = time() - t
     # non linear problem
     t = time()
-    nlprob.build_problem(data)
     nlprob.solve()
     times['non_linear'] = time() - t
     # linear one variable problem
     t = time()
-    loprob.build_problem(data)
     loprob.solve()
     times['linear_one_variable'] = time() - t
 

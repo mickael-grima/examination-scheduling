@@ -17,10 +17,12 @@ from utils.tools import convert_to_table
 
 
 class LinearProblem(MainProblem):
-    def __init__(self, name='ExaminationProblem'):
+    def __init__(self, data, name='ExaminationProblem'):
         super(LinearProblem, self).__init__(name=name)
         self.c = 0.5  # criteria factor
         self.available_constants = ['s', 'c', 'Q', 'T', 'h']  # every constants names have to be included in this list
+
+        self.build_problem(data)
 
     def build_variables(self):
         """ @param n, r, p: number of exams, rooms and periods
