@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import picos as pic
 import logging
+import gurobipy as gb
 
 
 class BaseProblem(object):
     """ The base of every problems
     """
 
-    def __init__(self):
+    def __init__(self, name='ExaminationProblem'):
         self.vars = {}
         self.constants = {}
         self.dimensions = {}
-        self.problem = pic.Problem()
+        self.problem = gb.Model(name)
 
         self.available_constants = []
         self.logger = logging
@@ -53,7 +53,7 @@ class BaseProblem(object):
     def solve(self):
         """ Solve the problem
         """
-        self.problem.solve()
+        self.problem.optimize()
 
     def __str__(self):
         # Dimensions
@@ -65,8 +65,7 @@ class BaseProblem(object):
         for name, varss in self.vars.iteritems():
             if not first:
                 res += '\n           '
-            res += '%s=%s' % (name, str({key: str(value) if value.is_valued() else '0.0'
-                                         for key, value in varss.iteritems()}))
+            res += '%s=%s' % (name, str({key: value.Obj for key, value in varss.iteritems()}))
             first = False
         # Constants
         res += '\nConstants: '
