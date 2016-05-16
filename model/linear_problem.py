@@ -39,7 +39,6 @@ class LinearProblem(MainProblem):
             self.vars.setdefault('z', {})
             for j in range(n):
                 self.vars['z'][i, j] = self.problem.addVar(vtype=gb.GRB.INTEGER, name='z[%s, %s]' % (i, j))
-        self.problem.update()
         return True
 
     def build_constraints(self):

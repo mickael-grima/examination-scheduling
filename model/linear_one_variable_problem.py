@@ -31,7 +31,6 @@ class LinearOneVariableProblem(MainProblem):
             for k in range(r):
                 for l in range(p):
                     self.vars['x'][i, k, l] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s,%s,%s]' % (i, k, l))
-        self.problem.update()
         return True
 
     def build_constraints(self):
