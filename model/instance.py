@@ -43,11 +43,11 @@ def build_random_data(**kwards):
     conflicts = kwards.get('conflicts', 0.5)
     data = {'n': n, 'r': r, 'p': p}
     # we generate a random number of student between 5 and 10 per exam
-    data['s'] = [int(5 + 6 * rd.random()) for i in range(n)]
+    data['s'] = [ int(5 + 6 * rd.random()) for i in range(n)]
     # the room has a capacity between 5 and 20
-    data['c'] = [int(5 + 16 * rd.random()) for k in range(r)]
+    data['c'] = [ int(5 + 16 * rd.random()) for k in range(r)]
     # hours between starting day and starting periods are fixed equal to 2
-    data['h'] = [2 for l in range(p)]
+    data['h'] = [ 2*l for l in range(p)]
     # conflicts: 0.75 chance to have a conflict between 2 exams
     data['Q'] = [[ 1*(rd.random()<=conflicts) for j in range(n)] for i in range(n)]
     # opening rooms: 3/4 chance that a room open to a given period
