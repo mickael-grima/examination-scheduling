@@ -12,7 +12,7 @@ import itertools
 import random
 
 from gurobipy import Model, quicksum, GRB, GurobiError
-from instance import build_random_data
+from model.instance import build_random_data
 
 # Create variables
 def build_model(data):
@@ -66,7 +66,8 @@ def build_model(data):
 
     # Set objective
     #model.setObjective( quicksum([ x[i,k] * s[i] for i,k in itertools.product(range(n), range(r)) ]), GRB.MINIMIZE)
-    model.setObjective( -1*quicksum([Q[i][j]*(quicksum([y[i,l]*h[l] - y[j,l]*h[l] for l in range(p)]))*(quicksum([y[i,l]*h[l] - y[j,l]*h[l] for l in range(p)])) for i, j in itertools.combinations(range(n),2) if Q[i][j] == 1])  +  quicksum(x[i,k] * s[i] for i,k in itertools.product(range(n),range(r)) )  , GRB.MINIMIZE)
+    gamma = 1
+    model.setObjective( -gamma*quicksum([Q[i][j]*(quicksum([y[i,l]*h[l] - y[j,l]*h[l] for l in range(p)]))*(quicksum([y[i,l]*h[l] - y[j,l]*h[l] for l in range(p)])) for i, j in itertools.combinations(range(n),2) if Q[i][j] == 1 and j > i])  +  quicksum(x[i,k] * s[i] for i,k in itertools.product(range(n),range(r)) )  , GRB.MINIMIZE)
  
     print "Zielfunktion gesetzt"
 
@@ -84,9 +85,10 @@ def build_model(data):
 
 if __name__ == "__main__":
     
-    n = 20
-    r = 10
-    p = 5
+    
+    n = 10
+    r = 5
+    p = 10   
 
     # generate data
     random.seed(42)
