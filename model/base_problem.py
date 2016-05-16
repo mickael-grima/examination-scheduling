@@ -55,7 +55,10 @@ class BaseProblem(object):
         """ Solve the problem
         """
         self.problem.optimize()
-        self.objVal = self.problem.objVal
+        try:
+            self.objVal = self.problem.objVal
+        except:
+            self.objVal = 0
 
     def __str__(self):
         # Dimensions

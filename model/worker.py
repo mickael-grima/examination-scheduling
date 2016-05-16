@@ -22,13 +22,13 @@ def compare_time(data):
     """ we compare for some problems how many time we need to solve each problem
     """
     problems = {
-#                'linear': LinearProblem(data), 
-#                'non_linear': NonLinearProblem(data), 
-                'linear_one_variable': LinearOneVariableProblem(data)
+#                'linear': LinearProblem, 
+                'non_linear': NonLinearProblem, 
+                'linear_one_variable': LinearOneVariableProblem
                 }
     times =  dict()
     for prob_name in problems:
-        problem = problems[prob_name]
+        problem = problems[prob_name](data)
         t = time()
         problem.optimize()
         times[prob_name] = time() - t

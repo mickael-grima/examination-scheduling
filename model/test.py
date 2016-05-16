@@ -24,33 +24,34 @@ def compare(data):
     """ we compare for some problems how many time we need to solve each problem
     """
     problems = {
-            #    'linear': LinearProblem(data), 
-                'non_linear': build_nonlinear_model(data), 
-                'linear_one_variable': build_linear_model(data)
+            #    '1': NonLinearProblem, 
+#                '2 nonlinear': build_nonlinear_model, 
+                '3 linear': build_linear_model
                 }
     
     times =  dict()
     objectives = dict()
     for prob_name in problems:
         print(prob_name)
-        model = problems[prob_name]
+        model = problems[prob_name](data)
         
         t = time()
         model.optimize()
         times[prob_name] = time() - t
-        
-        objectives[prob_name] = model.objVal
-        
+        try:
+            objectives[prob_name] = model.objVal
+        except:
+            objectives[prob_name] = 0
     return times, objectives
 
 
 if __name__ == '__main__':
     
-    n = 10
-    r = 10
-    p = 4
+    n = 500
+    r = 130
+    p = 130
     
-    data = build_random_data(n=n, r=r, p=p)
+    data = build_random_data(n=n, r=r, p=p, conflicts=0.5)
     time, objectives = compare(data)
     
     print("")
