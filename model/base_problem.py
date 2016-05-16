@@ -51,10 +51,11 @@ class BaseProblem(object):
             return True
         return False
 
-    def solve(self):
+    def optimize(self):
         """ Solve the problem
         """
         self.problem.optimize()
+        self.objVal = self.problem.objVal
 
     def __str__(self):
         # Dimensions
