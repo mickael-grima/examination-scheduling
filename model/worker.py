@@ -14,7 +14,7 @@ sys.path.append(PROJECT_PATH)
 from model.linear_problem import LinearProblem
 from model.non_linear_problem import NonLinearProblem
 from model.linear_one_variable_problem import LinearOneVariableProblem
-from instance import build_random_data
+from model.instance import build_random_data
 from time import time
 
 
