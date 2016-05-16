@@ -39,11 +39,11 @@ try:
     for room in rooms:
 
         for l in range(numberofperiods):
-            t[("%s" % (room) ,"%s" % (l)) ] = 1
+            t[room,l] = 1
 
     for examA in exams:
         for examB in exams:
-            k[("%s" % (examA),"%s" % (examB))] = 0
+            k[examA,examB] = 0
 
 
     # Create a new model
@@ -80,14 +80,14 @@ try:
     for room in rooms:
 
         for l in range(numberofperiods):
-            m.addQConstr( quicksum(x[exam,room]*y[exam,l] for exam in exams) <= t[("%s"  % (room),"%s" % (l))], "c2")
+            m.addQConstr( quicksum(x[exam,room]*y[exam,l] for exam in exams) <= t[room,l], "c2")
 
 
     
 
     # Add constraint: There are no conflicts quadratic
     for l in range(numberofperiods):
-        m.addQConstr( quicksum(y[examA,l]*y[examB,l]*k[("%s" % (examA),"%s" % (examB))] for examA, examB in itertools.combinations(exams,2) if k[("%s" % (examA),"%s" % (examB))] == 1 ) == 0,  "c3")
+        m.addQConstr( quicksum(y[examA,l]*y[examB,l]*k[examA,examB] for examA, examB in itertools.combinations(exams,2) if k[examA,examB] == 1 ) == 0,  "c3")
 
 
     ###### Improve speed by generating combinations of examA and examb outside of loop
@@ -95,7 +95,7 @@ try:
 
 
     # Set objective
-    m.setObjective(-1*quicksum(  k[("%s" % (examA),"%s" % (examB))]*(quicksum( y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods)))*(quicksum( y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods))) for examA, examB in itertools.combinations(exams,2) if k[("%s" % (examA),"%s" % (examB))] == 1)  +  quicksum(x[exam,room]*examstudents[exam] for exam,room in itertools.product(exams,rooms) )  , GRB.MINIMIZE)
+    m.setObjective(-1*quicksum(  k[examA,examB]*(quicksum( y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods)))*(quicksum( y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods))) for examA, examB in itertools.combinations(exams,2) if k[examA,examB] == 1)  +  quicksum(x[exam,room]*examstudents[exam] for exam,room in itertools.product(exams,rooms) )  , GRB.MINIMIZE)
  
     print "Zielfunktion gesetzt"
 
@@ -112,7 +112,7 @@ try:
     m.optimize()
 
     for v in m.getVars():
-        if v.x == 1:
+        if v.x == 1: 
             print('%s %g' % (v.varName, v.x))
 
     print('Obj: %g' % m.objVal)
