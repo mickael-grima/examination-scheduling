@@ -49,14 +49,15 @@ class NonLinearProblem(MainProblem):
             # Add constraint: Each exam is planned in exactly one period
             constraint = (gb.quicksum(self.vars['y'][i, l] for l in range(p)) == 1)
             self.problem.addConstr(constraint, "c0")
+
             # Add constraint: Each exam has enough seats
-            constraint = (
-                gb.quicksum(self.vars['x'][i, k] * self.constants['c'][k] for k in range(r)) >= self.constants['s'][i]
-            )
+            constraint = (gb.quicksum(self.vars['x'][i, k] * self.constants['c'][k] for k in range(r)) >= self.constants['s'][i])
             self.problem.addConstr(constraint, "c1")
+
             # Add constraint: Each exam is planned in exactly one period
             constraint = (gb.quicksum(self.vars['y'][i, l] for l in range(p)) == 1)
             self.problem.addConstr(constraint, "c0")
+            
         # Add constraint: Each room has at most one exam per period
         for k in range(r):
             for l in range(p):
