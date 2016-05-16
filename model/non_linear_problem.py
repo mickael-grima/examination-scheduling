@@ -84,7 +84,7 @@ class NonLinearProblem(MainProblem):
         self.problem.optimize()
         return True
 
-    def solve(self):
+    def optimize(self):
         # maximum level of linearization
         self.problem.params.preqlinearize = 1
         # max presolve agressivity
