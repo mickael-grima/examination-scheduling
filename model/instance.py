@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# this script produce instances:
+# this script produce instances: 
 #   - we get it from files
 #   - we produce it randomly
 #   - or we find simple specific instance
 
 import random as rd
+import numpy as np
 
 
 def force_data_format(func):
@@ -72,3 +73,16 @@ def build_simple_data(**kwards):
         'h': [0, 2, 4]  # number of hours before period
     }
     return data
+
+
+@force_data_format
+def build_smart_random(**kwards):
+    """ Generate smart random data
+        kwards = {'n': , 'r': ,'p': , 'tseed': }
+    """
+    rd.seed(kwards.get('tseed', 1))
+    np.random.seed(kwards.get('tseed', 1))
+    n, r, p = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0)
+    data = {'n': n, 'r': r, 'p': p}
+    # Student between 20 and 1000 per exam
+    data['s'] = np.random.normal(150, 10, n)

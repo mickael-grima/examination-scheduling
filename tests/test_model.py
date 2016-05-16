@@ -39,16 +39,14 @@ class TestSolvers(unittest.TestCase):
                   [1, 1, 0]],  # Opening times for rooms
             'h': [0, 2, 4]  # number of hours before period
         }
-        self.lprob = lpb.LinearProblem()
+        self.lprob = lpb.LinearProblem(self.small_input)
         self.cprob = cpb.ColouringGraphProblem()
-        self.loprob = lopb.LinearOneVariableProblem()
-        self.nlprob = nlpb.NonLinearProblem()
+        self.loprob = lopb.LinearOneVariableProblem(self.small_input)
+        self.nlprob = nlpb.NonLinearProblem(self.small_input)
 
     def testLinearProblem(self):
         """ We test the builder, if we have enough variables, constants for linear problem
         """
-        self.lprob.build_problem(self.small_input)
-
         # Tests
         # n, p and r
         self.assertEqual(self.lprob.dimensions['n'], self.small_input['n'])
@@ -72,8 +70,6 @@ class TestSolvers(unittest.TestCase):
     def testLinearOneVariableProblem(self):
         """ We test the builder, if we have enough variables, constants for linear problem with one variable
         """
-        self.loprob.build_problem(self.small_input)
-
         # Tests
         # n, p and r
         self.assertEqual(self.loprob.dimensions['n'], self.small_input['n'])
@@ -95,8 +91,6 @@ class TestSolvers(unittest.TestCase):
     def testNonLinearProblem(self):
         """ We test the builder, if we have enough variables, constants for non linear problem
         """
-        self.nlprob.build_problem(self.small_input)
-
         # Tests
         # n, p and r
         self.assertEqual(self.nlprob.dimensions['n'], self.small_input['n'])

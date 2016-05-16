@@ -14,20 +14,22 @@ sys.path.append(PROJECT_PATH)
 from model.linear_problem import LinearProblem
 from model.non_linear_problem import NonLinearProblem
 from model.linear_one_variable_problem import LinearOneVariableProblem
-from instance import build_random_data
+from model.instance import build_random_data
 from time import time
 
 
 def compare_time(data):
     """ we compare for some problems how many time we need to solve each problem
     """
-    problems = {'linear': LinearProblem(), 'non_linear': NonLinearProblem(), 'linear_one_variable': LinearOneVariableProblem()}
-    problems = {'linear_one_variable': LinearOneVariableProblem()}
+    problems = {
+#                'linear': LinearProblem(data), 
+#                'non_linear': NonLinearProblem(data), 
+                'linear_one_variable': LinearOneVariableProblem(data)
+                }
     times =  dict()
     for prob_name in problems:
         problem = problems[prob_name]
         t = time()
-        problem.build_problem(data)
         problem.solve()
         times[prob_name] = time() - t
         
@@ -37,7 +39,7 @@ def compare_time(data):
         for k in range(r):
             for l in range(p):
                 print(x[i,k,l])
-        
+                
     return times
 
 
