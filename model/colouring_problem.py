@@ -87,7 +87,7 @@ class ColouringGraphProblem(BaseProblem):
         crit = gb.quicksum(list(self.vars['y'].itervalues()))
         self.problem.setObjective(crit, gb.GRB.MINIMIZE)
 
-    def solve(self):
+    def optimize(self):
         self.problem.optimize()
         # We convert the solution to a graph
         for key, var in self.vars['x'].iteritems():

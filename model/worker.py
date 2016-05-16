@@ -30,19 +30,19 @@ def compare_time(data):
     for prob_name in problems:
         problem = problems[prob_name]
         t = time()
-        problem.solve()
+        problem.optimize()
         times[prob_name] = time() - t
         
         n, r, p = problem.dimensions['n'], problem.dimensions['r'], problem.dimensions['p']
         x = problem.vars['x']
         i = 1
-        for k in range(r):
-            for l in range(p):
-                print(x[i,k,l])
+        #for k in range(r):
+            #for l in range(p):
+                #print(x[i,k,l])
                 
     return times
 
 
 if __name__ == '__main__':
-    data = build_random_data(n=150, r=30, p=30)
+    data = build_random_data(n=300, r=30, p=30)
     print compare_time(data)
