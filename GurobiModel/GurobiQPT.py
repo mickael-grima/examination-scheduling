@@ -114,15 +114,27 @@ try:
 
 
 
-    m.tune()
+    # m.tune()
 
-    m.params.TuneTimeLimit = 50
+    # m.params.TuneTimeLimit = 50
 
-    model.tune()
-    for i in range(model.tuneResultCount):
-    	model.getTuneResult(i)
-    	model.write('tune'+str(i)+'.prm')
+    # model.tune()
+    # for i in range(model.tuneResultCount):
+    # 	model.getTuneResult(i)
+    # 	model.write('tune'+str(i)+'.prm')
 
+
+    # Set Parameter
+    #m.params.mipfocus = 3
+    #maximum level of linearization
+    m.params.preqlinearize = 1
+    #max presolve agressivity
+    m.params.presolve = 2
+    #Choosing root method 3= concurrent = run barrier and dual simplex in parallel
+    m.params.method = 1
+
+
+    m.optimize()
 
     for v in m.getVars():
     	if v.x == 1:
