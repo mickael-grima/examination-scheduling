@@ -43,6 +43,7 @@ class BaseProblem(object):
             self.build_constants(data)
             # ----------- VARIABLES -------------
             self.build_variables()
+            self.problem.update()
             # ----------- CONSTRAINTS -------------
             self.build_constraints()
             # ----------- CRITERIA -------------

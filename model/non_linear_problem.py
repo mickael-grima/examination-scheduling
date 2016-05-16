@@ -27,16 +27,15 @@ class NonLinearProblem(MainProblem):
             Build the variables of the problem from the data
         """
         n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
+        self.vars.setdefault('x', {})
+        self.vars.setdefault('y', {})
         for i in range(n):
-            self.vars.setdefault('x', {})
             for k in range(r):
                 # exam i in room k
                 self.vars['x'][i, k] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s, %s]' % (i, k))
-            self.vars.setdefault('y', {})
             for l in range(p):
                 # exam i during period l
                 self.vars['y'][i, l] = self.problem.addVar(vtype=gb.GRB.BINARY, name='y[%s, %s]' % (i, l))
-        self.problem.update()
         return True
 
     def build_constraints(self):
@@ -66,7 +65,7 @@ class NonLinearProblem(MainProblem):
                 self.problem.addQConstr(constraint, "c2")
         # Add constraint: There are no conflicts
         for l in range(p):
-            constraint = (gb.quicksum(self.vars['y'][i, l] * self.vars['y'][j, l] * self.constants['Q'][i][j] for i, j in itertools.combinations(range(n), 2)) == 0)
+            constraint = (gb.quicksum([self.vars['y'][i, l] * self.vars['y'][j, l] * self.constants['Q'][i][j] for i, j in itertools.combinations(range(n), 2) if self.constants['Q'][i][j] == 1]) == 0)
             self.problem.addQConstr(constraint, "c3")
         return True
 
@@ -76,9 +75,8 @@ class NonLinearProblem(MainProblem):
         """
         n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
         obj1 = (gb.quicksum([self.vars['x'][i, k] * self.constants['s'][i] for i, k in itertools.product(range(n), range(r))]))
-        obj21 = [[gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) for i in range(n)] for j in range(n)]
-        obj22 = [[gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) for i in range(n)] for j in range(n)]
-        obj = obj1 - gb.quicksum([gb.quicksum([self.constants['Q'][i][j] * obj21[i][j] * obj22[i][j] for i, j in itertools.combinations(range(n), 2)])])
+        obj2 = [[gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) for i in range(n)] for j in range(n)]
+        obj = obj1 - gb.quicksum([gb.quicksum([self.constants['Q'][i][j] * obj2[i][j] * obj2[i][j] for i, j in itertools.combinations(range(n), 2) if self.constants['Q'][i][j] == 1])])
         self.problem.setObjective(obj, gb.GRB.MINIMIZE)
         self.problem.optimize()
         return True
