@@ -82,3 +82,12 @@ class NonLinearProblem(MainProblem):
         self.problem.setObjective(obj, gb.GRB.MINIMIZE)
         self.problem.optimize()
         return True
+
+    def solve(self):
+        # maximum level of linearization
+        self.problem.params.preqlinearize = 1
+        # max presolve agressivity
+        self.problem.params.presolve = 2
+        # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
+        self.problem.params.method = 1
+        self.problem.optimize()
