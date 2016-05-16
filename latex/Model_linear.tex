@@ -3,7 +3,9 @@
                {Variablen}
                \ba
                x_{i,k,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ zum Zeitpunkt $l$ in Raum $k$ stattfindet} \\ 
-                                                          0, & \mbox{sonst} \end{array} \right.  
+                                                          0, & \mbox{sonst} \end{array} \right.  \\
+                y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ im Zeitinterval $l$ stattfindet} \\ 
+                                                        0, & \mbox{sonst} \end{array} \right.  
                 \ea
                Dimensionen:
               \ba
@@ -38,6 +40,11 @@
        \begin{frame}
                {Constraints}
                 \begin{enumerate} 
+                \item Verbindung der Variablen
+                \ba
+                \sum_{k=1}^r x_{i,k,l} & \leq y_{i,l} \cdot r \;\;\; \forall i \in [n] \forall l \in [p] \\
+                \sum_{k=1}^r x_{i,k,l} & \geq y_{i,l} \;\;\; \forall i \in [n] \forall l \in [p] \\
+                \ea
                 \item Jede Prüfung wird auf einem Zeitinterval eingeplant
                 \ba
                     \sum_{l=1}^p \sum_{k = 1}^r x_{i,k,l} \geq 1 \;\;\; \forall i \in [n]
@@ -60,12 +67,16 @@
                \begin{enumerate}
                \item[4] Jedem Raum wird je Zeit maximal eine Prüfung zugeteilt (2.Version)
                \ba
-                \sum_{k=1}^r x_{i,k,l} & \leq r \eta_{i,l} \;\;\; \forall i \in [n] \forall l \in [p] \\
-                \sum_{m = 1, m \neq l}^p \sum_{k=1}^r x_{i,k,m} & \leq r (1-\eta_{i,l})  \;\;\; \forall i \in [n] \forall l \in [p]
+                \sum_{k=1}^r x_{i,k,l} & \leq r y_{i,l} \;\;\; \forall i \in [n] \forall l \in [p] \\
+                \sum_{m = 1, m \neq l}^p \sum_{k=1}^r x_{i,k,m} & \leq r (1-y_{i,l})  \;\;\; \forall i \in [n] \forall l \in [p]
                 \ea
                \item[5] Konfliktvermeidung
                 \ba
                     \sum_{j=1, j \neq i}^n q_{i,j} x_{j,k,l} \leq (1 - x_{i,k,l}) \sum_{\nu=1}^n q_{i,\nu} \;\;\; \forall i \in [n], \forall k \in [r], \forall l \in [p]
+                \ea
+                \item[5] Konfliktvermeidung (2.Version)
+                \ba
+                    \sum_{j=1, j > i}^n \sum_{k=1}^r q_{i,j} x_{j,k,l} \leq (1 - y_{i,l}) \sum_{\nu=1}^n q_{i,\nu} \;\;\; \forall i \in [n], \forall l \in [p]
                 \ea
              \end{enumerate}
         \end{frame}
