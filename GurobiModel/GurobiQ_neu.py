@@ -5,7 +5,7 @@ import random
 from gurobipy import Model, quicksum, GRB, GurobiError
 from instance import build_random_data
 
-# Create varjles
+# Create variables
 def build_model(data):
     
     n = data['n']
@@ -17,9 +17,9 @@ def build_model(data):
     Q = data['Q']
     T = data['T']
     
-    model = Model("iinationScheduling")
+    model = Model("ExaminationScheduling")
     
-    print("Building varjles...")
+    print("Building variables...")
     x = {}
     y = {}
     for i in range(n):
@@ -28,7 +28,7 @@ def build_model(data):
         for l in range(p):
             y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
 
-    model.update() # integrate new varjles
+    model.update() # integrate new variables
     
     print("Building constraints...")    
 
