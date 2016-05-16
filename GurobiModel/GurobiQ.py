@@ -78,12 +78,23 @@ try:
 
     # Add constraint: Each room has at most one exam per period
     for room in rooms:
-
         for l in range(numberofperiods):
             m.addQConstr( quicksum([x[exam,room]*y[exam,l] for exam in exams]) <= t[room,l], "c2")
 
 
-    
+
+    # # Add constraint: There are no room period conflicts - linear - takes to long to add
+    # for l in range(numberofperiods):
+    #     for room in rooms:
+    #         for examA,examB in itertools.combinations(exams,2):
+    #             m.addConstr( x[examA,room] + x[examB,room] + y[examA,l] + y[examB,l] <= 3,  "c2a")
+    #             print "Bedingungen 2a - %s - %s generiert" % (l,room)
+    #         for exam in exams:
+    #             if t[room,l] == 0:
+    #                 m.addConstr( x[exam,room] + y[exam,l] <= 1 , "c2b")
+    #                 "Bedingungen 2b generiert"
+
+
 
     # Add constraint: There are no conflicts quadratic
     for l in range(numberofperiods):
@@ -92,7 +103,6 @@ try:
 
     ###### Improve speed by generating combinations of examA and examb outside of loop
     
-
 
     # Set objective
     m.setObjective(-1*quicksum([k[examA,examB]*(quicksum([y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods)]))*(quicksum([y[examA,l]*hours[l] - y[examB,l]*hours[l] for l in range(numberofperiods)])) for examA, examB in itertools.combinations(exams,2) if k[examA,examB] == 1])  +  quicksum(x[exam,room]*examstudents[exam] for exam,room in itertools.product(exams,rooms) )  , GRB.MINIMIZE)

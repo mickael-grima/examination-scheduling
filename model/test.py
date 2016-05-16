@@ -44,6 +44,7 @@ def compare(data):
         
         # Optimize selected model
         t = time()
+
         problem.optimize()
         times[prob_name] = time() - t
         
