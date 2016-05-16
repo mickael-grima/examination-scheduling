@@ -24,7 +24,7 @@ try:
         roomcapacity.update({'MI%s' % (i+1) : random.randint(20, 350)})
 
     hours = []
-    for i in range(30):
+    for i in range(8):
         hours.extend([i*2])
 
 
@@ -43,7 +43,7 @@ try:
 
     for examA in exams:
         for examB in exams:
-            k[examA, examB] = int(random.random() + 0.2)
+            k[examA, examB] = int(random.random() + 0.5)
 
 
     # Create a new model
