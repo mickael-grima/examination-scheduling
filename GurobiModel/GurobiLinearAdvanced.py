@@ -76,6 +76,13 @@ def build_model(data):
     print("c2: each exam at exactly one time")
     for i in range(n):
         model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1 , "c2")
+
+    """
+    Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot pe written at the same time
+            -then instead of saying of one exam is written in a given period all conflicts cannot be written in the same period we could say
+            -Vor all exams in a given clique only one can be written
+
+    """
     
     print("c3: avoid conflicts")
     for i in range(n):
@@ -89,7 +96,8 @@ def build_model(data):
     print("c5: only one exam per room per period")
     for k in range(r):
         for l in range(p):
-            model.addConstr( quicksum([ x[i, k, l] for i in range(n) if T[k][l] == 1 ]) <= T[k][l], "c5")
+            if T[k][l] == 1:
+                model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")
     
     print("c6: any multi room exam takes place at one moment in time")
     for i in range(n):

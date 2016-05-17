@@ -62,8 +62,8 @@ def compare(data):
 
 if __name__ == '__main__':
     
-    n = 50
-    r = 20
+    n = 300
+    r = 40
     p = 20
     tseed = 774032
     
