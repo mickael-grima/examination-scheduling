@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import logging
+import gurobipy as gb
+
+
+class BaseProblem(object):
+    """ The base of every problems
+    """
+
+    def __init__(self, name='ExaminationProblem'):
+        self.vars = {}
+        self.constants = {}
+        self.dimensions = {}
+        self.problem = gb.Model(name)
+
+        self.available_constants = []
+        self.logger = logging
+
+    def build_dimensions(self, data):
+        return True
+
+    def build_constants(self, data):
+        return True
+
+    def build_variables(self):
+        return True
+
+    def build_constraints(self):
+        return True
+
+    def build_objectif(self):
+        return True
+
+    def build_problem(self, data):
+        """ @param data: contains the constants: 'Q', 's', ...
+            the constants are representing as a dictionnary
+        """
+        # First extract the dimension problems: n, r and p
+        if self.build_dimensions(data):
+            # ----------- CONSTANTS -------------
+            self.build_constants(data)
+            # ----------- VARIABLES -------------
+            self.build_variables()
+            self.problem.update()
+            # ----------- CONSTRAINTS -------------
+            self.build_constraints()
+            # ----------- CRITERIA -------------
+            self.build_objectif()
+            return True
+        return False
+
+    def optimize(self):
+        """ Solve the problem
+        """
+        self.problem.optimize()
+        try:
+           self.objVal = self.problem.objVal
+        except:
+           self.objVal = 0
+
+    def __str__(self):
+        # Dimensions
+        res = 'Dimensions: %s\n' % ', '.join('%s=%s' % (name, value)
+                                             for name, value in self.dimensions.iteritems())
+        # Variables
+        res += 'Variables: '
+        first = True
+        for name, varss in self.vars.iteritems():
+            if not first:
+                res += '\n           '
+            res += '%s=%s' % (name, str({key: value.Obj for key, value in varss.iteritems()}))
+            first = False
+        # Constants
+        res += '\nConstants: '
+        first = True
+        for name, consts in self.constants.iteritems():
+            if not first:
+                res += '\n           '
+            res += '%s=%s' % (name, str(consts))
+            first = False
+        return res

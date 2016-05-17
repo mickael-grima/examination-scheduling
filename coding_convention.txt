@@ -1,0 +1,5 @@
+
+
+Coding convention
+
+# Everything related to style, naming, spacing and such belongs here
