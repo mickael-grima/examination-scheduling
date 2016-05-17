@@ -67,9 +67,7 @@ if __name__ == '__main__':
     
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
     time, objectives = compare(data)
-    
-    print data['c']
-    print data['s']
+
 
     print("")
     for key in time:

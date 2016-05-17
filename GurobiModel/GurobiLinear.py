@@ -111,7 +111,7 @@ def build_model(data):
     # Set Parameters
     print("Setting Parameters...")
     # max presolve agressivity
-    model.params.presolve = 2
+    #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
 
