@@ -92,9 +92,9 @@ def build_smart_random(**kwards):
 
     #create possible number of participants, increase probability that number of participants is between 150 and 300
     num = [i for i in range(10,901)]
-    for times in range(500):
+    for times in range(1500):
         num.extend([int(i) for i in range(10,150)])
-    for times in range(15):
+    for times in range(500):
         num.extend([int(i) for i in range(150,301)])
 
     # get number of students participating
@@ -102,9 +102,9 @@ def build_smart_random(**kwards):
     # get room capacity from real data
     data['c'] = get_random_room_capacity(r,w)
     #create a conflict by probybility 1/5
-    data['Q'] = [[1 if rd.random() < 0.2 else 0 for j in range(n)] for i in range(n)]
+    data['Q'] = [[1 if rd.random() < 0 else 0 for j in range(n)] for i in range(n)]
     #close some rooms by probability 1/10
-    data['T'] = [[1 if rd.random() < 0.1 else 0 for l in range(p)] for k in range(r)]
+    data['T'] = [[1 if rd.random() > 0.1 else 0 for l in range(p)] for k in range(r)]
     #Hours between periods
     data['h'] = [2 for l in range(p)]
 
