@@ -44,5 +44,5 @@ def compare_time(data):
 
 
 if __name__ == '__main__':
-    data = build_random_data(n=300, r=30, p=30)
+    data = build_random_data(n=200, r=30, p=30)
     print compare_time(data)
