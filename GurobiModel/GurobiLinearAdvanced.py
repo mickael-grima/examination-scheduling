@@ -80,7 +80,7 @@ def build_model(data):
     """
     Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot pe written at the same time
             -then instead of saying of one exam is written in a given period all conflicts cannot be written in the same period we could say
-            -Vor all exams in a given clique only one can be written
+            -for all exams in a given clique only one can be written
 
     """
     
