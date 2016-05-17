@@ -14,6 +14,7 @@ sys.path.append(PROJECT_PATH)
 
 from GurobiModel.GurobiQ_neu import build_model as build_nonlinear_model
 from GurobiModel.GurobiLinear import build_model as build_linear_model
+from GurobiModel.GurobiLinearAdvanced import build_model as build_linear_advanced_model
 
 from model.linear_problem import LinearProblem
 from model.non_linear_problem import NonLinearProblem
@@ -29,6 +30,7 @@ def compare(data):
     # Select models to compare
     problems = {
                 'GurobiLinear': build_linear_model,
+                'GurobiLinearAdvanced' : build_linear_advanced_model,
  #               'GurobiQ_neu': build_nonlinear_model, 
  #               'non_linear_problem': NonLinearProblem, 
                 }
@@ -60,9 +62,9 @@ def compare(data):
 
 if __name__ == '__main__':
     
-    n = 500
-    r = 63
-    p = 60
+    n = 50
+    r = 20
+    p = 20
     tseed = 774032
     
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
