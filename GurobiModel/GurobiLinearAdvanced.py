@@ -78,7 +78,7 @@ def build_model(data):
         model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1 , "c2")
 
     """
-    Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot pe written at the same time
+    Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot be written at the same time
             -then instead of saying of one exam is written in a given period all conflicts cannot be written in the same period we could say
             -for all exams in a given clique only one can be written
 
