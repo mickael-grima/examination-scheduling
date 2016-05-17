@@ -73,7 +73,7 @@
         
   \include{Model_nonlinear}
   
-  \include{Model_linear}
+  \include{Model_linear_v2}
 
   \begin{frame}
                 {Modellvergleich}
@@ -83,12 +83,8 @@
             \hline 
             Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
             \hline \hline
-            2D  & & \\ (mit abs)& $nr + np$ & $2n + rp + p$ \\ \hline
-            2D linear & & \\ (mit abs)& $nr + np + 2 n^2$ & $2n + \frac 1 2 nrp(n-1) + nT + np + 4 n^2$ \\ \hline
-            2D linear  & & \\ (ohne abs)& $nr + np$ & $2n + \frac 1 2 nrp(n-1) + nT + np $\\ \hline 
-            3D & & \\ (mit abs) & $nrp + 2rn^2$ & $2n + rp + nrp + nrp + 4rn^2$\\
-            \hline
-            3D  & & \\ (ohne abs)& $nrp$ & $2n + rp + nrp + nrp$ \\ \hline
+            2D (Qadratisch)  & $nr + np$ & $2n + rp + p$ \\ \hline
+            3D + 2D (Linear) & $nrp + np + 2K$ & $2n + rp + 4np + 4 K$\\ \hline
             
         \end{tabular}
         \end{center}
@@ -102,19 +98,7 @@
         \item $p \approx 70$
         \item $T \approx 400$
         \end{itemize}
-        \begin{center}
-        \begin{tabular}{ | l | l | l |}
-            \hline 
-            Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
-            \hline \hline
-            2D (mit abs)& $0.17 \cdot 10^6$ & $7370$ \\ \hline
-            2D linear (mit abs)& $3 \cdot 10^6$ & $3.5 \cdot 10^9$ \\ \hline
-            2D linear (ohne abs)& $0.17 \cdot 10^6$ & $3.5 \cdot 10^9$\\ \hline 
-            3D (mit abs) & $207 \cdot 10^6$ & $415 \cdot 10^6$\\
-            \hline
-            3D (ohne abs)& $6 \cdot 10^6$ & $12 \cdot 10^6$ \\ \hline
-        \end{tabular}
-        \end{center}
+        
   \end{frame}
   
 \end{document}
