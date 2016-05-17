@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#TESTING The TEST
-
 import sys
 import os
 PATHS = os.getcwd().split('/')
@@ -20,24 +18,27 @@ from time import time, strftime
 import pickle as pk
 from argparse import ArgumentParser
 from copy import deepcopy
+import gtk
 
 import matplotlib
 matplotlib.use('Agg')  # for not popping up windows
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
-all_colours = ["blue", "red", "yellow", "purple", "orange", "green", "grey", "cyan", "pink", "black"]
+all_colours = ["#00B1EB", "#E51C39", "#FCEA10", "green", "red", "yellow", "cyan", "orange",
+               "blue", "grey", "purple", "pink", "black"]
 m = len(all_colours)
 
 plt.axis('off')
 
 
-def complete_string_to_length(st, lgt):
-    """ @param st: string
-        Add space to the right and the left in order thath st has the length lgt
+def get_screen_size():
+    """ return a tuple with the width and the length of the screen siye in inches
     """
-    while(len(st) < lgt):
-        st = '%s ' % st
-    return st
+    screen = gtk.Window().get_screen()
+    resolution = screen.get_resolution()
+    size = (screen.get_width(), screen.get_height())
+    return size[0] / resolution, size[1] / resolution
 
 
 class ColorGraph(object):
@@ -96,7 +97,10 @@ class ColorGraph(object):
         """
         if self.colours.get(node) is None:
             return False
-        self.colours[node] = color
+        if type(color) == int:
+            self.colours[node] = all_colours[color]
+        else:
+            self.colours[node] = color
         return True
 
     def plot_history(self, save=True):
@@ -144,7 +148,17 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colours=None):
+    def get_history_node_ordered(self):
+        """ Give the list of node sorted such that first node was coloured first, ans so on
+        """
+        res = []
+        for step, history in self.history.iteritems():
+            for node, colour in history.iteritems():
+                if colour != 'white' and node not in res:
+                    res.append(node)
+        return res
+
+    def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colours={}, pos={}):
         """ @param save: do we save the picture
             @param with_labels: do we write the labels of the nodes on the picture
             @param ind: index of the picture
@@ -152,8 +166,11 @@ class ColorGraph(object):
             @param clf: after saving we clean the figure if clf==True
             Draw the graph with the self.colours and save it if save==true
         """
+        if not pos:
+            pos = nx.spring_layout(self.graph)
         cols = [colour for _, colour in colours.iteritems()] or [colour for _, colour in self.colours.iteritems()]
-        nx.draw_shell(self.graph, node_color=cols, with_labels=with_labels, ax=ax)
+        nx.draw(self.graph, pos, node_color=cols, with_labels=with_labels, ax=ax, node_size=1500,
+                labels={node: "P%s" % node for node in self.graph.nodes()}, font_size=16)
         if save:
             filename = self.DIRECTORY + self.plotname
             if(ind < 10):
@@ -161,6 +178,8 @@ class ColorGraph(object):
             elif(ind < 100):
                 filename = filename + '0'
             plt.savefig("%s%s.jpg" % (filename, ind))
+        else:
+            plt.show()
         if clf:
             plt.clf()
 
@@ -172,30 +191,41 @@ class ColorGraph(object):
             We draw the graph as a calendar: each color has a given x coordinate
             We save it if save==True
         """
+        # How many nodes with a given color did we already draw
+        periods = ['9:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00']
+        periods_places = [i * 80 for i in range(len(periods))]
         counter_colors = {color: 0 for color in all_colours}
         cols = colours or self.colours
         if ax is None:
             fig, ax = plt.subplot()
-        # Axis parameters
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-        ax.axes.get_yaxis().set_visible(False)
-        ax.axes.get_xaxis().set_visible(False)
-        ax.axes.xaxis.set_label('Räume')
-        ax.axes.yaxis.set_label('Zeit')
-        for node in self.graph.nodes():
+        xticklabels, yticklabels = {}, {}
+        node_list = self.get_history_node_ordered()
+        for node in node_list:
+            # The indice of the colour given to node in all_colours
             color_ind = [i for i in range(len(all_colours)) if all_colours[i] == cols[node]]
             if color_ind:
                 color_ind = color_ind[0]
             else:
                 continue
-            ax.bar(counter_colors[self.colours[node]] * 50, 80, bottom=color_ind * 100, width=40,
+            xticklabels.setdefault(counter_colors[self.colours[node]] * 50 + 20,
+                                   'Raum %s' % (counter_colors[self.colours[node]] + 1))
+            ax.bar(counter_colors[self.colours[node]] * 50, 80, bottom=color_ind * 120, width=40,
                    color=cols[node])
             counter_colors[cols[node]] += 1
             # Add text labels
             if with_labels:
-                ax.text(counter_colors[self.colours[node]] * 50 - 30, color_ind * 100 + 40, 'P%s' % node,
+                ax.text(counter_colors[self.colours[node]] * 50 - 15, color_ind * 120 + 40, 'P%s' % node,
                         ha='right', fontsize=16)
+        nb_yticklabels = int(len(set(self.colours.itervalues())) * 120 / 80.) + 1
+        yticklabels = {periods_places[i]: periods[i] for i in range(nb_yticklabels)}
+        # Axis parameters
+        ax.set_title('Kalender')
+        ax.set_xticks(list(xticklabels.iterkeys()))
+        ax.set_xticklabels(list(xticklabels.itervalues()), fontsize=12)
+        ax.set_yticks(list(yticklabels.iterkeys()))
+        ax.set_yticklabels(list(yticklabels.itervalues()), fontsize=12)
+        ax.axes.xaxis.set_label('Räume')
+        ax.axes.yaxis.set_label('Perioden')
         if save:
             filename = '%scalendar-%s-' % (self.DIRECTORY, strftime("%Y%m%d"))
             if(ind < 10):
@@ -245,7 +275,7 @@ class ColorGraph(object):
             filename = '%ssimulation-%s-%s.jpg' % (self.DIRECTORY, strftime("%Y%m%d"), name)
             plt.savefig(filename)
 
-    def draw_heuristics_and_exact(self, directory, save=False, with_labels=False):
+    def draw_heuristics_and_exact(self, directory, save=False, with_labels=False, pos={}):
         """ @param dir: the directory where to save the files
             We draw together the heuristics and exact solution (calendar and graph) in the same plot
         """
@@ -259,21 +289,19 @@ class ColorGraph(object):
         # for each step of the history we save a file in dir
         steps = list(set(self.history.iterkeys()).union(set(graph_heur.history.iterkeys())))
         steps.sort()
+        screen_size = get_screen_size()
         for step in steps:
-            fig, axarr = plt.subplots(2, 2, figsize=(10, 10))
-            fig.set_facecolor('black')
-            plt.tight_layout()
-
+            fig, axarr = plt.subplots(2, 2, figsize=screen_size)
             axarr[0, 1].set_xlim(0, width)
-            axarr[0, 1].set_ylim(0, height)
+            axarr[0, 1].set_ylim(height, 0)
             axarr[1, 1].set_xlim(0, width)
-            axarr[1, 1].set_ylim(0, height)
+            axarr[1, 1].set_ylim(height, 0)
             self.draw(save=False, clf=False, ax=axarr[0, 0],
-                      colours=self.history.get(step), with_labels=with_labels)
+                      colours=self.history.get(step), with_labels=with_labels, pos=pos)
             self.draw_calendar(save=False, clf=False, ax=axarr[0, 1],
                                colours=self.history.get(step), with_labels=with_labels)
             graph_heur.draw(save=False, clf=False, ax=axarr[1, 0],
-                            colours=graph_heur.history.get(step), with_labels=with_labels)
+                            colours=graph_heur.history.get(step), with_labels=with_labels, pos=pos)
             graph_heur.draw_calendar(save=False, clf=False, ax=axarr[1, 1],
                                      colours=graph_heur.history.get(step), with_labels=with_labels)
             if not os.path.exists(directory):
@@ -472,6 +500,7 @@ class ColorGraph(object):
 
 
 def create_alex_graph(special_edge=False):
+    # Build the Graph
     G = ColorGraph()
     for i in range(9):
         G.graph.add_node(i)
@@ -489,16 +518,29 @@ def create_alex_graph(special_edge=False):
         G.graph.add_edge(2, 5)
     G.colours = {node: 'white' for node in G.graph.nodes()}
 
+    # Build the position
+    pos = {
+        0: (0, 1),
+        1: (0, 0),
+        2: (1, 2),
+        3: (0, 3),
+        4: (2, 2),
+        5: (3, 3),
+        6: (2, 0),
+        7: (3, 0),
+        8: (3, 1)
+    }
+
     G.color_graph()
     print G.get_chromatic_number()
     G.reset()
     G.color_graph_rand_iter(it=20)
     print G.get_chromatic_number()
 
-    G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PROJECT_PATH, save=True, with_labels=True)
+    G.draw_heuristics_and_exact('%sbooth/alex/plots/' % PROJECT_PATH, save=True, with_labels=True, pos=pos)
 
-    os.system("convert -delay 70 -loop 0 %s/booth/alex/plots/simulation-*.jpg %s/booth/alex/gif/animated.gif"
-              % PROJECT_PATH)
+    os.system("convert -delay 200 -loop 0 %s/booth/alex/plots/simulation-*.jpg %s/booth/alex/gif/animated.gif"
+              % (PROJECT_PATH, PROJECT_PATH))
 
 
 def find_bad_greedy_algorithm_graph(nb_it=50, min_colour=0):
@@ -565,7 +607,9 @@ def generate_plot_simulation_from_file():
     print "-------- Start generating plots ---------------"
     graphs = pk.load(open('%s/booth/files/relevant_graphs' % PROJECT_PATH, 'rb'))
     for nb_nodes, graph in graphs.iteritems():
-        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PROJECT_PATH, nb_nodes), save=True, with_labels=True)
+        pos = nx.spring_layout(graph[0].graph)
+        graph[0].draw_heuristics_and_exact('%sbooth/plots/%s/' % (PROJECT_PATH, nb_nodes), save=True,
+                                           with_labels=True, pos=pos)
         print "Plots directory %s/ created" % nb_nodes
     print "---------- Done -------------"
 
@@ -611,7 +655,7 @@ def test():
         # convert to animation
         import time
         time.sleep(1)  # delays for 5 seconds
-        os.system("convert -delay 70 -loop 0 plots/*jpg animated.gif")
+        os.system("convert -delay 120 -loop 0 plots/*jpg animation.gif")
 
         print(G.colours)
 
@@ -641,4 +685,5 @@ def main():
     generate_gif_from_plots()
 
 if __name__ == '__main__':
-    main()
+    # main()
+    create_alex_graph()

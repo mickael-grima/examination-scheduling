@@ -7,15 +7,15 @@ import logging
 
 
 class Graphicer(object):
-	def __init__(self, logger=None):
-		self.logger = logger or logging  # Save here the logs
+    def __init__(self, logger=None):
+        self.logger = logger or logging  # Save here the logs
 
-	def draw_bar_graph(self):
-		""" draw a bar graph
-		"""
-		pass
+    def draw_bar_graph(self):
+        """ draw a bar graph
+        """
+        pass
 
-	def draw_pie_chart(self):
-		""" draw here a pie chart
-		"""
-		pass
+    def draw_pie_chart(self):
+        """ draw here a pie chart
+        """
+        pass
