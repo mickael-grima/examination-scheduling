@@ -1,66 +1,5 @@
-# Assignment Problem
-# Written in pymprog by Yingjie Lan <ylan@umd.edu>
 
-# The assignment problem is one of the fundamental combinatorial
-#   optimization problems.
-
-#   In its most general form, the problem is as follows:
-
-#   There are a number of agents and a number of tasks. Any agent can be
-#   assigned to perform any task, incurring some cost that may vary
-#   depending on the agent-task assignment. It is required to perform all
-#   tasks by assigning exactly one agent to each task in such a way that
-#   the total cost of the assignment is minimized.
-#   (From Wikipedia, the free encyclopedia.)
-
-#problem data
-m = 8 # agents
-M = range(m) #set of agents
-n = 8 # tasks
-N = range(n) #set of tasks
-
-from pymprog import *
-
-beginModel("assign")
-#verbose(True) #Turn on this for model output
-A = iprod(M, N) #combine index
-#declare variables
-x = var(A, 'x') #assignment decision vars
-#declare parameters: 
-#for automatic model update if parameters change
-tc = par(c, 'cost') 
-minimize(sum(tc[i][j]*x[i,j] for i,j in A), 'totalcost')
-st(#subject to: each agent works on at most one task
-[sum(x[k,j] for j in N)<=1 for k in M], #one for each agent
-'agent') #a name for this group of constraints, optional
-st(#subject to: each task must be assigned to somebody
-[sum(x[i,k] for i in M)==1 for k in N], 'task')
-
-solve()
-print("Total Cost = %g"%vobj())
-assign = [(i,j) for i in M for j in N 
-                if x[i,j].primal>0.5]
-for i,j in assign:
-   print "Agent %d gets Task %d with Cost %g"%(i, j, tc[i][j].value)
-
-i,j = assign[0]
-tc[i][j].value += 10
-print "set cost c%s to higher value %s"%(str([i,j]),str(tc[i][j].value))
-
-solve() #this takes care of model update
-print("Total Cost = %g"%vobj())
-assign = [(i,j) for i in M for j in N 
-                if x[i,j].primal>0.5]
-for i,j in assign:
-   print "Agent %d gets Task %d with Cost %g"%(i, j, tc[i][j].value)
-
-endModel()
-
-
-
-
-
-
+# wrapper class
 class glpkWrapper(object):
     ''' 
     A simple wrapper for the PyMathProg glpk class 
@@ -72,7 +11,8 @@ class glpkWrapper(object):
         self.objVal = 0
         
     def optimize(self):
-        result = self.model.solve()
+        result = self.model.solve(float)
+        #result = self.model.solve(int)
         self.objVal = self.model.vobj()
         return result
 
@@ -101,7 +41,7 @@ Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) 
 '''
 
 # Create variables
-def build_model(data, n_cliques = 0):
+def build_model(data, n_cliques = 20):
     
     # Load Data Format
     n = data['n']
@@ -131,9 +71,7 @@ def build_model(data, n_cliques = 0):
     z = model.var(NxN, 'z', bool) 
     delta = model.var(NxN, 'delta', bool) 
     
-    # integrate new variables
-    model.update() 
-
+    
     # adding variables as found in MidTerm.pdf
     print("Building constraints...")    
     
@@ -199,21 +137,24 @@ def build_model(data, n_cliques = 0):
     gamma = 1
     obj1 = sum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
     obj2 = -sum([ z[i,j] for i in range(n) for j in conflicts[i] ])
+    #print(x)
+    #obj1 = sum(x.values()) 
+    #obj2 = -sum(z.values())
     
     model.min(obj1 + gamma * obj2, 'ExaminationScheduling')
     
     print("Setting Parameters...")
     print("None")
     
-    return(glpkWrapper(model))
+    return(glpkWrapper(model),y)
 
     
 
 if __name__ == "__main__":
     
-    n = 10
-    r = 10
-    p = 10  
+    n = 6
+    r = 6
+    p = 6
 
     # generate data
     random.seed(42)
@@ -222,7 +163,8 @@ if __name__ == "__main__":
     rooms = ['MI%s' % (k+1) for k in range(r)]
     
     # Create and solve model
-    model = build_model(data, n_cliques = 0)        
+    model,x = build_model(data, n_cliques = 0)   
+    print("Optimizing...")
     model.optimize()
-    
+    print x
     print('Obj: %g' % model.objVal)
