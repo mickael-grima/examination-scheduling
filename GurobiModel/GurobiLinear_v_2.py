@@ -136,7 +136,7 @@ if __name__ == "__main__":
     
     n = 10
     r = 5
-    p = 10  
+    p = 10   
 
     # generate data
     random.seed(42)
