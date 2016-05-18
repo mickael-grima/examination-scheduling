@@ -32,7 +32,7 @@ def compare(data):
     problems = {
         'Linear Advanced': build_linear_model_3,
         'Linear CliqueCut': build_linear_model_3,
-        'GurobiQ_neu': build_nonlinear_model
+    #    'GurobiQ_neu': build_nonlinear_model
     }
 
     times = dict()
@@ -58,9 +58,9 @@ def compare(data):
 
 
 def test_compare():
-    n = 20
-    r = 14
-    p = 14
+    n = 50
+    r = 50
+    p = 30
     tseed = 774032
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)

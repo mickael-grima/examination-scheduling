@@ -23,6 +23,22 @@ from model.instance import build_random_data
 
 '''
 
+'''
+	***************  POSSIBLE IMPROVEMENTS    ***************
+	
+	Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
+	Change objective function:
+		-our current objective funcion fails for cliques (all exams have conflicts) for example 
+			*exam1 on day 1
+			*exam2 on day 5
+			*exam3 on day 10
+			*Our current objective function |5-1|+|10-5|+|10-1| = 18
+			*exam1 on day 1
+			*exam2 on day 1
+			*exam3 on day 10
+			*Has exactly the same objective function of 18 but clearly the first schedule is by far better
+'''
+
 # Create variables
 def build_model(data, n_cliques = 2):
     
@@ -131,9 +147,9 @@ def build_model(data, n_cliques = 2):
     
     for counter, clique in itertools.izip(range(n_cliques), cliques):
         for l in range(l):
-            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique")
-        
-    print("OK")
+            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
+
+    print("All constrained built - OK")
 
     # objective: minimize number of used rooms and maximize the distance of exams
     print("Building Objective...")
