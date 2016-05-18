@@ -11,13 +11,15 @@ sys.path.append(PROJECT_PATH)
 import itertools
 import random
 import networkx as nx
+import math 
     
 from gurobipy import Model, quicksum, GRB, GurobiError
 from model.instance import build_random_data
 
 '''
 
-Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
+	-Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
+	-Changed in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)}
 
 '''
 
@@ -104,7 +106,8 @@ def build_model(data, n_cliques = 2):
     print("c6: any multi room exam takes place at one moment in time")
     for i in range(n):
         for l in range(p):
-            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * r, "c6")
+        	Mr = 10 if 10 < s[i]/75 else s[i]/75
+            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * Mr, "c6")
     
     print("c7: resolving the absolute value")
     for i in range(n):
