@@ -14,11 +14,13 @@ sys.path.append(PROJECT_PATH)
 
 from GurobiModel.GurobiQ_neu import build_model as build_nonlinear_model
 from GurobiModel.GurobiLinear import build_model as build_linear_model
+from GurobiModel.GurobiLinearAdvanced import build_model as build_linear_advanced_model
 
 from model.linear_problem import LinearProblem
 from model.non_linear_problem import NonLinearProblem
 
 from model.instance import build_random_data
+from model.instance import build_smart_random
 from time import time
 
 def compare(data):
@@ -28,7 +30,8 @@ def compare(data):
     # Select models to compare
     problems = {
                 'GurobiLinear': build_linear_model,
-                'GurobiQ_neu': build_nonlinear_model, 
+                'GurobiLinearAdvanced' : build_linear_advanced_model,
+ #               'GurobiQ_neu': build_nonlinear_model, 
  #               'non_linear_problem': NonLinearProblem, 
                 }
     
@@ -59,17 +62,15 @@ def compare(data):
 
 if __name__ == '__main__':
     
-    n = 10
-    r = 5
-    p = 10   
-
+    n = 300
+    r = 40
+    p = 20
+    tseed = 774032
     
-    random.seed(42)
-    
-    data = build_random_data(n=n, r=r, p=p, conflicts=0.5)
-    
+    data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
     time, objectives = compare(data)
-    
+
+
     print("")
     for key in time:
         print key

@@ -8,6 +8,7 @@
 
 import random as rd
 import numpy as np
+from load_rooms import get_random_room_capacity
 
 
 def force_data_format(func):
@@ -79,11 +80,34 @@ def build_simple_data(**kwards):
 @force_data_format
 def build_smart_random(**kwards):
     """ Generate smart random data
-        kwards = {'n': , 'r': ,'p': , 'tseed': }
+        kwards = {'n': , 'r': ,'p': , 'tseed':, 'w': }
+            w = where (01    = Innenstadt, 
+                       02    = Garching, 
+                       02-81 = Hochbrueck) 
+
     """
-    rd.seed(kwards.get('tseed', 1))
     np.random.seed(kwards.get('tseed', 1))
-    n, r, p = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0)
+    n, r, p, w = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0), kwards.get('w', ["01", "02", "02-81"])
     data = {'n': n, 'r': r, 'p': p}
-    # Student between 20 and 1000 per exam
-    data['s'] = np.random.normal(150, 10, n)
+
+    #create possible number of participants, increase probability that number of participants is between 150 and 300
+    num = [i for i in range(10,901)]
+    for times in range(1500):
+        num.extend([int(i) for i in range(10,150)])
+    for times in range(500):
+        num.extend([int(i) for i in range(150,301)])
+
+    # get number of students participating
+    data['s'] = np.random.choice(num,n)
+    # get room capacity from real data
+    data['c'] = get_random_room_capacity(r,w)
+    #create a conflict by probybility 1/5
+    data['Q'] = [[1 if rd.random() < 0 else 0 for j in range(n)] for i in range(n)]
+    #close some rooms by probability 1/10
+    data['T'] = [[1 if rd.random() > 0.1 else 0 for l in range(p)] for k in range(r)]
+    #Hours between periods
+    data['h'] = [2 for l in range(p)]
+
+
+    return data
+
