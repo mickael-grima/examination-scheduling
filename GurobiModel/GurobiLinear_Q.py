@@ -26,6 +26,9 @@ def build_model(data):
     h = data['h']
     Q = data['Q']
     T = data['T']
+    conflicts = data['conflicts']
+    locking_times = data['locking_times']
+    
     model = Model("ExaminationScheduling")
     
     # Build variables
@@ -108,7 +111,7 @@ if __name__ == "__main__":
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, conflicts=0.75)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.75)
     print(data['h'])
     print(data['c'])
     print(data['s'])

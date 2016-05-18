@@ -30,11 +30,13 @@ def build_model(data):
     s = data['s']
     c = data['c']
     h = data['h']
-    Q = data['Q']
+    conflicts = data['conflicts']
+    locking_times = data['locking_times']
     T = data['T']
+    
     model = Model("ExaminationScheduling")
     
-    # Build variables
+    
     print("Building variables...")
     
     # x[i,k,l] = 1 if exam i is at time l in room k
@@ -56,9 +58,7 @@ def build_model(data):
     z = {}
     delta = {}
     for i in range(n):
-        for j in range(i+1,n):
-            if Q[i][j] == 0:
-                continue
+        for j in conflicts[i]:
             z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
             delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
     
@@ -81,13 +81,13 @@ def build_model(data):
     Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot be written at the same time
             -then instead of saying of one exam is written in a given period all conflicts cannot be written in the same period we could say
             -for all exams in a given clique only one can be written
-
     """
     
     print("c3: avoid conflicts")
     for i in range(n):
         for l in range(p):
-            model.addConstr(quicksum([ Q[i][j] * y[j,l] for j in range(i+1,n) if Q[i][j] == 1 ]) <= (1 - y[i, l]) * sum(Q[i]), "c3")
+            # careful!! Big M changed!
+            model.addConstr(quicksum([ y[j,l] for j in conflicts[i] ]) <= (1 - y[i, l]) * sum(conflicts[i]), "c3")
     
     print("c4: seats for all students")
     for i in range(n):
@@ -102,13 +102,11 @@ def build_model(data):
     print("c6: any multi room exam takes place at one moment in time")
     for i in range(n):
         for l in range(p):
-            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l  if T[k][m] == 1 ]) <= (1 - y[i, l])*r, "c6")
+            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * r, "c6")
     
     print("c7: resolving the absolute value")
     for i in range(n):
-        for j in range(i+1,n):
-            if Q[i][j] == 0:
-                continue
+        for j in conflicts[i]:
             model.addConstr( z[i, j] <= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
             model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
             model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
@@ -120,7 +118,7 @@ def build_model(data):
     print("Building Objective...")
     gamma = 1
     obj1 = quicksum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
-    obj2 = -quicksum([ Q[i][j] * z[i,j] for i in range(n) for j in range(i+1,n) if Q[i][j] == 1])
+    obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
 
     model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
     # Set Parameters
@@ -138,11 +136,11 @@ if __name__ == "__main__":
     
     n = 10
     r = 5
-    p = 10   
+    p = 10  
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, conflicts=0.75)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.9)
     print(data['h'])
     print(data['c'])
     print(data['s'])
@@ -154,7 +152,6 @@ if __name__ == "__main__":
         model = build_model(data)        
         
         model.optimize()
-
         
         for v in model.getVars():
             if v.x == 1 and ("x" in v.varName or "y" in v.varName): 
