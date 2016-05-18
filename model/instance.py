@@ -110,7 +110,8 @@ def build_smart_random(**kwards):
     data['s'] = np.random.choice(num,n)
     
     # get room capacity from real data
-    data['c'] = get_random_room_capacity(r,w)
+    data['c'] = np.random.choice(num, r)
+    #data['c'] = get_random_room_capacity(r,w)
     
     # hours between starting day and starting periods are fixed equal to 2
     data['h'] = [ 2*l for l in range(p)]

@@ -6,7 +6,11 @@ import sys
 
 def load_rooms():
 	#get woorkbook and worksheet
-    wb = op.load_workbook('model\Data\Raumuebersicht.xlsx')
+    try:
+        wb = op.load_workbook('model\Data\Raumuebersicht.xlsx')
+    except:
+        wb = op.load_workbook('model/Data/Raumuebersicht.xlsx')
+        
     sheet = wb.get_sheet_by_name('Raum')
 
     #load rooms, capayity for exams and id of the campus; 01 = Innenstadt, 02 = Garching, 02-81 = Hochbrueck

@@ -10,7 +10,8 @@ sys.path.append(PROJECT_PATH)
 
 import itertools
 import random
-
+import networkx as nx
+    
 from gurobipy import Model, quicksum, GRB, GurobiError
 from model.instance import build_random_data
 
@@ -21,7 +22,7 @@ Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) 
 '''
 
 # Create variables
-def build_model(data):
+def build_model(data, n_cliques = 2):
     
     # Load Data Format
     n = data['n']
@@ -67,6 +68,7 @@ def build_model(data):
 
     # adding variables as found in MidTerm.pdf
     print("Building constraints...")    
+    
     print("c1: connecting variables x and y")
     for i in range(n):
         for l in range(p):
@@ -112,6 +114,22 @@ def build_model(data):
             model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
             model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
             
+    
+    print("c8: Building clique constraints")
+    G = nx.Graph()
+    for i in range(n):
+        G.add_node(i)
+        
+    for i in range(n):
+        for j in conflicts[i]:
+            G.add_edge(i,j)
+            
+    cliques = nx.find_cliques(G) # generator
+    
+    for counter, clique in itertools.izip(range(n_cliques), cliques):
+        for l in range(l):
+            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique")
+        
     print("OK")
 
     # objective: minimize number of used rooms and maximize the distance of exams
@@ -134,22 +152,19 @@ def build_model(data):
 
 if __name__ == "__main__":
     
-    n = 10
-    r = 5
-    p = 10   
+    n = 20
+    r = 20
+    p = 20  
 
     # generate data
     random.seed(42)
     data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.9)
-    print(data['h'])
-    print(data['c'])
-    print(data['s'])
     exams = [ 'Ana%s' % (i+1) for i in range(n) ]
     rooms = ['MI%s' % (k+1) for k in range(r)]
     
     # Create and solve model
     try:        
-        model = build_model(data)        
+        model = build_model(data, n_cliques = 0)        
         
         model.optimize()
         
