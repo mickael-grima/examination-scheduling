@@ -106,7 +106,7 @@ def build_model(data, n_cliques = 2):
     print("c6: any multi room exam takes place at one moment in time")
     for i in range(n):
         for l in range(p):
-        	Mr = 10 if 10 < s[i]/75 else s[i]/75
+            Mr = 10 if 10 < s[i]/75 else s[i]/75
             model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * Mr, "c6")
     
     print("c7: resolving the absolute value")
