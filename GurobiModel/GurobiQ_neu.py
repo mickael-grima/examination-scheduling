@@ -25,6 +25,8 @@ def build_model(data):
     h = data['h']
     Q = data['Q']
     T = data['T']
+    conflicts = data['conflicts']
+    locking_times = data['locking_times']
     
     model = Model("ExaminationScheduling")
     

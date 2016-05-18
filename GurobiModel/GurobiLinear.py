@@ -26,6 +26,9 @@ def build_model(data):
     h = data['h']
     Q = data['Q']
     T = data['T']
+    conflicts = data['conflicts']
+    locking_times = data['locking_times']
+    
     model = Model("ExaminationScheduling")
     
     # Build variables
@@ -108,14 +111,14 @@ def build_model(data):
     obj2 = -quicksum([ Q[i][j] * z[i,j] for i in range(n) for j in range(i+1,n) if Q[i][j] == 1])
 
     model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
-    # Set Parameters
+    
+    
     print("Setting Parameters...")
-    # max presolve agressivity
+    # max presolve agressivity:
     #model.params.presolve = 2
-    # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
+    # Choosing root method 3= concurrent = run barrier and dual simplex in parallel:
     #model.params.method = 1
 
-    # return
     return(model)
 
 
@@ -127,7 +130,7 @@ if __name__ == "__main__":
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, conflicts=0.75)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.75)
     print(data['h'])
     print(data['c'])
     print(data['s'])
