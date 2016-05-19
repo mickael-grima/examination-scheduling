@@ -60,10 +60,10 @@ def compare(data):
 
 
 def test_compare():
-    n = 20
+    n = 14
     r = 15
     p = 30
-    tseed = 774032
+    tseed = 100
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
     time, objectives = compare(data)
