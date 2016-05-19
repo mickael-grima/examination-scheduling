@@ -34,7 +34,7 @@ def compare(data):
     problems = {
         'Linear Advanced': build_linear_model_3,
         'Linear Advanced Cliques': build_linear_model_4,
-    #    'GurobiQ_neu': build_nonlinear_model
+     #  'GurobiQ_neu': build_nonlinear_model
     }
 
     times = dict()

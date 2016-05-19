@@ -41,7 +41,7 @@ from model.instance import build_random_data
 '''
 
 # Create variables
-def build_model(data, n_cliques = 10):
+def build_model(data, n_cliques = 0):
     
     # Load Data Format
     n = data['n']
@@ -104,11 +104,11 @@ def build_model(data, n_cliques = 10):
             -for all exams in a given clique only one can be written
     """
     
-    # print("c3: avoid conflicts")
-    # for i in range(n):
-    #     for l in range(p):
-    #         # careful!! Big M changed!
-    #         model.addConstr(quicksum([ y[j,l] for j in conflicts[i] ]) <= (1 - y[i, l]) * sum(conflicts[i]), "c3")
+    print("c3: avoid conflicts")
+    for i in range(n):
+        for l in range(p):
+            # careful!! Big M changed!
+            model.addConstr(quicksum([ y[j,l] for j in conflicts[i] ]) <= (1 - y[i, l]) * sum(conflicts[i]), "c3")
     
     print("c4: seats for all students")
     for i in range(n):
