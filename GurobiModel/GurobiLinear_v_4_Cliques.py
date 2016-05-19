@@ -18,16 +18,16 @@ from model.instance import build_random_data
 
 '''
 
-	-Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
-	-Changed in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)}
+	-Model GurobiLinear_v_3 has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
+	-Model GurobiLinear_v_4_Cliques adds Clique constraints for conflicts only one exam in a clique conflict can take place at a time
 
 '''
 
 '''
 	***************  POSSIBLE IMPROVEMENTS    ***************
 	
-	Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
-	Change objective function:
+	-Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
+	-Change objective function:
 		-our current objective funcion fails for cliques (all exams have conflicts) for example 
 			*exam1 on day 1
 			*exam2 on day 5
@@ -37,6 +37,7 @@ from model.instance import build_random_data
 			*exam2 on day 1
 			*exam3 on day 10
 			*Has exactly the same objective function of 18 but clearly the first schedule is by far better
+	-Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similiar [to discuss]
 '''
 
 # Create variables
@@ -123,7 +124,7 @@ def build_model(data, n_cliques = 2):
     for i in range(n):
         for l in range(p):
             Mr = 10 if 10 < s[i]/75 else s[i]/75
-            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * Mr, "c6")
+            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * r, "c6")
     
     print("c7: resolving the absolute value")
     for i in range(n):
@@ -134,20 +135,20 @@ def build_model(data, n_cliques = 2):
             model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
             
     
-    # print("c8: Building clique constraints")
-    # G = nx.Graph()
-    # for i in range(n):
-    #     G.add_node(i)
+    print("c8: Building clique constraints")
+    G = nx.Graph()
+    for i in range(n):
+        G.add_node(i)
         
-    # for i in range(n):
-    #     for j in conflicts[i]:
-    #         G.add_edge(i,j)
+    for i in range(n):
+        for j in conflicts[i]:
+            G.add_edge(i,j)
             
-    # cliques = nx.find_cliques(G) # generator
+    cliques = nx.find_cliques(G) # generator
     
-    # for counter, clique in itertools.izip(range(n_cliques), cliques):
-    #     for l in range(l):
-    #         model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
+    for counter, clique in itertools.izip(range(n_cliques), cliques):
+        for l in range(l):
+            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
 
     print("All constrained built - OK")
 

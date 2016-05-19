@@ -17,6 +17,8 @@ from GurobiModel.GurobiLinear_v_2_Q import build_model as build_linear_model_2
 from GurobiModel.GurobiLinear_v_3 import build_model as build_linear_model_3
 from GurobiModel.GurobiLinear_v_4_Cliques import build_model as build_linear_model_4
 
+from model.non_linear_problem import NonLinearProblem
+
 from model.linear_problem import LinearProblem
 from model.non_linear_problem import NonLinearProblem
 
@@ -31,7 +33,7 @@ def compare(data):
     # Select models to compare
     problems = {
         'Linear Advanced': build_linear_model_3,
-        'Linear Advanced Again': build_linear_model_3,
+        'Linear Advanced Cliques': build_linear_model_4,
     #    'GurobiQ_neu': build_nonlinear_model
     }
 
@@ -58,9 +60,9 @@ def compare(data):
 
 
 def test_compare():
-    n = 10
+    n = 20
     r = 15
-    p = 10
+    p = 30
     tseed = 774032
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
