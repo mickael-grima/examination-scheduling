@@ -1,0 +1,105 @@
+\documentclass[11pt]{beamer}
+%\documentclass{article}
+\usetheme{Rochester}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+%\usepackage[german]{babel}
+\usepackage{indentfirst} % \and
+\usepackage{hyperref}
+\usepackage{multirow}
+
+\usepackage{amsmath}
+%\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{natbib}
+
+%\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{calc}
+%\usepackage{ifthen}
+
+
+
+\newcommand{\R}{\mathds{R}}     
+\newcommand{\N}{\mathds{N}}
+\newcommand{\sU}{\mathcal{U}}
+
+
+\usetikzlibrary{arrows}
+
+%\usepackage{algorithm2e}
+%\usepackage{algorithmic}
+
+
+%% Custom commands
+\newcommand{\hide}[1]{}
+%\newcommand{\definition}[1]{\textbf{Definition: #1}}
+%\newcommand{\algorithm}[1]{\textbf{Algorithm: #1}}
+\def\ba#1\ea{\begin{align*}#1\end{align*}}
+\def\ban#1\ean{\begin{align}#1\end{align}}
+\newenvironment{abschnitt}{}{}
+
+\author{Alexander Eckl, Maximilian Fiedler, Mickael Grima, Roland Halbig}
+\title{Examination Scheduling}
+% \subtitle{subtitle}
+%\logo{}
+\institute{Technische Universität München}
+\date{March 21, 2016}
+%\subject{}
+%\setbeamercovered{transparent}
+\setbeamertemplate{navigation symbols}{}
+
+
+\begin{document}
+        
+        \maketitle
+        
+        \begin{frame}
+               {Konstanten}
+               \ba
+                    s_i &:= \text{Anzahl der Studenten, die für Prüfung $i$ angemeldet sind} \\
+                    c_k &:= \text{Anzahl der nutzbaren Sitzplätzein Raum $k$} \\
+                    Q   &:= \text{Kollisionsmatrix} \\
+                    q_{i,j} &:= \left\{ \begin{array}{cl} 0, & \mbox{falls Prüfung $i$ und $j$ gleichzeitig stattfinden können} \\ 
+                                                          1, & \mbox{sonst} \end{array} \right.  \\
+                    T  &:= \text{Sperrmatrix} \\
+                    t_{i,j} &:= \left\{ \begin{array}{cl} 1, & \mbox{falls Raum $k$ zum Zeitintervall $l$ geöffnet ist} \\ 
+                                                          0, & \mbox{sonst} \end{array} \right.  \\
+                    h_l &:= \text{Anzahl der Stunden von Periode $l$ nach Beginn des Prüfungszeitraumes}
+               \ea
+        \end{frame}
+        
+  \include{Model_nonlinear}
+  
+  \include{Model_linear_v2}
+
+  \begin{frame}
+                {Modellvergleich}
+                
+        \begin{center}
+        \begin{tabular}{ | l | l | l |}
+            \hline 
+            Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
+            \hline \hline
+            2D (Qadratisch)  & $nr + np$ & $2n + rp + p$ \\ \hline
+            3D + 2D (Linear) & $nrp + np + 2K$ & $2n + rp + 4np + 4 K$\\ \hline
+            
+        \end{tabular}
+        \end{center}
+    \end{frame}
+    \begin{frame}
+            {Modellvergleich - In Zahlen}
+       Problemdimensionen:
+        \begin{itemize}
+        \item $n \approx 1200$
+        \item $r \approx 70$
+        \item $p \approx 70$
+        \item $T \approx 400$
+        \end{itemize}
+        
+  \end{frame}
+  
+\end{document}
+
