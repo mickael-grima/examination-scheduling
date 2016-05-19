@@ -96,6 +96,7 @@ def build_smart_random(**kwards):
 
     """
     np.random.seed(kwards.get('tseed', 1))
+    rd.seed(kwards.get('tseed', 1))
     n, r, p, w = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0), kwards.get('w', ["01", "02", "02-81"])
     data = {'n': n, 'r': r, 'p': p}
 

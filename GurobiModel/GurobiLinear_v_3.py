@@ -127,6 +127,7 @@ def build_model(data):
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
+    #model.params.seed = 774032
 
     # return
     return(model)
@@ -134,18 +135,18 @@ def build_model(data):
 
 if __name__ == "__main__":
     
-    n = 10
-    r = 5
-    p = 10   
+    # n = 10
+    # r = 5
+    # p = 10   
 
-    # generate data
-    random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.9)
-    print(data['h'])
-    print(data['c'])
-    print(data['s'])
-    exams = [ 'Ana%s' % (i+1) for i in range(n) ]
-    rooms = ['MI%s' % (k+1) for k in range(r)]
+    # # generate data
+    # random.seed(774032)
+    # data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.05)
+    # print(data['h'])
+    # print(data['c'])
+    # print(data['s'])
+    # exams = [ 'Ana%s' % (i+1) for i in range(n) ]
+    # rooms = ['MI%s' % (k+1) for k in range(r)]
     
     # Create and solve model
     try:        

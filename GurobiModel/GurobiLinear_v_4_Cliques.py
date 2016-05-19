@@ -134,20 +134,20 @@ def build_model(data, n_cliques = 2):
             model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
             
     
-    print("c8: Building clique constraints")
-    G = nx.Graph()
-    for i in range(n):
-        G.add_node(i)
+    # print("c8: Building clique constraints")
+    # G = nx.Graph()
+    # for i in range(n):
+    #     G.add_node(i)
         
-    for i in range(n):
-        for j in conflicts[i]:
-            G.add_edge(i,j)
+    # for i in range(n):
+    #     for j in conflicts[i]:
+    #         G.add_edge(i,j)
             
-    cliques = nx.find_cliques(G) # generator
+    # cliques = nx.find_cliques(G) # generator
     
-    for counter, clique in itertools.izip(range(n_cliques), cliques):
-        for l in range(l):
-            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
+    # for counter, clique in itertools.izip(range(n_cliques), cliques):
+    #     for l in range(l):
+    #         model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
 
     print("All constrained built - OK")
 
@@ -171,15 +171,15 @@ def build_model(data, n_cliques = 2):
 
 if __name__ == "__main__":
     
-    n = 20
-    r = 20
-    p = 20  
+    # n = 50
+    # r = 20
+    # p = 20  
 
-    # generate data
-    random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.9)
-    exams = [ 'Ana%s' % (i+1) for i in range(n) ]
-    rooms = ['MI%s' % (k+1) for k in range(r)]
+    # # generate data
+    # random.seed(42)
+    # data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.05)
+    # exams = [ 'Ana%s' % (i+1) for i in range(n) ]
+    # rooms = ['MI%s' % (k+1) for k in range(r)]
     
     # Create and solve model
     try:        

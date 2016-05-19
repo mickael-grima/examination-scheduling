@@ -31,7 +31,7 @@ def compare(data):
     # Select models to compare
     problems = {
         'Linear Advanced': build_linear_model_3,
-        'Linear CliqueCut': build_linear_model_3,
+        'Linear Advanced Again': build_linear_model_3,
     #    'GurobiQ_neu': build_nonlinear_model
     }
 
@@ -58,9 +58,9 @@ def compare(data):
 
 
 def test_compare():
-    n = 50
-    r = 50
-    p = 30
+    n = 10
+    r = 15
+    p = 10
     tseed = 774032
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
