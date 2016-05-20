@@ -1,46 +1,67 @@
-
-# wrapper class
-class glpkWrapper(object):
-    ''' 
-    A simple wrapper for the PyMathProg glpk class 
-    This should have as little functionality as possible!
-    '''
+param n, integer, >= 1;
+param r, integer, >= 1;
+param p, integer, >= 1;
     
-    def __init__(self, model=None):
-        self.model = model
-        self.objVal = 0
-        
-    def optimize(self):
-        
-        #result = self.model.solve()
-        self.model.solvopt(mir_cuts=True, gmi_cuts=True)
-        result = self.model.solve(int)
-        self.objVal = self.model.vobj()
-        return result
+set N, default {1..n};
+set R, default {1..r};
+set P, default {1..p};
 
-import sys
-import os
-PATHS = os.getcwd().split('/')
-PROJECT_PATH = ''
-for p in PATHS:
-    PROJECT_PATH += '%s/' % p
-    if p == 'examination-scheduling':
-        break
-sys.path.append(PROJECT_PATH)
+set NxRxP, within N cross R cross P
+set NxP, within N cross P;
+set NxN, within N cross N;
+    
+var x{(i,k,l) in NxRxP}, >= 0, <= 1;
 
-import itertools
-import random
-import networkx as nx
-from time import time
+param a{(i,j) in E}, > 0;
+/* a[i,j] is capacity of arc (i,j) */
 
-import pymprog
-from model.instance import build_random_data
+param s, symbolic, in V, default 1;
+/* source node */
 
-'''
+param t, symbolic, in V, != s, default n;
+/* sink node */
 
-Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
+var x{(i,j) in E}, >= 0, <= a[i,j];
+/* x[i,j] is elementary flow through arc (i,j) to be found */
 
-'''
+var flow, >= 0;
+/* total flow from s to t */
+
+s.t. node{i in V}:
+/* node[i] is conservation constraint for node i */
+
+   sum{(j,i) in E} x[j,i] + (if i = s then flow)
+   /* summary flow into node i through all ingoing arcs */
+
+   = /* must be equal to */
+
+   sum{(i,j) in E} x[i,j] + (if i = t then flow);
+   /* summary flow from node i through all outgoing arcs */
+
+maximize obj: flow;
+/* objective is to maximize the total flow through the network */
+
+solve;
+
+printf{1..56} "="; printf "\n";
+printf "Maximum flow from node %s to node %s is %g\n\n", s, t, flow;
+printf "Starting node   Ending node   Arc capacity   Flow in arc\n";
+printf "-------------   -----------   ------------   -----------\n";
+printf{(i,j) in E: x[i,j] != 0}: "%13s   %11s   %12g   %11g\n", i, j,
+   a[i,j], x[i,j];
+printf{1..56} "="; printf "\n";
+
+data;
+
+/* These data correspond to an example from [Christofides]. */
+
+/* Optimal solution is 29 */
+
+param n := 9;
+
+end;
+
+
 
 # Create variables
 def build_model(data, n_cliques = 20):
@@ -60,16 +81,14 @@ def build_model(data, n_cliques = 20):
     print("Building variables...")
     
     # x[i,k,l] = 1 if exam i is at time l in room k
-    NxRxP = [ (i,k,l) for i in range(n) for k in range(r) for l in range(p) if T[k][l] == 1 ]
+    
     x = model.var(NxRxP, 'x', bool) 
 
     # y[i,l] = 1 if exam i is at time l
-    NxP = [ (i,l) for i in range(n) for l in range(p) ]
     y = model.var(NxP, 'y', bool) 
     
     # help variable z[i,j] and delta[i,j] for exam i and exam j
     # we are only interested in those exams i and j which have a conflict!
-    NxN = [ (i,j) for i in range(n) for j in conflicts[i] ]
     z = model.var(NxN, 'z', bool) 
     delta = model.var(NxN, 'delta', bool) 
     
@@ -108,13 +127,13 @@ def build_model(data, n_cliques = 20):
         for l in range(p):
             model.st(sum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * r, "c6")
     
-    #print("c7: resolving the absolute value")
-    #for i in range(n):
-        #for j in conflicts[i]:
-            #model.st( z[i, j] <= sum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
-            #model.st( z[i, j] <= -sum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
-            #model.st( z[i, j] >= sum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
-            #model.st( z[i, j] >= -sum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
+    print("c7: resolving the absolute value")
+    for i in range(n):
+        for j in conflicts[i]:
+            model.st( z[i, j] <= sum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
+            model.st( z[i, j] <= -sum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
+            model.st( z[i, j] >= sum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
+            model.st( z[i, j] >= -sum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
             
     
     print("c8: Building clique constraints")
@@ -138,14 +157,15 @@ def build_model(data, n_cliques = 20):
     print("Building Objective...")
     gamma = 1
     obj1 = sum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
-    #obj2 = -sum([ z[i,j] for i in range(n) for j in conflicts[i] ])
-    obj2 = 1
+    obj2 = -sum([ z[i,j] for i in range(n) for j in conflicts[i] ])
     #print(x)
     #obj1 = sum(x.values()) 
     #obj2 = -sum(z.values())
     
     model.min(obj1 + gamma * obj2, 'ExaminationScheduling')
     
+    print("Setting Parameters...")
+    print("None")
     
     return(glpkWrapper(model),y)
 
@@ -153,9 +173,9 @@ def build_model(data, n_cliques = 20):
 
 if __name__ == "__main__":
     
-    n = 25
-    r = 25
-    p = 25
+    n = 6
+    r = 6
+    p = 6
 
     # generate data
     random.seed(42)
@@ -166,8 +186,6 @@ if __name__ == "__main__":
     # Create and solve model
     model,x = build_model(data, n_cliques = 0)   
     print("Optimizing...")
-    t = time()
     model.optimize()
-    print(time() - t)
-    #print x
+    print x
     print('Obj: %g' % model.objVal)

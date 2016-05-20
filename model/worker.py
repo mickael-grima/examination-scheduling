@@ -32,8 +32,8 @@ def compare(data):
     # Select models to compare
     problems = {
  #               'GurobiLinear': build_linear_model,
-                'Linear Advanced' : build_linear_model_3,
-                'Linear CliqueCut': build_linear_model_3,
+#                'Linear Advanced' : build_linear_model_3,
+                'Linear CliqueCut': build_linear_model_4,
 #                'GurobiQ_neu': build_nonlinear_model, 
  #               'non_linear_problem': NonLinearProblem, 
                 }
@@ -46,6 +46,8 @@ def compare(data):
         print(prob_name)
         
         # Build selected model
+        random.seed(42)
+
         problem = problems[prob_name](data)
         
         # Optimize selected model
@@ -65,9 +67,9 @@ def compare(data):
 
 if __name__ == '__main__':
     
-    n = 20
-    r = 14
-    p = 14
+    n = 19
+    r = 10
+    p = 15
     tseed = 774032
     
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)

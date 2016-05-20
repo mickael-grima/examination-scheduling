@@ -22,7 +22,7 @@ Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) 
 '''
 
 # Create variables
-def build_model(data, n_cliques = 2):
+def build_model(data, n_cliques = 0):
     
     # Load Data Format
     n = data['n']
@@ -78,12 +78,6 @@ def build_model(data, n_cliques = 2):
     print("c2: each exam at exactly one time")
     for i in range(n):
         model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1 , "c2")
-
-    """
-    Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot be written at the same time
-            -then instead of saying of one exam is written in a given period all conflicts cannot be written in the same period we could say
-            -for all exams in a given clique only one can be written
-    """
     
     print("c3: avoid conflicts")
     for i in range(n):
@@ -145,16 +139,31 @@ def build_model(data, n_cliques = 2):
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
-
+    #model.params.perturbvalue = 0
+    #model.params.bariterlimit = 0
+#    model.params.iterationlimit = 10 # simplex iterations
+#    model.params.nodelimit = 1 # MIP nodes visited
+#    model.params.solutionlimit = 1 #MIP number of feasible solutions
+    #model.params.timelimit = 60 # seconds
+    #model.params.heuristics = 0.0
+    #model.params.simplexpricing = 1 # Automatic (-1), Partial Pricing (0), Steepest Edge (1), Devex (2), and Quick-Start Steepest Edge (3).
+    #model.params.presolve = 0
+    #model.params.cliquecuts = 0
+    #model.params.rins = 0
+    #model.params.submipnodes = 0
+    #model.params.zeroobjnodes = 0
+    #model.setParam("MinRelNodes", 0);
+    #model.setParam("PumpPasses", 0);
+    model.setParam("Seed", 42);
     # return
     return(model)
 
 
 if __name__ == "__main__":
     
-    n = 20
-    r = 20
-    p = 20  
+    n = 10
+    r = 10
+    p = 10  
 
     # generate data
     random.seed(42)
