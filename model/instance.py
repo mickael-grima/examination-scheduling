@@ -22,7 +22,7 @@ def force_data_format(func):
         p = data.get('p', 0)
             
         conflicts = data.get('conflicts', defaultdict(list))
-        Q = [[ 1 * (j in conflicts[i] or i in conflicts[j] or i == j) for j in range(n)] for i in range(n)]   
+        Q = [[ 1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
         
         locking_times = data.get('locking_times', defaultdict(list))
         T = [[ 1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
@@ -79,8 +79,8 @@ def build_simple_data(**kwards):
         'p': 3,  # 3 periods
         's': [5, 3, 4, 2, 1],  # number of students per exams
         'c': [5, 4, 1],  # number os seats per rooms
-        'conflicts': {0: [3,4], 1: [3], 2: [0,1,2,4], 3: [0,2,3]}, # Conflicts 
-        'locking_times': {0: [1], 1: [2], 2: [2]}, # locking times for rooms
+        'conflicts': {0: [3,4], 1: [3], 2: [0,1,2,4], 3: [0,2,3], 4: []},  # Conflicts 
+        'locking_times': {0: [1], 1: [2], 2: [2]},  # locking times for rooms
         'h': [0, 2, 4]  # number of hours before period
     }
     return data
@@ -96,6 +96,7 @@ def build_smart_random(**kwards):
 
     """
     np.random.seed(kwards.get('tseed', 1))
+    rd.seed(kwards.get('tseed', 1))
     n, r, p, w = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0), kwards.get('w', ["01", "02", "02-81"])
     data = {'n': n, 'r': r, 'p': p}
 
