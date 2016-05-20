@@ -16,6 +16,7 @@ from GurobiModel.GurobiLinear_v_1 import build_model as build_linear_model_1
 from GurobiModel.GurobiLinear_v_2_Q import build_model as build_linear_model_2
 from GurobiModel.GurobiLinear_v_3 import build_model as build_linear_model_3
 from GurobiModel.GurobiLinear_v_4_Cliques import build_model as build_linear_model_4
+from GurobiModel.GurobiLinear_v_5_replace_c1b import build_model as build_linear_model_5
 
 from model.non_linear_problem import NonLinearProblem
 
@@ -32,9 +33,10 @@ def compare(data):
     """
     # Select models to compare
     problems = {
+        'Linear Advanced replace c1b': build_linear_model_5,
         'Linear Advanced': build_linear_model_3,
-        'Linear Advanced Cliques': build_linear_model_4,
-     #  'GurobiQ_neu': build_nonlinear_model
+    #    'Linear Advanced Cliques': build_linear_model_4,    
+    #  'GurobiQ_neu': build_nonlinear_model
     }
 
     times = dict()
@@ -60,14 +62,19 @@ def compare(data):
 
 
 def test_compare():
-    n = 14
+    n = 25
     r = 15
-    p = 30
-    tseed = 100
+    p = 20
+    tseed = 4
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
     time, objectives = compare(data)
 
+    print("")
+    print("n: %s" % (n))
+    print("r: %s" % (r))
+    print("p: %s" % (p))
+    print("seed: %s" % (tseed))
     print("")
     for key in time:
         print key

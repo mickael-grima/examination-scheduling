@@ -20,6 +20,7 @@ from model.instance import build_random_data
 
 	-Model GurobiLinear_v_3 has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
 	-Model GurobiLinear_v_4_Cliques adds Clique constraints for conflicts only one exam in a clique conflict can take place at a time
+	-Model GurobiLinear_v_4_Cliques changed r in BIG-M-Method  to 12 so far
 
 '''
 
@@ -38,6 +39,12 @@ from model.instance import build_random_data
 			*exam3 on day 10
 			*Has exactly the same objective function of 18 but clearly the first schedule is by far better
 	-Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similiar [to discuss]
+	-Idea for linking variables x and y
+		*c1b creates l*i constraints this could be reduced to only i constraints
+		*reason
+			+"c1a" says if one exam takes place in some period than y_i,l cannot be zero 
+			+ then constraint c2 forces all other y_i,l to be 0 anyway
+			+ now say for all i sum(x_i,k,l for all k and for all l) >= 1 this forces at least one y_i,l to be 1 - this only has i constraints but more columns
 '''
 
 # Create variables
@@ -91,7 +98,7 @@ def build_model(data, n_cliques = 0):
     print("c1: connecting variables x and y")
     for i in range(n):
         for l in range(p):
-            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= r * y[i, l], "c1a")
+            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= 12 * y[i, l], "c1a")
             model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) >= y[i, l], "c1b")
             
     print("c2: each exam at exactly one time")
@@ -124,7 +131,7 @@ def build_model(data, n_cliques = 0):
     for i in range(n):
         for l in range(p):
             Mr = 10 if 10 < s[i]/75 else s[i]/75
-            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * r, "c6")
+            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * 12, "c6")
     
     print("c7: resolving the absolute value")
     for i in range(n):
@@ -173,15 +180,15 @@ def build_model(data, n_cliques = 0):
 
 if __name__ == "__main__":
     
-    # n = 50
-    # r = 20
-    # p = 20  
+    n = 50
+    r = 20
+    p = 20  
 
-    # # generate data
-    # random.seed(42)
-    # data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.05)
-    # exams = [ 'Ana%s' % (i+1) for i in range(n) ]
-    # rooms = ['MI%s' % (k+1) for k in range(r)]
+    # generate data
+    random.seed(42)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.05)
+    exams = [ 'Ana%s' % (i+1) for i in range(n) ]
+    rooms = ['MI%s' % (k+1) for k in range(r)]
     
     # Create and solve model
     try:        
