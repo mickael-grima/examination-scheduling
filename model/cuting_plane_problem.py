@@ -15,8 +15,8 @@ class MasterProblem(MainProblem):
     """
     def __init__(self, data, name='MasterProblem'):
         super(MasterProblem, self).__init__(name=name)
-        self.build_problem(data)
         self.c = 0.5
+        self.build_problem(data)
 
     def build_variables(self):
         """ @param n, r, p: number of exams, rooms and periods
@@ -69,12 +69,12 @@ class MasterProblem(MainProblem):
         """ @param n, r, p: number of exams, rooms and periods
             Build the constants of the problem from the data
         """
-        n, r = self.dimensions['n'], self.dimensions['r']
+        n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
         crit1 = (
             self.c * gb.quicksum([self.vars['x'][i, k] * self.constants['s'][i] for i in range(n) for k in range(r)])
         )
         crit2 = (
-            gb.quicksum([self.constants['Q'][i, j] * gb.quicksum([self.constants['h'][l] * (self.vars['y'][i, l] - self.vars['y'][j, l]) * (self.vars['y'][i, l] - self.vars['y'][j, l]) for l in range(p)])
+            gb.quicksum([self.constants['Q'][i][j] * gb.quicksum([self.constants['h'][l] * (self.vars['y'][i, l] - self.vars['y'][j, l]) * (self.vars['y'][i, l] - self.vars['y'][j, l]) for l in range(p)])
                          for i in range(n) for j in range(i + 1, n)])
         )
         self.problem.setObjective(crit1 - crit2 * crit2, gb.GRB.MINIMIZE)
