@@ -21,7 +21,6 @@ from model.instance import build_random_data
 	-Model GurobiLinear_v_3 has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
 	-Model GurobiLinear_v_4_Cliques adds Clique constraints for conflicts only one exam in a clique conflict can take place at a time
 	-Model GurobiLinear_v_4_Cliques changed r in BIG-M-Method  to 12 so far
-    -Model GurobiLinear_v_5_replace_c1b replaced the old c1b constraint for more details see improvement ideas in v_4
 
 '''
 
@@ -29,21 +28,28 @@ from model.instance import build_random_data
 	***************  POSSIBLE IMPROVEMENTS    ***************
 	
 	-Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
-	-Change objective function:
-		-our current objective funcion fails for cliques (all exams have conflicts) for example 
-			*exam1 on day 1
-			*exam2 on day 5
-			*exam3 on day 10
-			*Our current objective function |5-1|+|10-5|+|10-1| = 18
-			*exam1 on day 1
-			*exam2 on day 1
-			*exam3 on day 10
-			*Has exactly the same objective function of 18 but clearly the first schedule is by far better
 	-Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similiar [to discuss]
-	
+	-Idea for linking variables x and y
+		*c1b creates l*i constraints this could be reduced to only i constraints
+		*reason
+			+"c1a" says if one exam takes place in some period than y_i,l cannot be zero 
+			+ then constraint c2 forces all other y_i,l to be 0 anyway
+			+ now say for all i sum(x_i,k,l for all k and for all l) >= 1 this forces at least one y_i,l to be 1 - this only has i constraints but more columns
 '''
 
-# Create variables
+# def find_smallest_room_to_fit_in(**kwords):
+#     n,s,r,c = kwords.get('n', 1), kwords.get('s', 1), kwords.get('r', 1), kwords.get('c', 1)   
+
+#     sR = [r+1 for i in range(n)]
+
+#     for i in range(n):
+#         for l in range(r):
+#             if s[i] <= c[l]:
+#                 sR[i] = l
+
+#     return sR
+             
+    
 def build_model(data, n_cliques = 0):
     
     # Load Data Format
@@ -56,6 +62,8 @@ def build_model(data, n_cliques = 0):
     conflicts = data['conflicts']
     locking_times = data['locking_times']
     T = data['T']
+    # sR = find_smallest_room_to_fit_in(n=n,s=s,r=r,c=c)
+    print sR
     
     model = Model("ExaminationScheduling")
     
@@ -76,14 +84,14 @@ def build_model(data, n_cliques = 0):
         for l in range(p):
             y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
     
-    # help variable z[i,j] and delta[i,j] for exam i and exam j
-    # we are only interested in those exams i and j which have a conflict!
-    z = {}
-    delta = {}
-    for i in range(n):
-        for j in conflicts[i]:
-            z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
-            delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
+    # # help variable z[i,j] and delta[i,j] for exam i and exam j
+    # # we are only interested in those exams i and j which have a conflict!
+    # z = {}
+    # delta = {}
+    # for i in range(n):
+    #     for j in conflicts[i]:
+    #         z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
+    #         delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
     
     # integrate new variables
     model.update() 
@@ -95,7 +103,7 @@ def build_model(data, n_cliques = 0):
     for i in range(n):
         for l in range(p):
             model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= 12 * y[i, l], "c1a")
-        model.addConstr( quicksum([ x[i, k, l] for k in range(r) for l in range(p) if T[k][l] == 1 ]) >= 1, "c1b")
+            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) >= y[i, l], "c1b")
             
     print("c2: each exam at exactly one time")
     for i in range(n):
@@ -123,19 +131,14 @@ def build_model(data, n_cliques = 0):
             if T[k][l] == 1:
                 model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")
     
-    print("c6: any multi room exam takes place at one moment in time")
-    for i in range(n):
-        for l in range(p):
-            Mr = 10 if 10 < s[i]/75 else s[i]/75
-            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * 12, "c6")
-    
-    print("c7: resolving the absolute value")
-    for i in range(n):
-        for j in conflicts[i]:
-            model.addConstr( z[i, j] <= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
-            model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
-            model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
-            model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
+   
+    # print("c7: resolving the absolute value")
+    # for i in range(n):
+    #     for j in conflicts[i]:
+    #         model.addConstr( z[i, j] <= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
+    #         model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
+    #         model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
+    #         model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
             
     
     print("c8: Building clique constraints")
@@ -156,13 +159,14 @@ def build_model(data, n_cliques = 0):
 
     print("All constrained built - OK")
 
-    # objective: minimize number of used rooms and maximize the distance of exams
+    # objective: minimize number of used rooms
     print("Building Objective...")
     gamma = 1
     obj1 = quicksum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
-    obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
+    #obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
 
-    model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
+    #model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
+    model.setObjective( obj1, GRB.MINIMIZE)
     # Set Parameters
     print("Setting Parameters...")
     # max presolve agressivity
