@@ -17,6 +17,7 @@ from base_problem import BaseProblem
 class MainProblem(BaseProblem):
     def __init__(self, name='MainProblem'):
         super(MainProblem, self).__init__(name=name)
+        self.available_constants = ['s', 'c', 'Q', 'T', 'h']
 
     def build_dimensions(self, data):
         """ get the dimension from data
