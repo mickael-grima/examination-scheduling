@@ -109,11 +109,10 @@ def build_smart_random(**kwards):
 
     # get number of students participating
     data['s'] = np.random.choice(num,n)
-    data['s'] = sorted(data['s'], reverse=True)
-    print data['s']
 
     # get room capacity from real data
     data['c'] = np.random.choice(num, r)
+    data['c'] = sorted(data['c'], reverse=True)
     #data['c'] = get_random_room_capacity(r,w)
     
     # hours between starting day and starting periods are fixed equal to 2

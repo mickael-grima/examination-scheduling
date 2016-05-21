@@ -8,6 +8,7 @@ for p in PATHS:
         break
 sys.path.append(PROJECT_PATH)
 
+import operator
 import itertools
 import random
 import networkx as nx
@@ -37,17 +38,6 @@ from model.instance import build_random_data
 			+ now say for all i sum(x_i,k,l for all k and for all l) >= 1 this forces at least one y_i,l to be 1 - this only has i constraints but more columns
 '''
 
-# def find_smallest_room_to_fit_in(**kwords):
-#     n,s,r,c = kwords.get('n', 1), kwords.get('s', 1), kwords.get('r', 1), kwords.get('c', 1)   
-
-#     sR = [r+1 for i in range(n)]
-
-#     for i in range(n):
-#         for l in range(r):
-#             if s[i] <= c[l]:
-#                 sR[i] = l
-
-#     return sR
              
     
 def build_model(data, n_cliques = 0):
@@ -63,7 +53,8 @@ def build_model(data, n_cliques = 0):
     locking_times = data['locking_times']
     T = data['T']
     # sR = find_smallest_room_to_fit_in(n=n,s=s,r=r,c=c)
-    print sR
+    #print sR
+
     
     model = Model("ExaminationScheduling")
     
@@ -158,6 +149,8 @@ def build_model(data, n_cliques = 0):
             print "c_lique_%s_%s_%s" % (counter,clique,l)
 
     print("All constrained built - OK")
+
+
 
     # objective: minimize number of used rooms
     print("Building Objective...")
