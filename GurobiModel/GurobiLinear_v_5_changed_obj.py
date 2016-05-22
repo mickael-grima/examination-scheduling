@@ -80,14 +80,14 @@ def build_model(data, n_cliques = 0):
         for l in range(p):
             y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
     
-    # help variable z[i,j] and delta[i,j] for exam i and exam j
-    # we are only interested in those exams i and j which have a conflict!
-    z = {}
-    delta = {}
-    for i in range(n):
-        for j in conflicts[i]:
-            z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
-            delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
+    # # help variable z[i,j] and delta[i,j] for exam i and exam j
+    # # we are only interested in those exams i and j which have a conflict!
+    # z = {}
+    # delta = {}
+    # for i in range(n):
+    #     for j in conflicts[i]:
+    #         z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
+    #         delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
     
     w = model.addVar(vtype=GRB.INTEGER, name="w")
     
@@ -101,7 +101,7 @@ def build_model(data, n_cliques = 0):
     for i in range(n):
         for l in range(p):
             model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= 12 * y[i, l], "c1a")
-        model.addConstr( quicksum([ x[i, k, l] for k in range(r) for l in range(p) if T[k][l] == 1 ]) >= 1, "c1b")
+            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) >= y[i, l], "c1b")
             
     print("c2: each exam at exactly one time")
     for i in range(n):
@@ -132,18 +132,16 @@ def build_model(data, n_cliques = 0):
     print("c6: any multi room exam takes place at one moment in time")
     for i in range(n):
         for l in range(p):
-            Mr = 10 if 10 < s[i]/75 else s[i]/75
             model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * 12, "c6")
-    
-    print("c7: resolving the absolute value")
-    for i in range(n):
-        for j in conflicts[i]:
-            model.addConstr( z[i, j] <= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
-            model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
-            model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
-            model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
-            model.addConstr( w <= z[i,j], "c7e")
-            
+
+    #print("c7: resolving the absolute value")
+    #for i in range(n):
+        #for j in conflicts[i]:
+            #model.addConstr( z[i, j] <= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
+            #model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
+            #model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
+            #model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
+            #model.addConstr( w <= z[i,j], "c7e")            
     
     print("c8: Building clique constraints")
     G = nx.Graph()
@@ -170,7 +168,8 @@ def build_model(data, n_cliques = 0):
     #obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
     obj2 = -w
 
-    model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
+    #model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
+    model.setObjective( obj1, GRB.MINIMIZE)
     # Set Parameters
     print("Setting Parameters...")
     # max presolve agressivity
