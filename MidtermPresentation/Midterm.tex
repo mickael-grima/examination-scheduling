@@ -82,7 +82,7 @@
         	
 	        \begin{enumerate}
 	        	\item Each exam is planed in exactly one period
-	        	\item<2-> There are enough seats
+	        	\item<2-> There are enough seats for each exam
 	        	\item<3-> In each room there is only one exam at a time
 	        	\item<4-> No student has to write two exams at the same time
 	        	\item<5-> Rooms for an exam are minimized
@@ -138,7 +138,7 @@
          		\setcounter{enumi}{1}
          		\item There must be enough seats for the students in the chosen rooms
          		\ba
-         		\sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_* x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
+         		\sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_k * x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
          		\ea
          		
 				\ba
@@ -154,7 +154,7 @@
          		\setcounter{enumi}{2}     
          		\item In each room there is only one exam at a time
          		\ba
-         		\sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq t_{k,l} \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
+         		\sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq 1 \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
          		\ea
          	\end{enumerate}
          \end{frame}
