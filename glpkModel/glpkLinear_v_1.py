@@ -13,8 +13,8 @@ class glpkWrapper(object):
     def optimize(self):
         
         #result = self.model.solve()
-        self.model.solvopt(mir_cuts=True, gmi_cuts=True)
-        result = self.model.solve(int)
+        self.model.solvopt(msg_lev = 3, mir_cuts=True, gmi_cuts=True)
+        result = self.model.solve()
         self.objVal = self.model.vobj()
         return result
 
@@ -43,7 +43,7 @@ Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) 
 '''
 
 # Create variables
-def build_model(data, n_cliques = 20):
+def build_model(data, n_cliques = 0):
     
     # Load Data Format
     n = data['n']
@@ -60,11 +60,12 @@ def build_model(data, n_cliques = 20):
     print("Building variables...")
     
     # x[i,k,l] = 1 if exam i is at time l in room k
+    
     NxRxP = [ (i,k,l) for i in range(n) for k in range(r) for l in range(p) if T[k][l] == 1 ]
     x = model.var(NxRxP, 'x', bool) 
 
     # y[i,l] = 1 if exam i is at time l
-    NxP = [ (i,l) for i in range(n) for l in range(p) ]
+    NxP = itertools.product(range(n), range(p))
     y = model.var(NxP, 'y', bool) 
     
     # help variable z[i,j] and delta[i,j] for exam i and exam j
@@ -138,8 +139,8 @@ def build_model(data, n_cliques = 20):
     print("Building Objective...")
     gamma = 1
     obj1 = sum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
-    #obj2 = -sum([ z[i,j] for i in range(n) for j in conflicts[i] ])
     obj2 = 1
+    #obj2 = -sum([ z[i,j] for i in range(n) for j in conflicts[i] ])
     #print(x)
     #obj1 = sum(x.values()) 
     #obj2 = -sum(z.values())
@@ -154,8 +155,8 @@ def build_model(data, n_cliques = 20):
 if __name__ == "__main__":
     
     n = 25
-    r = 25
-    p = 25
+    r = 17
+    p = 12
 
     # generate data
     random.seed(42)

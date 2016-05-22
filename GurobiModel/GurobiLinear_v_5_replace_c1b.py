@@ -89,6 +89,8 @@ def build_model(data, n_cliques = 0):
             z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
             delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
     
+    w = model.addVar(vtype=GRB.INTEGER, name="w")
+    
     # integrate new variables
     model.update() 
 
@@ -140,6 +142,7 @@ def build_model(data, n_cliques = 0):
             model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
             model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
             model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
+            model.addConstr( w <= z[i,j], "c7e")
             
     
     print("c8: Building clique constraints")
@@ -164,7 +167,8 @@ def build_model(data, n_cliques = 0):
     print("Building Objective...")
     gamma = 1
     obj1 = quicksum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
-    obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
+    #obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
+    obj2 = -w
 
     model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
     # Set Parameters
@@ -180,9 +184,9 @@ def build_model(data, n_cliques = 0):
 
 if __name__ == "__main__":
     
-    n = 50
-    r = 20
-    p = 20  
+    n = 150
+    r = 120
+    p = 120 
 
     # generate data
     random.seed(42)
@@ -198,6 +202,10 @@ if __name__ == "__main__":
         
         for v in model.getVars():
             if v.x == 1 and ("x" in v.varName or "y" in v.varName): 
+                print('%s %g' % (v.varName, v.x))
+            if "w" in v.varName: 
+                print('%s %g' % (v.varName, v.x))
+            if "z" in v.varName: 
                 print('%s %g' % (v.varName, v.x))
 
         print('Obj: %g' % model.objVal)
