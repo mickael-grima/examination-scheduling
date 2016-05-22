@@ -44,11 +44,14 @@ def compare(data):
     }
 
     times = dict()
+
     objectives = dict()
 
     for prob_name in problems:
         print(prob_name)
         # Build selected model
+        random.seed(42)
+
         problem = problems[prob_name](data)
         # Optimize selected model
         t = time()

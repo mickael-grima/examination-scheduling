@@ -12,14 +12,14 @@ plots/
 booth/files/relevant_graphs
 
 # latex aux files
-latex/*.toc 
-latex/*.aux 
-latex/*.log 
-latex/*.out 
-latex/*.snm 
-latex/*.nav 
-latex/*.blg 
-latex/*.bbl
+MidtermPresentation/*.toc 
+MidtermPresentation/*.aux 
+MidtermPresentation/*.log 
+MidtermPresentation/*.out 
+MidtermPresentation/*.snm 
+MidtermPresentation/*.nav 
+MidtermPresentation/*.blg 
+MidtermPresentation/*.bbl
 
 # Distribution / packaging
 .Python

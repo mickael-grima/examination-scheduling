@@ -15,10 +15,10 @@
 \usepackage{dsfont}
 \usepackage{natbib}
 
-\usepackage{graphicx}
+%\usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{calc}
-\usepackage{ifthen}
+%\usepackage{ifthen}
 
 
 
@@ -56,11 +56,18 @@
         
         \maketitle
         
+        \begin{frame}{Problem description}
+               
+               To find a good examination schedule for the exam period of the TUM
+        
+        \end{frame}
+        
+        
         \begin{frame}
-               {Konstanten}
+               {Constants}
                \ba
-                    s_i &:= \text{Anzahl der Studenten, die für Prüfung $i$ angemeldet sind} \\
-                    c_k &:= \text{Anzahl der nutzbaren Sitzplätzein Raum $k$} \\
+                    s_i &:= \text{Number of students signed up for exam $i$.} \\
+                    c_k &:= \text{Number of available seats in the lecture room $k$.} \\
                     Q   &:= \text{Kollisionsmatrix} \\
                     q_{i,j} &:= \left\{ \begin{array}{cl} 0, & \mbox{falls Prüfung $i$ und $j$ gleichzeitig stattfinden können} \\ 
                                                           1, & \mbox{sonst} \end{array} \right.  \\
@@ -71,35 +78,36 @@
                \ea
         \end{frame}
         
-  \include{Model_nonlinear}
+%   \include{Model_nonlinear}
   
-  \include{Model_linear_v2}
+  \include{Model_linear}
 
-  \begin{frame}
-                {Modellvergleich}
-                
-        \begin{center}
-        \begin{tabular}{ | l | l | l |}
-            \hline 
-            Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
-            \hline \hline
-            2D (Qadratisch)  & $nr + np$ & $2n + rp + p$ \\ \hline
-            3D + 2D (Linear) & $nrp + np + 2K$ & $2n + rp + 4np + 4 K$\\ \hline
-            
-        \end{tabular}
-        \end{center}
-    \end{frame}
-    \begin{frame}
-            {Modellvergleich - In Zahlen}
-       Problemdimensionen:
-        \begin{itemize}
-        \item $n \approx 1200$
-        \item $r \approx 70$
-        \item $p \approx 70$
-        \item $T \approx 400$
-        \end{itemize}
-        
-  \end{frame}
+%   \begin{frame}
+%                 {Modellvergleich}
+
+%                 
+%         \begin{center}
+%         \begin{tabular}{ | l | l | l |}
+%             \hline 
+%             Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
+%             \hline \hline
+%             2D (Qadratisch)  & $nr + np$ & $2n + rp + p$ \\ \hline
+%             3D + 2D (Linear) & $nrp + np + 2K$ & $2n + rp + 4np + 4 K$\\ \hline
+%             
+%         \end{tabular}
+%         \end{center}
+%     \end{frame}
+%     \begin{frame}
+%             {Modellvergleich - In Zahlen}
+%        Problemdimensionen:
+%         \begin{itemize}
+%         \item $n \approx 1200$
+%         \item $r \approx 70$
+%         \item $p \approx 70$
+%         \item $T \approx 400$
+%         \end{itemize}
+%         
+%   \end{frame}
   
 \end{document}
 
