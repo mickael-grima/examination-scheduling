@@ -20,6 +20,7 @@ from GurobiModel.GurobiLinear_v_4_Cliques import build_model as build_linear_mod
 from GurobiModel.GurobiLinear_v_5_changed_obj import build_model as build_linear_model_5
 from GurobiModel.GurobiLinear_v_6_removed_c6 import build_model as build_linear_model_6
 
+
 from model.non_linear_problem import NonLinearProblem
 
 from model.linear_problem import LinearProblem
@@ -35,8 +36,8 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear Advanced removed c6': build_linear_model_6,
-        'Linear Advanced changed obj': build_linear_model_5,
+         'Linear Advanced removed c6': build_linear_model_6,
+    #    'Linear Advanced changed obj': build_linear_model_5,
     #    'Linear Advanced': build_linear_model_3,
     #    'Linear Advanced Cliques': build_linear_model_4,    
     #  'GurobiQ_neu': build_nonlinear_model

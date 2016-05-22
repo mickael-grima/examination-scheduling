@@ -23,7 +23,7 @@
 \usepackage{dsfont}
 \usepackage{natbib}
 
-%\usepackage{graphicx}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{calc}
 %\usepackage{ifthen}
@@ -60,15 +60,125 @@
 \setbeamertemplate{navigation symbols}{}
 
 
+
 \begin{document}
         
         \maketitle
         
-        \begin{frame}{Problem description}
+        \begin{frame}{Outline}
+        	\tableofcontents
+       	
+        \end{frame}
+        
+        \section{Problem}
+        
+        \begin{frame}{Problem}
                
-               To find a good examination schedule for the exam period of the TUM
+               Find a good examination schedule for the exam period of the TUM
         
         \end{frame}
+        
+        \begin{frame}{Most important criteria for an examination schedule}
+        	
+	        \begin{enumerate}
+	        	\item Each exam is planed in exactly one period
+	        	\item<2-> There are enough seats
+	        	\item<3-> In each room there is only one exam at a time
+	        	\item<4-> No student has to write two exams at the same time
+	        	\item<5-> Rooms for an exam are minimized
+	        	\item<6-> Time between exams is maximized
+	        \end{enumerate}
+        	
+        \end{frame}
+        
+        \section{ILP Formulation}
+        
+         \begin{frame}{Model - Variables}
+         	\ba
+         	x_{i,k,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$ in room $k$ } \\ 
+         		0, & \mbox{sonst} \end{array} \right.  \\         	
+         	y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$} \\ 
+         		0, & \mbox{sonst} \end{array} \right.  
+         	\ea
+         	
+         \end{frame}
+         
+         
+         \begin{frame}{Connecting variables}
+         	\begin{enumerate} 
+         		\setcounter{enumi}{-1}
+         		\item Connecting variables $x$ and $y$
+         		\ba
+         		(1) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \leq y_{i,l} \cdot M \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  
+         		\ea
+         		\pause
+         		\ba
+         		(2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \geq y_{i,l} \;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}
+         		\ea
+         	\end{enumerate}
+         \end{frame}
+         
+         \begin{frame}{Each exam is planned}
+         	\begin{enumerate} 
+         		        		
+         		\item Each exam is planned in exactly on period
+         		\ba
+         		(3) \;\;\;\; \sum_{\forall \mbox{\small{ periods $l$}}} y_{i,l} = 1 \;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$ } \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;
+         		\ea
+         		\pause
+         		\ba
+         		(2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \geq y_{i,l} \;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$, }  \forall \mbox{\small{ periods $l$}}
+         		\ea
+         		
+         	\end{enumerate}
+         \end{frame}
+         
+         \begin{frame}{There are enough seats}
+         	\begin{enumerate} 
+         		\setcounter{enumi}{1}
+         		\item There must be enough seats for the students in the chosen rooms
+         		\ba
+         		\sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_* x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
+         		\ea
+         		
+				\ba
+				s_i &:= \text{ \# students taking exam $i$.} \\
+				c_k &:= \text{ \# seats in room $k$.} \\
+				\ea
+         		
+         	\end{enumerate}
+         \end{frame}
+        
+         \begin{frame}{One exam at a time}
+         	\begin{enumerate}
+         		\setcounter{enumi}{2}     
+         		\item In each room there is only one exam at a time
+         		\ba
+         		\sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq t_{k,l} \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
+         		\ea
+         	\end{enumerate}
+         \end{frame}
+        
+        \begin{frame}{No conflicts}
+        	\begin{enumerate}
+        		\setcounter{enumi}{3}
+        		\item No student has to write two exams at the same time
+        		\ba
+        		\sum_{\substack{\forall \mbox{\small{ exams $j$:}} \\  \mbox{\small{$i$,$j$ have a conflict}} }}y_{j,l}  \leq (1-y_{i,l})*M \;\;\;\ \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$ }}
+        		\ea
+        	\end{enumerate}
+        \end{frame}
+        
+        \section{Improvements and Next Steps}
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         \begin{frame}
