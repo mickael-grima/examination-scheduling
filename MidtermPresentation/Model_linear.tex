@@ -17,27 +17,6 @@
        
        
        \begin{frame}
-               {Zielfunktion}
-               \ba
-               \min \sum_{i = 1}^n \sum_{k = 1}^r \sum_{l = 1}^p s_i x_{i,k,l} - \gamma \sum_{i=1, j>i}^n q_{i,j} \left| \sum_{l=1}^p h_l (y_{i,l} - y_{j,l}) \right|
-               \ea
-               Resolving the absolute value: Define $\Delta h_{i,j} := \sum_{l=1}^p h_l (y_{i,l} - y_{j,l})$. \\
-               \ba
-               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma \sum_{i=1, j>i}^n q_{i,j} z_{i,j} \\
-               s.t. \;\; 
-               & z_{i,j} \leq \Delta h_{i,j} + \delta_{i,j} (h_p - h_1) \;\;\; \forall i,j \in [n]\\
-               & z_{i,j} \leq -\Delta h_{i,j} + (1-\delta_{i,j}) (h_p - h_1) \;\;\; \forall i,j \in [n] \\
-               &z_{i,j} \geq \Delta h_{i,j} \;\;\; \forall i,j \in [n] \\
-               &z_{i,j} \geq -\Delta h_{i,j} \;\;\; \forall i,j \in [n]
-               \ea
-               
-               http://lpsolve.sourceforge.net/5.1/absolute.htm
-
-        \end{frame}
-  
-  
-       
-       \begin{frame}
                {Constraints}
                 \begin{enumerate} 
                 \item Verknüpfung der Variablen
@@ -68,10 +47,36 @@
                 \ba
                     \sum_{i=1}^n x_{i,k,l} \leq t_{k,l} \;\;\;\forall k \in [r], \forall l \in [p]
                 \ea
-                \item Eine Prüfung in mehreren Räumen findet gleichzeitig statt
-               \ba
-                \sum_{m = 1, m \neq l}^p \sum_{k=1}^r x_{i,k,m} & \leq r (1-y_{i,l})  \;\;\; \forall i \in [n] \forall l \in [p]
+                \item Clique Constraints
+                \ba
+                    \sum_{j in clique} y_{i,l} \leq 1 \;\;\;\forall l \in [p]
                 \ea
+%                 \item Eine Prüfung in mehreren Räumen findet gleichzeitig statt
+%                \ba
+%                 \sum_{m = 1, m \neq l}^p \sum_{k=1}^r x_{i,k,m} & \leq r (1-y_{i,l})  \;\;\; \forall i \in [n] \forall l \in [p]
+%                 \ea
              \end{enumerate}
         \end{frame}
-        
+       
+       \begin{frame}
+               {Zielfunktion}
+               \ba
+               \min \sum_{i = 1}^n \sum_{k = 1}^r \sum_{l = 1}^p s_i x_{i,k,l} - \gamma \min_{j>i: q_{i,j}>0}  \left| \Delta h_{i,j} \right|
+               \ea
+               where $\Delta h_{i,j} := \sum_{l=1}^p h_l (y_{i,l} - y_{j,l})$. Resolving abs:
+               \ba
+               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma w \\
+               s.t. \;\; 
+                z_{i,j} &\leq \Delta h_{i,j} + \delta_{i,j} (h_p - h_1) \;\;\; \forall i,j \in [n]\\
+                z_{i,j} &\leq -\Delta h_{i,j} + (1-\delta_{i,j}) (h_p - h_1) \;\;\; \forall i,j \in [n] \\
+               z_{i,j} &\geq \Delta h_{i,j} \;\;\; \forall i,j \in [n] \\
+               z_{i,j} &\geq -\Delta h_{i,j} \;\;\; \forall i,j \in [n] \\
+               w &\geq z_{i,j}  \forall i,j \in [n]
+               \ea
+               
+               
+               http://lpsolve.sourceforge.net/5.1/absolute.htm
+
+        \end{frame}
+  
+    
