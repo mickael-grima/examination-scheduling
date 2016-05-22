@@ -138,7 +138,7 @@
          		\setcounter{enumi}{1}
          		\item There must be enough seats for the students in the chosen rooms
          		\ba
-         		\sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_k * x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
+         		(4) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_k * x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
          		\ea
          		
 				\ba
@@ -154,7 +154,7 @@
          		\setcounter{enumi}{2}     
          		\item In each room there is only one exam at a time
          		\ba
-         		\sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq 1 \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
+         		(5) \;\;\;\; \sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq 1 \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
          		\ea
          	\end{enumerate}
          \end{frame}
@@ -164,12 +164,43 @@
         		\setcounter{enumi}{3}
         		\item No student has to write two exams at the same time
         		\ba
-        		\sum_{\substack{\forall \mbox{\small{ exams $j$:}} \\  \mbox{\small{$i$,$j$ have a conflict}} }}y_{j,l}  \leq (1-y_{i,l})*M \;\;\;\ \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$ }}
+        		(6) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ exams $j$:}} \\  \mbox{\small{$i$,$j$ have a conflict}} }}y_{j,l}  \leq (1-y_{i,l})*M \;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$ }}
         		\ea
         	\end{enumerate}
         \end{frame}
         
+        \begin{frame}{Objective function}
+        		TODO
+        \end{frame}
+        
         \section{Improvements and Next Steps}
+        
+        \begin{frame}{Heuristics - Finding a good starting solution}
+        	\begin{itemize}
+        		\item Plan exams that are difficult to plan first
+        		\item Caculate difficulty by:
+        		\begin{itemize}
+        			\item number of students taking exam
+		        	\item Identifying cliques in conflict graph		        			
+        		\end{itemize}
+        		\item Use graph-coloring to identify exams that can be written in parallel
+        		
+        	\end{itemize}
+        \end{frame}
+        
+        \begin{frame}{Model improvements}
+        	\begin{enumerate}
+    
+        		\item Clique Constraints
+        		\ba
+        		(7) \;\;\;\; \sum_{\mbox{\small{j in clique}}} y_{i,l} \leq 1 \;\;\;\forall \mbox{\small{cliques calculated from conflict graph}}
+        		\ea
+        	\end{enumerate}
+        \end{frame}
+        
+        \begin{frame}{Data}
+        
+        \end{frame}
         
         
         
