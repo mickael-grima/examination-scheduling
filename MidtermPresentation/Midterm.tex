@@ -171,7 +171,7 @@ progressbar=frametitle,
 	\begin{itemize}
         \item Minimize the total number of rooms:
         \ba
-        \min & \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} 
+        (a) & \min \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} 
         \ea
 	\end{itemize}
 \end{frame}
@@ -180,7 +180,7 @@ progressbar=frametitle,
 	\begin{itemize}
 		\item Maximize the time between two exams:
 		\ba
-		\max \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j}
+		(b) & \max \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j}
 		\ea
 		
 		\ba
@@ -193,7 +193,7 @@ progressbar=frametitle,
     \begin{itemize}	
     	\item Combine the previous two objective functions using a weighting factor $\gamma > 0$:
 	    \ba
-	    \min \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} \ - \ \gamma \cdot \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j}
+	    (a+b) & \min \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} \ - \ \gamma \cdot \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j}
 	    \ea
 	\end{itemize}
 \end{frame}
