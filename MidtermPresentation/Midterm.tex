@@ -1,13 +1,19 @@
 %!TEX program = xelatex
-\documentclass[12pt]{beamer}
+\documentclass[12pt,t]{beamer}
 
 \usetheme[
-progressbar=frametitle
-%sectionpage=progressbar
-%,noframetitleoffset, block=fill
+progressbar=frametitle,
+%titleformat=regular
+%sectionpage=progressbar,
+%noframetitleoffset,
+%block=fill
 ]{m}
 \definecolor{TUMblue}{RGB}{55,55,255}
 \setbeamercolor{alerted text}{fg=TUMblue}
+
+\metroset{inner/titleformat=regular}
+\metroset{inner/sectiontitleformat=uppercase}
+\metroset{outer/frametitleformat=regular}
 
 % \usepackage{booktabs}
 % \usepackage[scale=2]{ccicons}
@@ -32,18 +38,14 @@ progressbar=frametitle
 \usepackage{calc}
 %\usepackage{ifthen}
 
-
-
 \newcommand{\R}{\mathds{R}}     
 \newcommand{\N}{\mathds{N}}
 \newcommand{\sU}{\mathcal{U}}
-
 
 \usetikzlibrary{arrows}
 
 %\usepackage{algorithm2e}
 %\usepackage{algorithmic}
-
 
 %% Custom commands
 \newcommand{\hide}[1]{}
@@ -55,202 +57,176 @@ progressbar=frametitle
 
 \author{Alexander Eckl, Maximilian Fiedler, Mickael Grima, Roland Halbig}
 \title{Examination Scheduling}
-% \subtitle{subtitle}
+%\subtitle{subtitle}
 %\logo{}
 \institute{Technische Universität München}
-\date{March 21, 2016}
+\date{May 25, 2016}
 %\subject{}
 %\setbeamercovered{transparent}
 \setbeamertemplate{navigation symbols}{}
 
 
-
 \begin{document}
         
-        \maketitle
-        
-        \begin{frame}{Outline}
-        	\tableofcontents
-        \end{frame}
-        
-        \section{Problem}
-        
-        \begin{frame}{{Problem}}
-               
-               Find a good examination schedule for the exam period of the TUM
-        
-        \end{frame}
-        
-        \begin{frame}{Most important criteria for an examination schedule}
-        	
-	        \begin{itemize}
-\item Each exam is planed in exactly one period
-\item<2-> In each room there is only one exam at a time
-\item<3-> There are enough seats for each exam
-\item<4-> No student has to write two exams at the same time
-\item<5-> Rooms for an exam are minimized
-\item<6-> Time between exams is maximized
-	        \end{itemize}
-        	
-        \end{frame}
-        
-        \begin{frame}{Outline}
-                \tableofcontents
-        \end{frame}
-        
-        \section{Formulation of Constraints}
-        
-         \begin{frame}{Model - Variables}
-         	\ba
-         	x_{i,k,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$ in room $k$ } \\ 
-         		0, & \mbox{otherwise} \end{array} \right.  \\         %	\pause
-         	y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$} \\ 
-         		0, & \mbox{otherwise} \end{array} \right.  
-         	\ea
-         	
-         \end{frame}
+\maketitle
 
+\begin{frame}{Outline}
+      	\tableofcontents
+\end{frame}
 
-\begin{frame}{Connecting variables}
+\section{Problem Formulation}
+
+\begin{frame}{Problem} 
+       Find a good examination schedule for the exam period of the TUM.
+\end{frame}
+
+\begin{frame}{Criteria for a good examination schedule}    	
+ 	\begin{itemize}
+		\item Each exam is planned in exactly one period
+		\item<2-> In each room there is only one exam at a time
+		\item<3-> There are enough seats for each exam
+		\item<4-> No student has to write two exams at the same time
+		\item<5-> Rooms for an exam are minimized
+		\item<6-> Time between exams is maximized
+ 	\end{itemize}	
+\end{frame}
+
+\section{Modeling The Problem}
+
+\begin{frame}{Variables}
+      	\ba
+   		x_{i,k,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$ in room $k$ } \\ 
+   		0, & \mbox{otherwise} \end{array} \right.  \\
+   		\uncover<2->{
+   		y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$} \\ 
+   		0, & \mbox{otherwise} \end{array} \right.
+   		}
+      	\ea
+\end{frame}
+
+\begin{frame}{Constraints}
+  	\begin{itemize} 
+	    \item Connecting the variables $x$ and $y$:
+	    \ba
+	   	(1) & \sum_{\mbox{\small{ rooms $k$}}} x_{i,k,l} &&\leq y_{i,l} \cdot M &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  \\
+	    \uncover<2->{
+	    (2) & \sum_{\mbox{\small{ rooms $k$}}} x_{i,k,l} &&\geq y_{i,l} &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}
+	    }
+   		\ea
+   	\end{itemize}
+\end{frame}
+
+\begin{frame}{Constraints}
+	\begin{itemize}                     
+  		\item Each exam is planned in exactly one period:
+		\ba
+		(3) & \sum_{\mbox{\small{ periods $l$}}} y_{i,l} &&= 1 &&\forall \mbox{ exams $i$ } \\
+		\uncover<2->{
+		\text{c.f. }(2) & \sum_{\mbox{\small{ rooms $k$}}} x_{i,k,l}  &&\geq y_{i,l} &&\forall \mbox{ exams $i$, } \forall \mbox{\small{ periods $l$}}
+		}
+		\ea
+ 	\end{itemize}
+\end{frame}
+
+\begin{frame}{Constraints}
     \begin{itemize} 
-            \setcounter{enumi}{-1}
-            \item[] Connecting variables $x$ and $y$
-            \ba
-            (1) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \leq y_{i,l} \cdot M \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  
-            \ea
-            \pause
-            \ba
-            (2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \geq y_{i,l} \;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}
-            \ea
+        \item There are enough seats for the students in the exam rooms:
+        \ba
+        (4) & \sum_{\substack{\mbox{\small{ periods $l$, }} \\ \mbox{\small{ rooms $k$ }}}} c_k \cdot x_{i,k,l} &&\geq s_i &&\forall \mbox{\small{ exams $i$}}
+        \ea
+        
+        \ba
+        s_i &:= \text{ \# students taking exam $i$} \\
+        c_k &:= \text{ \# seats in room $k$} \\
+        \ea
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Each exam is planned}
-    \begin{itemize} 
-                                    
-            \item[] Each exam is planned in exactly one period
-            \ba
-            \,\;\;\;\;\;\;\;(3) \;\;\;\; \sum_{\forall \mbox{\small{ periods $l$}}} y_{i,l} = 1 \;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$ } \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;
-            \ea
-            \pause
-            \ba
-            \text{c.f. }(2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l}  \geq y_{i,l} \;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$, }  \forall \mbox{\small{ periods $l$}}
-            \ea
-            
+\begin{frame}{Constraints}
+    \begin{itemize}    
+        \item In every room there is only one exam at a given time:
+        \ba
+        (5) & \sum_{\mbox{\small{ exams $i$ }}} x_{i,k,l} &&\leq 1 &&\forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
+        \ea
     \end{itemize}
 \end{frame}
 
-\begin{frame}{There are enough seats}
-    \begin{itemize} 
-            \setcounter{enumi}{1}
-            \item[] There must be enough seats for the students in the chosen rooms
-            \ba
-            (4) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_k \cdot x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
-            \ea
-            
-                    \ba
-                    s_i &:= \text{ \# students taking exam $i$.} \\
-                    c_k &:= \text{ \# seats in room $k$.} \\
-                    \ea
-            
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{One exam at a time}
+\begin{frame}{Constraints}
     \begin{itemize}
-            \setcounter{enumi}{2}     
-            \item[] In each room there is only one exam at a time
-            \ba
-            (5) \;\;\;\; \sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq 1 \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
-            \ea
+        \item There are no conflicts for students taking multiple exams:
+        \ba
+        (6) & \sum_{\substack{\mbox{\footnotesize{ exams $j$,}} \\  \mbox{\footnotesize{$i$ conflicts with $j$}} }}y_{j,l} &&\leq (1-y_{i,l}) \cdot M &&\forall \mbox{\footnotesize{ exams $i$, }} \forall \mbox{\footnotesize{ periods $l$ }}
+        \ea
     \end{itemize}
 \end{frame}
 
-\begin{frame}{No conflicts}
-    \begin{itemize}
-            \setcounter{enumi}{3}
-            \item[] No student has to write two exams at the same time
-            \ba
-            (6) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ exams $j$:}} \\  \mbox{\small{$i$,$j$ have a conflict}} }}y_{j,l}  \leq (1-y_{i,l}) \cdot M \;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$ }}
-            \ea
-    \end{itemize}
+%\section{Objective Function}
+        
+\begin{frame}{Objective function}
+	\begin{itemize}
+        \item Minimize the total number of rooms:
+        \ba
+        \min & \sum_{\substack{\mbox{\small{ exams $i$,}} \\ \mbox{\small{ rooms $k$,}} \\ \mbox{\small{ periods $l$}}}} x_{i,k,l} 
+        \ea
+	\end{itemize}
+\end{frame}
+        
+\begin{frame}{Objective function}
+	\begin{itemize}
+		\item Maximize the time between two exams:
+		\ba
+		\max \sum_{\substack{\mbox{\small{ exams $i,j$}} \\ \mbox{\small{$i>j$}} }}   d_{i,j}
+		\ea
+		
+		\ba
+		d_{i,j} &:= \text{distance between exams i and j}
+		\ea
+	\end{itemize}
 \end{frame}
 
-        \begin{frame}{Outline}
-                \tableofcontents
-        \end{frame}
+\begin{frame}{Objective function}
+    \begin{itemize}	
+    	\item Combine the previous two objective functions using a weighting factor $\gamma > 0$:
+	    \ba
+	    \min \sum_{\substack{\mbox{\small{ exams $i$,}} \\ \mbox{\small{ rooms $k$,}} \\ \mbox{\small{ periods $l$}}}} x_{i,k,l} \ - \ \gamma \cdot \sum_{\substack{\mbox{\small{ exams $i,j$}} \\ \mbox{\small{$i>j$}} }}   d_{i,j}
+	    \ea
+	\end{itemize}
+\end{frame}
         
-        \section{Objective Function}
-        
-        \begin{frame}{Objective function}
-        \begin{itemize}
-        \item[]
-        Minimize the total number of rooms
-        
-        \ba
-        \text{minimize} \;\;\; \sum_{\mbox{\small{ exams $i$}}} \sum_{\mbox{\small{ rooms $k$}}} \sum_{\mbox{\small{ periods $l$}}} x_{i,k,l} 
-        \ea
-        \end{itemize}
-       \end{frame}
-        
-        \begin{frame}{Maximize time between exams}
-        Maximize the time between two exams
-        \ba
-        \max \sum_{j>i: q_{i,j}>0}  d_{i,j}
-        \ea
-        
-        \ba
-        d_{i,j} &:= \text{Distance between exams i and j}
-        \ea
-        \pause
-    
-    \end{frame}
-    \begin{frame}
-    {Objective Functions Combined}
-    Combine objective functions using weighting factor $\gamma > 0$
-    
-    \ba
-    \min \sum_{i = 1}^n \sum_{k = 1}^r \sum_{l = 1}^p x_{i,k,l} 
-    - \gamma \sum_{j>i: q_{i,j}>0}   d_{i,j}
-        \ea
-    
-    
-    \end{frame}
-        
-        \begin{frame}{Outline}
-                \tableofcontents
-        \end{frame}
-        
-        \section{Improvements and Next Steps}
+\section{Next Steps}
 
 \begin{frame}{Finding a feasible starting point}
+    \begin{itemize}
+        \item Use graph-coloring to schedule exams without conflicts.
+        \item Plan difficult exams first.
+        \item Calculate difficulty by:
         \begin{itemize}
-                \item Use graph-coloring to schedule exams without conflicts
-                \item Plan difficult exams first
-                \item Calculate difficulty by:
-                \begin{itemize}
-                        \item number of students taking exam
-                        \item Identifying cliques in conflict graph		
-                \end{itemize}
-                
+        	\item Number of students taking exam
+        	\item Identifying cliques in conflict graph	
         \end{itemize}
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{Model improvements}
-        \begin{itemize}
-
-                \item[] Clique Constraints
-                \ba
-                (7) \;\;\;\; \sum_{\mbox{\small{j in clique}}} y_{i,l} \leq 1 \;\;\;\forall \mbox{\small{cliques calculated from conflict graph}}
-                \ea
-        \end{itemize}
+\begin{frame}{Improvements to the model}
+	\begin{itemize}
+	    \item Add Clique Constraints:
+	    \ba
+	    (7) \;\;\;\; \sum_{\mbox{\small{j in clique}}} y_{i,l} \leq 1 \;\;\;\forall \mbox{\small{ cliques calculated from conflict graph}}
+	    \ea
+	    \pause
+	    \item Remove absolute value in the objective function.
+	    \pause
+	    \item Improve running time using heuristics, pre-solving, etc.	    
+    \end{itemize}
 \end{frame}
 
-        
-        \begin{frame}{Data}
-        
-        \end{frame}
-        
+\begin{frame}{Data acquisition}
+	\begin{itemize}
+		\item -dummy-
+	    \item -From exam coordinator for Mathematics-
+	    \item -From central exam coordinator-
+	    \item -Direct export from TUMonline-   
+    \end{itemize}
+\end{frame}
      
 \end{document}
-
