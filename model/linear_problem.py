@@ -10,6 +10,7 @@ class LinearProblem(MainProblem):
     def __init__(self, data, name='ExaminationProblem'):
         super(LinearProblem, self).__init__(name=name)
         self.c = 0.5  # criteria factor
+        self.ModelName = name
 
         self.build_problem(data)
 
