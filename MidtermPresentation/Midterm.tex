@@ -42,7 +42,7 @@ progressbar=frametitle,
 \newcommand{\N}{\mathds{N}}
 \newcommand{\sU}{\mathcal{U}}
 
-\usetikzlibrary{arrows}
+\usetikzlibrary{arrows,shapes,backgrounds}
 
 %\usepackage{algorithm2e}
 %\usepackage{algorithmic}
@@ -74,7 +74,7 @@ progressbar=frametitle,
       	\tableofcontents
 \end{frame}
 
-\section{Problem Formulation}
+\section{Problem}
 
 \begin{frame}[c]{Problem} 
        Find a good examination schedule for the exam period of the TUM.
@@ -200,42 +200,97 @@ progressbar=frametitle,
         
 \section{Next Steps}
 
-\begin{frame}{Finding a feasible starting point}
-    \begin{itemize}
-        \item Use graph-coloring to schedule exams without conflicts.
-        \pause
-        \item Plan difficult exams first.
-        \pause
-        \item Calculate difficulty by:
-        \pause
-        \begin{itemize}
-        	\item Number of students taking exam
-        	\pause
-        	\item Identifying cliques in conflict graph	
-        \end{itemize}
-    \end{itemize}
+\begin{frame}{Finding a feasible starting solution}
+	\vspace{-1cm}
+	% Define block styles
+	\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+	text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+	\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+	text width=10em, text centered, rounded corners, minimum height=2em, , text=white ,fill={rgb:red,43;green,65;blue,98}]
+	\tikzstyle{line} = [draw, -latex']
+	\tikzstyle{cloud} = [minimum height=1.7em]
+	
+		\begin{tikzpicture}[node distance = 2cm, align=center]
+		% Place nodes\\
+		\node [block] (init) {Compute planning order of exams};
+		\pause
+		\node [block, fill=white, text={rgb:red,43;green,65;blue,98}, below of=init] (first) {Plan exam most difficult to plan};
+		\path [line] (init) -- (first);
+		\pause
+		\node [block, below of=first, fill=white, text={rgb:red,43;green,65;blue,98},] (second) {Plan exam second most difficult to plan};
+		\path [line] (first) -- (second);
+		\pause
+		\node [block, below of=second, opacity=0] (empty) {Plan exam second most difficult to plan};
+		\path [line,dashed] (second) -- (empty);
+		
+		
+		
+		\pause		
+		\node [cloud, left of=init, xshift=-1.9cm] (coloring) {coloring};
+		\node [left of=init, xshift=-3.2cm] (e) {};
+		\path [line] (coloring) -- (init);
+		\pause
+		\node [cloud, above of=init, yshift=-0.3cm] (cliques) {cliques heuristics};
+		\path [line] (cliques) -- (init);
+		\pause
+		\node [cloud, right of=init, xshift=2.1cm ] (students) {\small{\#} students};
+		\path [line] (students) -- (init);
+		
+		
+		{stop};	
+		
+		
+		\end{tikzpicture}
+		
 \end{frame}
+
+%\begin{frame}{Finding a feasible starting solution}
+%    \begin{itemize}
+%        \item Use graph-coloring to schedule exams without conflicts.
+%        \pause
+%        \item Plan difficult exams first.
+%        \pause
+%        \item Calculate difficulty by:
+%        \pause
+%        \begin{itemize}
+%        	\item Number of students taking exam
+%        	\pause
+%        	\item Identifying cliques in conflict graph	
+%        \end{itemize}
+%    \end{itemize}
+%\end{frame}
 
 \begin{frame}{Improvements to the model}
 	\begin{itemize}
 	    \item Add Clique Constraints:
 	    \ba
-	    (7) &\sum_{\mbox{\scriptsize{$i$ in clique}}} y_{i,l} &&\leq 1 &&\forall \, \mbox{\small{cliques calculated from the conflict graph}}
+	    (7) &\sum_{\mbox{\scriptsize{$i$ in clique}}} y_{i,l} &&\leq 1 &&\forall \, \mbox{\small{cliques}}
 	    \ea
 	    \pause
 	    \item Remove absolute value in the objective function.
 	    \pause
-	    \item Improve running time using heuristics, pre-solving, etc.	    
+	    \item Improve running time using heuristics, pre-solving, etc.	   
+	    \item Using a path based model and column generation	 
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Data acquisition}
-	\begin{itemize}
-		\item -dummy-
-	    \item -From exam coordinator for Mathematics-
-	    \item -From central exam coordinator-
-	    \item -Direct export from TUMonline-   
-    \end{itemize}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=7cm]{server.jpg} 
+		\caption{Server, hopefully somewhere in Germany}
+	\end{figure}
+		
 \end{frame}
+
+%\begin{frame}{Data acquisition}
+%	\begin{itemize}
+%		\item -dummy-
+%	    \item -From exam coordinator for Mathematics-
+%	    \item -From central exam coordinator-
+%	    \item -Direct export from TUMonline-   
+%    \end{itemize}
+%\end{frame}
      
 \end{document}
