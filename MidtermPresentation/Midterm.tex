@@ -1,12 +1,16 @@
 %!TEX program = xelatex
-\documentclass[10pt]{beamer}
+\documentclass[12pt]{beamer}
 
-\usetheme[progressbar=frametitle, noframetitleoffset, block=fill]{m}
+\usetheme[
+progressbar=frametitle
+%sectionpage=progressbar
+%,noframetitleoffset, block=fill
+]{m}
 \definecolor{TUMblue}{RGB}{55,55,255}
 \setbeamercolor{alerted text}{fg=TUMblue}
 
-\usepackage{booktabs}
-\usepackage[scale=2]{ccicons}
+% \usepackage{booktabs}
+% \usepackage[scale=2]{ccicons}
 
 %  \usetheme{Rochester}
 
@@ -67,12 +71,11 @@
         
         \begin{frame}{Outline}
         	\tableofcontents
-       	
         \end{frame}
         
         \section{Problem}
         
-        \begin{frame}{Problem}
+        \begin{frame}{{Problem}}
                
                Find a good examination schedule for the exam period of the TUM
         
@@ -80,261 +83,174 @@
         
         \begin{frame}{Most important criteria for an examination schedule}
         	
-	        \begin{enumerate}
-	        	\item Each exam is planed in exactly one period
-	        	\item<2-> There are enough seats for each exam
-	        	\item<3-> In each room there is only one exam at a time
-	        	\item<4-> No student has to write two exams at the same time
-	        	\item<5-> Rooms for an exam are minimized
-	        	\item<6-> Time between exams is maximized
-	        \end{enumerate}
+	        \begin{itemize}
+\item Each exam is planed in exactly one period
+\item<2-> In each room there is only one exam at a time
+\item<3-> There are enough seats for each exam
+\item<4-> No student has to write two exams at the same time
+\item<5-> Rooms for an exam are minimized
+\item<6-> Time between exams is maximized
+	        \end{itemize}
         	
         \end{frame}
         
-        \section{ILP Formulation}
+        \begin{frame}{Outline}
+                \tableofcontents
+        \end{frame}
+        
+        \section{Formulation of Constraints}
         
          \begin{frame}{Model - Variables}
          	\ba
          	x_{i,k,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$ in room $k$ } \\ 
-         		0, & \mbox{sonst} \end{array} \right.  \\         	
+         		0, & \mbox{otherwise} \end{array} \right.  \\         %	\pause
          	y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$} \\ 
-         		0, & \mbox{sonst} \end{array} \right.  
+         		0, & \mbox{otherwise} \end{array} \right.  
          	\ea
          	
          \end{frame}
-         
-         
-         \begin{frame}{Connecting variables}
-         	\begin{enumerate} 
-         		\setcounter{enumi}{-1}
-         		\item Connecting variables $x$ and $y$
-         		\ba
-         		(1) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \leq y_{i,l} \cdot M \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  
-         		\ea
-         		\pause
-         		\ba
-         		(2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \geq y_{i,l} \;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}
-         		\ea
-         	\end{enumerate}
-         \end{frame}
-         
-         \begin{frame}{Each exam is planned}
-         	\begin{enumerate} 
-         		        		
-         		\item Each exam is planned in exactly on period
-         		\ba
-         		(3) \;\;\;\; \sum_{\forall \mbox{\small{ periods $l$}}} y_{i,l} = 1 \;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$ } \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;
-         		\ea
-         		\pause
-         		\ba
-         		(2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \geq y_{i,l} \;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$, }  \forall \mbox{\small{ periods $l$}}
-         		\ea
-         		
-         	\end{enumerate}
-         \end{frame}
-         
-         \begin{frame}{There are enough seats}
-         	\begin{enumerate} 
-         		\setcounter{enumi}{1}
-         		\item There must be enough seats for the students in the chosen rooms
-         		\ba
-         		(4) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_k * x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
-         		\ea
-         		
-				\ba
-				s_i &:= \text{ \# students taking exam $i$.} \\
-				c_k &:= \text{ \# seats in room $k$.} \\
-				\ea
-         		
-         	\end{enumerate}
-         \end{frame}
-        
-         \begin{frame}{One exam at a time}
-         	\begin{enumerate}
-         		\setcounter{enumi}{2}     
-         		\item In each room there is only one exam at a time
-         		\ba
-         		(5) \;\;\;\; \sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq 1 \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
-         		\ea
-         	\end{enumerate}
-         \end{frame}
-        
-        \begin{frame}{No conflicts}
-        	\begin{enumerate}
-        		\setcounter{enumi}{3}
-        		\item No student has to write two exams at the same time
-        		\ba
-        		(6) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ exams $j$:}} \\  \mbox{\small{$i$,$j$ have a conflict}} }}y_{j,l}  \leq (1-y_{i,l})*M \;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$ }}
-        		\ea
-        	\end{enumerate}
+
+
+\begin{frame}{Connecting variables}
+    \begin{itemize} 
+            \setcounter{enumi}{-1}
+            \item[] Connecting variables $x$ and $y$
+            \ba
+            (1) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \leq y_{i,l} \cdot M \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  
+            \ea
+            \pause
+            \ba
+            (2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l} & \geq y_{i,l} \;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}
+            \ea
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Each exam is planned}
+    \begin{itemize} 
+                                    
+            \item[] Each exam is planned in exactly one period
+            \ba
+            \,\;\;\;\;\;\;\;(3) \;\;\;\; \sum_{\forall \mbox{\small{ periods $l$}}} y_{i,l} = 1 \;\;\;\;\;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$ } \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;
+            \ea
+            \pause
+            \ba
+            \text{c.f. }(2) \;\;\;\; \sum_{\forall \mbox{\small{ rooms $k$}}} x_{i,k,l}  \geq y_{i,l} \;\;\;\;\;\;\;\;\; \forall \mbox{ exams $i$, }  \forall \mbox{\small{ periods $l$}}
+            \ea
+            
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{There are enough seats}
+    \begin{itemize} 
+            \setcounter{enumi}{1}
+            \item[] There must be enough seats for the students in the chosen rooms
+            \ba
+            (4) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ periods $l$, }} \\ \forall \mbox{\small{ rooms $k$ }}}} c_k \cdot x_{i,k,l} \geq s_i \;\;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$}}
+            \ea
+            
+                    \ba
+                    s_i &:= \text{ \# students taking exam $i$.} \\
+                    c_k &:= \text{ \# seats in room $k$.} \\
+                    \ea
+            
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{One exam at a time}
+    \begin{itemize}
+            \setcounter{enumi}{2}     
+            \item[] In each room there is only one exam at a time
+            \ba
+            (5) \;\;\;\; \sum_{ \forall \mbox{\small{ exams $i$ }}} x_{i,k,l} \leq 1 \;\;\;\;\;\;\;\;\;  \forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
+            \ea
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{No conflicts}
+    \begin{itemize}
+            \setcounter{enumi}{3}
+            \item[] No student has to write two exams at the same time
+            \ba
+            (6) \;\;\;\; \sum_{\substack{\forall \mbox{\small{ exams $j$:}} \\  \mbox{\small{$i$,$j$ have a conflict}} }}y_{j,l}  \leq (1-y_{i,l}) \cdot M \;\;\;\;\;\;\;\; \forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$ }}
+            \ea
+    \end{itemize}
+\end{frame}
+
+        \begin{frame}{Outline}
+                \tableofcontents
         \end{frame}
         
+        \section{Objective Function}
+        
         \begin{frame}{Objective function}
-        		TODO
+        \begin{itemize}
+        \item[]
+        Minimize the total number of rooms
+        
+        \ba
+        \text{minimize} \;\;\; \sum_{\mbox{\small{ exams $i$}}} \sum_{\mbox{\small{ rooms $k$}}} \sum_{\mbox{\small{ periods $l$}}} x_{i,k,l} 
+        \ea
+        \end{itemize}
+       \end{frame}
+        
+        \begin{frame}{Maximize time between exams}
+        Maximize the time between two exams
+        \ba
+        \max \sum_{j>i: q_{i,j}>0}  d_{i,j}
+        \ea
+        
+        \ba
+        d_{i,j} &:= \text{Distance between exams i and j}
+        \ea
+        \pause
+    
+    \end{frame}
+    \begin{frame}
+    {Objective Functions Combined}
+    Combine objective functions using weighting factor $\gamma > 0$
+    
+    \ba
+    \min \sum_{i = 1}^n \sum_{k = 1}^r \sum_{l = 1}^p x_{i,k,l} 
+    - \gamma \sum_{j>i: q_{i,j}>0}   d_{i,j}
+        \ea
+    
+    
+    \end{frame}
+        
+        \begin{frame}{Outline}
+                \tableofcontents
         \end{frame}
         
         \section{Improvements and Next Steps}
-        
-        \begin{frame}{Heuristics - Finding a good starting solution}
-        	\begin{itemize}
-        		\item Plan exams that are difficult to plan first
-        		\item Caculate difficulty by:
-        		\begin{itemize}
-        			\item number of students taking exam
-		        	\item Identifying cliques in conflict graph		        			
-        		\end{itemize}
-        		\item Use graph-coloring to identify exams that can be written in parallel
-        		
-        	\end{itemize}
-        \end{frame}
-        
-        \begin{frame}{Model improvements}
-        	\begin{enumerate}
-    
-        		\item Clique Constraints
-        		\ba
-        		(7) \;\;\;\; \sum_{\mbox{\small{j in clique}}} y_{i,l} \leq 1 \;\;\;\forall \mbox{\small{cliques calculated from conflict graph}}
-        		\ea
-        	\end{enumerate}
-        \end{frame}
+
+\begin{frame}{Finding a feasible starting point}
+        \begin{itemize}
+                \item Use graph-coloring to schedule exams without conflicts
+                \item Plan difficult exams first
+                \item Calculate difficulty by:
+                \begin{itemize}
+                        \item number of students taking exam
+                        \item Identifying cliques in conflict graph		
+                \end{itemize}
+                
+        \end{itemize}
+\end{frame}
+
+\begin{frame}{Model improvements}
+        \begin{itemize}
+
+                \item[] Clique Constraints
+                \ba
+                (7) \;\;\;\; \sum_{\mbox{\small{j in clique}}} y_{i,l} \leq 1 \;\;\;\forall \mbox{\small{cliques calculated from conflict graph}}
+                \ea
+        \end{itemize}
+\end{frame}
+
         
         \begin{frame}{Data}
         
         \end{frame}
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        \begin{frame}
-               {Constants}
-               \ba
-                    s_i &:= \text{Number of students signed up for exam $i$.} \\
-                    c_k &:= \text{Number of available seats in the lecture room $k$.} \\
-                    Q   &:= \text{Kollisionsmatrix} \\
-                    q_{i,j} &:= \left\{ \begin{array}{cl} 0, & \mbox{falls Prüfung $i$ und $j$ gleichzeitig stattfinden können} \\ 
-                                                          1, & \mbox{sonst} \end{array} \right.  \\
-                    T  &:= \text{Sperrmatrix} \\
-                    t_{i,j} &:= \left\{ \begin{array}{cl} 1, & \mbox{falls Raum $k$ zum Zeitintervall $l$ geöffnet ist} \\ 
-                                                          0, & \mbox{sonst} \end{array} \right.  \\
-                    h_l &:= \text{Anzahl der Stunden von Periode $l$ nach Beginn des Prüfungszeitraumes}
-               \ea
-        \end{frame}
-        
-  \begin{frame}
-               {Variablen}
-               \ba
-               x_{i,k,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ zum Zeitpunkt $l$ in Raum $k$ stattfindet} \\ 
-                                                          0, & \mbox{sonst} \end{array} \right.  \\
-                y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{wenn Prüfung $i$ im Zeitinterval $l$ stattfindet} \\ 
-                                                        0, & \mbox{sonst} \end{array} \right.  
-                \ea
-               Dimensionen:
-              \ba
-              n&: Anzahl der Prüfungen \\
-              r&: Anzahl der Räume \\
-              p&: Anzahl der Zeitintervalle
-              \ea
-        \end{frame}
-       
-       
-       \begin{frame}
-               {Constraints}
-                \begin{enumerate} 
-                \item Verknüpfung der Variablen
-                \ba
-                \sum_{k=1}^r x_{i,k,l} & \leq y_{i,l} \cdot r \;\;\; \forall i \in [n] \forall l \in [p] \\
-                \sum_{k=1}^r x_{i,k,l} & \geq y_{i,l} \;\;\; \forall i \in [n] \forall l \in [p]
-                \ea
-                
-                \item Jede Prüfung wird auf genau einem Zeitinterval eingeplant
-                \ba
-                    \sum_{l=1}^p y_{i,l} = 1 \;\;\; \forall i \in [n]
-                \ea
-                \item Konfliktvermeidung
-                \ba
-                    \sum_{j=1, j > i}^n q_{i,j} y_{j,l} \leq (1 - y_{i,l}) \sum_{\nu=1}^n q_{i,\nu} \;\;\; \forall i \in [n], \forall l \in [p]
-                \ea
-                
-                \end{enumerate}
-       \end{frame}
-       \begin{frame}
-               \begin{enumerate}
-               \setcounter{enumi}{4}
-               \item Alle Studierenden bekommen einen Platz
-                \ba
-                    \sum_{l=1}^p \sum_{k=1}^r c_k x_{i,k,l} \geq s_i \;\;\;\forall i \in [n]
-                \ea
-               \item Jedem Raum wird je Zeit maximal eine Prüfung zugeteilt
-                \ba
-                    \sum_{i=1}^n x_{i,k,l} \leq t_{k,l} \;\;\;\forall k \in [r], \forall l \in [p]
-                \ea
-                \item Clique Constraints
-                \ba
-                    \sum_{j in clique} y_{i,l} \leq 1 \;\;\;\forall l \in [p]
-                \ea
-%                 \item Eine Prüfung in mehreren Räumen findet gleichzeitig statt
-%                \ba
-%                 \sum_{m = 1, m \neq l}^p \sum_{k=1}^r x_{i,k,m} & \leq r (1-y_{i,l})  \;\;\; \forall i \in [n] \forall l \in [p]
-%                 \ea
-             \end{enumerate}
-        \end{frame}
-       
-       \begin{frame}
-               {Zielfunktion}
-               \ba
-               \min \sum_{i = 1}^n \sum_{k = 1}^r \sum_{l = 1}^p s_i x_{i,k,l} - \gamma \min_{j>i: q_{i,j}>0}  \left| \Delta h_{i,j} \right|
-               \ea
-               where $\Delta h_{i,j} := \sum_{l=1}^p h_l (y_{i,l} - y_{j,l})$. Resolving abs:
-               \ba
-               \min &\sum_{i = 1}^n \sum_{k = 1}^r s_i x_{i,k} - \gamma w \\
-               s.t. \;\; 
-                z_{i,j} &\leq \Delta h_{i,j} + \delta_{i,j} (h_p - h_1) \;\;\; \forall i,j \in [n]\\
-                z_{i,j} &\leq -\Delta h_{i,j} + (1-\delta_{i,j}) (h_p - h_1) \;\;\; \forall i,j \in [n] \\
-               z_{i,j} &\geq \Delta h_{i,j} \;\;\; \forall i,j \in [n] \\
-               z_{i,j} &\geq -\Delta h_{i,j} \;\;\; \forall i,j \in [n] \\
-               w &\geq z_{i,j}  \forall i,j \in [n]
-               \ea
-               
-               
-               http://lpsolve.sourceforge.net/5.1/absolute.htm
-
-        \end{frame}
-  
-    
-
-%   \begin{frame}
-%                 {Modellvergleich}
-
-%                 
-%         \begin{center}
-%         \begin{tabular}{ | l | l | l |}
-%             \hline 
-%             Modell & Anzahl Variablen & Anzahl Nebenbedingungen \\
-%             \hline \hline
-%             2D (Qadratisch)  & $nr + np$ & $2n + rp + p$ \\ \hline
-%             3D + 2D (Linear) & $nrp + np + 2K$ & $2n + rp + 4np + 4 K$\\ \hline
-%             
-%         \end{tabular}
-%         \end{center}
-%     \end{frame}
-%     \begin{frame}
-%             {Modellvergleich - In Zahlen}
-%        Problemdimensionen:
-%         \begin{itemize}
-%         \item $n \approx 1200$
-%         \item $r \approx 70$
-%         \item $p \approx 70$
-%         \item $T \approx 400$
-%         \end{itemize}
-%         
-%   \end{frame}
-  
+     
 \end{document}
 
