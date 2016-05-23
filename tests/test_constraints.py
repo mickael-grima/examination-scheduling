@@ -17,7 +17,7 @@ import model.instance as ins
 import utils.tools as tools
 from model.linear_problem import LinearProblem
 from model.linear_one_variable_problem import LinearOneVariableProblem
-from model.cuting_plane_problem import ReducedProblem
+from model.cuting_plane_problem import ReducedProblem, CutingPlaneProblem
 
 
 class TestConstraints(unittest.TestCase):
@@ -44,28 +44,34 @@ class TestConstraints(unittest.TestCase):
         lprob = LinearProblem(data)
         loprob = LinearOneVariableProblem(data)
         rprob = ReducedProblem(data)
+        cprob = CutingPlaneProblem(data)
         lprob.optimize()
         loprob.optimize()
         rprob.optimize()
+        cprob.optimize()
         self.problems = {
             'OneExamPerPeriod': [
                 lprob,
                 loprob,
-                rprob
+                rprob,
+                cprob
             ],
             'EnoughSeat': [
                 lprob,
                 loprob,
-                rprob
+                rprob,
+                cprob
             ],
             'OneExamPeriodRoom': [
                 lprob,
                 loprob,
+                cprob
             ],
             'Conflicts': [
                 lprob,
                 loprob,
-                rprob
+                rprob,
+                cprob
             ]
         }
 
@@ -85,7 +91,7 @@ class TestConstraints(unittest.TestCase):
         for prob in self.problems['EnoughSeat']:
             x, y = tools.update_variable(prob)
             n, r, _ = tools.get_dimensions_from(x, y)
-            c, s, _, _, _ = tools.get_constants_from(prob)
+            c, s, _, _, _ = prob.get_constants()
             for i in range(n):
                 self.assertTrue(sum([x[i, k] * c[k] for k in range(r)]) >= s[i],
                                 msg="%s doesn't respect constraint for i=%s" % (prob.ModelName, i))
@@ -96,7 +102,7 @@ class TestConstraints(unittest.TestCase):
         for prob in self.problems['OneExamPeriodRoom']:
             x, y = tools.update_variable(prob)
             n, r, p = tools.get_dimensions_from(x, y)
-            _, _, _, T, _ = tools.get_constants_from(prob)
+            _, _, _, T, _ = prob.get_constants()
             for k in range(r):
                 for l in range(p):
                     self.assertTrue(sum(x[i, k] * y[i, l] for i in range(n)) <= T[k][l],
@@ -108,7 +114,7 @@ class TestConstraints(unittest.TestCase):
         for prob in self.problems['Conflicts']:
             x, y = tools.update_variable(prob)
             n, r, p = tools.get_dimensions_from(x, y)
-            _, _, Q, _, _ = tools.get_constants_from(prob)
+            _, _, Q, _, _ = prob.get_constants()
             for l in range(p):
                 self.assertTrue(sum([y[i, l] * y[j, l] * Q[i][j] for i, j in itertools.combinations(range(n), 2) if Q[i][j] == 1]) == 0,
                                 msg="%s doesn't respect constraint for l=%s" % (prob.ModelName, l))

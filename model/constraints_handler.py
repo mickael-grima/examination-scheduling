@@ -46,7 +46,7 @@ def test_one_exam_period_room(prob, **indices):
     prob.optimize()
     x, y = tools.update_variable(prob)
     n, r, p = tools.get_dimensions_from(x, y)
-    _, _, _, T, _ = tools.get_constants_from(prob)
+    _, _, _, T, _ = prob.get_constants()
     res = True
     if indices.get('k') is not None:
         k = indices.get('k')

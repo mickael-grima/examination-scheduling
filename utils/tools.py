@@ -58,15 +58,3 @@ def update_variable(problem):
     except:
         logging.exception("update_variable: the given problem doesn't have a function update_prob")
     return ({}, {})
-
-
-def get_constants_from(problem):
-    """ @param problem: either a problem inheriting from BaseProblem class or a guroby problem
-        Find the constants of the problem
-        @returns: c, s, Q, T, h
-    """
-    try:
-        return problem.constants['c'], problem.constants['s'], problem.constants['Q'], problem.constants['T'], problem.constants['h']
-    except:
-        logging.warning('get_constants_from: problem has no argument constants')
-        return ({} for i in range(5))

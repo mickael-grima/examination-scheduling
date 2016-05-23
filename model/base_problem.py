@@ -27,6 +27,16 @@ class BaseProblem(object):
         y = {key: get_value(var) for key, var in self.vars['y'].iteritems()}
         return x, y
 
+    def get_constants(self):
+        """ @returns: constants of the problem: c,s,Q,T,h
+        """
+        c = self.constants['c']
+        s = self.constants['s']
+        Q = self.constants['Q']
+        T = self.constants['T']
+        h = self.constants['h']
+        return c, s, Q, T, h
+
     def build_dimensions(self, data):
         return True
 
