@@ -2,15 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import division
-import sys
-import os
-PATHS = os.getcwd().split('/')
-PROJECT_PATH = ''
-for p in PATHS:
-    PROJECT_PATH += '%s/' % p
-    if p == 'examination-scheduling':
-        break
-sys.path.append(PROJECT_PATH)
+from time import time
+from random import random
 
 from GurobiModel.GurobiQ_v_2 import build_model as build_nonlinear_model
 from GurobiModel.GurobiLinear_v_1 import build_model as build_linear_model_1
@@ -20,15 +13,7 @@ from GurobiModel.GurobiLinear_v_4_Cliques import build_model as build_linear_mod
 from GurobiModel.GurobiLinear_v_5_changed_obj import build_model as build_linear_model_5
 from GurobiModel.GurobiLinear_v_6_removed_c6 import build_model as build_linear_model_6
 
-
-from model.non_linear_problem import NonLinearProblem
-
-from model.linear_problem import LinearProblem
-from model.non_linear_problem import NonLinearProblem
-
-from model.instance import build_random_data
 from model.instance import build_smart_random
-from time import time
 
 
 def compare(data):

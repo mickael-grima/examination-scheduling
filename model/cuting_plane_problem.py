@@ -10,12 +10,14 @@ import gurobipy as gb
 from utils.tools import convert_to_table
 
 
-class MasterProblem(MainProblem):
+class ReducedProblem(MainProblem):
     """ Master problem: without the third constraint
     """
-    def __init__(self, data, name='MasterProblem'):
-        super(MasterProblem, self).__init__(name=name)
+    def __init__(self, data, name='ReducedProblem'):
+        super(ReducedProblem, self).__init__(name=name)
         self.c = 0.5
+        self.ModelName = name
+
         self.build_problem(data)
 
     def build_variables(self):
@@ -25,7 +27,6 @@ class MasterProblem(MainProblem):
         n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
         self.vars.setdefault('x', {})
         self.vars.setdefault('y', {})
-        self.vars.setdefault('z', {})
         for i in range(n):
             for k in range(r):
                 # exam i in room k
@@ -77,7 +78,7 @@ class MasterProblem(MainProblem):
             gb.quicksum([self.constants['Q'][i][j] * gb.quicksum([self.constants['h'][l] * (self.vars['y'][i, l] - self.vars['y'][j, l]) * (self.vars['y'][i, l] - self.vars['y'][j, l]) for l in range(p)])
                          for i in range(n) for j in range(i + 1, n)])
         )
-        self.problem.setObjective(crit1 - crit2 * crit2, gb.GRB.MINIMIZE)
+        self.problem.setObjective(crit1 - crit2, gb.GRB.MINIMIZE)
         return True
 
     def __str__(self):
@@ -101,3 +102,37 @@ class MasterProblem(MainProblem):
             res += '%s=%s' % (name, str(consts))
             first = False
         return res
+
+
+class CutingPlaneProblem(object):
+    """ We generate the cuting plane algorithm
+    """
+    def __init__(self, data):
+        self.c = 0.5
+        self.reducedProblem = ReducedProblem(data)
+        # TODO constraint to add at each step
+        self.constraint = lambda x, y, i, j, k, l: x[j, k] + y[j, l] <= 3 - x[i, k] - y[i, l]
+
+    def add_constraint(self):
+        """ Add the constraint to have only one exam pro room pro period
+        """
+        pass
+
+    def has_violated_constraint(self):
+        """ Check if the constraint is violated
+        """
+        pass
+
+    def find_variable_violated_constraint(self):
+        """ Find the variable which violate the self.constraint
+        """
+        pass
+
+    def solve(self):
+        """ we run here the algorithm
+        """
+        self.optimize()
+        while self.has_violated_constraint():
+            var = self.find_variable_violated_constraint()
+            self.add_constraint(var)
+            self.optimize()

@@ -1,16 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-PATHS = os.getcwd().split('/')
-PROJECT_PATH = ''
-for p in PATHS:
-    PROJECT_PATH += '%s/' % p
-    if p == 'examination-scheduling':
-        break
-sys.path.append(PROJECT_PATH)
-
 import gurobipy as gb
 from model.main_problem import MainProblem
 from utils.tools import convert_to_table
@@ -20,7 +10,6 @@ class LinearProblem(MainProblem):
     def __init__(self, data, name='ExaminationProblem'):
         super(LinearProblem, self).__init__(name=name)
         self.c = 0.5  # criteria factor
-        self.available_constants = ['s', 'c', 'Q', 'T', 'h']  # every constants names have to be included in this list
 
         self.build_problem(data)
 

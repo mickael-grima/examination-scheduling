@@ -10,6 +10,7 @@ for p in paths:
     if p == 'examination-scheduling':
         break
 sys.path.append(path)
+
 import unittest
 from booth.colouring import ColorGraph
 
