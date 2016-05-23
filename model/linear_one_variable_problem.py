@@ -1,19 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-PATHS = os.getcwd().split('/')
-PROJECT_PATH = ''
-for p in PATHS:
-    PROJECT_PATH += '%s/' % p
-    if p == 'examination-scheduling':
-        break
-sys.path.append(PROJECT_PATH)
-
 import gurobipy as gb
 from model.main_problem import MainProblem
-import itertools
+from utils.tools import get_value
 
 
 class LinearOneVariableProblem(MainProblem):
@@ -22,8 +12,16 @@ class LinearOneVariableProblem(MainProblem):
         super(LinearOneVariableProblem, self).__init__(name=name)
         self.c = 0.5  # criteria factor
         self.available_constants = ['s', 'c', 'Q', 'T', 'h']  # every constants names have to be included in this list
+        self.ModelName = name
 
         self.build_problem(data)
+
+    def update_variable(self):
+        n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
+        x = {(i, k): 1.0 if sum([get_value(self.vars['x'][i, k, l]) for l in range(p)]) > 0 else 0.0
+             for i in range(n) for k in range(r)}
+        y = {(i, l): get_value(self.vars['y'][i, l]) for i in range(n) for l in range(p)}
+        return (x, y)
 
     def build_variables(self):
         """

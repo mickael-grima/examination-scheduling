@@ -1,16 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-PATHS = os.getcwd().split('/')
-PROJECT_PATH = ''
-for p in PATHS:
-    PROJECT_PATH += '%s/' % p
-    if p == 'examination-scheduling':
-        break
-sys.path.append(PROJECT_PATH)
-
 from base_problem import BaseProblem
 
 
@@ -18,6 +8,7 @@ class MainProblem(BaseProblem):
     def __init__(self, name='MainProblem'):
         super(MainProblem, self).__init__(name=name)
         self.available_constants = ['s', 'c', 'Q', 'T', 'h']
+        self.ModelName = name
 
     def build_dimensions(self, data):
         """ get the dimension from data

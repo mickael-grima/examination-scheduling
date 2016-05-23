@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
+
 
 def convert_to_table(variables, *dim):
     """ @param variables: dictionnary of variables
@@ -19,13 +21,52 @@ def convert_to_table(variables, *dim):
     return res
 
 
-def get_dimensions_from(variables):
+def get_dimensions_from(x, y):
     """ @param variables: variable from gurobi
         return the maximal number or each rank in the tuple key
     """
-    maxs = {}
-    for key, _ in variables.iteritems():
-        for i in range(len(key)):
-            maxs.setdefault(i, key[i])
-            maxs[i] = max(key[i], maxs[i])
-    return [value for _, value in maxs.iteritems()]
+    n, r, p = set(), set(), set()
+    for key, _ in x.iteritems():
+        n.add(key[0])
+        r.add(key[1])
+    for key, _ in y.iteritems():
+        n.add(key[0])
+        p.add(key[1])
+    return len(n), len(r), len(p)
+
+
+def get_value(var):
+        """ Return the value of var if possible, else 0
+        """
+        try:
+            return var.X
+        except Exception as e:
+            logging.warning(str(e))
+            return 0.0
+
+
+def update_variable(problem):
+    """ @param problem: either a problem inheriting from BaseProblem class or a guroby problem
+        Transform the variable of the given problem to the two following variables:
+                    x[i, k]: 1 if exam i is taking place in room k
+                    y[i, l]: 1 if exam i happens during period l
+        @returns: x, y
+    """
+    # problem from Base_problem class
+    try:
+        return problem.update_variable()
+    except:
+        logging.exception("update_variable: the given problem doesn't have a function update_prob")
+    return ({}, {})
+
+
+def get_constants_from(problem):
+    """ @param problem: either a problem inheriting from BaseProblem class or a guroby problem
+        Find the constants of the problem
+        @returns: c, s, Q, T, h
+    """
+    try:
+        return problem.constants['c'], problem.constants['s'], problem.constants['Q'], problem.constants['T'], problem.constants['h']
+    except:
+        logging.warning('get_constants_from: problem has no argument constants')
+        return ({} for i in range(5))
