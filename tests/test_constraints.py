@@ -17,7 +17,7 @@ import model.instance as ins
 import utils.tools as tools
 from model.linear_problem import LinearProblem
 from model.linear_one_variable_problem import LinearOneVariableProblem
-from model.cuting_plane_problem import ReducedProblem, CutingPlaneProblem
+from model.cuting_plane_problem import ReducedProblem
 
 
 class TestConstraints(unittest.TestCase):
@@ -41,25 +41,31 @@ class TestConstraints(unittest.TestCase):
                   [1, 1, 0]],  # Opening times for rooms
             'h': [0, 2, 4]  # number of hours before period
         }
+        lprob = LinearProblem(data)
+        loprob = LinearOneVariableProblem(data)
+        rprob = ReducedProblem(data)
+        lprob.optimize()
+        loprob.optimize()
+        rprob.optimize()
         self.problems = {
             'OneExamPerPeriod': [
-                LinearProblem(data),
-                LinearOneVariableProblem(data),
-                ReducedProblem(data)
+                lprob,
+                loprob,
+                rprob
             ],
             'EnoughSeat': [
-                LinearProblem(data),
-                LinearOneVariableProblem(data),
-                ReducedProblem(data)
+                lprob,
+                loprob,
+                rprob
             ],
             'OneExamPeriodRoom': [
-                LinearProblem(data),
-                LinearOneVariableProblem(data),
+                lprob,
+                loprob,
             ],
             'Conflicts': [
-                LinearProblem(data),
-                LinearOneVariableProblem(data),
-                ReducedProblem(data)
+                lprob,
+                loprob,
+                rprob
             ]
         }
 
@@ -67,7 +73,6 @@ class TestConstraints(unittest.TestCase):
         """ Test here the constraint: one exam per period
         """
         for prob in self.problems['OneExamPerPeriod']:
-            prob.optimize()
             x, y = tools.update_variable(prob)
             n, _, p = tools.get_dimensions_from(x, y)
             for i in range(n):
@@ -78,7 +83,6 @@ class TestConstraints(unittest.TestCase):
         """ Test here the constraint: enough seats for each exam
         """
         for prob in self.problems['EnoughSeat']:
-            prob.optimize()
             x, y = tools.update_variable(prob)
             n, r, _ = tools.get_dimensions_from(x, y)
             c, s, _, _, _ = tools.get_constants_from(prob)
@@ -90,7 +94,6 @@ class TestConstraints(unittest.TestCase):
         """ Test here the constraint: For each room and period we have only one exam
         """
         for prob in self.problems['OneExamPeriodRoom']:
-            prob.optimize()
             x, y = tools.update_variable(prob)
             n, r, p = tools.get_dimensions_from(x, y)
             _, _, _, T, _ = tools.get_constants_from(prob)
@@ -103,7 +106,6 @@ class TestConstraints(unittest.TestCase):
         """ Test here the constraint: no student has to write two exams or more at the same time
         """
         for prob in self.problems['Conflicts']:
-            prob.optimize()
             x, y = tools.update_variable(prob)
             n, r, p = tools.get_dimensions_from(x, y)
             _, _, Q, _, _ = tools.get_constants_from(prob)
