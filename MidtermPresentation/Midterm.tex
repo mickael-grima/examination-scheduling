@@ -76,7 +76,7 @@ progressbar=frametitle,
 
 \section{Problem Formulation}
 
-\begin{frame}{Problem} 
+\begin{frame}[c]{Problem} 
        Find a good examination schedule for the exam period of the TUM.
 \end{frame}
 
@@ -97,7 +97,7 @@ progressbar=frametitle,
       	\ba
    		x_{i,k,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$ in room $k$ } \\ 
    		0, & \mbox{otherwise} \end{array} \right.  \\
-   		\uncover<2->{
+		\uncover<2->{
    		y_{i,l} &:= \left\{ \begin{array}{cl} 1, & \mbox{if exam $i$ is written in period $l$} \\ 
    		0, & \mbox{otherwise} \end{array} \right.
    		}
@@ -107,9 +107,10 @@ progressbar=frametitle,
 \begin{frame}{Constraints}
   	\begin{itemize} 
 	    \item Connecting the variables $x$ and $y$:
+	    \pause
 	    \ba
-	   	(1) & \sum_{\mbox{\small{ rooms $k$}}} x_{i,k,l} &&\leq y_{i,l} \cdot M &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  \\
-	    \uncover<2->{
+	   	(1) & \sum_{\mbox{\small{ rooms $k$}}} x_{i,k,l} &&\leq y_{i,l} \cdot M &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  \\[4mm]
+	    \uncover<3->{
 	    (2) & \sum_{\mbox{\small{ rooms $k$}}} x_{i,k,l} &&\geq y_{i,l} &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}
 	    }
    		\ea
@@ -119,9 +120,10 @@ progressbar=frametitle,
 \begin{frame}{Constraints}
 	\begin{itemize}                     
   		\item Each exam is planned in exactly one period:
+  		\pause
 		\ba
-		(3) & \sum_{\mbox{\small{ periods $l$}}} y_{i,l} &&= 1 &&\forall \mbox{ exams $i$ } \\
-		\uncover<2->{
+		(3) & \sum_{\mbox{\small{ periods $l$}}} y_{i,l} &&= 1 &&\forall \mbox{ exams $i$ } \\[4mm]
+		\uncover<3->{
 		\text{c.f. }(2) & \sum_{\mbox{\small{ rooms $k$}}} x_{i,k,l}  &&\geq y_{i,l} &&\forall \mbox{ exams $i$, } \forall \mbox{\small{ periods $l$}}
 		}
 		\ea
@@ -131,6 +133,7 @@ progressbar=frametitle,
 \begin{frame}{Constraints}
     \begin{itemize} 
         \item There are enough seats for the students in the exam rooms:
+        \pause
         \ba
         (4) & \sum_{\substack{\mbox{\small{ periods $l$, }} \\ \mbox{\small{ rooms $k$ }}}} c_k \cdot x_{i,k,l} &&\geq s_i &&\forall \mbox{\small{ exams $i$}}
         \ea
@@ -145,6 +148,7 @@ progressbar=frametitle,
 \begin{frame}{Constraints}
     \begin{itemize}    
         \item In every room there is only one exam at a given time:
+        \pause
         \ba
         (5) & \sum_{\mbox{\small{ exams $i$ }}} x_{i,k,l} &&\leq 1 &&\forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
         \ea
@@ -154,8 +158,9 @@ progressbar=frametitle,
 \begin{frame}{Constraints}
     \begin{itemize}
         \item There are no conflicts for students taking multiple exams:
+        \pause
         \ba
-        (6) & \sum_{\substack{\mbox{\footnotesize{ exams $j$,}} \\  \mbox{\footnotesize{$i$ conflicts with $j$}} }}y_{j,l} &&\leq (1-y_{i,l}) \cdot M &&\forall \mbox{\footnotesize{ exams $i$, }} \forall \mbox{\footnotesize{ periods $l$ }}
+        (6) & \sum_{\substack{\mbox{\footnotesize{ exams $j$,}} \\  \mbox{\footnotesize{$j$ conflicts with $i$}} }}y_{j,l} &&\leq (1-y_{i,l}) \cdot M &&\forall \mbox{\footnotesize{ exams $i$, }} \forall \mbox{\footnotesize{ periods $l$ }}
         \ea
     \end{itemize}
 \end{frame}
@@ -198,10 +203,14 @@ progressbar=frametitle,
 \begin{frame}{Finding a feasible starting point}
     \begin{itemize}
         \item Use graph-coloring to schedule exams without conflicts.
+        \pause
         \item Plan difficult exams first.
+        \pause
         \item Calculate difficulty by:
+        \pause
         \begin{itemize}
         	\item Number of students taking exam
+        	\pause
         	\item Identifying cliques in conflict graph	
         \end{itemize}
     \end{itemize}
