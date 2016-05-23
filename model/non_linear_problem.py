@@ -1,16 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-PATHS = os.getcwd().split('/')
-PROJECT_PATH = ''
-for p in PATHS:
-    PROJECT_PATH += '%s/' % p
-    if p == 'examination-scheduling':
-        break
-sys.path.append(PROJECT_PATH)
-
 import gurobipy as gb
 from model.main_problem import MainProblem
 import itertools
@@ -81,7 +71,6 @@ class NonLinearProblem(MainProblem):
         obj2 = [[gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] - self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) for i in range(n)] for j in range(n)]
         obj = obj1 - gb.quicksum([gb.quicksum([self.constants['Q'][i][j] * obj2[i][j] * obj2[i][j] for i, j in itertools.combinations(range(n), 2) if self.constants['Q'][i][j] == 1])])
         self.problem.setObjective(obj, gb.GRB.MINIMIZE)
-        self.problem.optimize()
         return True
 
     def optimize(self):

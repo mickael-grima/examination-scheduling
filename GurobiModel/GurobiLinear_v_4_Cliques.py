@@ -11,18 +11,44 @@ sys.path.append(PROJECT_PATH)
 import itertools
 import random
 import networkx as nx
+import math 
     
 from gurobipy import Model, quicksum, GRB, GurobiError
 from model.instance import build_random_data
 
 '''
 
-Model GurobiLinearAdvanced has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
+	-Model GurobiLinear_v_3 has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
+	-Model GurobiLinear_v_4_Cliques adds Clique constraints for conflicts only one exam in a clique conflict can take place at a time
+	-Model GurobiLinear_v_4_Cliques changed r in BIG-M-Method  to 12 so far
 
 '''
 
+'''
+	***************  POSSIBLE IMPROVEMENTS    ***************
+	
+	-Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
+	-Change objective function:
+		-our current objective funcion fails for cliques (all exams have conflicts) for example 
+			*exam1 on day 1
+			*exam2 on day 5
+			*exam3 on day 10
+			*Our current objective function |5-1|+|10-5|+|10-1| = 18
+			*exam1 on day 1
+			*exam2 on day 1
+			*exam3 on day 10
+			*Has exactly the same objective function of 18 but clearly the first schedule is by far better
+	-Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similiar [to discuss]
+	-Idea for linking variables x and y
+		*c1b creates l*i constraints this could be reduced to only i constraints
+		*reason
+			+"c1a" says if one exam takes place in some period than y_i,l cannot be zero 
+			+ then constraint c2 forces all other y_i,l to be 0 anyway
+			+ now say for all i sum(x_i,k,l for all k and for all l) >= 1 this forces at least one y_i,l to be 1 - this only has i constraints but more columns
+'''
+
 # Create variables
-def build_model(data, n_cliques = 2):
+def build_model(data, n_cliques = 0):
     
     # Load Data Format
     n = data['n']
@@ -72,18 +98,12 @@ def build_model(data, n_cliques = 2):
     print("c1: connecting variables x and y")
     for i in range(n):
         for l in range(p):
-            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= r * y[i, l], "c1a")
+            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= 12 * y[i, l], "c1a")
             model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) >= y[i, l], "c1b")
             
     print("c2: each exam at exactly one time")
     for i in range(n):
         model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1 , "c2")
-
-    """
-    Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot be written at the same time
-            -then instead of saying of one exam is written in a given period all conflicts cannot be written in the same period we could say
-            -for all exams in a given clique only one can be written
-    """
     
     print("c3: avoid conflicts")
     for i in range(n):
@@ -104,7 +124,8 @@ def build_model(data, n_cliques = 2):
     print("c6: any multi room exam takes place at one moment in time")
     for i in range(n):
         for l in range(p):
-            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * r, "c6")
+            Mr = 10 if 10 < s[i]/75 else s[i]/75
+            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * 12, "c6")
     
     print("c7: resolving the absolute value")
     for i in range(n):
@@ -128,9 +149,10 @@ def build_model(data, n_cliques = 2):
     
     for counter, clique in itertools.izip(range(n_cliques), cliques):
         for l in range(l):
-            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique")
-        
-    print("OK")
+            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
+            print "c_lique_%s_%s_%s" % (counter,clique,l)
+
+    print("All constrained built - OK")
 
     # objective: minimize number of used rooms and maximize the distance of exams
     print("Building Objective...")
@@ -145,20 +167,35 @@ def build_model(data, n_cliques = 2):
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
-
+    #model.params.perturbvalue = 0
+    #model.params.bariterlimit = 0
+#    model.params.iterationlimit = 10 # simplex iterations
+#    model.params.nodelimit = 1 # MIP nodes visited
+#    model.params.solutionlimit = 1 #MIP number of feasible solutions
+    #model.params.timelimit = 60 # seconds
+    #model.params.heuristics = 0.0
+    #model.params.simplexpricing = 1 # Automatic (-1), Partial Pricing (0), Steepest Edge (1), Devex (2), and Quick-Start Steepest Edge (3).
+    #model.params.presolve = 0
+    #model.params.cliquecuts = 0
+    #model.params.rins = 0
+    #model.params.submipnodes = 0
+    #model.params.zeroobjnodes = 0
+    #model.setParam("MinRelNodes", 0);
+    #model.setParam("PumpPasses", 0);
+    model.setParam("Seed", 42);
     # return
     return(model)
 
 
 if __name__ == "__main__":
     
-    n = 20
+    n = 50
     r = 20
     p = 20  
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.9)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.05)
     exams = [ 'Ana%s' % (i+1) for i in range(n) ]
     rooms = ['MI%s' % (k+1) for k in range(r)]
     

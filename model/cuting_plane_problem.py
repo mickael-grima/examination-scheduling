@@ -1,15 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import gurobipy as gb
+# This script contains a cuting plane approach: We take the LinearProblem and supress the third constraint
+# At each step we add a part from this third constraint.
+# If the third constraint isn't violated we have the optimal solution
+
 from model.main_problem import MainProblem
+import gurobipy as gb
 from utils.tools import convert_to_table
 
 
-class LinearProblem(MainProblem):
-    def __init__(self, data, name='ExaminationProblem'):
-        super(LinearProblem, self).__init__(name=name)
-        self.c = 0.5  # criteria factor
+class ReducedProblem(MainProblem):
+    """ Master problem: without the third constraint
+    """
+    def __init__(self, data, name='ReducedProblem'):
+        super(ReducedProblem, self).__init__(name=name)
+        self.c = 0.5
+        self.ModelName = name
 
         self.build_problem(data)
 
@@ -20,7 +27,6 @@ class LinearProblem(MainProblem):
         n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
         self.vars.setdefault('x', {})
         self.vars.setdefault('y', {})
-        self.vars.setdefault('z', {})
         for i in range(n):
             for k in range(r):
                 # exam i in room k
@@ -28,8 +34,6 @@ class LinearProblem(MainProblem):
             for l in range(p):
                 # exam i during period l
                 self.vars['y'][i, l] = self.problem.addVar(vtype=gb.GRB.BINARY, name='y[%s, %s]' % (i, l))
-            for j in range(n):
-                self.vars['z'][i, j] = self.problem.addVar(vtype=gb.GRB.INTEGER, name='z[%s, %s]' % (i, j))
         return True
 
     def build_constraints(self):
@@ -60,38 +64,21 @@ class LinearProblem(MainProblem):
                         # We use room k if and only if the room is open
                         constraint = (self.vars['x'][i, k] + self.vars['y'][i, l] <= 1)
                         self.problem.addConstr(constraint, "c3")
-            for j in range(i + 1, n):
-                for k in range(r):
-                    for l in range(p):
-                        # One room k can have only exam for a given period l
-                        constraint = (
-                            self.vars['x'][j, k] + self.vars['y'][j, l] <=
-                            3 - self.vars['x'][i, k] - self.vars['y'][i, l]
-                        )
-                        self.problem.addConstr(constraint, "c4")
-                # Criteria constraint for 'z'
-                constraint = (
-                    self.vars['z'][i, j] >= gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] for l in range(p)]) -
-                    gb.quicksum([self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)])
-                )
-                self.problem.addConstr(constraint, "c5")
-                constraint = (
-                    self.vars['z'][i, j] >= gb.quicksum([self.vars['y'][j, l] * self.constants['h'][l] for l in range(p)]) -
-                    gb.quicksum([self.vars['y'][i, l] * self.constants['h'][l] for l in range(p)])
-                )
-                self.problem.addConstr(constraint, "c6")
         return True
 
     def build_objectif(self):
         """ @param n, r, p: number of exams, rooms and periods
             Build the constants of the problem from the data
         """
-        n, r = self.dimensions['n'], self.dimensions['r']
-        crit = (
-            self.c * gb.quicksum([self.vars['x'][i, k] * self.constants['s'][i] for i in range(n) for k in range(r)]) -
-            gb.quicksum([self.vars['z'][i, j] for i in range(n) for j in range(i + 1, n)])
+        n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
+        crit1 = (
+            self.c * gb.quicksum([self.vars['x'][i, k] * self.constants['s'][i] for i in range(n) for k in range(r)])
         )
-        self.problem.setObjective(crit, gb.GRB.MINIMIZE)
+        crit2 = (
+            gb.quicksum([self.constants['Q'][i][j] * gb.quicksum([self.constants['h'][l] * (self.vars['y'][i, l] - self.vars['y'][j, l]) * (self.vars['y'][i, l] - self.vars['y'][j, l]) for l in range(p)])
+                         for i in range(n) for j in range(i + 1, n)])
+        )
+        self.problem.setObjective(crit1 - crit2, gb.GRB.MINIMIZE)
         return True
 
     def __str__(self):
@@ -115,3 +102,37 @@ class LinearProblem(MainProblem):
             res += '%s=%s' % (name, str(consts))
             first = False
         return res
+
+
+class CutingPlaneProblem(object):
+    """ We generate the cuting plane algorithm
+    """
+    def __init__(self, data):
+        self.c = 0.5
+        self.reducedProblem = ReducedProblem(data)
+        # TODO constraint to add at each step
+        self.constraint = lambda x, y, i, j, k, l: x[j, k] + y[j, l] <= 3 - x[i, k] - y[i, l]
+
+    def add_constraint(self):
+        """ Add the constraint to have only one exam pro room pro period
+        """
+        pass
+
+    def has_violated_constraint(self):
+        """ Check if the constraint is violated
+        """
+        pass
+
+    def find_variable_violated_constraint(self):
+        """ Find the variable which violate the self.constraint
+        """
+        pass
+
+    def solve(self):
+        """ we run here the algorithm
+        """
+        self.optimize()
+        while self.has_violated_constraint():
+            var = self.find_variable_violated_constraint()
+            self.add_constraint(var)
+            self.optimize()
