@@ -12,13 +12,12 @@ from utils.tools import convert_to_table, get_dimensions_from
 def print_variables(x, y):
     """ x, y have to be 2-dimensional variables
     """
+    n, r, p = get_dimensions_from(x, y)
     res = 'VARIABLES: \n'
     # ----- x -------
     res += '-------- x --------  lines=rooms, columns=exams\n'
-    dims = get_dimensions_from(x)
-    res += convert_to_table(x, dims[0], dims[1])
+    res += convert_to_table(x, n, r)
     # ----- y -------
     res += '-------- y --------  lines=periods, columns=exams\n'
-    dims = get_dimensions_from(y)
-    res += convert_to_table(y, dims[0], dims[1])
+    res += convert_to_table(y, n, p)
     return res

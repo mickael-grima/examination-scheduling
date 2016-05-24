@@ -3,6 +3,7 @@
 
 import logging
 import gurobipy as gb
+from utils.tools import get_value
 
 
 class BaseProblem(object):
@@ -14,9 +15,27 @@ class BaseProblem(object):
         self.constants = {}
         self.dimensions = {}
         self.problem = gb.Model(name)
+        self.ModelName = name
 
         self.available_constants = []
         self.logger = logging
+
+    def update_variable(self):
+        """ Rewrite variable in order to have only the values
+        """
+        x = {key: get_value(var) for key, var in self.vars['x'].iteritems()}
+        y = {key: get_value(var) for key, var in self.vars['y'].iteritems()}
+        return x, y
+
+    def get_constants(self):
+        """ @returns: constants of the problem: c,s,Q,T,h
+        """
+        c = self.constants['c']
+        s = self.constants['s']
+        Q = self.constants['Q']
+        T = self.constants['T']
+        h = self.constants['h']
+        return c, s, Q, T, h
 
     def build_dimensions(self, data):
         return True
@@ -56,9 +75,9 @@ class BaseProblem(object):
         """
         self.problem.optimize()
         try:
-           self.objVal = self.problem.objVal
+            self.objVal = self.problem.objVal
         except:
-           self.objVal = 0
+            self.objVal = 0
 
     def __str__(self):
         # Dimensions

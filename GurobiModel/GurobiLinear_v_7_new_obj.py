@@ -99,7 +99,7 @@ def build_model(data, n_cliques = 0):
     # integrate new variables
     model.update() 
 
-    # adding variables as found in MidTerm.pdf
+    # adding constraints as found in MidTerm.pdf
     print("Building constraints...")    
     
     print("c1: connecting variables x and y")

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-valid_test=(colouring model)
+valid_test=(colouring model constraints)
 param=`echo $1`
 
 DIR=""

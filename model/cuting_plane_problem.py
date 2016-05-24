@@ -8,14 +8,17 @@
 from model.main_problem import MainProblem
 import gurobipy as gb
 from utils.tools import convert_to_table
+from model.constraints_handler import test_one_exam_period_room
 
 
-class MasterProblem(MainProblem):
+class ReducedProblem(MainProblem):
     """ Master problem: without the third constraint
     """
-    def __init__(self, data, name='MasterProblem'):
-        super(MasterProblem, self).__init__(name=name)
+    def __init__(self, data, name='ReducedProblem'):
+        super(ReducedProblem, self).__init__(name=name)
         self.c = 0.5
+        self.ModelName = name
+
         self.build_problem(data)
 
     def build_variables(self):
@@ -25,7 +28,6 @@ class MasterProblem(MainProblem):
         n, r, p = self.dimensions['n'], self.dimensions['r'], self.dimensions['p']
         self.vars.setdefault('x', {})
         self.vars.setdefault('y', {})
-        self.vars.setdefault('z', {})
         for i in range(n):
             for k in range(r):
                 # exam i in room k
@@ -77,7 +79,7 @@ class MasterProblem(MainProblem):
             gb.quicksum([self.constants['Q'][i][j] * gb.quicksum([self.constants['h'][l] * (self.vars['y'][i, l] - self.vars['y'][j, l]) * (self.vars['y'][i, l] - self.vars['y'][j, l]) for l in range(p)])
                          for i in range(n) for j in range(i + 1, n)])
         )
-        self.problem.setObjective(crit1 - crit2 * crit2, gb.GRB.MINIMIZE)
+        self.problem.setObjective(crit1 - crit2, gb.GRB.MINIMIZE)
         return True
 
     def __str__(self):
@@ -101,3 +103,51 @@ class MasterProblem(MainProblem):
             res += '%s=%s' % (name, str(consts))
             first = False
         return res
+
+
+class CutingPlaneProblem(object):
+    """ We generate the cuting plane algorithm
+    """
+    def __init__(self, data):
+        self.c = 0.5
+        self.reducedProblem = ReducedProblem(data)
+        self.ModelName = self.reducedProblem.ModelName
+        self.constraint = lambda x, y, i, j, k, l: x[j, k] + y[j, l] <= 3 - x[i, k] - y[i, l]
+
+    def update_variable(self):
+        return self.reducedProblem.update_variable()
+
+    def get_constants(self):
+        return self.reducedProblem.get_constants()
+
+    def add_constraint(self, k, l):
+        """ Add the constraint to have only one exam pro room pro period
+        """
+        x = self.reducedProblem.vars['x']
+        y = self.reducedProblem.vars['y']
+        n = self.reducedProblem.dimensions['n']
+        for i in range(n):
+            for j in range(i + 1, n):
+                self.reducedProblem.problem.addConstr(self.constraint(x, y, i, j, k, l))
+
+    def find_variable_violated_constraint(self):
+        """ Find the variable which violate the self.constraint
+            @returns: k, l
+        """
+        r = self.reducedProblem.dimensions['r']
+        p = self.reducedProblem.dimensions['p']
+        for k in range(r):
+            for l in range(p):
+                if not test_one_exam_period_room(self.reducedProblem, k=k, l=l):
+                    return k, l
+        return -1, -1
+
+    def optimize(self):
+        """ we run here the algorithm
+        """
+        self.reducedProblem.optimize()
+        k, l = self.find_variable_violated_constraint()
+        while k >= 0 and l >= 0:
+            self.add_constraint(k, l)
+            self.reducedProblem.optimize()
+            k, l = self.find_variable_violated_constraint()
