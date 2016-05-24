@@ -1,5 +1,5 @@
 %!TEX program = xelatex
-\documentclass[12pt,t]{beamer}
+\documentclass[12pt,t,leqno]{beamer}
 
 \usetheme[
 progressbar=frametitle,
@@ -107,12 +107,13 @@ progressbar=frametitle,
 \begin{frame}{Constraints}
   	\begin{itemize} 
 	    \item Connecting the variables $x$ and $y$:
-	    \pause
+	    \uncover<2->{
 	    \ba
-	   	(1) & \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l} &&\leq y_{i,l} \cdot M &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}  \\[4mm]
+	   	& \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l} &&\leq y_{i,l} \cdot M &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}} \tag{1} \\[4mm]}
 	    \uncover<3->{
-	    (2) & \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l} &&\geq y_{i,l} &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}}
+	    & \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l} &&\geq y_{i,l} &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}} \tag{2} \\
 	    }
+	    \notag
    		\ea
    	\end{itemize}
 \end{frame}
@@ -120,12 +121,13 @@ progressbar=frametitle,
 \begin{frame}{Constraints}
 	\begin{itemize}                     
   		\item Each exam is planned in exactly one period:
-  		\pause
+  		\uncover<2->{
 		\ba
-		(3) & \sum_{\mbox{\scriptsize{ periods $l$}}} y_{i,l} &&= 1 &&\forall \mbox{ exams $i$ } \\[4mm]
+		& \sum_{\mbox{\scriptsize{ periods $l$}}} y_{i,l} &&= 1 &&\forall \mbox{ exams $i$ } \tag{3} \\[4mm]}
 		\uncover<3->{
-		\text{c.f. }(2) & \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l}  &&\geq y_{i,l} &&\forall \mbox{ exams $i$, } \forall \mbox{\small{ periods $l$}}
+		& \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l}  &&\geq y_{i,l} &&\forall \mbox{ exams $i$, } \forall \mbox{\small{ periods $l$}} \tag{c.f. 2} \\ 
 		}
+		\notag
 		\ea
  	\end{itemize}
 \end{frame}
@@ -135,7 +137,7 @@ progressbar=frametitle,
         \item There are enough seats for the students in the exam rooms:
         \pause
         \ba
-        (4) & \sum_{\substack{\mbox{\scriptsize{ periods $l$, }} \\ \mbox{\scriptsize{ rooms $k$ }}}} c_k \cdot x_{i,k,l} &&\geq s_i &&\forall \mbox{\small{ exams $i$}}
+        & \sum_{\substack{\mbox{\scriptsize{ periods $l$, }} \\ \mbox{\scriptsize{ rooms $k$ }}}} c_k \cdot x_{i,k,l} &&\geq s_i &&\forall \mbox{\small{ exams $i$}} \tag{4}
         \ea
         
         \ba
@@ -150,7 +152,7 @@ progressbar=frametitle,
         \item In every room there is only one exam at a given time:
         \pause
         \ba
-        (5) & \sum_{\mbox{\scriptsize{ exams $i$ }}} x_{i,k,l} &&\leq 1 &&\forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }}
+        & \sum_{\mbox{\scriptsize{ exams $i$ }}} x_{i,k,l} &&\leq 1 &&\forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }} \tag{5}
         \ea
     \end{itemize}
 \end{frame}
@@ -160,7 +162,7 @@ progressbar=frametitle,
         \item There are no conflicts for students taking multiple exams:
         \pause
         \ba
-        (6) & \sum_{\substack{\mbox{\scriptsize{ exams $j$,}} \\  \mbox{\scriptsize{$j$ conflicts with $i$}} }}y_{j,l} &&\leq (1-y_{i,l}) \cdot M &&\forall \mbox{\footnotesize{ exams $i$, }} \forall \mbox{\footnotesize{ periods $l$ }}
+        & \sum_{\substack{\mbox{\scriptsize{ exams $j$,}} \\  \mbox{\scriptsize{$j$ conflicts with $i$}} }}y_{j,l} &&\leq (1-y_{i,l}) \cdot M &&\forall \mbox{\footnotesize{exams $i$, }} \forall \mbox{\footnotesize{periods $l$ }} \tag{6}
         \ea
     \end{itemize}
 \end{frame}
@@ -171,7 +173,7 @@ progressbar=frametitle,
 	\begin{itemize}
         \item Minimize the total number of rooms:
         \ba
-        (a) & \min \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} 
+        & \min \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} \tag{a}
         \ea
 	\end{itemize}
 \end{frame}
@@ -180,7 +182,7 @@ progressbar=frametitle,
 	\begin{itemize}
 		\item Maximize the time between two exams:
 		\ba
-		(b) & \max \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j}
+		& \max \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j} \tag{b}
 		\ea
 		
 		\ba
@@ -193,7 +195,7 @@ progressbar=frametitle,
     \begin{itemize}	
     	\item Combine the previous two objective functions using a weighting factor $\gamma > 0$:
 	    \ba
-	    (a+b) & \min \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} \ - \ \gamma \cdot \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j}
+	    & \min \sum_{\substack{\mbox{\scriptsize{ exams $i$,}} \\ \mbox{\scriptsize{ rooms $k$,}} \\ \mbox{\scriptsize{ periods $l$}}}} x_{i,k,l} \ - \ \gamma \cdot \sum_{\substack{\mbox{\scriptsize{ exams $i,j$}} \\ \mbox{\scriptsize{$i$ conflicts with $j$}} }}   d_{i,j} \tag{a,b}
 	    \ea
 	\end{itemize}
 \end{frame}
