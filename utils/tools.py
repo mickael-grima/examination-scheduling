@@ -1,7 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+import os
+paths = os.getcwd().split('/')
+path = ''
+for p in paths:
+    path += '%s/' % p
+    if p == 'examination-scheduling':
+        break
+sys.path.append(path)
+
 import logging
+from gurobipy import Model
 
 
 def convert_to_table(variables, *dim):
@@ -45,7 +56,7 @@ def get_value(var):
             return 0.0
 
 
-def update_variable(problem):
+def update_variable(problem, **dimensions):
     """ @param problem: either a problem inheriting from BaseProblem class or a guroby problem
         Transform the variable of the given problem to the two following variables:
                     x[i, k]: 1 if exam i is taking place in room k
@@ -53,8 +64,26 @@ def update_variable(problem):
         @returns: x, y
     """
     # problem from Base_problem class
+    n = dimensions.get('n', 0)
+    r = dimensions.get('r', 0)
+    p = dimensions.get('p', 0)
     try:
-        return problem.update_variable()
+        if problem.__class__.__name__.endswith('Problem'):
+            return problem.update_variable()
+        elif issubclass(problem.__class__, Model):
+            try:
+                try:
+                    x = {(i, k): 1.0 if sum([problem.getVarByName("x_%s_%s_%s" % (i, k, l)).X > 0 for l in range(p)]) else 0.0
+                         for i in range(n) for k in range(r)}
+                except:
+                    x = {(i, k): problem.getVarByName("x_%s_%s" % (i, k)) for i in range(n) for k in range(r)}
+                y = {(i, l): problem.getVarByName("y_%s_%s" % (i, l)).X for i in range(n) for l in range(p)}
+            except:
+                logging.warning("update_variable: problem %s has not been solved" % problem.ModelName)
+                x = {(i, k): 0.0 for i in range(n) for k in range(r)}
+                y = {(i, l): 0.0 for i in range(n) for l in range(p)}
+            return x, y
     except:
-        logging.exception("update_variable: the given problem doesn't have a function update_prob")
+        logging.exception("update_variable: impossible to update the variable of the given problem %s"
+                          % problem.ModelName)
     return ({}, {})

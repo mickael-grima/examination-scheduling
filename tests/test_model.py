@@ -16,6 +16,7 @@ from model import linear_problem as lpb
 from model import colouring_problem as cpb
 from model import linear_one_variable_problem as lopb
 from model import non_linear_problem as nlpb
+from model.instance import build_small_input
 
 
 class TestSolvers(unittest.TestCase):
@@ -23,22 +24,7 @@ class TestSolvers(unittest.TestCase):
     """
 
     def setUp(self):
-        self.small_input = {
-            'n': 5,  # 5 exams
-            'r': 3,  # 3 rooms
-            'p': 3,  # 3 periods
-            's': [5, 3, 4, 2, 1],  # number of students per exams
-            'c': [5, 4, 1],  # number os seats per rooms
-            'Q': [[0, 0, 0, 1, 1],
-                  [0, 0, 0, 1, 0],
-                  [0, 0, 0, 1, 1],
-                  [1, 1, 1, 0, 1],
-                  [1, 0, 1, 1, 0]],  # Conflicts matrix
-            'T': [[1, 0, 1],
-                  [1, 1, 0],
-                  [1, 1, 0]],  # Opening times for rooms
-            'h': [0, 2, 4]  # number of hours before period
-        }
+        self.small_input = build_small_input()
         self.lprob = lpb.LinearProblem(self.small_input)
         self.cprob = cpb.ColouringGraphProblem()
         self.loprob = lopb.LinearOneVariableProblem(self.small_input)
