@@ -1,3 +1,4 @@
+
 import sys
 import os
 PATHS = os.getcwd().split('/')
@@ -54,7 +55,9 @@ def build_model(data, n_cliques = 0):
     T = data['T']
     # sR = find_smallest_room_to_fit_in(n=n,s=s,r=r,c=c)
     #print sR
-
+    for k in range(r):
+        for l in range(p):
+            T[k][l] = 1
     
     model = Model("ExaminationScheduling")
     
@@ -155,7 +158,7 @@ def build_model(data, n_cliques = 0):
     # objective: minimize number of used rooms
     print("Building Objective...")
     gamma = 1
-    obj1 = quicksum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
+    obj1 = quicksum([ x[i,k,l]/s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
     #obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
 
     #model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
@@ -173,13 +176,13 @@ def build_model(data, n_cliques = 0):
 
 if __name__ == "__main__":
     
-    n = 50
+    n = 170
     r = 20
-    p = 20  
+    p = 10
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.05)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.5)
     exams = [ 'Ana%s' % (i+1) for i in range(n) ]
     rooms = ['MI%s' % (k+1) for k in range(r)]
     
@@ -189,9 +192,9 @@ if __name__ == "__main__":
         
         model.optimize()
         
-        for v in model.getVars():
-            if v.x == 1 and ("x" in v.varName or "y" in v.varName): 
-                print('%s %g' % (v.varName, v.x))
+        #for v in model.getVars():
+            #if v.x == 1 and ("x" in v.varName or "y" in v.varName): 
+                #print('%s %g' % (v.varName, v.x))
 
         print('Obj: %g' % model.objVal)
 
