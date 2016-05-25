@@ -105,12 +105,13 @@ progressbar=frametitle,
 \end{frame}
 
 \begin{frame}{Constraints}
-  	\begin{itemize} 
+  	\begin{itemize}
+  		\uncover<1->{ 
 	    \item Connecting the variables $x$ and $y$:
-	    \uncover<2->{
+	    }\uncover<2->{
 	    \ba
-	   	& \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l} &&\leq y_{i,l} \cdot M &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}} \tag{1} \\[4mm]}
-	    \uncover<3->{
+	   	& \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l} &&\leq y_{i,l} \cdot M &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}} \tag{1} \\[4mm]
+	    }\uncover<3->{
 	    & \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l} &&\geq y_{i,l} &&\forall \mbox{\small{ exams $i$, }}  \forall \mbox{\small{ periods $l$}} \tag{2} \\
 	    }
 	    \notag
@@ -149,7 +150,7 @@ progressbar=frametitle,
 
 \begin{frame}{Constraints}
     \begin{itemize}    
-        \item In every room there is only one exam at a given time:
+        \item In every room there is at most one exam at a given time:
         \pause
         \ba
         & \sum_{\mbox{\scriptsize{ exams $i$ }}} x_{i,k,l} &&\leq 1 &&\forall \mbox{\small{ rooms $k$}}, \forall \mbox{\small{ periods $l$ }} \tag{5}
@@ -264,6 +265,8 @@ progressbar=frametitle,
 
 \begin{frame}{Improvements to the model}
 	\begin{itemize}
+		\item Include more soft constraints, e.g. blocked rooms, lecturer preferences.
+		\pause
 	    \item Add Clique Constraints:
 	    \ba
 	    (7) &\sum_{\mbox{\scriptsize{$i$ in clique}}} y_{i,l} &&\leq 1 &&\forall \, \mbox{\small{cliques}}
@@ -273,7 +276,7 @@ progressbar=frametitle,
 	    \pause
 	    \item Improve running time using heuristics, pre-solving, etc.	  
 	    \pause 
-	    \item Use a path based model and column generation	 
+	    \item Use a path-based model and column generation.	 
     \end{itemize}
 \end{frame}
 
