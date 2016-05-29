@@ -65,6 +65,22 @@ class TestConstraints(unittest.TestCase):
             'Conflicts': [lprob, loprob, rprob, cprob, glprob1, glprob2, glprob3, glprob4, glprob5, glprob6, glprob7]
         }
 
+    def testIntegrality(self):
+        """ Test if the variables are integer
+        """
+        probs = set(self.problems['OneExamPerPeriod'])
+        probs.union(set(self.problems['EnoughSeat']))
+        probs.union(set(self.problems['OneExamPerPeriod']))
+        probs.union(set(self.problems['Conflicts']))
+        for prob in probs:
+            n, r, p = self.data['n'], self.data['r'], self.data['p']
+            x, y = tools.update_variable(prob, n=n, r=r, p=p)
+            for i in range(n):
+                for k in range(r):
+                    self.assertTrue(x[i, k].is_integer())
+                for l in range(p):
+                    self.assertTrue(y[i, l].is_integer())
+
     def testOneExamPerPeriod(self):
         """ Test here the constraint: one exam per period
         """

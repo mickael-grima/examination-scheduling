@@ -6,6 +6,15 @@ This project consist in finding a solution to the examination scheduling at TUM 
 
 Python
 
+# Create a problem
+
+Two way have to be considered when creating a problem:  
+  - create a class inheriting of class `BaseProblem` and complete method `build_constants`, `build_variables`, `build_constraints` and `build_dimensions`  
+  - create a method that returns a model `guroby.Model`. Variable names are in this case: `"x_%s_%s_%s" % (i, j, k)` or `"x_%s_%s" % (i, j)`. `x` may be replaced by `y`. Only `x` and `y` can be used.  
+
+** Test **  
+In the script `test_constraints.py`, in the method `SetUp(self)`, create the problem, solve it and add it to the lists depending which constraints you want to solve.  
+
 # Installation for github (Windows)
 
 Git for windows:  
