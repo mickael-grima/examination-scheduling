@@ -125,9 +125,9 @@ progressbar=frametitle,
   		\uncover<2->{
 		\ba
 		& \sum_{\mbox{\scriptsize{ periods $l$}}} y_{i,l} &&= 1 &&\forall \mbox{ exams $i$ } \tag{3} \\[4mm]}
-		\uncover<3->{
-		& \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l}  &&\geq y_{i,l} &&\forall \mbox{ exams $i$, } \forall \mbox{\small{ periods $l$}} \tag{c.f. 2} \\ 
-		}
+%		\uncover<3->{
+%		& \sum_{\mbox{\scriptsize{ rooms $k$}}} x_{i,k,l}  &&\geq y_{i,l} &&\forall \mbox{ exams $i$, } \forall \mbox{\small{ periods $l$}} \tag{c.f. 2} \\ 
+%		}
 		\notag
 		\ea
  	\end{itemize}
@@ -162,9 +162,14 @@ progressbar=frametitle,
     \begin{itemize}
         \item There are no conflicts for students taking multiple exams:
         \pause
+         \ba
+	     \mbox{Idea: } \ \ \ \ \ \ \  y_{i,l} = 1 \Rightarrow \sum_{\mbox{\scriptsize{j conflicts i}}} y_{j,l} = 0 \ \ \ \ \forall \mbox{ periods l}
+         \ea
+         \pause
         \ba
-        & \sum_{\substack{\mbox{\scriptsize{ exams $j$,}} \\  \mbox{\scriptsize{$j$ conflicts with $i$}} }}y_{j,l} &&\leq (1-y_{i,l}) \cdot M &&\forall \mbox{\footnotesize{exams $i$, }} \forall \mbox{\footnotesize{periods $l$ }} \tag{6}
+        & \sum_{\substack{\mbox{\scriptsize{ exams $j$,}} \\  \mbox{\scriptsize{$j$ conflicts $i$}} }}y_{j,l} &&\leq (1-y_{i,l}) \cdot M &&\forall \mbox{\footnotesize{exams $i$, }} \forall \mbox{\footnotesize{periods $l$ }} \tag{6}
         \ea
+       
     \end{itemize}
 \end{frame}
 
@@ -268,18 +273,19 @@ progressbar=frametitle,
 
 \begin{frame}{Improvements to the model}
 	\begin{itemize}
-		\item Include more soft constraints, e.g. blocked rooms, lecturer preferences.
-		\pause
-	    \item Add Clique Constraints:
+
+	    \item Add clique constraints:
 	    \ba
-	    &\sum_{\mbox{\scriptsize{$i$ in clique}}} y_{i,l} &&\leq 1 &&\forall \, \mbox{\small{cliques}} \tag{7}
+	    &\sum_{\mbox{\scriptsize{$i$ in clique}}} y_{i,l} &&\leq 1 &&\forall \, \mbox{\small{cliques, }} \forall \mbox{\small{periods $l$}} \tag{7}
 	    \ea
 	    \pause
-	    \item Remove absolute value in the objective function.
+	    \item Include more soft constraints
+	    \pause
+	    \item Remove absolute value in the objective function
 	    \pause
 	    \item Improve running time using heuristics, pre-solving, etc.	  
 	    \pause 
-	    \item Use a path-based model and column generation.	 
+	    \item Use a path-based model and column generation
     \end{itemize}
 \end{frame}
 
