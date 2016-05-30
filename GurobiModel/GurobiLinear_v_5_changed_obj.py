@@ -61,7 +61,7 @@ def build_model(data, n_cliques = 0):
     locking_times = data['locking_times']
     T = data['T']
     
-    model = Model("ExaminationScheduling")
+    model = Model("ExaminationScheduling_v5_changed_obj")
     
     
     print("Building variables...")

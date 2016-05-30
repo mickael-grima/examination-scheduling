@@ -29,7 +29,7 @@ def build_model(data):
     conflicts = data['conflicts']
     locking_times = data['locking_times']
     
-    model = Model("ExaminationScheduling")
+    model = Model("ExaminationScheduling_v2_Q")
     
     # Build variables
     print("Building variables...")

@@ -47,7 +47,7 @@ try:
 
 
     # Create a new model
-    m = Model("ExaminationScheduling")
+    m = Model("ExaminationSchedulingQ_v1")
 
     # Create variables
     x = {}

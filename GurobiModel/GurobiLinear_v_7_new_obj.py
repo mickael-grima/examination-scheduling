@@ -66,7 +66,7 @@ def build_model(data, n_cliques = 0):
     # sR = find_smallest_room_to_fit_in(n=n,s=s,r=r,c=c)
     #print sR
     
-    model = Model("ExaminationScheduling")
+    model = Model("ExaminationScheduling_v7_new_obj")
     
     
     print("Building variables...")

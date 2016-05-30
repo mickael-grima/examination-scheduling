@@ -34,7 +34,7 @@ def build_model(data):
     locking_times = data['locking_times']
     T = data['T']
     
-    model = Model("ExaminationScheduling")
+    model = Model("ExaminationScheduling_v3")
     
     
     print("Building variables...")

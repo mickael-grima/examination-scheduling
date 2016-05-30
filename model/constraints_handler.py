@@ -4,7 +4,6 @@
 # We write functions concerning the constraints
 
 from utils import tools
-import itertools
 
 
 def test_one_exam_per_period(x, y, **indices):
@@ -66,8 +65,18 @@ def test_conflicts(x, y, Q=[], **indices):
     res = True
     if indices.get('l') is not None:
         l = indices.get('l')
-        res = sum([y[i, l] * y[j, l] * Q[i][j] for i in range(n) for j in range(n) if Q[i][j] == 1]) == 0
+        if indices.get('i') is not None:
+            i = indices.get('i')
+            res = sum([y[i, l] * y[j, l] * Q[i][j] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
+        else:
+            for i in range(n):
+                res = res and sum([y[i, l] * y[j, l] * Q[i][j]for j in range(n) if Q[i][j] == 1 and i != j]) == 0
     else:
         for l in range(p):
-            res = res and sum([y[i, l] * y[j, l] * Q[i][j] for i in range(n) for j in range(n) if Q[i][j] == 1]) == 0
+            if indices.get('i') is not None:
+                i = indices.get('i')
+                res = res and sum([y[i, l] * y[j, l] * Q[i][j] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
+            else:
+                for i in range(n):
+                    res = res and sum([y[i, l] * y[j, l] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
     return res

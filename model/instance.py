@@ -23,11 +23,12 @@ def force_data_format(func):
         p = data.get('p', 0)
 
         Q = data.get('Q')
-        for i in range(n):
-            Q[i][i] = 0
         conflicts = data.get('conflicts', defaultdict(list))
         if not Q:
             Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
+        else:
+            for i in range(n):
+                Q[i][i] = 0
 
         locking_times = data.get('locking_times', defaultdict(list))
         T = [[1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]

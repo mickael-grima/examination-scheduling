@@ -12,8 +12,8 @@ for p in paths:
 sys.path.append(path)
 
 import unittest
-from heuristics.generate_starting_solution import generate_starting_solution
-from model.instance import build_small_input
+from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
+from model.instance import build_small_input, build_random_data
 from utils.tools import transform_variables
 from model.constraints_handler import (
     test_conflicts,
@@ -32,7 +32,7 @@ class TestConstraints(unittest.TestCase):
     def testGenerateStartingSolution(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
         """
-        x, y = generate_starting_solution(self.data)
+        x, y = generate_starting_solution_by_maximal_time_slot_filling(self.data)
         n, r, p = self.data['n'], self.data['r'], self.data['p']
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")

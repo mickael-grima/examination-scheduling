@@ -59,7 +59,7 @@ def build_model(data, n_cliques = 0):
         for l in range(p):
             T[k][l] = 1
     
-    model = Model("ExaminationScheduling")
+    model = Model("ExaminationScheduling_v6_removed_c6")
     
     
     print("Building variables...")

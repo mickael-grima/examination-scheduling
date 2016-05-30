@@ -122,7 +122,7 @@ class TestConstraints(unittest.TestCase):
             x, y = tools.update_variable(prob, n=n, r=r, p=p)
             Q = self.data['Q']
             for l in range(p):
-                self.assertTrue(sum([y[i, l] * y[j, l] * Q[i][j] for i, j in itertools.combinations(range(n), 2) if Q[i][j] == 1]) == 0,
+                self.assertTrue(sum([y[i, l] * y[j, l] for i in range(n) for j in range(n) if Q[i][j] == 1 and i != j]) == 0,
                                 msg="%s doesn't respect constraint for l=%s" % (prob.ModelName, l))
 
 
