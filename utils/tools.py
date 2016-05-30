@@ -110,3 +110,14 @@ def update_variable(problem, **dimensions):
         logging.exception("update_variable: impossible to update the variable of the given problem %s"
                           % problem.ModelName)
     return ({}, {})
+
+
+def transform_variables(x, y):
+    """ @param x: variable x. must have the form {(i, k, l): var/ value} or {(i, k): var/ value}
+        @param y: variable y. must have the form {(i, l): var/ value}
+        Transform the variable of the given problem to the two following variables:
+                    x[i, k]: 1 if exam i is taking place in room k
+                    y[i, l]: 1 if exam i happens during period l
+        @returns: x, y
+    """
+    pass

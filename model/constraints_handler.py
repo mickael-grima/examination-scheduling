@@ -7,11 +7,9 @@ from utils import tools
 import itertools
 
 
-def test_one_exam_per_period(prob, **indices):
+def test_one_exam_per_period(x, y, **indices):
     """ Test here the constraint: one exam per period
     """
-    prob.optimize()
-    x, y = tools.update_variable(prob)
     n, _, p = tools.get_dimensions_from(x, y)
     res = True
     if indices.get('i') is not None:
@@ -23,13 +21,10 @@ def test_one_exam_per_period(prob, **indices):
     return res
 
 
-def test_enough_seat(prob, **indices):
+def test_enough_seat(x, y, c, s, **indices):
     """ Test here the constraint: enough seats for each exam
     """
-    prob.optimize()
-    x, y = tools.update_variable(prob)
     n, r, _ = tools.get_dimensions_from(x, y)
-    c, s, _, _, _ = tools.get_constants_from(prob)
     res = True
     if indices.get('i') is not None:
         i = indices.get('i')
@@ -40,13 +35,10 @@ def test_enough_seat(prob, **indices):
     return res
 
 
-def test_one_exam_period_room(prob, **indices):
+def test_one_exam_period_room(x, y, T, **indices):
     """ Test here the constraint: For each room and period we have only one exam
     """
-    prob.optimize()
-    x, y = tools.update_variable(prob)
     n, r, p = tools.get_dimensions_from(x, y)
-    _, _, _, T, _ = prob.get_constants()
     res = True
     if indices.get('k') is not None:
         k = indices.get('k')
@@ -67,13 +59,10 @@ def test_one_exam_period_room(prob, **indices):
     return res
 
 
-def test_conflicts(prob, **indices):
+def test_conflicts(x, y, Q, **indices):
     """ Test here the constraint: no student has to write two exams or more at the same time
     """
-    prob.optimize()
-    x, y = tools.update_variable(prob)
     n, r, p = tools.get_dimensions_from(x, y)
-    _, _, Q, _, _ = tools.get_constants_from(prob)
     res = True
     if indices.get('l') is not None:
         l = indices.get('l')

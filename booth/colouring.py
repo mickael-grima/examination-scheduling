@@ -321,6 +321,15 @@ class ColorGraph(object):
             self.colours = colours
             self.draw_calendar(save=True, ind=step)
 
+    def build_graph(self, nb_nodes, conflicts):
+        """ @param data: dimensions of the problem and conflicts matrice
+        """
+        for i in range(nb_nodes):
+            self.add_node(i)
+            for j in range(i + 1, nb_nodes):
+                if conflicts[i][j]:
+                    self.add_edge(i, j)
+
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         """ @param nb_nodes: number of nodes of the constructed graph
             @param probability: the ratio of edge we want in expectation
