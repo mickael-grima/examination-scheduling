@@ -56,6 +56,29 @@ def get_value(var):
             return 0.0
 
 
+def get_variables(problem):
+    """ Return the variables of the problem as dictionnaries:
+        e.g.: x = {(i, k, l): var}, y = {(i, l): var}
+    """
+    x, y = {}, {}
+    if problem.__class__.__name__.endswith('Problem'):
+        for name, var in problem.vars.iteritems():
+            if name == 'x':
+                x = var
+            if name == 'y':
+                y = var
+    elif issubclass(problem.__class__, Model):
+        for var in problem.getVars():
+            lst = var.VarName.split('_')
+            if lst and lst[0] == 'x':
+                key = tuple([int(ind) for ind in lst[1:]])
+                x.setdefault(key, var)
+            elif lst and lst[0] == 'y':
+                key = tuple([int(ind) for ind in lst[1:]])
+                y.setdefault(key, var)
+    return x, y
+
+
 def update_variable(problem, **dimensions):
     """ @param problem: either a problem inheriting from BaseProblem class or a guroby problem
         Transform the variable of the given problem to the two following variables:
