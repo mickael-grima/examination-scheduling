@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
+
 from __future__ import division
 from time import time
 from random import random
 
-from GurobiModel.GurobiQ_v_2 import build_model as build_nonlinear_model
 from GurobiModel.GurobiLinear_v_1 import build_model as build_linear_model_1
 from GurobiModel.GurobiLinear_v_2_Q import build_model as build_linear_model_2
 from GurobiModel.GurobiLinear_v_3 import build_model as build_linear_model_3
 from GurobiModel.GurobiLinear_v_4_Cliques import build_model as build_linear_model_4
 from GurobiModel.GurobiLinear_v_5_changed_obj import build_model as build_linear_model_5
 from GurobiModel.GurobiLinear_v_6_removed_c6 import build_model as build_linear_model_6
+from GurobiModel.GurobiLinear_v_8_removed_obj import build_model as build_linear_model_8
 
 from model.instance import build_smart_random
 
@@ -21,8 +23,9 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-         'Linear Advanced removed c6': build_linear_model_6,
-    #    'Linear Advanced changed obj': build_linear_model_5,
+         'Linear Advanced removed obj': build_linear_model_8,
+    #     'Linear Advanced removed c6': build_linear_model_6,
+        'Linear Advanced changed obj': build_linear_model_5,
     #    'Linear Advanced': build_linear_model_3,
     #    'Linear Advanced Cliques': build_linear_model_4,    
     #  'GurobiQ_neu': build_nonlinear_model
