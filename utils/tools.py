@@ -112,7 +112,7 @@ def update_variable(problem, **dimensions):
     return ({}, {})
 
 
-def transform_variables(x, y):
+def transform_variables(x, y, **dimensions):
     """ @param x: variable x. must have the form {(i, k, l): var/ value} or {(i, k): var/ value}
         @param y: variable y. must have the form {(i, l): var/ value}
         Transform the variable of the given problem to the two following variables:
@@ -120,4 +120,13 @@ def transform_variables(x, y):
                     y[i, l]: 1 if exam i happens during period l
         @returns: x, y
     """
-    pass
+    n = dimensions.get('n', 0)
+    r = dimensions.get('r', 0)
+    p = dimensions.get('p', 0)
+    if len(x.keys()) == 0:
+        logging.warning('dict x contains no variables')
+        return {}, {}
+    if len(x.keys()[0]) == 3:
+        return {(i, k): 1.0 if sum([x[i, k, l] > 0 for l in range(p)]) else 0.0 for i in range(n) for k in range(r)}, y
+    else:
+        return x, y

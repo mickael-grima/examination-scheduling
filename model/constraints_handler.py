@@ -21,7 +21,7 @@ def test_one_exam_per_period(x, y, **indices):
     return res
 
 
-def test_enough_seat(x, y, c, s, **indices):
+def test_enough_seat(x, y, c=[], s=[], **indices):
     """ Test here the constraint: enough seats for each exam
     """
     n, r, _ = tools.get_dimensions_from(x, y)
@@ -35,7 +35,7 @@ def test_enough_seat(x, y, c, s, **indices):
     return res
 
 
-def test_one_exam_period_room(x, y, T, **indices):
+def test_one_exam_period_room(x, y, T=[], **indices):
     """ Test here the constraint: For each room and period we have only one exam
     """
     n, r, p = tools.get_dimensions_from(x, y)
@@ -59,15 +59,15 @@ def test_one_exam_period_room(x, y, T, **indices):
     return res
 
 
-def test_conflicts(x, y, Q, **indices):
+def test_conflicts(x, y, Q=[], **indices):
     """ Test here the constraint: no student has to write two exams or more at the same time
     """
     n, r, p = tools.get_dimensions_from(x, y)
     res = True
     if indices.get('l') is not None:
         l = indices.get('l')
-        res = sum([y[i, l] * y[j, l] * Q[i][j] for i, j in itertools.combinations(range(n), 2) if Q[i][j] == 1]) == 0
+        res = sum([y[i, l] * y[j, l] * Q[i][j] for i in range(n) for j in range(n) if Q[i][j] == 1]) == 0
     else:
         for l in range(p):
-            res = res and sum([y[i, l] * y[j, l] * Q[i][j] for i, j in itertools.combinations(range(n), 2) if Q[i][j] == 1]) == 0
+            res = res and sum([y[i, l] * y[j, l] * Q[i][j] for i in range(n) for j in range(n) if Q[i][j] == 1]) == 0
     return res

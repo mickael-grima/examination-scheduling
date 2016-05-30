@@ -1,32 +1,37 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# this script produce instances: 
+# this script produce instances:
 #   - we get it from files
 #   - we produce it randomly
 #   - or we find simple specific instance
 
 import random as rd
 import numpy as np
-from load_rooms import get_random_room_capacity
+# from load_rooms import get_random_room_capacity
 from collections import defaultdict
+
 
 def force_data_format(func):
     """ decorator that force the format of data
     """
     def correct_format(**kwards):
         data = func(**kwards)
-        
+
         n = data.get('n', 0)
         r = data.get('r', 0)
         p = data.get('p', 0)
-            
+
+        Q = data.get('Q')
+        for i in range(n):
+            Q[i][i] = 0
         conflicts = data.get('conflicts', defaultdict(list))
-        Q = [[ 1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
-        
+        if not Q:
+            Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
+
         locking_times = data.get('locking_times', defaultdict(list))
-        T = [[ 1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
-    
+        T = [[1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
+
         res = {
             'n': n,
             'r': r,
