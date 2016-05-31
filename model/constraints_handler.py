@@ -72,11 +72,12 @@ def test_conflicts(x, y, Q=[], **indices):
             for i in range(n):
                 res = res and sum([y[i, l] * y[j, l] * Q[i][j]for j in range(n) if Q[i][j] == 1 and i != j]) == 0
     else:
-        for l in range(p):
-            if indices.get('i') is not None:
-                i = indices.get('i')
+        if indices.get('i') is not None:
+            i = indices.get('i')
+            for l in range(p):
                 res = res and sum([y[i, l] * y[j, l] * Q[i][j] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
-            else:
-                for i in range(n):
+        else:
+            for i in range(n):
+                for l in range(p):
                     res = res and sum([y[i, l] * y[j, l] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
     return res

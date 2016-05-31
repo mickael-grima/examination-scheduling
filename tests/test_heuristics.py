@@ -13,7 +13,8 @@ sys.path.append(path)
 
 import unittest
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
-from model.instance import build_small_input, build_random_data
+from model.instance import build_small_input, build_smart_random
+from booth.colouring import ColorGraph
 from utils.tools import transform_variables
 from model.constraints_handler import (
     test_conflicts,
@@ -27,7 +28,15 @@ class TestConstraints(unittest.TestCase):
     """ Test here the heuristics. Heuristics can be found in folder heuristics
     """
     def setUp(self):
-        self.data = build_small_input()
+        self.data = build_smart_random(n=150, p=200, r=200)
+
+    def testColouringHeuristic(self):
+        graph = ColorGraph()
+        graph.build_graph(self.data['n'], self.data['Q'])
+        graph.color_graph()
+        x, y = {}, graph.build_variable()
+        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+                        msg="conflict constraint failed")
 
     def testGenerateStartingSolution(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution

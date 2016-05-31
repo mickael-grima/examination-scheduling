@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 all_colours = ["#00B1EB", "#E51C39", "#FCEA10", "green", "red", "yellow", "cyan", "orange",
-               "blue", "grey", "purple", "pink", "black"]
+               "blue", "grey", "purple", "pink", "black"] + ['i' for i in range(1000)]
 m = len(all_colours)
 
 plt.axis('off')
@@ -321,13 +321,22 @@ class ColorGraph(object):
             self.colours = colours
             self.draw_calendar(save=True, ind=step)
 
+    def build_variable(self):
+        """ we build the variable y = {(i, l): value} from the colouring solution we found
+        """
+        y = {}
+        for i in range(len(self.graph.nodes())):
+            for l in range(self.get_chromatic_number()):
+                y[i, l] = 1.0 if self.colours[self.graph.nodes()[i]] == all_colours[l] else 0.0
+        return y
+
     def build_graph(self, nb_nodes, conflicts):
         """ @param data: dimensions of the problem and conflicts matrice
         """
         for i in range(nb_nodes):
             self.add_node(i)
             for j in range(i + 1, nb_nodes):
-                if conflicts[i][j]:
+                if conflicts[i][j] > 0:
                     self.add_edge(i, j)
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):

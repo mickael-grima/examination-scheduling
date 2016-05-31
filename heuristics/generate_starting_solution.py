@@ -7,12 +7,7 @@
 from model.constraints_handler import test_conflicts, test_enough_seat
 from booth.colouring import ColorGraph
 from random import randint
-
-
-def capacity_constr(seat, l, r, C, T):
-    """ Check if the capacity constraint is respected
-    """
-    return seat <= sum([C[k, l] * T[k][l] for k in range(r)])
+import sys
 
 
 def get_random_exam(seats, black_list=[]):
@@ -39,35 +34,6 @@ def permut_exam(seats):
     seats[ind1] = seats[ind2]
     seats[ind2] = tpl
     return seats
-
-
-def find_best_time_slots(exs):
-    """ @param exs: list of exams
-        find the time slots that are the most adapted to the exams
-        a time slot is adapted to a group if the number of free seats is minimized
-    """
-    pass
-
-
-def sort_and_split(groups):
-    """ @param groups: dictinnary of colour, exams. exams have no conflict each other
-        for each group of parallel exams, we try to find the most adapted time slot for scheduling
-        if several time slots are needed, we split the group into several groups, one for each time slot
-        a time slot is adapted to a group if the number of free seats is minimized
-    """
-    groups_exams = []
-    while groups:
-        time_slots = {}  # dictionnary: time_slot -> list of exams
-        value = 1000000  # MAX_integer
-        colour = None
-        for col, exs in groups.iteritems():
-            t, v = find_best_time_slots(exs)
-            if v <= value:
-                value = v
-                time_slots = t
-                colour = col
-        groups_exams.append(time_slots)
-        del groups[colour]
 
 
 def generate_starting_solution_from_given_order(x, y, ordered_exams, data):
@@ -123,12 +89,80 @@ def generate_starting_solution(data, Niter=10):
     return x_, y_
 
 
+# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+def find_best_time_slots(exs, data, black_times=[]):
+    """ @param exs: list of exams
+        find the time slots that are the most adapted to the exams
+        a time slot is adapted to a group if the number of free seats is minimized
+        We try first to use only one time slot. If it is not possible we try two and so on
+    """
+    T, c, s, p, r = data['T'], data['c'], data['s'], data['p'], data['r']
+    value, time = sys.maxint, -1
+    exs = sorted(exs, key=lambda ex: s[ex], reverse=True)
+    for l in [ll for ll in range(p) if ll not in black_times]:
+        rooms_ind = filter(lambda x: T[x][l] > 0, range(r))
+        rooms = sorted([c[k] for k in rooms_ind], reverse=True)
+        i, k, v = 0, 0, 0
+        seats = [seat for seat in s]
+        while i < len(exs) and k < len(rooms):
+            v += max(rooms[k] - s[exs[i]], 0)
+            seats[exs[i]] = max(seats[exs[i]] - rooms[k], 0)
+            if seats[exs[i]] <= rooms[k]:
+                i += 1
+            k += 1
+        if i == len(exs) and v < value:
+            value = v
+            time = l
+    return time, value
+
+
+def sort_and_split(groups, data):
+    """ @param groups: dictinnary of colour, exams. exams have no conflict each other
+        for each group of parallel exams, we try to find the most adapted time slot for scheduling
+        if several time slots are needed, we split the group into several groups, one for each time slot
+        a time slot is adapted to a group if the number of free seats is minimized
+    """
+    groups_exams = []
+    while groups:
+        time_slots, value, colour = None, sys.maxint, None
+        for col, exs in groups.iteritems():
+            t, v = find_best_time_slots(exs, data, black_times=[time for time, _ in groups_exams])
+            if v <= value:
+                value, time_slots, colour = v, (t, exs), col
+        groups_exams.append(time_slots)
+        print time_slots
+        del groups[colour]
+    return groups_exams
+
+
+def attribute_time_and_room(groups_exams, data):
+    n, r, p = data.get('n', 0), data.get('r', 0), data.get('p', 0)
+    T, s, c = data['T'], data['s'], data['c']
+    x = {(i, k, l): 0.0 for i in range(n) for k in range(r) for l in range(p)}
+    y = {(i, l): 0.0 for i in range(n) for l in range(p)}
+    for time, exams in groups_exams:
+        exams = sorted(exams, key=lambda ex: s[ex], reverse=True)
+        rooms_ind = filter(lambda x: T[x][time] > 0, range(r))
+        rooms = sorted([(k, c[k]) for k in rooms_ind], key=lambda x: x[1], reverse=True)
+        i, k, seats = 0, 0, [seat for seat in s]
+        while i < len(exams) and k < len(rooms):
+            seats[exams[i]] = max(seats[exams[i]] - rooms[k][1], 0)
+            x[exams[i], rooms[k][0], time] = 1.0
+            y[exams[i], time] = 1.0
+            if seats[exams[i]] <= rooms[k][1]:
+                i += 1
+            k += 1
+    return x, y
+
+
 def generate_starting_solution_by_maximal_time_slot_filling(data):
     """ Generate first groups of exams that can be scheduled in parallel, and then fill
         the rooms in order that a minimal among of place is not used for each time slot
     """
-    n, r, p = data.get('n', 0), data.get('r', 0), data.get('p', 0)
-    Q, s = data['Q'], data['s']
+    n = data.get('n', 0)
+    Q = data['Q']
 
     # We first solve the coloring problem
     prob = ColorGraph()
@@ -137,21 +171,12 @@ def generate_starting_solution_by_maximal_time_slot_filling(data):
     groups = {}  # group of parallel exams
     for exam, colour in prob.colours.iteritems():
         groups.setdefault(colour, [])
-        groups[colour].append([i for i in range(len(prob.graph.nodes())) if prob.graph.nodes()[i] == exam][0])
+        groups[colour].append(exam)
 
     # give an order to the groups
-    groups_exams = sort_and_split(groups)
+    groups_exams = sort_and_split(groups, data)
 
     # attribute rooms and time slots
-    x = {(i, k, l): 0.0 for i in range(n) for k in range(r) for l in range(p)}
-    y = {(i, l): 0.0 for i in range(n) for l in range(p)}
-    print data
-    for colour, exams in groups_exams.iteritems():
-        x_, y_ = generate_starting_solution_from_given_order(x, y, exams, data)
-        print exams
-        if x_ and y_:
-            x, y = x_, y_
-        else:
-            print 'FAILED'
+    x, y = attribute_time_and_room(groups_exams, data)
 
     return x, y
