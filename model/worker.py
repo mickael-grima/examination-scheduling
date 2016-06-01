@@ -4,8 +4,19 @@
 
 
 from __future__ import division
+
+import sys
+import os
+PATHS = os.getcwd().split('/')
+PROJECT_PATH = ''
+for p in PATHS:
+    PROJECT_PATH += '%s/' % p
+    if p == 'examination-scheduling':
+        break
+sys.path.append(PROJECT_PATH)
+
 from time import time
-from random import random
+import random 
 
 from GurobiModel.GurobiLinear_v_1 import build_model as build_linear_model_1
 from GurobiModel.GurobiLinear_v_2_Q import build_model as build_linear_model_2
