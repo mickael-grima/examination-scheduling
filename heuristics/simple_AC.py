@@ -9,6 +9,7 @@ for p in PATHS:
 sys.path.append(PROJECT_PATH)
 
 import networkx as nx
+import numpy as np
 
 from heuristics.AC import AC
 from heuristics.graph_coloring import greedy_coloring
@@ -27,10 +28,6 @@ class simple_AC(AC):
         
         returns x_ik y_il, objVal
     '''
-
-    def __init__(self, data, gamma = 1.0):
-        super(simple_AC, self).__init__(data, gamma)
-    
 
     def generate_colorings(self, num_ants):
         

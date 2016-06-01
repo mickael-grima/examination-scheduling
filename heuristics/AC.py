@@ -83,11 +83,23 @@ class AC:
     
     def generate_colorings(self, num_ants):
         
-        # TODO: Generate visiting schemes and colorings using greedy algorithm
-        # ...
+        # TODO: Construct Graph from Conflicts matrix
+        G = ColorGraph()
+        
+        # get connected components 
+        components = nx.connected_component_subgraphs(G.graph)
+        
         colorings = []
         for i in range(self.data['n']):
+            
+            
+            # TODO: Generate visiting schemes
+            # ...
             visiting_scheme = np.random.shuffle(np.arange(self.data['n'])) 
+            
+            # TODO: Consider components for ants. If the graph is not connected, then the ants have to also consider all other components
+            
+            # feed visiting scheme to greedy graph coloring
             coloring = greedy_coloring( self.data, visiting_scheme )
             colorings.append( coloring )
         return colorings
@@ -128,10 +140,9 @@ if __name__ == '__main__':
     num_ants = 10
     ac = AC(data)
     colorings = ac.generate_colorings(num_ants)
-    print colorings
     print ac.heuristic(colorings[0])
-    print ac.optimize(num_ants)
-    print ac.optimize(num_ants)
+    print (ac.optimize(num_ants))[2]
+    print (ac.optimize(num_ants))[2]
     
     
     

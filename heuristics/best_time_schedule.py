@@ -28,7 +28,10 @@ def best_time_schedule(coloring, h):
         for l in range(p):
             y[i,l] = 0.0
     
+    
     # TODO: Calculate best time schedule using simulated annealing
+    
+    # TODO: Consider locked rooms and times constraints
     
     return y
 
@@ -40,7 +43,6 @@ def easy_time_schedule(coloring, h):
     
     # TODO: Initialise using meaningful values
     # ...
-    print(coloring)
     n = len(coloring)
     p = len(h)
     y = {}
@@ -48,7 +50,9 @@ def easy_time_schedule(coloring, h):
         for l in range(p):
             y[i,l] = 0.0
     
-    # TODO: Calculate best time schedule using simulated annealing
+    # TODO: Calculate simple time schedule
+    
+    # TODO: Consider locked rooms and times constraints
     
     return y 
 

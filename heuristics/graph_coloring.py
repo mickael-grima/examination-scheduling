@@ -18,5 +18,7 @@ def greedy_coloring(data, visiting_scheme):
     
     # TODO: Use ColoGraph API for this, please. Might come in handy!
     
+    # TODO: Consider constraints for feasible rooms
+    
     coloring = range(data['n'])
     return coloring 
