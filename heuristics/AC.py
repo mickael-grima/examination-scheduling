@@ -1,3 +1,8 @@
+import numpy as np
+import networkx as nx
+
+
+
 from model.instance import force_data_format
 
 from heuristics.best_time_schedule import best_time_schedule
@@ -5,7 +10,7 @@ from heuristics.schedule_rooms import schedule_rooms
 
 from model.objectives import obj1, obj2
 
-import numpy as np
+from heuristics.graph_coloring import greedy_coloring
 
 
 
@@ -67,10 +72,13 @@ class AC:
     
     def generate_colorings(self, num_ants):
         
-        # TODO: Generate colourings
+        # TODO: Generate visiting schemes and colorings using greedy algorithm
         # ...
-        colorings = [ np.random.shuffle(np.arange(self.data[n])) for n in num_ants ]
-        
+        colorings = []
+        for i in range(self.data['n']):
+            visiting_scheme = np.random.shuffle(np.arange(self.data['n'])) 
+            coloring = greedy_coloring( visiting_scheme )
+            colorings.append( coloring )
         return colorings
     
     
