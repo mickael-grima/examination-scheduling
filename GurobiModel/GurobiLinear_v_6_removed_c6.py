@@ -158,7 +158,7 @@ def build_model(data, n_cliques = 0):
     # objective: minimize number of used rooms
     print("Building Objective...")
     gamma = 1
-    obj1 = quicksum([ x[i,k,l]/s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
+    obj1 = quicksum([ x[i,k,l] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
     #obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
 
     #model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
@@ -167,6 +167,8 @@ def build_model(data, n_cliques = 0):
     print("Setting Parameters...")
     # max presolve agressivity
     #model.params.presolve = 2
+    model.params.barconvtol = 1
+    model.params.nodelimit = 1
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
 
@@ -176,13 +178,13 @@ def build_model(data, n_cliques = 0):
 
 if __name__ == "__main__":
     
-    n = 170
+    n = 120
     r = 20
     p = 10
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.5)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.75)
     exams = [ 'Ana%s' % (i+1) for i in range(n) ]
     rooms = ['MI%s' % (k+1) for k in range(r)]
     
