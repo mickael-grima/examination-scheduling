@@ -24,6 +24,7 @@ The main data are:
   - `s` for students capacities (for each exam)  
   - `T` for open time of rooms  
   - `Q` for conflicts  
+  - `conflicts` for sparse version of `Q`
   - `h` for beginning time of each timeslot  
   - `n` the number of exams  
   - `p` the number of timeslots  

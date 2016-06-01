@@ -1,4 +1,15 @@
+import sys
+import os
+PATHS = os.getcwd().split('/')
+PROJECT_PATH = ''
+for p in PATHS:
+    PROJECT_PATH += '%s/' % p
+    if p == 'examination-scheduling':
+        break
+sys.path.append(PROJECT_PATH)
+
 import networkx as nx
+import numpy as np
 
 from heuristics.AC import AC
 from heuristics.graph_coloring import greedy_coloring
@@ -8,7 +19,7 @@ from heuristics.graph_coloring import greedy_coloring
 # TODO: ALEX
 #
 
-class AC_simple(AC):
+class simple_AC(AC):
     '''
         Optimize the examination scheduling problem using shuffling of exam lists.
         
@@ -18,10 +29,6 @@ class AC_simple(AC):
         returns x_ik y_il, objVal
     '''
 
-    def __init__(self, data, gamma = 1.0):
-        super(AC, self).__init__(data, gamma)
-    
-
     def generate_colorings(self, num_ants):
         
         # TODO: Generate colourings
@@ -29,7 +36,7 @@ class AC_simple(AC):
         colorings = []
         for i in range(self.data['n']):
             visiting_scheme = np.random.shuffle(np.arange(self.data['n'])) 
-            coloring = greedy_coloring( visiting_scheme )
+            coloring = greedy_coloring( self.data, visiting_scheme )
             colorings.append( coloring )
         
         return colorings
@@ -43,11 +50,10 @@ if __name__ == '__main__':
     tseed = 295
 
     from model.instance import build_smart_random
-    data = build_smart_random(n=n, r=r, p=p, tseed=tseed)    test_compare()
+    data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
     num_ants = 10
-    ac = AC_simple(data)
+    ac = simple_AC(data)
     colorings = ac.generate_colorings(num_ants)
     print colorings
-    
     
