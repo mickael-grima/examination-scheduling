@@ -132,7 +132,6 @@ def sort_and_split(groups, data):
             if v <= value:
                 value, time_slots, colour = v, (t, exs), col
         groups_exams.append(time_slots)
-        print time_slots
         del groups[colour]
     return groups_exams
 

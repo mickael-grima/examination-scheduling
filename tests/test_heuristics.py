@@ -28,7 +28,7 @@ class TestConstraints(unittest.TestCase):
     """ Test here the heuristics. Heuristics can be found in folder heuristics
     """
     def setUp(self):
-        self.data = build_smart_random(n=150, p=200, r=200)
+        self.data = build_smart_random(n=150, p=20, r=150)
 
     def testColouringHeuristic(self):
         graph = ColorGraph()
