@@ -25,11 +25,15 @@ The main data are:
   - `T` for open time of rooms  
   - `Q` for conflicts  
   - `h` for beginning time of each timeslot  
+  - `n` the number of exams  
+  - `p` the number of timeslots  
+  - `r` the number of rooms  
 Upper cases are matrix `[[]]` and lower cases are lists `[]`  
 Other data can be introduced, however they must be linked to the main data.  
 
 ** Test **  
 In the script `test_constraints.py`, in the method `SetUp(self)`, create the problem, solve it and add it to the lists depending which constraints you want to solve.  
+If you want a best descriptif of eventual failures, do the same in `test_constraint_advanced.py`  
 
 # Installation for github (Windows)
 
