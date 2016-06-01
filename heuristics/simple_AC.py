@@ -1,5 +1,8 @@
+import networkx as nx
 
 from heuristics.AC import AC
+from heuristics.graph_coloring import greedy_coloring
+
 
 #
 # TODO: ALEX
@@ -23,7 +26,11 @@ class AC_simple(AC):
         
         # TODO: Generate colourings
         # ...
-        colorings = [ np.random.shuffle(np.arange(self.data[n])) for n in num_ants ]
+        colorings = []
+        for i in range(self.data['n']):
+            visiting_scheme = np.random.shuffle(np.arange(self.data['n'])) 
+            coloring = greedy_coloring( visiting_scheme )
+            colorings.append( coloring )
         
         return colorings
     
