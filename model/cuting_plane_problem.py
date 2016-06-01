@@ -7,7 +7,7 @@
 
 from model.main_problem import MainProblem
 import gurobipy as gb
-from utils.tools import convert_to_table
+from utils.tools import convert_to_table, update_variable
 from model.constraints_handler import test_one_exam_period_room
 
 
@@ -134,11 +134,13 @@ class CutingPlaneProblem(object):
         """ Find the variable which violate the self.constraint
             @returns: k, l
         """
+        n = self.reducedProblem.dimensions['n']
         r = self.reducedProblem.dimensions['r']
         p = self.reducedProblem.dimensions['p']
+        x, y = update_variable(self.reducedProblem, n=n, p=p, r=r)
         for k in range(r):
             for l in range(p):
-                if not test_one_exam_period_room(self.reducedProblem, k=k, l=l):
+                if not test_one_exam_period_room(x, y, T=self.reducedProblem.constants['T'], k=k, l=l):
                     return k, l
         return -1, -1
 

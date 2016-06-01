@@ -56,6 +56,29 @@ def get_value(var):
             return 0.0
 
 
+def get_variables(problem):
+    """ Return the variables of the problem as dictionnaries:
+        e.g.: x = {(i, k, l): var}, y = {(i, l): var}
+    """
+    x, y = {}, {}
+    if problem.__class__.__name__.endswith('Problem'):
+        for name, var in problem.vars.iteritems():
+            if name == 'x':
+                x = var
+            if name == 'y':
+                y = var
+    elif issubclass(problem.__class__, Model):
+        for var in problem.getVars():
+            lst = var.VarName.split('_')
+            if lst and lst[0] == 'x':
+                key = tuple([int(ind) for ind in lst[1:]])
+                x.setdefault(key, var)
+            elif lst and lst[0] == 'y':
+                key = tuple([int(ind) for ind in lst[1:]])
+                y.setdefault(key, var)
+    return x, y
+
+
 def update_variable(problem, **dimensions):
     """ @param problem: either a problem inheriting from BaseProblem class or a guroby problem
         Transform the variable of the given problem to the two following variables:
@@ -87,3 +110,23 @@ def update_variable(problem, **dimensions):
         logging.exception("update_variable: impossible to update the variable of the given problem %s"
                           % problem.ModelName)
     return ({}, {})
+
+
+def transform_variables(x, y, **dimensions):
+    """ @param x: variable x. must have the form {(i, k, l): var/ value} or {(i, k): var/ value}
+        @param y: variable y. must have the form {(i, l): var/ value}
+        Transform the variable of the given problem to the two following variables:
+                    x[i, k]: 1 if exam i is taking place in room k
+                    y[i, l]: 1 if exam i happens during period l
+        @returns: x, y
+    """
+    n = dimensions.get('n', 0)
+    r = dimensions.get('r', 0)
+    p = dimensions.get('p', 0)
+    if len(x.keys()) == 0:
+        logging.warning('dict x contains no variables')
+        return {}, {}
+    if len(x.keys()[0]) == 3:
+        return {(i, k): 1.0 if sum([x[i, k, l] > 0 for l in range(p)]) else 0.0 for i in range(n) for k in range(r)}, y
+    else:
+        return x, y

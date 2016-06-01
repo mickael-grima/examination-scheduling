@@ -65,6 +65,22 @@ class TestConstraints(unittest.TestCase):
             'Conflicts': [lprob, loprob, rprob, cprob, glprob1, glprob2, glprob3, glprob4, glprob5, glprob6, glprob7]
         }
 
+    def testIntegrality(self):
+        """ Test if the variables are integer
+        """
+        probs = set(self.problems['OneExamPerPeriod'])
+        probs.union(set(self.problems['EnoughSeat']))
+        probs.union(set(self.problems['OneExamPerPeriod']))
+        probs.union(set(self.problems['Conflicts']))
+        for prob in probs:
+            n, r, p = self.data['n'], self.data['r'], self.data['p']
+            x, y = tools.update_variable(prob, n=n, r=r, p=p)
+            for i in range(n):
+                for k in range(r):
+                    self.assertTrue(x[i, k].is_integer())
+                for l in range(p):
+                    self.assertTrue(y[i, l].is_integer())
+
     def testOneExamPerPeriod(self):
         """ Test here the constraint: one exam per period
         """
@@ -106,7 +122,7 @@ class TestConstraints(unittest.TestCase):
             x, y = tools.update_variable(prob, n=n, r=r, p=p)
             Q = self.data['Q']
             for l in range(p):
-                self.assertTrue(sum([y[i, l] * y[j, l] * Q[i][j] for i, j in itertools.combinations(range(n), 2) if Q[i][j] == 1]) == 0,
+                self.assertTrue(sum([y[i, l] * y[j, l] for i in range(n) for j in range(n) if Q[i][j] == 1 and i != j]) == 0,
                                 msg="%s doesn't respect constraint for l=%s" % (prob.ModelName, l))
 
 

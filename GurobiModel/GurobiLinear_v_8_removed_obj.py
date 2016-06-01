@@ -12,6 +12,7 @@ import itertools
 import random
 import networkx as nx
 import math 
+from time import time
     
 from gurobipy import Model, quicksum, GRB, GurobiError
 from model.instance import build_random_data
@@ -28,16 +29,6 @@ from model.instance import build_random_data
 	***************  POSSIBLE IMPROVEMENTS    ***************
 	
 	-Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
-	-Change objective function:
-		-our current objective funcion fails for cliques (all exams have conflicts) for example 
-			*exam1 on day 1
-			*exam2 on day 5
-			*exam3 on day 10
-			*Our current objective function |5-1|+|10-5|+|10-1| = 18
-			*exam1 on day 1
-			*exam2 on day 1
-			*exam3 on day 10
-			*Has exactly the same objective function of 18 but clearly the first schedule is by far better
 	-Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similiar [to discuss]
 	-Idea for linking variables x and y
 		*c1b creates l*i constraints this could be reduced to only i constraints
@@ -47,7 +38,8 @@ from model.instance import build_random_data
 			+ now say for all i sum(x_i,k,l for all k and for all l) >= 1 this forces at least one y_i,l to be 1 - this only has i constraints but more columns
 '''
 
-# Create variables
+             
+    
 def build_model(data, n_cliques = 0):
     
     # Load Data Format
@@ -61,7 +53,7 @@ def build_model(data, n_cliques = 0):
     locking_times = data['locking_times']
     T = data['T']
     
-    model = Model("ExaminationScheduling_v5_changed_obj")
+    model = Model("ExaminationScheduling")
     
     
     print("Building variables...")
@@ -80,21 +72,21 @@ def build_model(data, n_cliques = 0):
         for l in range(p):
             y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
     
-    # # help variable z[i,j] and delta[i,j] for exam i and exam j
-    # # we are only interested in those exams i and j which have a conflict!
-    # z = {}
-    # delta = {}
-    # for i in range(n):
-    #     for j in conflicts[i]:
-    #         z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
-    #         delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
+    # help variable z[i,j] and delta[i,j] for exam i and exam j
+    # we are only interested in those exams i and j which have a conflict!
+    z = {}
+    delta = {}
+    for i in range(n):
+        for j in conflicts[i]:
+            z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
+            delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
     
     w = model.addVar(vtype=GRB.INTEGER, name="w")
     
     # integrate new variables
     model.update() 
 
-    # adding variables as found in MidTerm.pdf
+    # adding constraints as found in MidTerm.pdf
     print("Building constraints...")    
     
     print("c1: connecting variables x and y")
@@ -127,51 +119,36 @@ def build_model(data, n_cliques = 0):
     for k in range(r):
         for l in range(p):
             if T[k][l] == 1:
-                model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")
+                model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")    
     
-    print("c6: any multi room exam takes place at one moment in time")
-    for i in range(n):
-        for l in range(p):
-            model.addConstr(quicksum([ x[i, k, m] for k in range(r) for m in range(p) if m != l and T[k][m] == 1 ]) <= (1 - y[i, l]) * 12, "c6")
-
-    #print("c7: resolving the absolute value")
-    #for i in range(n):
-        #for j in conflicts[i]:
-            #model.addConstr( z[i, j] <= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) + delta[i,j] * (2*h[len(h)-1]), "c7a")
-            #model.addConstr( z[i, j] <= -quicksum([ h[l]*(y[i,l]-y[j,l]) for l in range(p) ]) + (1-delta[i,j]) * (2*h[len(h)-1]), "c7b")
-            #model.addConstr( z[i, j] >= quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7c")
-            #model.addConstr( z[i, j] >= -quicksum([ h[l]*(y[i,l] - y[j,l]) for l in range(p) ]) , "c7d")
-            #model.addConstr( w <= z[i,j], "c7e")            
     
-    print("c8: Building clique constraints")
-    G = nx.Graph()
-    for i in range(n):
-        G.add_node(i)
-        
-    for i in range(n):
-        for j in conflicts[i]:
-            G.add_edge(i,j)
+    print("c8: Building %d clique constraints" %n_cliques)
+    if n_cliques > 0:
+        G = nx.Graph()
+        for i in range(n):
+            G.add_node(i)
             
-    cliques = nx.find_cliques(G) # generator
-    
-    for counter, clique in itertools.izip(range(n_cliques), cliques):
-        for l in range(l):
-            model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
-            print "c_lique_%s_%s_%s" % (counter,clique,l)
+        for i in range(n):
+            for j in conflicts[i]:
+                G.add_edge(i,j)
+                
+        cliques = nx.find_cliques(G) # generator
+        
+        for counter, clique in itertools.izip(range(n_cliques), cliques):
+            for l in range(l):
+                model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
+                #print "c_lique_%s_%s_%s" % (counter,clique,l)
 
     print("All constrained built - OK")
 
-    # objective: minimize number of used rooms and maximize the distance of exams
+    # objective: minimize number of used rooms
     print("Building Objective...")
-    gamma = 1
     obj1 = quicksum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
-    #obj2 = -quicksum([ z[i,j] for i in range(n) for j in conflicts[i] ])
-    obj2 = -w
 
-    #model.setObjective( obj1 + gamma * obj2, GRB.MINIMIZE)
     model.setObjective( obj1, GRB.MINIMIZE)
+
     # Set Parameters
-    print("Setting Parameters...")
+    #print("Setting Parameters...")
     # max presolve agressivity
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
@@ -183,9 +160,9 @@ def build_model(data, n_cliques = 0):
 
 if __name__ == "__main__":
     
-    n = 150
-    r = 120
-    p = 120 
+    n = 50
+    r = 20
+    p = 20  
 
     # generate data
     random.seed(42)
@@ -195,19 +172,17 @@ if __name__ == "__main__":
     
     # Create and solve model
     try:        
-        model = build_model(data, n_cliques = 0)        
+        model = build_model(data, n_cliques = 30)        
         
+        t = time()
         model.optimize()
+        t = time() - t
         
         for v in model.getVars():
             if v.x == 1 and ("x" in v.varName or "y" in v.varName): 
                 print('%s %g' % (v.varName, v.x))
-            if "w" in v.varName: 
-                print('%s %g' % (v.varName, v.x))
-            if "z" in v.varName: 
-                print('%s %g' % (v.varName, v.x))
 
         print('Obj: %g' % model.objVal)
-
+        print('Runtime: %0.2f s' % t)
     except GurobiError:
         print('Error reported')
