@@ -32,7 +32,7 @@ def force_data_format(func):
             for i in range(n):
                 for j in range(i+1,n):
                     Q[j][i] = Q[i][j]
-            for i in range(n)
+            for i in range(n):
                 for j in range(n):
                     if Q[i][j] == 1:
                         coflicts[i].append(j)
