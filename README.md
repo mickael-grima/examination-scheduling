@@ -6,7 +6,7 @@ This project consist in finding a solution to the examination scheduling at TUM 
 
 Python
 
-# Create a problem
+# Conventions
 
 ** Probelms **
 Two way have to be considered when creating a problem:  
@@ -16,7 +16,17 @@ Two way have to be considered when creating a problem:
 ** Variables **
 Two way to create new variables:  
   - if the variable is contained in a guroby model, its name has to be: `"x_%s_%s_%s" % (i, j, k)` or `"x_%s_%s" % (i, j)`. `x` may be replaced by `y`. Only `x` and `y` can be used  
-  - if not x and y have to be dictionaries: `x = {(i, k): 0.0 for ...}` or `x = {(i, k, l): 0.0 for ..}`. `x` may be replaced by `y`. Only `x` and `y` can be used  
+  - if not x and y have to be dictionaries: `x = {(i, k): 0.0 for ...}` or `x = {(i, k, l): 0.0 for ..}`. `x` may be replaced by `y`. Only `x` and `y` can be used 
+
+** Data **
+The main data are:  
+  - `c` for room capacities  
+  - `s` for students capacities (for each exam)  
+  - `T` for open time of rooms  
+  - `Q` for conflicts  
+  - `h` for beginning time of each timeslot  
+Upper cases are matrix `[[]]` and lower cases are lists `[]`  
+Other data can be introduced, however they must be linked to the main data.  
 
 ** Test **  
 In the script `test_constraints.py`, in the method `SetUp(self)`, create the problem, solve it and add it to the lists depending which constraints you want to solve.  
