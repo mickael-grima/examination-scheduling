@@ -10,6 +10,7 @@ __pycache__/
 plots/
 *.gif
 booth/files/relevant_graphs
+model/Data/visualization/*
 
 # latex aux files
 MidtermPresentation/*.toc 
