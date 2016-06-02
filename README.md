@@ -24,7 +24,7 @@ The main data are:
   - `s` for students capacities (for each exam)  
   - `T` for open time of rooms  
   - `Q` for conflicts  
-  - `conflicts` for sparse version of `Q`
+  - `conflicts` for sparse version of `Q`  
   - `h` for beginning time of each timeslot  
   - `n` the number of exams  
   - `p` the number of timeslots  
@@ -35,6 +35,10 @@ Other data can be introduced, however they must be linked to the main data.
 ** Test **  
 In the script `test_constraints.py`, in the method `SetUp(self)`, create the problem, solve it and add it to the lists depending which constraints you want to solve.  
 If you want a best descriptif of eventual failures, do the same in `test_constraint_advanced.py`  
+
+# Visualization  
+
+To visualize the produced solutions of a problem or heuristics, first use function `update_variables` for a problem or `transform_variables` for variables to get the right form of x, y variables. These functions can be found in `tools/utils.py`. Then run the function `generate_file` (in script `tools/graphicer.py`). It will generate a file in the folder `model/Data/visualization/name.csv` where name is the name you gave if you gave one else `visual-date-time` where date and time are respectively the current date and time the current time.  
 
 # Installation for github (Windows)
 
