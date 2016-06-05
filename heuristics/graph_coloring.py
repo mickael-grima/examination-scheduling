@@ -37,7 +37,6 @@ def greedy_coloring(data, G, visiting_scheme):
     total_rooms = {}
 
     capacity = sum(data['c'])
-    print capacity
 
     for node in visiting_scheme:
         # Make sure he colors of all the neigbour are known
@@ -69,8 +68,6 @@ def greedy_coloring(data, G, visiting_scheme):
             total_students[color] = data['s'][node]
             total_rooms[color] = 1
     
-    print data['s']    
-    print total_students
     return coloring 
 
 
