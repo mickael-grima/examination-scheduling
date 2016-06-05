@@ -14,31 +14,58 @@ sys.path.append(PROJECT_PATH)
 #
 
 
-def schedule_rooms(data, y):
+def schedule_rooms(data, exams_to_schedule, period):
     '''
-        create optimal room plan for the fixed exams
+        schedule_rooms needs to be called for every single period
+        schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
     '''
     
     # TODO: Initialise using meaningful values
     # ...
-    n = data['n']
+
+
+    n = length(exams_to_schedule)
     r = data['r']
-    x = {}
-    for i in range(n):
-        for k in range(r):
-            x[i,k] = 0.0
+    c = data['c']
+    T = data['T']
+    z = {}
+
+    model = Model("RoomPlanner")
+
+    # z[i,k] = if exam i is written in room k
+    for k in range(r):
+        if T[k][period] == 1:
+            for i in range(n):
+                z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
+
+    model.update()
+
+    # Building constraints...    
     
-    # TODO: Maybe use Mickaels heuristic to find a start solution
+    # c1: seats for all students
+    for i in exams_to_schedule:
+        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) for l in range(p) if T[k][period] == 1 ]) >= s[i], "c1")
     
-    # TODO: Solve ILP
-    infeasible = False
+    # c2: only one exam per room
+    for k in range(r):
+            if T[k][l] == 1:
+                model.addConstr( quicksum([ z[i, k] for i in range(n)  ]) <= 1, "c2")    
+
+    # objective: minimize number of used rooms
+    obj1 = quicksum([ z[i,k] for i,k in itertools.product(range(n), range(r)) if T[k][l] == 1 ]) 
+
+    model.setObjective( obj1, GRB.MINIMIZE)
     
     # return best room schedule
-    if infeasible:
+    try:       
+        z={}
+        for i in range(n):
+            for k in range(r):
+                v = model.getVarByName("z_%s_%s")  % (i,k)
+                z[i,k]  = v.x     
+        return z
+    except GurobiError:
         return None
-    else:
-        return x
-
 
 
 
