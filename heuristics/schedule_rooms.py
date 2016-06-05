@@ -9,10 +9,8 @@ for p in PATHS:
 sys.path.append(PROJECT_PATH)
 
 
-#
-# TODO: MAX
-#
-
+import itertools
+from gurobipy import Model, quicksum, GRB, GurobiError
 
 def schedule_rooms(data, exams_to_schedule, period):
     '''
@@ -24,10 +22,11 @@ def schedule_rooms(data, exams_to_schedule, period):
     # ...
 
 
-    n = length(exams_to_schedule)
+    n = len(exams_to_schedule)
     r = data['r']
     c = data['c']
     T = data['T']
+    s = data['s']
     z = {}
 
     model = Model("RoomPlanner")
@@ -56,13 +55,17 @@ def schedule_rooms(data, exams_to_schedule, period):
 
     model.setObjective( obj1, GRB.MINIMIZE)
     
+    model.optimize()
+
+
     # return best room schedule
     try:       
         z={}
-        for i in range(n):
-            for k in range(r):
-                v = model.getVarByName("z_%s_%s")  % (i,k)
-                z[i,k]  = v.x     
+        for k in range(r):
+            if T[k][period] == 1:
+                for i in range(n):
+                    v = model.getVarByName("z_%s_%s" % (i,k)) 
+                    z[i,k]  = v.x    
         return z
     except GurobiError:
         return None
@@ -72,15 +75,15 @@ def schedule_rooms(data, exams_to_schedule, period):
 
 if __name__ == '__main__':
     
-    n = 10
-    r = 10
-    p = 10
-    tseed = 295
+    n = 55
+    r = 64
+    p = 1
+    tseed = 457
 
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)  
 
-    # TODO: Construct valuable test case which constructs a feasible y
+    schedule_rooms(data, [i for i in range(n)], 0)
     
     
     
