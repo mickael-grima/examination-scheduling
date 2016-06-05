@@ -21,21 +21,37 @@ def greedy_coloring(data, G, visiting_scheme):
     
     # TODO: Consider constraints for feasible rooms
     
+    # Dictionarry for final coloring
     coloring = {}
 
+    # Keep track of the number of students that have to write in a given period/color for capacity checking
+    total_students = {}
+
     for node in visiting_scheme:
-    	neighbour_coloring = set()
+        # Make sure he colors of all the neigbour are known
+        neighbour_coloring = set()
 
-    	for neighbour in G.neighbors_iter(node):
-    		if neighbour in coloring:
-    			neighbour_coloring.add(coloring[neighbour])
+        # Find all colorin in neighbourhood
+        for neighbour in G.neighbors_iter(node):
+            if neighbour in coloring:
+                neighbour_coloring.add(coloring[neighbour])
 
-    	for color in itertools.count():
-    		if color not in neighbour_coloring:
-    			break
+        # Find first color that is not in neighbourhood and which would not exceed room capacity for a given period
+        for color in itertools.count():
+            if color not in neighbour_coloring:
+                break
 
-    	coloring[node] = color
+        # Set found color
+        coloring[node] = color
 
+        # Update number of students in given period
+        if color in total_students:
+            total_students[color] += data['s'][node]
+        else:
+            total_students[color] = data['s'][node]
+    
+    print data['s']    
+    print total_students
     return coloring 
 
 
