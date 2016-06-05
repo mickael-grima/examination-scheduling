@@ -84,7 +84,9 @@ class AC:
     def generate_colorings(self, num_ants):
         
         # TODO: Construct Graph from Conflicts matrix
-        G = ColorGraph()
+        ''' Need to Talk about Graph coloring API '''
+
+        G = nx.Graph()
         
         # get connected components 
         components = nx.connected_component_subgraphs(G.graph)
@@ -100,7 +102,8 @@ class AC:
             # TODO: Consider components for ants. If the graph is not connected, then the ants have to also consider all other components
             
             # feed visiting scheme to greedy graph coloring
-            coloring = greedy_coloring( self.data, visiting_scheme )
+            # coloring will be a dictionarry
+            coloring = greedy_coloring( self.data, G, visiting_scheme )
             colorings.append( coloring )
         return colorings
     
