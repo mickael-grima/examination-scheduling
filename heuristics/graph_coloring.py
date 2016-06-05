@@ -91,5 +91,4 @@ if __name__ == '__main__':
     visiting_scheme=[1,2,3,4,5,6,0,7,8,9]
 
     coloring = greedy_coloring(data, G, visiting_scheme)
-    print coloring
-    
+    print coloring   
