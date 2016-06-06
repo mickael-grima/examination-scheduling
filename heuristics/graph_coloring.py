@@ -10,114 +10,82 @@ sys.path.append(PROJECT_PATH)
 
 
 import networkx as nx
-from booth.colouring import ColorGraph
+import itertools
+#from booth.colouring import ColorGraph
 
-def greedy_coloring(data, visiting_scheme):
+def greedy_coloring(data, G, visiting_scheme):
     
     # TODO: Implement greedy graph coloring algorithm which uses room capacities as boundary conditions
+        #DONE
+        #Might be worth in combining coloring with ordering
+
     
     # TODO: Use ColoGraph API for this, please. Might come in handy!
+       #TO DISCUSS
     
     # TODO: Consider constraints for feasible rooms
+        #Currrent heuristic
+        #Maybe: Solving LP for chcking feasability
+
+
     
-    n = data['n']
-    conflicts = data['conflicts']
+    # Dictionarry for final coloring
+    coloring = {}
+
+    # Keep track of the number of students that have to write in a given period/color for capacity checking
+    total_students = {}
+    total_rooms = {}
+
+    capacity = sum(data['c'])
+
+    for node in visiting_scheme:
+        # Make sure he colors of all the neigbour are known
+        neighbour_coloring = set()
+
+        # Find all colorin in neighbourhood
+        for neighbour in G.neighbors_iter(node):
+            if neighbour in coloring:
+                neighbour_coloring.add(coloring[neighbour])
+
+        # Find first color that is not in neighbourhood and which would not exceed room capacity for a given period (by seats and number of room)
+        for color in itertools.count():
+            if color not in neighbour_coloring:
+                if color in total_students:
+                    if total_students[color] + data['s'][node] <= capacity and total_rooms[color] + 1 <= data['r']:
+                        break
+                else:
+                    if data['s'][node] <= capacity:
+                        break
+
+        # Set found color
+        coloring[node] = color
+
+        # Update number of students in given period
+        if color in total_students:
+            total_students[color] += data['s'][node]
+            total_rooms[color] += 1
+        else:
+            total_students[color] = data['s'][node]
+            total_rooms[color] = 1
     
-    CG = ColorGraph(n_colors = n)
-    for i in range(n):
-        CG.add_node(i)
-    for i in range(n):    
-        for j in conflicts[i]:
-            CG.add_edge(i,j)
-            
-    for i in visiting_scheme:
-        
-    coloring = range(data['n'])
     return coloring 
 
 
+if __name__ == '__main__':
+    
+    n = 10
+    r = 10
+    p = 10
+    tseed = 295
 
+    from model.instance import build_smart_random
+    data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
+    G = nx.Graph()
+    G.add_nodes_from([0,1,2,3,4,5,6,7,8,9])
+    #G.add_edges_from([(1,2),(1,3),(2,4),(2,3),(3,5),(5,6),(1,6),(3,6)])
 
+    visiting_scheme=[1,2,3,4,5,6,0,7,8,9]
 
-
-
-class ColorGraph(object):
-    def __init__(self):
-        self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
-        self.plotname = "graphcolouring"
-        self.ALL_COLOURS = [str(i) for i in range(20)]
-
-        self.graph = nx.Graph()
-        self.colours = {}
-        self.revert = True
-        self.history = {}
-
-        if not os.path.exists(self.DIRECTORY):
-            os.makedirs(self.DIRECTORY)
-
-    def add_node(self, node):
-        """ @param node: node
-        Add node to self.graph
-        """
-        self.graph.add_node(node)
-        self.colours.setdefault(node, 'white')
-
-    def add_edge(self, node1, node2):
-        self.graph.add_edge(node1, node2)
-        self.colours.setdefault(node1, 'white')
-        self.colours.setdefault(node2, 'white')
-
-    def reset_history(self):
-        """ reinitialized self.history to an empty dictionnary
-        """
-        self.history = {}
-
-    def reset_colours(self):
-        """ Reset all the colours to white
-        """
-        for col in self.colours:
-            self.colours[col] = 'white'
-
-    def reset(self):
-        """ do both reset_colours and reset_history
-        """
-        self.reset_colours()
-        self.reset_history()
-
-    def reinitialize(self):
-
-    def update_color(self, node, color):
-        """ @param node: node to consider in self.graph
-            @param color: color to set to this node
-            Set color to node in self.colours
-        """
-
-    def plot_history(self, save=True):
-
-    def get_degree(self):
-        """ return a dictionnary {node: degree}
-        """
-        
-    def get_chromatic_number(self):
-        """ return the number of colours used
-        """
-        
-    def get_max_ind_set(self):
-        """ for the given colouring give the maximum independant set size
-        """
-        
-    def get_schedule_plan(self):
-        """ Return a dictionnary of dependencies for each node
-            e.g.: {1: [2, 3], 2: [1,4], 3: [1], 4: [2], 5: []}
-        """
-        
-    def check_neighbours(self, node, colour):
-        """ @param node: node to consider
-            @param colour: colour to check
-            We check for every neighbor of node if it has colour as colour
-            If not we return true, else we return false
-        """
-        
-    def get_history_node_ordered(self):
-        
+    coloring = greedy_coloring(data, G, visiting_scheme)
+    print coloring   

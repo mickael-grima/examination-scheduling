@@ -9,51 +9,81 @@ for p in PATHS:
 sys.path.append(PROJECT_PATH)
 
 
-#
-# TODO: MAX
-#
+import itertools
+from gurobipy import Model, quicksum, GRB, GurobiError
 
-
-def schedule_rooms(data, y):
+def schedule_rooms(data, exams_to_schedule, period):
     '''
-        create optimal room plan for the fixed exams
+        schedule_rooms needs to be called for every single period
+        schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
     '''
     
     # TODO: Initialise using meaningful values
     # ...
-    n = data['n']
-    r = data['r']
-    x = {}
-    for i in range(n):
-        for k in range(r):
-            x[i,k] = 0.0
-    
-    # TODO: Maybe use Mickaels heuristic to find a start solution
-    
-    # TODO: Solve ILP
-    infeasible = False
-    
-    # return best room schedule
-    if infeasible:
-        return None
-    else:
-        return x
 
+
+    n = len(exams_to_schedule)
+    r = data['r']
+    c = data['c']
+    T = data['T']
+    s = data['s']
+    z = {}
+
+    model = Model("RoomPlanner")
+
+    # z[i,k] = if exam i is written in room k
+    for k in range(r):
+        if T[k][period] == 1:
+            for i in range(n):
+                z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
+
+    model.update()
+
+    # Building constraints...    
+    
+    # c1: seats for all students
+    for i in exams_to_schedule:
+        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) for l in range(p) if T[k][period] == 1 ]) >= s[i], "c1")
+    
+    # c2: only one exam per room
+    for k in range(r):
+            if T[k][l] == 1:
+                model.addConstr( quicksum([ z[i, k] for i in range(n)  ]) <= 1, "c2")    
+
+    # objective: minimize number of used rooms
+    obj1 = quicksum([ z[i,k] for i,k in itertools.product(range(n), range(r)) if T[k][l] == 1 ]) 
+
+    model.setObjective( obj1, GRB.MINIMIZE)
+    
+    model.optimize()
+
+
+    # return best room schedule
+    try:       
+        z={}
+        for k in range(r):
+            if T[k][period] == 1:
+                for i in range(n):
+                    v = model.getVarByName("z_%s_%s" % (i,k)) 
+                    z[i,k]  = v.x    
+        return z
+    except GurobiError:
+        return None
 
 
 
 
 if __name__ == '__main__':
     
-    n = 10
-    r = 10
-    p = 10
-    tseed = 295
+    n = 55
+    r = 64
+    p = 1
+    tseed = 457
 
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)  
 
-    # TODO: Construct valuable test case which constructs a feasible y
+    schedule_rooms(data, [i for i in range(n)], 0)
     
     
     
