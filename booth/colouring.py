@@ -23,7 +23,6 @@ import gtk
 import matplotlib
 matplotlib.use('Agg')  # for not popping up windows
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 
 all_colours = ["#00B1EB", "#E51C39", "#FCEA10", "green", "red", "yellow", "cyan", "orange",
                "blue", "grey", "purple", "pink", "black"] + ['i' for i in range(1000)]
@@ -147,6 +146,23 @@ class ColorGraph(object):
         if colour in [self.colours[x[1]] for x in self.graph.edges(node)]:
             return(False)
         return(True)
+
+    def check_rooms_constraint(self, node, colour, data):
+        """ @param node: node to colour
+            @param colour: colour for coloring node
+            @param capacities: rooms capacities
+            check if rooms capacities constraint is fullfilled for the nodes that already have colour as colour
+        """
+        nodes = [nod for nod, col in self.colours.iteritems() if col != colour] + [node]
+        c, s, n, r = data.get('c', []), data.get('s', []), len(nodes), data.get('r', 0)
+        s = sorted([(i, s[i]) for i in nodes], key=lambda x: x[1], reverse=True)
+        c = sorted([c[k] for k in range(r)], reverse=True)
+        i, k = 0, 0
+        while i < n and k < r:
+            if s[i][1] <= c[k]:
+                i += 1
+            k += 1
+        return i < n
 
     def get_history_node_ordered(self):
         """ Give the list of node sorted such that first node was coloured first, ans so on
@@ -379,13 +395,17 @@ class ColorGraph(object):
         self.add_edge(2 * 4 + 2, (3) * 4 + 3)
         self.add_edge(3 * 4 + 2, (2) * 4 + 3)
 
-    def color_node(self, node):
-        """ Check the colors of the neighbors, and color the node with a different color
+    def color_node(self, node, data={}):
+        """ Check the colors of the neighbors, and color the node with a different color.
+            If capacities is not empty, we color the node respecting the capacities room constraint
         """
         for col in all_colours:
+            # we check if every other neighbors don't have col as colour
             if self.check_neighbours(node, col):
-                self.colours[node] = col
-                break
+                # We check if the room constraint is fullfilled
+                if self.check_rooms_constraint(node, col, data):
+                    self.colours[node] = col
+                    break
 
     def color_graph(self):
         """ @param save: do we save the sequence?

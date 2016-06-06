@@ -22,15 +22,16 @@ from heuristics.graph_coloring import greedy_coloring
 class simple_AC(AC):
     '''
         Optimize the examination scheduling problem using shuffling of exam lists.
-        
+
         data:        dictionary containing all relevant data
         gamma:       weighting factor for objectives
-        
+
         returns x_ik y_il, objVal
     '''
+    def __init__(self, data, gamma=1.0):
+        super(simple_AC, self).__init__(data, gamma=gamma, num_ants=0)
 
     def generate_colorings(self, num_ants):
-        
         # TODO: Generate colourings
         # ...
         colorings = []
