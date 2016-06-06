@@ -87,6 +87,16 @@ def test_time_schedule(n, r, p):
     #coloring = 
     pass
 
+
+def swop_color_dictionary(dic):
+    out = collections.defaultdict(set)
+    for k, v in dic.items():
+         out[v].add(k)
+
+    for v in out:
+        out[v]=list(out[v])     
+    return dict(out)
+
 if __name__ == '__main__':
     
     n = 10
