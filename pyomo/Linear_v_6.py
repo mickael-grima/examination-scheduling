@@ -103,7 +103,8 @@ def build_model(data, n_cliques = 0):
     '''
     
     print("c1: connecting variables x and y")
-    model.cons_1a = pymo.Constraint(model.NxP, rule=lambda m, i, l: sum(m.x[i, k, l] for k in m.R if T[k-1][l-1] == 1) <= m.r * m.y[i,l])
+    #model.cons_1a = pymo.Constraint(model.NxP, rule=lambda m, i, l: sum(m.x[i, k, l] for k in m.R if T[k-1][l-1] == 1) <= m.r * m.y[i,l])
+    model.cons_1a = pymo.Constraint(model.NxP, rule=lambda m, i, l: sum(m.x[i, k, l] for k in m.R if T[k-1][l-1] == 1) <= 12 * m.y[i,l])
     model.cons_1b = pymo.Constraint(model.NxP, rule=lambda m, i, l: sum(m.x[i, k, l] for k in m.R if T[k-1][l-1] == 1) >= m.y[i,l])
     model.cons_1a_v = lambda m, i, l: sum(m.x[i, k, l].value for k in m.R if T[k-1][l-1] == 1) <= m.r * m.y[i,l].value
     model.cons_1b_v = lambda m, i, l: sum(m.x[i, k, l].value for k in m.R if T[k-1][l-1] == 1) >= m.y[i,l].value
@@ -124,7 +125,7 @@ def build_model(data, n_cliques = 0):
     model.cons_4_v = lambda m, i: sum(m.x[i,k,l].value * m.c[k] for (k,l) in m.RxP if T[k-1][l-1] == 1) >= m.s[i]
     
     print("c5: only one exam per room per period")
-    model.cons_5 = pymo.Constraint(model.RxP, rule= lambda m, k, l: sum(m.x[i,k,l] for i in m.N) <= 1 )
+    model.cons_5 = pymo.Constraint(model.RxP, rule = lambda m, k, l: sum(m.x[i,k,l] for i in m.N) <= 1 )
     model.cons_5_v = lambda m, k, l: sum(m.x[i,k,l].value for i in m.N) <= 1 
     
     #"""
@@ -221,21 +222,21 @@ def schedule_exams(data, solver_name="gurobi", n_cliques=0, print_results=False)
     
 if __name__ == "__main__":
     
-    n = 300
+    n = 150
     r = 20
-    p = 15
+    p = 20  
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.35)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.75)
     exams = [ 'Ana%s' % (i+1) for i in range(n) ]
     rooms = ['MI%s' % (k+1) for k in range(r)]
     
     random.seed(42)
-    model, x, y, objVal, t = schedule_exams(data, n_cliques=0, solver_name = "gurobi")
+    model, x, y, objVal, t = schedule_exams(data, n_cliques=30, solver_name = "gurobi")
     
     random.seed(42)
-    model2, x2, y2, objVal2, t2 = schedule_exams(data, n_cliques=0, solver_name = "glpk")
+    #model2, x2, y2, objVal2, t2 = schedule_exams(data, n_cliques=30, solver_name = "glpk")
     
     print('Runtime: %0.2f s' % t)
     print('Runtime: %0.2f s' % t2)

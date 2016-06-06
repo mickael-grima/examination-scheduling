@@ -27,9 +27,7 @@ matplotlib.use('Agg')  # for not popping up windows
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-#all_colors = ["#00B1EB", "#E51C39", "#FCEA10", "green", "red", "yellow", "cyan", "orange",
-#               "blue", "grey", "purple", "pink", "black"] + ['i' for i in range(1000)]
-#m = len(all_colors)
+
 
 plt.axis('off')
 
@@ -44,8 +42,10 @@ def get_screen_size():
 
 
 class ColorGraph(object):
+    
+    
     def __init__(self, n_colors = 20):
-        self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
+        self.DIRECTORY = "%sheuristics/plots/" % PROJECT_PATH
         self.plotname = "graphcoloring"
         
         self.colors = defaultdict(int)
@@ -228,6 +228,7 @@ class ColorGraph(object):
         
 
     def draw(self, save=False, with_labels=False, ind=0, ax=None, clf=False, colors={}, pos={}):
+        
         """ 
             Draw the graph with the self.colors and save it if save==true
             @param save: do we save the picture
@@ -236,9 +237,14 @@ class ColorGraph(object):
             @param ax: if we have an ax we draw on it
             @param clf: after saving we clean the figure if clf==True
         """
+        
+        
+        all_colors = ["#00B1EB", "#E51C39", "#FCEA10", "green", "red", "yellow", "cyan", "orange", "blue", "grey", "purple", "pink", "black"] + ['i' for i in range(1000)]
+        m = len(all_colors)
+        
         if not pos:
             pos = nx.spring_layout(self.graph)
-        cols = [color for _, color in colors.iteritems()] or [color for _, color in self.colors.iteritems()]
+        cols = [all_colors[color] for _, color in colors.iteritems()] or [all_colors[color] for _, color in self.colors.iteritems()]
         nx.draw(self.graph, pos, node_color=cols, with_labels=with_labels, ax=ax, node_size=1500,
                 labels={node: "P%s" % node for node in self.graph.nodes()}, font_size=16)
         if save:
@@ -280,11 +286,5 @@ if __name__ == '__main__':
     print "ok"
     #G = build_rand_graph(nb_nodes=4)
     #G.draw(save=True)
-    G = nx.Graph()
-    plt.figure()
-    G.add_node(1)
-    G.add_node(2)
-    G.add_edge(1,2)
-    nx.draw(G)
-    #nx.draw(G.graph)
-    plt.show()
+    G = ColorGraph()
+    G.draw(save=True)
