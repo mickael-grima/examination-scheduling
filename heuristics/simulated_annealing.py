@@ -21,7 +21,7 @@ def obj2(times, conflicts):
     return sum( min( abs(times[i] - times[j]) for j in conflicts[i]) for i in range(len(times)) )
     
   
-def simulated_annealing(exam_colors, data, beta_0 = 1):
+def simulated_annealing(exam_colors, data, beta_0 = 1, max_iter = 1):
     
     h = data['h']
     conflicts = data['conflicts']
@@ -119,5 +119,5 @@ if __name__ == '__main__':
     
     # random coloring
     exam_colors = { i: rd.randint(0,n_colors-1) for i in range(n) }
-    
+    simulated_annealing(exam_colors, data, beta_0 = 1)
     

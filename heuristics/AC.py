@@ -21,8 +21,6 @@ from model.instance import force_data_format
 from heuristics.best_time_schedule import best_time_schedule, easy_time_schedule
 from heuristics.schedule_rooms import schedule_rooms
 
-from model.objectives import obj1, obj2
-
 from booth.colouring import ColorGraph
 from heuristics.graph_coloring import greedy_coloring
 
@@ -119,6 +117,10 @@ class AC:
             self.graph.reset_colours(self)
         return colorings
 
+    
+    def obj1(self, x):
+        return sum( x[i,k] for i in range(self.data['n']) for k in range(self.data['r']) ) 
+
     def heuristic(self, coloring):
         # create preliminary feasible time schedule
         y = easy_time_schedule(coloring, self.data['h'])
@@ -131,10 +133,10 @@ class AC:
             return None, None, 1e10
 
         # create time schedule permuting the time solts for each coloring
-        y = best_time_schedule(coloring, self.data['h'])
+        time_schedule, value = best_time_schedule(coloring, self.data['h'])
 
         # evaluate combined objectives
-        objVal = obj1(self.data, x) - self.gamma * obj2(self.data, y)
+        objVal = self.obj1(x) - self.gamma * value
 
         return x, y, objVal
 
