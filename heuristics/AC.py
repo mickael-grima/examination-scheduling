@@ -15,6 +15,7 @@ sys.path.append(PROJECT_PATH)
 import numpy as np
 import networkx as nx
 import random as rd
+import collections
 
 from model.instance import force_data_format
 
@@ -22,7 +23,6 @@ from heuristics.best_time_schedule import best_time_schedule, easy_time_schedule
 from heuristics.schedule_rooms import schedule_rooms
 
 from booth.colouring import ColorGraph
-from heuristics.graph_coloring import greedy_coloring
 
 
 class Ant(object):
@@ -54,20 +54,26 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight):
+    def generate_coloring(self, graph, edges_weight, capacities=[]):
+        """ @param graph: graph to color
+            @param edges_weight: weight on the edges for each node
+            @cparam capacities: capacities of the rooms. If empty, we don't consider them
+            generate a feasible coloring for this ant
+        """
         # for each connex component
         for node in self.starting_nodes:
             # start to visit the graph for one ant
             visited, current_node, nb = set(), node, 0
             while nb < 2 or current_node not in visited:
                 # color the node
-                graph.color_node(current_node)
+                graph.color_node(current_node, capacities=capacities)
                 visited.add(current_node)
                 self.traces.append(current_node)
                 nod = self.walk_to_next_node(edges_weight[node], black_list=visited)
                 current_node = nod
                 nb = nb + 1 if current_node in visited else nb
         return {n: c for n, c in graph.colours.iteritems()}
+
 
 
 # TODO: MICKAEL
@@ -113,7 +119,7 @@ class AC:
         """
         colorings = []
         for ant in self.ants:
-            colorings.append(ant.generate_coloring(self.graph, self.edges_weight))
+            colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data))
             self.graph.reset_colours(self)
         return colorings
 

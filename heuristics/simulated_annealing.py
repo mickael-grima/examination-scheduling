@@ -15,6 +15,15 @@ import random as rd
 # TODO: ROLAND
 #
 
+def swop_color_dictionary(dic):
+    out = collections.defaultdict(set)
+    for k, v in dic.items():
+         out[v].add(k)
+
+    for v in out:
+        out[v]=list(out[v])     
+    return dict(out)
+
     
 def obj2(times, conflicts):
     
