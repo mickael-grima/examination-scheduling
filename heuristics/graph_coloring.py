@@ -8,7 +8,7 @@ for p in PATHS:
         break
 sys.path.append(PROJECT_PATH)
 
-
+import collections
 import networkx as nx
 import itertools
 #from booth.colouring import ColorGraph
@@ -70,6 +70,15 @@ def greedy_coloring(data, G, visiting_scheme):
     
     return coloring 
 
+def swop_color_dictionarry(dic):
+    out = collections.defaultdict(set)
+    for k, v in dic.items():
+         out[v].add(k)
+
+    for v in out:
+        out[v]=list(out[v])     
+    return dict(out)
+
 
 if __name__ == '__main__':
     
@@ -89,3 +98,6 @@ if __name__ == '__main__':
 
     coloring = greedy_coloring(data, G, visiting_scheme)
     print coloring   
+    swoped = swop_color_dictionarry(coloring)
+    print swoped
+

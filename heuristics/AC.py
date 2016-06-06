@@ -15,6 +15,7 @@ sys.path.append(PROJECT_PATH)
 import numpy as np
 import networkx as nx
 import random as rd
+import collections
 
 from model.instance import force_data_format
 
@@ -74,6 +75,7 @@ class Ant(object):
                 current_node = nod
                 nb = nb + 1 if current_node in visited else nb
         return {n: c for n, c in graph.colours.iteritems()}
+
 
 
 # TODO: MICKAEL
