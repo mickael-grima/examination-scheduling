@@ -12,6 +12,8 @@ import numpy as np
 import random as rd
 from collections import defaultdict
 
+import networkx as nx
+
 from model.instance import build_random_data
 
 from copy import deepcopy
@@ -39,23 +41,35 @@ def to_binary(time_table, n, p):
         for i in time_table:
             y[i,time_table[i]] = 1.0
         
-        
-def obj2(times, exam_colors, conflicts):
+def get_coloring(conflicts):
+    # greedy coloring
+    graph = nx.Graph()
+    for c in conflicts:
+        for d in conflicts[c]:
+            graph.add_edge(c, d)
+    return nx.coloring.greedy_color(graph)
     
+    
+def obj2(times, exam_colors, conflicts):
     # TODO: Dont do this everytime ( swap, track changes ) 
     exam_times = [ times[exam_colors[i]] for i in exam_colors ]
-    
-    # TODO: Make the objective faster!
-    # TODO: !!!!!
     return sum([ min( [abs(exam_times[i] - exam_times[j]) for j in conflicts[i]] ) for i in exam_colors if len(conflicts[i]) > 0 ])
     
+    
+def obj3(times, exam_colors, color_conflicts):
+    # TODO: Can this even be speeded up?
+    # TODO: If only colors can be considered, speed up about 10x!!!!
+    return sum([ min( [abs(times[exam_colors[i]] - times[j]) for j in color_conflicts[i]] ) for i in exam_colors if len(color_conflicts[i]) > 0 ])
   
-def simulated_annealing(exam_colors, data, beta_0 = 1, times = None, max_iter = 1e4, log = False, log_hist=False):
+def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter = 1e4, log = False, log_hist=False):
     
     h = data['h']
     conflicts = data['conflicts']
     color_exams = swap_color_dictionary(exam_colors)
     assert list(exam_colors) == sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
+    
+    # for an exam i and a color c count the number of conflicts between them
+    color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
     
     n = len(exam_colors)
     p = len(h)
@@ -81,8 +95,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 1, times = None, max_iter = 
     
     # best values found so far
     best_times = deepcopy(times)
-    best_value = obj2(times, exam_colors, conflicts)
-    print best_value
+    best_value = obj3(times, exam_colors, color_conflicts)
     # initialize loop
     iteration = 0
     counter = 0
@@ -137,7 +150,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 1, times = None, max_iter = 
             get objective value
         '''
         
-        value = obj2(times, exam_colors, conflicts)
+        #value = obj2(times, exam_colors, conflicts)
+        value = obj3(times, exam_colors, color_conflicts)
         if log:
             print "Obj: %0.2f" % value
         '''
@@ -177,45 +191,84 @@ def simulated_annealing(exam_colors, data, beta_0 = 1, times = None, max_iter = 
 
     
 
+def test_objectives():
+    
+    rd.seed(42)
+    n = 300
+    r = 20
+    p = 20
+    prob_conflicts = 0.2
+    
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    conflicts = data['conflicts']
+    exam_colors = get_coloring(conflicts)
+    n_colors = len(set(exam_colors[k] for k in exam_colors))
+    
+    times, value = simulated_annealing(exam_colors, data, max_iter = 100)
+    
+    # exams per color
+    color_exams = swap_color_dictionary(exam_colors)
+    
+    # for an exam i and a color c count the number of conflicts between them
+    color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
+    
+    assert obj2(times, exam_colors, conflicts) == obj3(times, exam_colors, color_conflicts), "ERROR: OBJECTIVES DIFFER!"
+    print "OBJECTIVE TEST OK"
+
+
 
 from time import time
 if __name__ == '__main__':
     
-    rd.seed(42)
-    n = 300
-    r = 12
-    p = 12
-    n_colors = 10
+    #test_objectives()
+    #exit(0);
     
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=0.75, build_Q = False)
-        
-    # random coloring
-    exam_colors = { i: rd.randint(0,n_colors-1) for i in range(n) }
+    
+    rd.seed(42)
+    n = 1500
+    r = 70
+    p = 70
+    prob_conflicts = 0.2
+    
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    conflicts = data['conflicts']
+    exam_colors = get_coloring(conflicts)
+    n_colors = len(set(exam_colors[k] for k in exam_colors))
+    
     beta_0 = 1e-3
     log_hist = False
     
     max_iter = 1e1
+    print max_iter
     rd.seed(420)
     t1 = time()
     times, v1 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
     t1 = (time() - t1)*1.0
+    rt1 = t1/max_iter
     
     #print t1
     
     max_iter = 1e2
+    print max_iter
     rd.seed(420)
     t2 = time()
     times, v2 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
     t2 = (time() - t2)*1.0
+    rt2 = t2/max_iter
     
     #print t2
     
-    max_iter = 1e3
+    max_iter = 1e2
+    print max_iter
     rd.seed(420)
     t3 = time()
     times, v3 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
     times, v3 = simulated_annealing(exam_colors, data, times = times, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
     t3 = (time() - t3)*1.0
+    rt3 = t3/max_iter/2.
     
     print t1, t2, t3
+    print rt1, rt2, rt3
     print v1, v2, v3

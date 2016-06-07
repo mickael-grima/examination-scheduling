@@ -10,7 +10,7 @@ import random as rd
 import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
-
+import copy
 
 def force_data_format(func):
     """ decorator that force the format of data
@@ -24,7 +24,21 @@ def force_data_format(func):
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
-        if 'build_Q' in data and data['build_Q']:
+        
+        
+        # make sure the conflicts are symmetric!
+        add = defaultdict(list)
+        for k in conflicts:
+            for l in conflicts[k]:
+                if k > k and k not in conflicts[l]:
+                    add[l] += [k]
+        for k in conflicts:
+            conflicts[k] = sorted(set(conflicts[k] + add[k]))
+        
+        # conflicts matrix dense format (dont build if option is set)
+        if 'build_Q' in data and not data['build_Q']:
+            Q = None
+        else:
             if not Q:
                 Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
             else:
@@ -36,10 +50,9 @@ def force_data_format(func):
                 for i in range(n):
                     for j in range(n):
                         if Q[i][j] == 1:
-                            conflicts[i].append(j)
-        else:
-            Q = None
-            
+                            conflicts[i].append(j)    
+        
+        # locking times sparse and dense format
         locking_times = data.get('locking_times', defaultdict(list))
         T = [[1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
 
