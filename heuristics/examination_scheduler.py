@@ -86,7 +86,7 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1):
     return x, y, obj_val
 
 
-def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     ''' 
         Test optimize with dummy meta heuristic 
     '''
@@ -110,6 +110,20 @@ def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     print "VALUE:", v
     
     
+def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+    ''' 
+        Test optimize with dummy meta heuristic 
+    '''
+    print "Testing ant colony meta heuristic optimization"
+    
+    rd.seed(seed)
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    T = AC(data)
+    x, y, v = optimize(T, data, epochs=10, gamma = 0.01)
+    print "VALUE:", v
+    
+    
 def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     
     print "Testing heuristics"
@@ -124,5 +138,6 @@ def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
 if __name__ == '__main__':
     
     test_heuristic()
+    test_optimize_dummy()
     test_optimize()
     
