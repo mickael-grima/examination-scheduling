@@ -32,6 +32,8 @@ def schedule_rooms(coloring, color_schedule, data):
     
     # get exams for each color
     color_exams = swap_color_dictionary(coloring)
+
+    periods = [data['h'].index(color) for color in color_schedule]
     
     for color in color_exams:
         
@@ -40,7 +42,7 @@ def schedule_rooms(coloring, color_schedule, data):
         # return NONE in this function if one of the x is NONE
         x = defaultdict(int)
         z = defaultdict(int)
-        x = schedule_rooms_in_period(color_exams[color], color_schedule[color], data)
+        x = schedule_rooms_in_period(color_exams[color], periods[color], data)
         if x == None:
             return None
         else:
@@ -128,12 +130,10 @@ if __name__ == '__main__':
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
     coloring = get_coloring(data['conflicts'])
+
     color_schedule, value = simulated_annealing(coloring, data, max_iter = 100)
-    periods = [data['h'].index(color) for color in color_schedule]
 
-    print periods
-
-    schedule_rooms(coloring, periods, data)
+    schedule_rooms(coloring, color_schedule, data)
 
     #schedule_rooms_in_period([i for i in range(n)], 0, data)
     
