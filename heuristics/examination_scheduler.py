@@ -38,7 +38,7 @@ def heuristic(coloring, data, gamma = 1):
     # evaluate combined objectives
     obj_val = room_value - gamma * time_value
 
-    return rooms, times, obj_val
+    return room_schedule, time_schedule, obj_val
 
 
 def optimize(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
@@ -70,6 +70,7 @@ def optimize(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
             x, y, objVal = xs[best_index], ys[best_index], values[best_index]
 
     return x, y, objVal
+
 
 
 if __name__ == '__main__':

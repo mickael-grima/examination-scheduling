@@ -12,11 +12,13 @@ for p in paths:
 sys.path.append(path)
 
 import unittest
+
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
 from heuristics.AC import AC
 import heuristics.examination_scheduler as scheduler
-from heuristics import heuristic 
-from model.instance import build_small_input, build_smart_random
+import heuristics.time_scheduler as timescheduler
+
+from model.instance import build_smart_random
 from booth.colouring import ColorGraph
 from utils.tools import transform_variables
 from model.constraints_handler import (
@@ -60,8 +62,14 @@ class TestConstraints(unittest.TestCase):
     def testACAlgorithm(self):
         """ We test here the Ant Colony algorithm, without taking room scheduling in consideration
         """
+        x = {}
+        y, _ = timescheduler.optimize_time(AC(self.data), self.data)
+        self.assertTrue(y, msg="dct y doesn't contain any variables")
+        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+                        msg="conflict constraint failed")
+        self.assertTrue(test_one_exam_per_period(x, y), msg="one exam per period constraint failed")
 
-    def testHeuristics(self):
+    def TestHeuristics(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
         """
         x, y, _ = scheduler.optimize(AC(self.data), self.data)

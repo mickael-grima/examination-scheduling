@@ -13,6 +13,12 @@ import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
 from heuristics.tools import swap_color_dictionary
 
+
+#
+# Responsible team member: MAX
+#
+
+
 def obj1(x, n, r):
     '''
         Room objective
@@ -32,12 +38,21 @@ def schedule_rooms(coloring, time_schedule, data):
     for color in color_exams:
         
         # TODO Combine x values!!!!!!!!
-        
+        # Stop if schedulre_rooms_in_period returns NONE,
+        # return NONE in this function if one of the x is NONE
+        x = {}
+
         time = time_schedule[color_exams[color]][0]
         x = schedule_rooms_in_period(data, color_exams[color], time)
+        if x == None:
+            return None
+        else:
+            z.update(x) 
+
+        print z
     
     obj_val = obj1(x, data['n'], data['r'])
-    return x, obj_val
+    return zgit , obj_val
 
 def schedule_rooms_in_period(data, exams_to_schedule, period):
     '''
@@ -61,7 +76,7 @@ def schedule_rooms_in_period(data, exams_to_schedule, period):
     # z[i,k] = if exam i is written in room k
     for k in range(r):
         if T[k][period] == 1:
-            for i in range(n):
+            for i in exams_to_schedule:
                 z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
 
     model.update()
@@ -90,7 +105,7 @@ def schedule_rooms_in_period(data, exams_to_schedule, period):
         z={}
         for k in range(r):
             if T[k][period] == 1:
-                for i in range(n):
+                for i in exams_to_schedule:
                     v = model.getVarByName("z_%s_%s" % (i,k)) 
                     z[i,k]  = v.x    
         return z
