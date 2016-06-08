@@ -72,17 +72,7 @@ def build_model(data, n_cliques = 0):
         for l in range(p):
             y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
     
-    # help variable z[i,j] and delta[i,j] for exam i and exam j
-    # we are only interested in those exams i and j which have a conflict!
-    # z = {}
-    # delta = {}
-    # for i in range(n):
-    #     for j in conflicts[i]:
-    #         z[i, j] = model.addVar(vtype=GRB.INTEGER, name="z_%s_%s" % (i,j))
-    #         delta[i, j] = model.addVar(vtype=GRB.BINARY, name="delta_%s_%s" % (i,j))
-    
-    w = model.addVar(vtype=GRB.INTEGER, name="w")
-    
+
     # integrate new variables
     model.update() 
 
@@ -143,12 +133,18 @@ def build_model(data, n_cliques = 0):
 
     # objective: minimize number of used rooms
     print("Building Objective...")
-    obj1 = quicksum([ x[i,k,l] * s[i] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
+    obj1 = quicksum([ x[i,k,l] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
 
     model.setObjective( obj1, GRB.MINIMIZE)
 
     # Set Parameters
     #print("Setting Parameters...")
+    model.params.barconvtol = 1
+    model.params.nodelimit = 1
+    
+
+    model.setParam(GRB.Param.Threads, 1)
+ 
     # max presolve agressivity
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
@@ -160,31 +156,33 @@ def build_model(data, n_cliques = 0):
     return(model)
 
 
+
 if __name__ == "__main__":
     
-    n = 50
+    n = 150
     r = 20
     p = 20  
 
     # generate data
     random.seed(42)
-    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.05)
+    data = build_random_data(n=n, r=r, p=p, prob_conflicts=0.75)
     exams = [ 'Ana%s' % (i+1) for i in range(n) ]
     rooms = ['MI%s' % (k+1) for k in range(r)]
     
     # Create and solve model
+    t = time()
     try:        
         model = build_model(data, n_cliques = 30)        
         
-        t = time()
         model.optimize()
-        t = time() - t
         
         for v in model.getVars():
             if v.x == 1 and ("x" in v.varName or "y" in v.varName): 
                 print('%s %g' % (v.varName, v.x))
 
         print('Obj: %g' % model.objVal)
-        print('Runtime: %0.2f s' % t)
     except GurobiError:
         print('Error reported')
+    t = time() - t
+    print('Runtime: %0.2f s' % t)
+    

@@ -19,14 +19,12 @@ import collections
 
 from model.instance import force_data_format
 
-from heuristics.best_time_schedule import best_time_schedule, easy_time_schedule
-from heuristics.schedule_rooms import schedule_rooms
-
-from model.objectives import obj1, obj2
-
 from booth.colouring import ColorGraph
-from heuristics.graph_coloring import greedy_coloring
 
+
+
+
+# Responsible team member: MICKAEL
 
 class Ant(object):
     """ Represent an ant for the colouring graph
@@ -57,14 +55,19 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight):
+    def generate_coloring(self, graph, edges_weight, capacities=[]):
+        """ @param graph: graph to color
+            @param edges_weight: weight on the edges for each node
+            @cparam capacities: capacities of the rooms. If empty, we don't consider them
+            generate a feasible coloring for this ant
+        """
         # for each connex component
         for node in self.starting_nodes:
             # start to visit the graph for one ant
             visited, current_node, nb = set(), node, 0
             while nb < 2 or current_node not in visited:
                 # color the node
-                graph.color_node(current_node)
+                graph.color_node(current_node, capacities=capacities)
                 visited.add(current_node)
                 self.traces.append(current_node)
                 nod = self.walk_to_next_node(edges_weight[node], black_list=visited)
@@ -74,7 +77,6 @@ class Ant(object):
 
 
 
-# TODO: MICKAEL
 class AC:
     '''
         Optimize the examination scheduling problem using ant colony optimisation.
@@ -90,6 +92,7 @@ class AC:
         self.data = data
         self.gamma = gamma
         self.ants = [Ant(name='Ant%s' % i) for i in range(num_ants)]
+        self.num_ants = num_ants
         self.graph = ColorGraph()
         self.edges_weight = {}  # weight on the edges
 
@@ -112,73 +115,35 @@ class AC:
             for neighbor in self.graph.graph.neighbors(node):
                 self.edges_weight[node][neighbor] = weight
 
+
     def generate_colorings(self):
         """ Generate a feasible coloring for each ant
         """
         colorings = []
         for ant in self.ants:
-            colorings.append(ant.generate_coloring(self.graph, self.edges_weight))
+            colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data))
             self.graph.reset_colours(self)
         return colorings
 
-    def heuristic(self, coloring):
-        # create preliminary feasible time schedule
-        y = easy_time_schedule(coloring, self.data['h'])
-
-        # create room plan for the fixed exams
-        x = schedule_rooms(self.data, y)
-
-        # if infeasible, return large objVal
-        if x is None:
-            return None, None, 1e10
-
-        # create time schedule permuting the time solts for each coloring
-        y = best_time_schedule(coloring, self.data['h'])
-
-        # evaluate combined objectives
-        objVal = obj1(self.data, x) - self.gamma * obj2(self.data, y)
-
-        return x, y, objVal
-
-    def update_edges_weight(self, ant, coeff=2):
+    
+    def update_edges_weight(self, ant_index, coeff=2):
         """ @param ant: bst ant, we update the weights function of its traces
             update the pheromone for each ant. We multiply the current weight on the visiting edge by coeff
         """
+        assert ant_index < self.num_ants, "ERROR: There are only %d ants in this colony!" % self.num_ants
+        
+        ant = self.ants[ant_index]
         for i in range(len(ant.traces) - 1):
             node = ant.traces[i]
             next_node = ant.traces[i + 1]
             if next_node not in ant.starting_nodes:
                 self.edges_weight[node][next_node] *= coeff
 
-    def optimize(self, epochs=100, reinitialize=False):
-        # TODO: Initialise using meaningful values
-        # ...
-        #
-        x, y, objVal = None, None, 1e10
 
-        for epoch in range(epochs):
-            xs, ys, objVals = dict(), dict(), dict()
+    #def optimize(self, epochs=100, reinitialize=False):
+        #return heuristic.optimize(self, self.data, epochs=epochs, gamma = self.gamma, reinitialize=reinitialize)
 
-            # Generate colourings
-            colorings = self.generate_colorings()
-
-            # evaluate all colorings
-            for col in range(len(colorings)):
-                xs[col], ys[col], objVals[col] = self.heuristic(colorings[col])
-
-            # search for best coloring
-            values = [objVals[col] for col in range(len(colorings))]
-            best_index = max(range(len(values)), key=lambda i: values[i])
-
-            # Update pheromone traces
-            self.update_edges_weight(self.ants[best_index])
-
-            # save best value so far.. MINIMIZATION
-            if values[best_index] < objVal:
-                x, y, objVal = xs[best_index], ys[best_index], values[best_index]
-
-        return x, y, objVal
-
+    
 
 if __name__ == '__main__':
     n = 10
@@ -193,6 +158,4 @@ if __name__ == '__main__':
     num_ants = 10
     ac = AC(data)
     colorings = ac.generate_colorings(num_ants)
-    print ac.heuristic(colorings[0])
-    print (ac.optimize(num_ants))[2]
-    print (ac.optimize(num_ants))[2]
+    

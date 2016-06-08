@@ -10,7 +10,7 @@ import random as rd
 import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
-
+import copy
 
 def force_data_format(func):
     """ decorator that force the format of data
@@ -24,19 +24,35 @@ def force_data_format(func):
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
-        if not Q:
-            Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
+        
+        
+        # make sure the conflicts are symmetric!
+        add = defaultdict(list)
+        for k in conflicts:
+            for l in conflicts[k]:
+                if k > k and k not in conflicts[l]:
+                    add[l] += [k]
+        for k in conflicts:
+            conflicts[k] = sorted(set(conflicts[k] + add[k]))
+        
+        # conflicts matrix dense format (dont build if option is set)
+        if 'build_Q' in data and not data['build_Q']:
+            Q = None
         else:
-            for i in range(n):
-                Q[i][i] = 0
-            for i in range(n):
-                for j in range(i + 1, n):
-                    Q[j][i] = Q[i][j]
-            for i in range(n):
-                for j in range(n):
-                    if Q[i][j] == 1:
-                        conflicts[i].append(j)
-
+            if not Q:
+                Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
+            else:
+                for i in range(n):
+                    Q[i][i] = 0
+                for i in range(n):
+                    for j in range(i + 1, n):
+                        Q[j][i] = Q[i][j]
+                for i in range(n):
+                    for j in range(n):
+                        if Q[i][j] == 1:
+                            conflicts[i].append(j)    
+        
+        # locking times sparse and dense format
         locking_times = data.get('locking_times', defaultdict(list))
         T = [[1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
 
@@ -62,6 +78,7 @@ def build_random_data(**kwards):
     """
     n, r, p = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0)
     prob_conflicts = kwards.get('prob_conflicts', 0.5)
+    build_Q = kwards.get('build_Q', True)
     
     data = {'n': n, 'r': r, 'p': p}
     # we generate a random number of student between 5 and 10 per exam
@@ -70,6 +87,8 @@ def build_random_data(**kwards):
     data['c'] = [ int(5 + 16 * rd.random()) for k in range(r)]
     # hours between starting day and starting periods are fixed equal to 2
     data['h'] = [ 2*l for l in range(p)]
+    
+    data['build_Q'] = build_Q
     
     # conflicts is a list containing a list of conflicts for each index i
     data['conflicts'] = defaultdict(list)
