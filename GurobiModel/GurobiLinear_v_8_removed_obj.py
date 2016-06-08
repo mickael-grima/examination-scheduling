@@ -72,6 +72,7 @@ def build_model(data, n_cliques = 0):
         for l in range(p):
             y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
     
+
     # integrate new variables
     model.update() 
 
@@ -111,22 +112,22 @@ def build_model(data, n_cliques = 0):
                 model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")    
     
     
-    print("c8: Building %d clique constraints" %n_cliques)
-    if n_cliques > 0:
-        G = nx.Graph()
-        for i in range(n):
-            G.add_node(i)
+    # print("c8: Building %d clique constraints" %n_cliques)
+    # if n_cliques > 0:
+    #     G = nx.Graph()
+    #     for i in range(n):
+    #         G.add_node(i)
             
-        for i in range(n):
-            for j in conflicts[i]:
-                G.add_edge(i,j)
+    #     for i in range(n):
+    #         for j in conflicts[i]:
+    #             G.add_edge(i,j)
                 
-        cliques = nx.find_cliques(G) # generator
+    #     cliques = nx.find_cliques(G) # generator
         
-        for counter, clique in itertools.izip(range(n_cliques), cliques):
-            for l in range(l):
-                model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
-                #print "c_lique_%s_%s_%s" % (counter,clique,l)
+    #     for counter, clique in itertools.izip(range(n_cliques), cliques):
+    #         for l in range(l):
+    #             model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
+    #             #print "c_lique_%s_%s_%s" % (counter,clique,l)
 
     print("All constrained built - OK")
 
@@ -148,6 +149,8 @@ def build_model(data, n_cliques = 0):
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
+    model.params.barconvtol = 0.1
+    model.params.MIPFocus = 1
 
     # return
     return(model)
