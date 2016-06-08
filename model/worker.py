@@ -36,7 +36,7 @@ def compare(data):
     problems = {
          'Linear Advanced removed obj': build_linear_model_8,
     #     'Linear Advanced removed c6': build_linear_model_6,
-        'Linear Advanced changed obj': build_linear_model_5,
+    #    'Linear Advanced changed obj': build_linear_model_5,
     #    'Linear Advanced': build_linear_model_3,
     #    'Linear Advanced Cliques': build_linear_model_4,    
     #  'GurobiQ_neu': build_nonlinear_model
@@ -68,9 +68,9 @@ def compare(data):
 
 
 def test_compare():
-    n = 350
-    r = 40
-    p = 40
+    n = 1500
+    r = 65
+    p = 60
     tseed = 295
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
