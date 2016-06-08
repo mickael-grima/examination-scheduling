@@ -49,17 +49,112 @@ def get_coloring(conflicts):
             graph.add_edge(c, d)
     return nx.coloring.greedy_color(graph)
     
+def get_color_conflicts(color_exams, conflicts):
+    # get a list of exam conflicts between colors
+    color_conflicts = defaultdict(list)
+    for c in color_exams:
+        for d in color_exams:
+            # for each color c check all other colors if there exists at least one conflict
+            for i in color_exams[c]:
+                if intersect( conflicts[i], color_exams[d] ):
+                    color_conflicts[c].append(d)
+                    break
+    return color_conflicts
+
     
+def test_color_conflicts():
+    # TODO!
+    pass
+
+
+def intersect(set1, set2):
+    '''
+        If the two sets intersect, return True
+    '''
+    for elem in set1:
+        if elem in set2:
+            return True
+    return False
+
+
 def obj2(times, exam_colors, conflicts):
     # TODO: Dont do this everytime ( swap, track changes ) 
     exam_times = [ times[exam_colors[i]] for i in exam_colors ]
     return sum([ min( [abs(exam_times[i] - exam_times[j]) for j in conflicts[i]] ) for i in exam_colors if len(conflicts[i]) > 0 ])
     
     
-def obj3(times, exam_colors, color_conflicts):
+def obj3(times, exam_colors, exam_color_conflicts):
     # TODO: Can this even be speeded up?
     # TODO: If only colors can be considered, speed up about 10x!!!!
-    return sum([ min( [abs(times[exam_colors[i]] - times[j]) for j in color_conflicts[i]] ) for i in exam_colors if len(color_conflicts[i]) > 0 ])
+    d_n = [ 0 ] * len(exam_colors) 
+    for i in exam_colors:
+        if len(exam_color_conflicts[i]) > 0:
+            d_n[i] = min( [abs(times[exam_colors[i]] - times[j]) for j in exam_color_conflicts[i]] )
+    #d_n = [ min( [abs(times[exam_colors[i]] - times[j]) for j in exam_color_conflicts[i]] ) for i in exam_colors if len(exam_color_conflicts[i]) > 0]
+    print d_n
+    print times
+    return sum(d_n)
+
+# for the color c get the conflicting color with the minimum time distance
+def get_neighbor(c, times, color_conflicts):
+    if len(color_conflicts[c]) == 0:
+        return c
+    return color_conflicts[c][np.argmin( [ abs(times[c] - times[d]) for d in color_conflicts[c] ] )]
+
+
+# get a list of neighboring color nodes    
+def get_color_neighbors(color_exams, times, color_conflicts):
+
+    # TODO: for d in color_conflicts[c]
+    # TODO: Find left and find right
+    
+    # assuming no conflicting colors are at the same time
+    neighbor = [0]*len(times)
+    s_times = sorted(enumerate(a), key= lambda x:x[1])
+    for c in range(len(times)):
+        index, value = s_times[c]
+        if i == 0:
+            neighbor[index] = s_times[1][0]
+        elif i == len(times)-1:
+            neighbor[index] = s_times[len(times)-2][0]
+        elif abs(s_times[c-1][1] - value) < abs(s_times[c+1][1] - value):
+            neighbor[index] = s_times[c-1][0]
+        else:
+            neighbor[index] = s_times[c+1][0]
+    
+    print neighbor
+    print [ get_neighbor(c, times, color_conflicts) for c in color_exams ]
+
+    return [ get_neighbor(c, times, color_conflicts) for c in color_exams ]
+    
+# get the colors which changed their min distance if one color is changed without swap
+def get_changed_colors(c, times, new_h, color_neighbors, color_conflicts):
+    change_colors = []
+    for d in range(len(color_neighbors)):
+        if color_neighbors[d] == c:
+            change_colors.append(d)
+    print change_colors
+    old_h = times[c]
+    times[c] = new_h
+    new_neighbor = get_neighbor(c, times, color_conflicts)
+    
+    
+def obj4(times, exam_colors, color_exams, color_conflicts):
+    # TODO: Can this even be speeded up?
+    # TODO: If only colors can be considered, speed up about 10x!!!!
+    
+    # neighboring distance
+    print color_conflicts
+    color_neighbors = get_color_neighbors(color_exams, times, color_conflicts)
+    
+    
+    d_n = [ abs(times[exam_colors[i]] - times[color_neighbors[exam_colors[i]]]) for i in exam_colors ]
+    
+    print times
+    print d_n
+    # 1.Fall
+    
+    return sum(d_n)
   
 def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter = 1e4, log = False, log_hist=False):
     
@@ -69,7 +164,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
     assert list(exam_colors) == sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
     
     # for an exam i and a color c count the number of conflicts between them
-    color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
+    exam_color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
+    
+    color_conflicts = get_color_conflicts(color_exams, conflicts)
     
     n = len(exam_colors)
     p = len(h)
@@ -95,7 +192,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
     
     # best values found so far
     best_times = deepcopy(times)
-    best_value = obj3(times, exam_colors, color_conflicts)
+    best_value = obj3(times, exam_colors, exam_color_conflicts)
+    value = 0
     # initialize loop
     iteration = 0
     counter = 0
@@ -151,7 +249,13 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
         '''
         
         #value = obj2(times, exam_colors, conflicts)
-        value = obj3(times, exam_colors, color_conflicts)
+        #if color2 is not None:
+            #print "----"
+            #print value
+        value = obj3(times, exam_colors, exam_color_conflicts)
+        #if color2 is not None:
+            #print value
+            #print "----"
         if log:
             print "Obj: %0.2f" % value
         '''
@@ -194,9 +298,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
 def test_objectives():
     
     rd.seed(42)
-    n = 300
+    n = 30
     r = 20
-    p = 20
+    p = 20 
     prob_conflicts = 0.2
     
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
@@ -204,16 +308,24 @@ def test_objectives():
     conflicts = data['conflicts']
     exam_colors = get_coloring(conflicts)
     n_colors = len(set(exam_colors[k] for k in exam_colors))
-    
     times, value = simulated_annealing(exam_colors, data, max_iter = 100)
     
     # exams per color
     color_exams = swap_color_dictionary(exam_colors)
     
     # for an exam i and a color c count the number of conflicts between them
-    color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
+    exam_color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
+    # for each color c get all colors d where there exists a conflict
+    color_conflicts = get_color_conflicts(color_exams, conflicts)
     
-    assert obj2(times, exam_colors, conflicts) == obj3(times, exam_colors, color_conflicts), "ERROR: OBJECTIVES DIFFER!"
+    print n_colors
+    print conflicts
+    print exam_colors
+    ov2 = obj2(times, exam_colors, conflicts)
+    ov3 = obj3(times, exam_colors, exam_color_conflicts)
+    ov4 = obj4(times, exam_colors, color_exams, color_conflicts)
+    assert ov2 == ov3, "ERROR: OBJECTIVES 2 and 3 DIFFER! %0.2f VS %0.2f" %(ov2, ov3)
+    assert ov2 == ov4, "ERROR: OBJECTIVES 2 and 4 DIFFER! %0.2f VS %0.2f" %(ov2, ov4)
     print "OBJECTIVE TEST OK"
 
 
@@ -221,21 +333,22 @@ def test_objectives():
 from time import time
 if __name__ == '__main__':
     
-    #test_objectives()
-    #exit(0);
+    test_objectives()
+    exit(0);
     
     
     rd.seed(42)
-    n = 1500
-    r = 70
-    p = 70
-    prob_conflicts = 0.2
+    n = 25
+    r = 6
+    p = 30
+    prob_conflicts = 0.6
     
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     conflicts = data['conflicts']
     exam_colors = get_coloring(conflicts)
     n_colors = len(set(exam_colors[k] for k in exam_colors))
+    print n_colors
     
     beta_0 = 1e-3
     log_hist = False
