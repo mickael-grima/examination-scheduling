@@ -42,7 +42,7 @@ def get_coloring(conflicts):
         for d in conflicts[c]:
             graph.add_edge(c, d)
     return nx.coloring.greedy_color(graph)
-        
+
 
 def to_binary(coloring, color_schedule, h):
     '''

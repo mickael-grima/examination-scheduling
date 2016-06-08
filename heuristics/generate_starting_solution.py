@@ -5,7 +5,7 @@
 # x and y, here is no about how good the solution is
 
 from model.constraints_handler import test_conflicts, test_enough_seat
-from booth.colouring import ColorGraph
+from ColorGraph import ColorGraph
 from random import randint
 import sys
 
