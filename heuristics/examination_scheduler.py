@@ -16,12 +16,12 @@ import numpy as np
 import random as rd
 import collections
 
-from model.instance import force_data_format
+from model.instance import force_data_format, build_random_data
 
 from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
-from heuristics.tools import to_binary
+from heuristics.tools import to_binary, get_coloring
 
 
 def heuristic(coloring, data, gamma = 1):
@@ -45,7 +45,7 @@ def heuristic(coloring, data, gamma = 1):
     x, room_value = schedule_rooms(coloring, color_schedule, data)
     
     # if infeasible, return large obj_val since we are minimizing
-    if room_schedule is None:
+    if x is None:
         return None, None, sys.maxint
 
     # build binary variable 
@@ -57,7 +57,7 @@ def heuristic(coloring, data, gamma = 1):
     return x, y, obj_val
 
 
-def optimize(meta_heuristic, data, epochs=100, gamma = 1, reinitialize=False):
+def optimize(meta_heuristic, data, epochs=100, gamma = 1):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
@@ -80,26 +80,64 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, reinitialize=False):
         meta_heuristic.update(obj_vals.values(), best_index)
 
         # save best value so far.. MINIMIZATION
-        if values[best_index] < obj_val:
-            x, y, obj_val = xs[best_index], ys[best_index], values[best_index]
+        if best_value < obj_val:
+            x, y, obj_val = xs[best_index], ys[best_index], best_value
 
     return x, y, obj_val
 
 
-
-if __name__ == '__main__':
+def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+    ''' 
+        Test optimize with dummy meta heuristic 
+    '''
+    print "Testing dummy meta heuristic optimization"
     
-    n = 25
-    r = 6
-    p = 30
-    prob_conflicts = 0.6
+    class TestHeuristic:
+        def __init__(self, data):
+            self.data = data
+        def generate_colorings(self):
+            conflicts = self.data['conflicts']
+            return [ get_coloring(conflicts) ]
+        def update(self, values, best_index = None):
+            #print "Do nothing. Value is", values[best_index]
+            pass
     
-    rd.seed(42)
+    rd.seed(seed)
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
-    conflicts = data['conflicts']
-    exam_colors = get_coloring(conflicts)
-    n_colors = len(set(exam_colors[k] for k in exam_colors))
+    T = TestHeuristic(data)
+    x, y, v = optimize(T, data, epochs=10, gamma = 0.01)
+    print "VALUE:", v
     
-    print "Nothing happening here yet"
+    
+def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+    ''' 
+        Test optimize with dummy meta heuristic 
+    '''
+    print "Testing ant colony meta heuristic optimization"
+    
+    rd.seed(seed)
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    T = AC(data)
+    x, y, v = optimize(T, data, epochs=10, gamma = 0.01)
+    print "VALUE:", v
+    
+    
+def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+    
+    print "Testing heuristics"
+    
+    rd.seed(seed)
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    coloring = get_coloring(data['conflicts'])
+    print "VALUE:", heuristic(coloring, data, gamma = 0.01)[2]
+    
+    
+if __name__ == '__main__':
+    
+    test_heuristic()
+    test_optimize_dummy()
+    test_optimize()
     
