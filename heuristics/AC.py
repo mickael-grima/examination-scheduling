@@ -16,6 +16,7 @@ import numpy as np
 import networkx as nx
 import random as rd
 import logging
+import math
 
 from ColorGraph import ColorGraph
 
@@ -39,12 +40,12 @@ def time_heuristic(coloring, data, gamma=1):
     return time_schedule, -time_value
 
 
-def compute_weight(value, max_value, min_value, max_speed=4.0):
+def compute_speed(value, max_value, min_value, max_speed=4.0):
     if value < min_value:
         logging.warning("compute_weight: value has to be larger than min_value")
         return 1.0
     else:
-        return 1.0 + max_speed * (max_value - value) / (max_value - min_value)
+        return math.log(1.0 + max_speed * (max_value - value) / (max_value - min_value))
 
 
 class Ant(object):
@@ -162,7 +163,7 @@ class AC:
         min_value = min([value for value in edges.itervalues()])
         max_value = max([value for value in edges.itervalues()])
         for edge in edges:
-            edges[edge] = compute_weight(value, max_value, min_value, max_speed=max_speed)
+            edges[edge] = compute_speed(value, max_value, min_value, max_speed=max_speed)
         self.update_edges_weight(edges)
 
     def update_edges_weight(self, edges_weight):
