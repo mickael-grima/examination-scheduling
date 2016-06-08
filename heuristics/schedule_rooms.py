@@ -11,8 +11,35 @@ sys.path.append(PROJECT_PATH)
 
 import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
+from heuristics.tools import swap_color_dictionary
 
-def schedule_rooms(data, exams_to_schedule, period):
+def obj1(x, n, r):
+    '''
+        Room objective
+    '''
+    # TODO: Can we just sum over whole x?
+    return sum( x[i,k] for i in range(n) for k in range(r) ) 
+
+
+def schedule_rooms(coloring, time_schedule, data):
+    
+    if time_schedule is None:
+        return None, None
+    
+    # get exams for each color
+    color_exams = swap_color_dictionary(coloring)
+    
+    for color in color_exams:
+        
+        # TODO Combine x values!!!!!!!!
+        
+        time = time_schedule[color_exams[color]][0]
+        x = schedule_rooms_in_period(data, color_exams[color], time)
+    
+    obj_val = obj1(x, data['n'], data['r'])
+    return x, obj_val
+
+def schedule_rooms_in_period(data, exams_to_schedule, period):
     '''
         schedule_rooms needs to be called for every single period
         schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
@@ -83,7 +110,7 @@ if __name__ == '__main__':
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)  
 
-    schedule_rooms(data, [i for i in range(n)], 0)
+    schedule_rooms_in_period(data, [i for i in range(n)], 0)
     
     
     
