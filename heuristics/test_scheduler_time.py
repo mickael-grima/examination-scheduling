@@ -21,22 +21,22 @@ from model.instance import force_data_format
 from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
+from heuristics.tools import to_binary
 
 
-def time_heuristic(coloring, data):
+def time_heuristic(coloring, data, gamma = 1):
     
     # create time schedule permuting the time solts for each coloring
-    time_schedule, time_value = schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4)
+    color_schedule, time_value = schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4)
     
     # if infeasible, return large objVal since we are minimizing
     if time_schedule is None:
         return None, 1e10
 
-    # evaluate combined objectives
-    obj_val = - time_value
-
-    return time_schedule, obj_val
-
+    # build binary variable 
+    time_schedule = to_binary(coloring, color_schedule, data['h'])
+    
+    return time_schedule, time_value
 
 def optimize_time(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
     

@@ -171,9 +171,8 @@ def schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4):
         Schedule times using simulated annealing
     '''
     color_schedule, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, times = None, log = False, log_hist=False)
-    times = [ color_schedule[coloring[i]] for i in coloring ]
     
-    return times, value
+    return color_schedule, value
     
 
 if __name__ == '__main__':
