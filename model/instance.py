@@ -24,8 +24,7 @@ def force_data_format(func):
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
-        
-        
+
         # make sure the conflicts are symmetric!
         add = defaultdict(list)
         for k in conflicts:
@@ -34,7 +33,7 @@ def force_data_format(func):
                     add[l] += [k]
         for k in conflicts:
             conflicts[k] = sorted(set(conflicts[k] + add[k]))
-        
+
         # conflicts matrix dense format (dont build if option is set)
         if 'build_Q' in data and not data['build_Q']:
             Q = None
@@ -50,8 +49,8 @@ def force_data_format(func):
                 for i in range(n):
                     for j in range(n):
                         if Q[i][j] == 1:
-                            conflicts[i].append(j)    
-        
+                            conflicts[i].append(j)
+
         # locking times sparse and dense format
         locking_times = data.get('locking_times', defaultdict(list))
         T = [[1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
@@ -64,9 +63,9 @@ def force_data_format(func):
             'T': T,
             'conflicts': conflicts,
             'locking_times': locking_times,
-            's': data.get('s', []),
-            'c': data.get('c', []),
-            'h': data.get('h', [])
+            's': list(data.get('s', [])),
+            'c': list(data.get('c', [])),
+            'h': list(data.get('h', []))
         }
         return res
     return correct_format
@@ -161,7 +160,7 @@ def build_smart_random(**kwards):
         num.extend([int(i) for i in range(150,301)])
 
     # get number of students participating
-    data['s'] = np.random.choice(num,n)
+    data['s'] = np.random.choice(num, n)
 
     # get room capacity from real data
     data['c'] = np.random.choice(num, r)

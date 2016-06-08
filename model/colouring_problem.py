@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+import os
+paths = os.getcwd().split('/')
+path = ''
+for p in paths:
+    path += '%s/' % p
+    if p == 'examination-scheduling':
+        break
+sys.path.append(path)
+
 import gurobipy as gb
-from booth.colouring import ColorGraph
+from heuristics.ColorGraph import ColorGraph
 from model.base_problem import BaseProblem
 
 

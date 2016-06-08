@@ -5,7 +5,7 @@
 # x and y, here is no about how good the solution is
 
 from model.constraints_handler import test_conflicts, test_enough_seat
-from booth.colouring import ColorGraph
+from ColorGraph import ColorGraph
 from random import randint
 import sys
 
@@ -161,11 +161,10 @@ def generate_starting_solution_by_maximal_time_slot_filling(data):
         the rooms in order that a minimal among of place is not used for each time slot
     """
     n = data.get('n', 0)
-    Q = data['Q']
 
     # We first solve the coloring problem
     prob = ColorGraph()
-    prob.build_graph(n, Q)
+    prob.build_graph(n, data['conflicts'])
     prob.color_graph()
     groups = {}  # group of parallel exams
     for exam, colour in prob.colours.iteritems():
