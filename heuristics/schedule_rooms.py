@@ -58,7 +58,6 @@ def schedule_rooms(coloring, color_schedule, data):
     return z , obj_val
 
 def schedule_rooms_in_period(exams_to_schedule, period, data):
-    print period
     '''
         schedule_rooms needs to be called for every single period
         schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
