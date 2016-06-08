@@ -161,11 +161,10 @@ def generate_starting_solution_by_maximal_time_slot_filling(data):
         the rooms in order that a minimal among of place is not used for each time slot
     """
     n = data.get('n', 0)
-    Q = data['Q']
 
     # We first solve the coloring problem
     prob = ColorGraph()
-    prob.build_graph(n, Q)
+    prob.build_graph(n, data['conflicts'])
     prob.color_graph()
     groups = {}  # group of parallel exams
     for exam, colour in prob.colours.iteritems():

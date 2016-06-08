@@ -183,9 +183,8 @@ class ColorGraph(object):
         """
         for i in range(nb_nodes):
             self.add_node(i)
-            for j in range(i + 1, nb_nodes):
-                if conflicts[i][j] > 0:
-                    self.add_edge(i, j)
+            for j in conflicts[i]:
+                self.add_edge(i, j)
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         """ @param nb_nodes: number of nodes of the constructed graph

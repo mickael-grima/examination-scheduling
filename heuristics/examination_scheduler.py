@@ -24,7 +24,7 @@ from heuristics.schedule_rooms import schedule_rooms
 from heuristics.tools import to_binary, get_coloring
 
 
-def heuristic(coloring, data, gamma = 1):
+def heuristic(coloring, data, gamma = 1, max_iter = 100):
     '''
         The heuristiv which iteratively solves first the time scheduling problem, and afterwards the room scheduling problems.
         @Param: coloring dictionary which gives the color for each exam i
@@ -36,7 +36,7 @@ def heuristic(coloring, data, gamma = 1):
         obj_val: combined objective
     '''
     # create time schedule permuting the time solts for each coloring
-    color_schedule, time_value = schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4)
+    color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter)
     
     if color_schedule is None:
         return None, None, sys.maxint
@@ -57,13 +57,16 @@ def heuristic(coloring, data, gamma = 1):
     return x, y, obj_val
 
 
-def optimize(meta_heuristic, data, epochs=100, gamma = 1):
+def optimize(meta_heuristic, data, epochs=100, gamma = 1, max_iter = 100):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
 
     # iterate
     for epoch in range(epochs):
+        
+        print epoch
+        
         xs, ys, obj_vals = dict(), dict(), dict()
 
         # Generate colourings
@@ -71,7 +74,7 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1):
 
         # evaluate all colorings
         for col, coloring in enumerate(colorings):
-            xs[col], ys[col], obj_vals[col] = heuristic(coloring, data, gamma)
+            xs[col], ys[col], obj_vals[col] = heuristic(coloring, data, gamma = gamma, max_iter = max_iter)
 
         # search for best coloring
         best_index, best_value = max( enumerate(obj_vals.values()), key=lambda x: x[1] )
@@ -110,7 +113,7 @@ def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     print "VALUE:", v
     
     
-def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.2, seed = 42):
     ''' 
         Test optimize with dummy meta heuristic 
     '''
@@ -120,7 +123,7 @@ def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     T = AC(data)
-    x, y, v = optimize(T, data, epochs=10, gamma = 0.01)
+    x, y, v = optimize(T, data, epochs=10, gamma = 0.01, max_iter = 10)
     print "VALUE:", v
     
     
@@ -137,7 +140,7 @@ def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     
 if __name__ == '__main__':
     
-    test_heuristic()
-    test_optimize_dummy()
+    #test_heuristic()
+    #test_optimize_dummy()
     test_optimize()
     
