@@ -76,7 +76,6 @@ class Ant(object):
         return {n: c for n, c in graph.colours.iteritems()}
 
 
-
 class AC:
     '''
         Optimize the examination scheduling problem using ant colony optimisation.
@@ -115,7 +114,6 @@ class AC:
             for neighbor in self.graph.graph.neighbors(node):
                 self.edges_weight[node][neighbor] = weight
 
-
     def generate_colorings(self):
         """ Generate a feasible coloring for each ant
         """
@@ -125,13 +123,11 @@ class AC:
             self.graph.reset_colours(self)
         return colorings
 
-    
     def update_edges_weight(self, ant_index, coeff=2):
         """ @param ant: bst ant, we update the weights function of its traces
             update the pheromone for each ant. We multiply the current weight on the visiting edge by coeff
         """
         assert ant_index < self.num_ants, "ERROR: There are only %d ants in this colony!" % self.num_ants
-        
         ant = self.ants[ant_index]
         for i in range(len(ant.traces) - 1):
             node = ant.traces[i]
@@ -139,11 +135,6 @@ class AC:
             if next_node not in ant.starting_nodes:
                 self.edges_weight[node][next_node] *= coeff
 
-
-    #def optimize(self, epochs=100, reinitialize=False):
-        #return heuristic.optimize(self, self.data, epochs=epochs, gamma = self.gamma, reinitialize=reinitialize)
-
-    
 
 if __name__ == '__main__':
     n = 10
@@ -158,4 +149,3 @@ if __name__ == '__main__':
     num_ants = 10
     ac = AC(data)
     colorings = ac.generate_colorings(num_ants)
-    
