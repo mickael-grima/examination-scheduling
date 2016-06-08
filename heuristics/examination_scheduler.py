@@ -77,7 +77,7 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, reinitialize=False):
         best_index, best_value = max( enumerate(obj_vals.values()), key=lambda x: x[1] )
 
         # Update pheromone traces
-        meta_heuristic.update(values = obj_vals.values(), best_index = best_index)
+        meta_heuristic.update(obj_vals.values(), best_index)
 
         # save best value so far.. MINIMIZATION
         if values[best_index] < obj_val:

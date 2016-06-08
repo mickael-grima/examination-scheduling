@@ -61,7 +61,7 @@ class TestColouring(unittest.TestCase):
             cgraph.color_graph_rand()
             nb_white = len(cgraph.colours)
             for i in range(len(cgraph.history)):
-                nb_white_hist = len([w for n, w in cgraph.history[i].iteritems() if w == 'white'])
+                nb_white_hist = len([w for n, w in cgraph.history[i].iteritems() if w == -1])
                 self.assertEqual(nb_white_hist, nb_white - i)
             for node in cgraph.graph.nodes():
                 self.assertEqual(cgraph.colours[node], cgraph.history[len(cgraph.history) - 1][node])
@@ -76,7 +76,7 @@ class TestColouring(unittest.TestCase):
             cgraph.color_graph_rand_iter(it=10, save=False)
             nb_white = len(cgraph.colours)
             for i in range(len(cgraph.history)):
-                nb_white_hist = len([w for n, w in cgraph.history[i].iteritems() if w == 'white'])
+                nb_white_hist = len([w for n, w in cgraph.history[i].iteritems() if w == -1])
                 self.assertEqual(nb_white_hist, nb_white - i)
             for node in cgraph.graph.nodes():
                 self.assertEqual(cgraph.colours[node], cgraph.history[len(cgraph.history) - 1][node])

@@ -18,7 +18,7 @@ from heuristics.AC import AC
 import heuristics.examination_scheduler as scheduler
 import heuristics.time_scheduler as timescheduler
 
-from model.instance import build_smart_random
+from model.instance import build_smart_random, build_small_input
 from heuristics.ColorGraph import ColorGraph
 from utils.tools import transform_variables
 from model.constraints_handler import (
@@ -33,7 +33,8 @@ class TestConstraints(unittest.TestCase):
     """ Test here the heuristics. Heuristics can be found in folder heuristics
     """
     def setUp(self):
-        self.data = build_smart_random(n=150, p=20, r=150)
+        # self.data = build_small_input()
+        self.data = build_smart_random(n=15, p=20, r=15)
 
     def testColouringHeuristic(self):
         graph = ColorGraph()
@@ -63,11 +64,10 @@ class TestConstraints(unittest.TestCase):
         """ We test here the Ant Colony algorithm, without taking room scheduling in consideration
         """
         x = {}
-        y, _ = timescheduler.optimize_time(AC(self.data), self.data)
+        y, _ = AC(self.data).optimize_time(epochs=2)
         self.assertTrue(y, msg="dct y doesn't contain any variables")
         self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
                         msg="conflict constraint failed")
-        self.assertTrue(test_one_exam_per_period(x, y), msg="one exam per period constraint failed")
 
     def TestHeuristics(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
