@@ -87,7 +87,7 @@ def schedule_rooms_in_period(exams_to_schedule, period, data):
     
     # c1: seats for all students
     for i in exams_to_schedule:
-        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) for l in range(p) if T[k][period] == 1 ]) >= s[i], "c1")
+        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) if T[k][period] == 1 ]) >= s[i], "c1")
     
     # c2: only one exam per room
     for k in range(r):
