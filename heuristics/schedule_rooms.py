@@ -11,8 +11,9 @@ sys.path.append(PROJECT_PATH)
 
 import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
-from heuristics.tools import swap_color_dictionary
+from heuristics.tools import swap_color_dictionary, get_coloring
 from collections import defaultdict
+from schedule_times import simulated_annealing
 
 #
 # Responsible team member: MAX
@@ -38,19 +39,24 @@ def schedule_rooms(coloring, color_schedule, data):
         # Stop if schedulre_rooms_in_period returns NONE,
         # return NONE in this function if one of the x is NONE
         x = defaultdict(int)
-
-        x = schedule_rooms_in_period(data, color_exams[color], color_schedule[color])
+        z = defaultdict(int)
+        x = schedule_rooms_in_period(color_exams[color], color_schedule[color], data)
         if x == None:
             return None
         else:
             z.update(x) 
 
-        print z
+    
+
+    # for i in range(data['n']):
+    #     for j in range(data['r']):
+    #         print "%s,%s :  %s" %(i,j,z[i,j])
     
     obj_val = obj1(x)
-    return zgit , obj_val
+    return z , obj_val
 
-def schedule_rooms_in_period(data, exams_to_schedule, period):
+def schedule_rooms_in_period(exams_to_schedule, period, data):
+    print period
     '''
         schedule_rooms needs to be called for every single period
         schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
@@ -85,11 +91,11 @@ def schedule_rooms_in_period(data, exams_to_schedule, period):
     
     # c2: only one exam per room
     for k in range(r):
-            if T[k][l] == 1:
-                model.addConstr( quicksum([ z[i, k] for i in range(n)  ]) <= 1, "c2")    
+            if T[k][period] == 1:
+                model.addConstr( quicksum([ z[i, k] for i in exams_to_schedule  ]) <= 1, "c2")    
 
     # objective: minimize number of used rooms
-    obj1 = quicksum([ z[i,k] for i,k in itertools.product(range(n), range(r)) if T[k][l] == 1 ]) 
+    obj1 = quicksum([ z[i,k] for i,k in itertools.product(exams_to_schedule, range(r)) if T[k][period] == 1 ]) 
 
     model.setObjective( obj1, GRB.MINIMIZE)
     
@@ -113,15 +119,23 @@ def schedule_rooms_in_period(data, exams_to_schedule, period):
 
 if __name__ == '__main__':
     
-    n = 55
-    r = 64
-    p = 1
-    tseed = 457
+    n = 7
+    r = 10
+    p = 6
+    tseed = 37800
 
     from model.instance import build_smart_random
-    data = build_smart_random(n=n, r=r, p=p, tseed=tseed)  
+    data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
-    schedule_rooms_in_period(data, [i for i in range(n)], 0)
+    coloring = get_coloring(data['conflicts'])
+    color_schedule, value = simulated_annealing(coloring, data, max_iter = 100)
+    periods = [data['h'].index(color) for color in color_schedule]
+
+    print periods
+
+    schedule_rooms(coloring, periods, data)
+
+    #schedule_rooms_in_period([i for i in range(n)], 0, data)
     
     
     
