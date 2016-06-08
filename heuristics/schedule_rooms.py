@@ -21,7 +21,7 @@ def obj1(x, n, r):
     return sum( x[i,k] for i in range(n) for k in range(r) ) 
 
 
-def schedule_rooms(coloring, time_schedule, data):
+def schedule_rooms(coloring, color_schedule, data):
     
     if time_schedule is None:
         return None, None
@@ -36,8 +36,7 @@ def schedule_rooms(coloring, time_schedule, data):
         # return NONE in this function if one of the x is NONE
         x = {}
 
-        time = time_schedule[color_exams[color]][0]
-        x = schedule_rooms_in_period(data, color_exams[color], time)
+        x = schedule_rooms_in_period(data, color_exams[color], color_schedule[color])
         if x == None:
             return None
         else:
