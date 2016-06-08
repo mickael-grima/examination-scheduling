@@ -76,12 +76,12 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, reinitialize=False):
         # search for best coloring
         best_index, best_value = max( enumerate(obj_vals.values()), key=lambda x: x[1] )
 
-        # Update pheromone traces
-        meta_heuristic.update(values = obj_vals.values(), best_index = best_index)
+        # Update meta heuristic
+        meta_heuristic.update(obj_vals.values(), best_index = best_index)
 
         # save best value so far.. MINIMIZATION
-        if values[best_index] < obj_val:
-            x, y, obj_val = xs[best_index], ys[best_index], values[best_index]
+        if best_value < obj_val:
+            x, y, obj_val = xs[best_index], ys[best_index], best_value
 
     return x, y, obj_val
 

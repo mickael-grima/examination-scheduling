@@ -38,7 +38,7 @@ def obj3(times, exam_colors, exam_color_conflicts):
     return sum(d_n)
 
   
-def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter = 1e4, log = False, log_hist=False):
+def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter = 1e4, log = False, log_hist=False):
     
     h = data['h']
     conflicts = data['conflicts']
@@ -66,7 +66,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
     # initialization and parameters simulated annealing
     beta = beta_0
     schedule = lambda t: beta_0 * np.log(1+np.log(1+t))
-    converged = lambda x: x > 1e3
+    #schedule = lambda t: beta_0 * np.log(1+t)
     
     # best values found so far
     best_times = deepcopy(times)
@@ -82,7 +82,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
         best_history = []
     accepted = 0
     
-    while iteration < max_iter and not converged(beta):
+    while iteration < max_iter:
         iteration += 1
         counter += 1
             
@@ -135,7 +135,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
         if log:
             print np.exp(-beta * (value - old_value))
         
-        # TODO: Check: + beta because of maximization!!!
+        # exp(+ beta) because of maximization!!!
         if rd.uniform(0,1) <= np.exp( beta * (value - old_value) ):
             old_value = value
             accepted += 1
@@ -159,20 +159,33 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
                 times[color2] = new_slot
 
     if log_hist:
-        print history
-        print beta
-        print best_history
+        print "Beta(end):", beta
+        print "Opt hist:", best_history
+        import matplotlib.pyplot as plt
+        plt.plot(history)
+        plt.ylabel('obj values')
+        plt.savefig("plots/annealing.jpg")
+        print "annealing history plot in plots/annealing.jpg"
         
     return best_times, best_value
 
 
-def schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4):
+def schedule_times(coloring, data, beta_0 = 0.3, max_iter = 1e4, n_chains = 1, n_restarts = 1):
     '''
         Schedule times using simulated annealing
     '''
-    color_schedule, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, times = None, log = False, log_hist=False)
+    color_schedules = []
+    values = []
+    for chain in range(n_chains):
+        times = None
+        for restart in range(n_restarts):
+            times, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, times = times)
+        color_schedules[chain] = times
+        values[chain] = value
     
-    return color_schedule, value
+    best_index, best_value = max( enumerate(values), key = lambda x : x[1] )
+    
+    return color_schedules[best_index], best_value
     
 
 if __name__ == '__main__':
@@ -191,12 +204,13 @@ if __name__ == '__main__':
     print n_colors
     
     # annealing params
-    beta_0 = 1e-3
-    max_iter = 1e3
-    print max_iter
+    max_iter = 1e4
+    beta_0 = 0.4
+    print "Start beta: %f" %beta_0
+    print "Iterations: %d" %max_iter
     
     rd.seed(420)
-    log_hist = False
+    log_hist = True
     
     # run annealing
     from time import time
@@ -204,6 +218,6 @@ if __name__ == '__main__':
     times, v1 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
     t1 = (time() - t1)*1.0
     rt1 = t1/max_iter
-    print "%0.3f" %t1, v1
+    print "Time: %0.3f" %t1, "Value:", v1
     
     
