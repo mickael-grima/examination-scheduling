@@ -64,7 +64,7 @@ class TestConstraints(unittest.TestCase):
         """ We test here the Ant Colony algorithm, without taking room scheduling in consideration
         """
         x = {}
-        y, _ = AC(self.data).optimize_time(epochs=2)
+        y, _ = AC(self.data).optimize_time(epochs=50)
         self.assertTrue(y, msg="dct y doesn't contain any variables")
         self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
                         msg="conflict constraint failed")

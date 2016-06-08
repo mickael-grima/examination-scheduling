@@ -27,7 +27,7 @@ from heuristics.tools import to_binary
 
 def time_heuristic(coloring, data, gamma=1):
     # create time schedule permuting the time solts for each coloring
-    color_schedule, time_value = schedule_times(coloring, data, beta_0=0.01, max_iter=1e4)
+    color_schedule, time_value = schedule_times(coloring, data, beta_0=0.01, max_iter=300)
 
     # if infeasible, return large objVal since we are minimizing
     if color_schedule is None:
@@ -144,7 +144,7 @@ class AC:
             self.graph.reset_colours()
         return colorings
 
-    def update(self, values, best_index, max_speed=5.0):
+    def update(self, values, best_index, max_speed=1.1):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value
             @param best_index: best ant's index (obj value)
             @param max_speed: the maximal updating coefficient for edges
@@ -199,7 +199,7 @@ class AC:
             # save best value so far.. MINIMIZATION
             if values[best_index] < objVal:
                 y, objVal = ys[best_index], values[best_index]
-            print values, objVal
+            print self.edges_weight, objVal
 
         return y, objVal
 
