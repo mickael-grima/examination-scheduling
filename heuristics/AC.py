@@ -159,3 +159,5 @@ if __name__ == '__main__':
     ac = AC(data)
     colorings = ac.generate_colorings(num_ants)
     
+    
+    
