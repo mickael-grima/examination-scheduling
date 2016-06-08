@@ -32,6 +32,8 @@ def schedule_rooms(coloring, time_schedule, data):
     for color in color_exams:
         
         # TODO Combine x values!!!!!!!!
+        # Stop if schedulre_rooms_in_period returns NONE,
+        # return NONE in this function if one of the x is NONE
         
         time = time_schedule[color_exams[color]][0]
         x = schedule_rooms_in_period(data, color_exams[color], time)
