@@ -15,16 +15,28 @@ sys.path.append(PROJECT_PATH)
 import numpy as np
 import networkx as nx
 import random as rd
-import collections
 
-from model.instance import force_data_format
+from ColorGraph import ColorGraph
 
-from booth.colouring import ColorGraph
-
-
+from heuristics.schedule_times import schedule_times
+from heuristics.tools import to_binary
 
 
 # Responsible team member: MICKAEL
+
+def time_heuristic(coloring, data, gamma=1):
+    # create time schedule permuting the time solts for each coloring
+    color_schedule, time_value = schedule_times(coloring, data, beta_0=0.01, max_iter=1e4)
+
+    # if infeasible, return large objVal since we are minimizing
+    if color_schedule is None:
+        return None, sys.maxint
+
+    # build binary variable
+    time_schedule = to_binary(coloring, color_schedule, data['h'])
+
+    return time_schedule, -time_value
+
 
 class Ant(object):
     """ Represent an ant for the colouring graph
@@ -134,6 +146,35 @@ class AC:
             next_node = ant.traces[i + 1]
             if next_node not in ant.starting_nodes:
                 self.edges_weight[node][next_node] *= coeff
+
+    def optimize_time(self, data, epochs=100, gamma=1, reinitialize=False):
+        # init best values
+        y, objVal = None, sys.maxint
+
+        # iterate
+        for epoch in range(epochs):
+            ys, objVals = dict(), dict()
+
+            # Generate colourings
+            colorings = self.generate_colorings()
+
+            # evaluate all colorings
+            for col, coloring in enumerate(colorings):
+                ys[col], objVals[col] = time_heuristic(coloring, data, gamma)
+
+            # search for best coloring
+            # TODO: Replace by list() ??
+            values = [objVals[col] for col in range(len(colorings))]
+            best_index = np.argmax(values)
+
+            # Update pheromone traces
+            self.update_edges_weight(best_index)
+
+            # save best value so far.. MINIMIZATION
+            if values[best_index] < objVal:
+                y, objVal = ys[best_index], values[best_index]
+
+        return y, objVal
 
 
 if __name__ == '__main__':

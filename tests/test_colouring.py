@@ -12,7 +12,7 @@ for p in paths:
 sys.path.append(path)
 
 import unittest
-from booth.colouring import ColorGraph
+from heuristics.ColorGraph import ColorGraph
 
 
 class TestColouring(unittest.TestCase):

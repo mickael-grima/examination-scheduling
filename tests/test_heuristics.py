@@ -19,7 +19,7 @@ import heuristics.examination_scheduler as scheduler
 import heuristics.time_scheduler as timescheduler
 
 from model.instance import build_smart_random
-from booth.colouring import ColorGraph
+from heuristics.ColorGraph import ColorGraph
 from utils.tools import transform_variables
 from model.constraints_handler import (
     test_conflicts,

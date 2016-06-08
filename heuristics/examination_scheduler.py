@@ -21,15 +21,16 @@ from model.instance import force_data_format
 from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
+from heuristics.tools import to_binary
 
 
 def heuristic(coloring, data, gamma = 1):
     
     # create time schedule permuting the time solts for each coloring
-    time_schedule, time_value = schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4)
+    color_schedule, time_value = schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4)
     
     # create room schedule
-    room_schedule, room_value = schedule_rooms(coloring, time_schedule, data)
+    room_schedule, room_value = schedule_rooms(coloring, color_schedule, data)
     
     # if infeasible, return large objVal since we are minimizing
     if room_schedule is None or time_schedule is None:
@@ -38,6 +39,9 @@ def heuristic(coloring, data, gamma = 1):
     # evaluate combined objectives
     obj_val = room_value - gamma * time_value
 
+    # build binary variable 
+    time_schedule = to_binary(coloring, color_schedule, data['h'])
+    
     return room_schedule, time_schedule, obj_val
 
 
