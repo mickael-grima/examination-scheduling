@@ -122,7 +122,7 @@ class AC:
         """ initialize the graph and build the the random coefficient of the edges
         """
         # build the graph function of the data
-        self.graph.build_graph(self.data['n'], self.data['Q'])
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])
         components = [comp for comp in nx.connected_components(self.graph.graph)]
         # for each ant, we add a starting node for each connex component
         for ant in self.ants:
