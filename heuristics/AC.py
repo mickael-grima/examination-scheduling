@@ -135,6 +135,15 @@ class AC:
             self.graph.reset_colours(self)
         return colorings
 
+    def update(self, values, best_index=None):
+        if best_index is None:
+            # take best
+            self.update_edges_weight(best_index)
+        else:
+            # search for best coloring
+            best_index, best_value = max(enumerate(values), key=lambda x: x[1])
+            self.update_edges_weight(best_index)
+
     def update_edges_weight(self, ant_index, coeff=2):
         """ @param ant: bst ant, we update the weights function of its traces
             update the pheromone for each ant. We multiply the current weight on the visiting edge by coeff
