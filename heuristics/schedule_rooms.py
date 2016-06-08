@@ -35,14 +35,20 @@ def schedule_rooms(coloring, color_schedule, data):
 
     periods = [data['h'].index(color) for color in color_schedule]
     
+    z = defaultdict(int)
+    
     for color in color_exams:
+        #print "COLOR", color
         
-        # TODO Combine x values!!!!!!!!
         # Stop if schedulre_rooms_in_period returns NONE,
         # return NONE in this function if one of the x is NONE
+    
         x = defaultdict(int)
-        z = defaultdict(int)
+        
         x = schedule_rooms_in_period(color_exams[color], periods[color], data)
+        #print "SOL"
+        #for key in x:
+        #    print key, x[key]
         if x == None:
             return None
         else:
@@ -54,11 +60,11 @@ def schedule_rooms(coloring, color_schedule, data):
     #     for j in range(data['r']):
     #         print "%s,%s :  %s" %(i,j,z[i,j])
     
-    obj_val = obj1(x)
+    obj_val = obj1(z)
     return z , obj_val
 
 def schedule_rooms_in_period(exams_to_schedule, period, data):
-    print period
+    #print period
     '''
         schedule_rooms needs to be called for every single period
         schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
@@ -79,7 +85,7 @@ def schedule_rooms_in_period(exams_to_schedule, period, data):
 
     # z[i,k] = if exam i is written in room k
     for k in range(r):
-        print k, period
+        #print k, period
         if T[k][period] == 1:
             for i in exams_to_schedule:
                 z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
@@ -102,9 +108,11 @@ def schedule_rooms_in_period(exams_to_schedule, period, data):
 
     model.setObjective( obj1, GRB.MINIMIZE)
     
+    model.params.OutputFlag = 0
+    
     model.optimize()
 
-
+    
     # return best room schedule
     try:       
         z=defaultdict(int)

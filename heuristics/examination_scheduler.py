@@ -87,7 +87,11 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1):
 
 
 def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
-    ''' Test optimize with dummy meta heuristic '''
+    ''' 
+        Test optimize with dummy meta heuristic 
+    '''
+    print "Testing dummy meta heuristic optimization"
+    
     class TestHeuristic:
         def __init__(self, data):
             self.data = data
@@ -95,25 +99,26 @@ def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
             conflicts = self.data['conflicts']
             return [ get_coloring(conflicts) ]
         def update(self, values, best_index = None):
-            print "Do nothing. Value is", values[best_index]
+            #print "Do nothing. Value is", values[best_index]
             pass
     
     rd.seed(seed)
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     T = TestHeuristic(data)
-    x, y, v = optimize(T, data, epochs=10)
-    print x
-    print y
-    print v
+    x, y, v = optimize(T, data, epochs=10, gamma = 0.01)
+    print "VALUE:", v
+    
     
 def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+    
+    print "Testing heuristics"
     
     rd.seed(seed)
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     coloring = get_coloring(data['conflicts'])
-    print heuristic(coloring, data, gamma = 1)
+    print "VALUE:", heuristic(coloring, data, gamma = 0.01)[2]
     
     
 if __name__ == '__main__':
