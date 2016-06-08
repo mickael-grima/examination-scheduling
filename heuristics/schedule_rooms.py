@@ -29,6 +29,7 @@ def obj1(x):
 
 def schedule_rooms(coloring, time_schedule, data):
     
+    return 0, 0
     # get exams for each color
     color_exams = swap_color_dictionary(coloring)
     

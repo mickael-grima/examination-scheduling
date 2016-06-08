@@ -20,13 +20,16 @@ from heuristics.tools import get_coloring, swap_color_dictionary
 #
 # Responsible team member: ROLAND
 #
+# TODO: Currently works only if n > p!!! Change
+# TODO: n = 4, p = 6, seed = 37800
+# 
 
 def obj2(times, exam_colors, conflicts):
     exam_times = [ times[exam_colors[i]] for i in exam_colors ]
     return sum([ min( [abs(exam_times[i] - exam_times[j]) for j in conflicts[i]] ) for i in exam_colors if len(conflicts[i]) > 0 ])
     
     
-def obj3(times, exam_colors, exam_color_conflicts):
+def obj3(color_schedule, exam_colors, exam_color_conflicts):
     # TODO: Can this even be speeded up?
     # TODO: If only colors can be considered, speed up about 10x!!!!
     # TODO: Dont do this everytime ( swap, track changes ) 
@@ -34,11 +37,11 @@ def obj3(times, exam_colors, exam_color_conflicts):
     #for i in exam_colors:
         #if len(exam_color_conflicts[i]) > 0:
             #d_n[i] = min( [abs(times[exam_colors[i]] - times[j]) for j in exam_color_conflicts[i]] )
-    d_n = [ min( [abs(times[exam_colors[i]] - times[j]) for j in exam_color_conflicts[i]] ) for i in exam_colors if len(exam_color_conflicts[i]) > 0]
+    d_n = [ min( [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in exam_color_conflicts[i]] ) for i in exam_colors if len(exam_color_conflicts[i]) > 0]
     return sum(d_n)
 
   
-def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter = 1e4, log = False, log_hist=False):
+def simulated_annealing(exam_colors, data, beta_0 = 0.3, color_schedule = None, max_iter = 1e4, log = False, log_hist=False):
     
     h = data['h']
     conflicts = data['conflicts']
@@ -60,8 +63,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter 
     
     # initialize the time slots randomly
     # TODO: Careful! Does not consider the statespace so far! Might be infeasible
-    if times is None:
-        times = rd.sample( h, n_colors )
+    if color_schedule is None:
+        color_schedule = rd.sample( h, n_colors )
     
     # initialization and parameters simulated annealing
     beta = beta_0
@@ -69,8 +72,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter 
     #schedule = lambda t: beta_0 * np.log(1+t)
     
     # best values found so far
-    best_times = deepcopy(times)
-    best_value = obj3(times, exam_colors, exam_color_conflicts)
+    best_color_schedule = deepcopy(color_schedule)
+    best_value = obj3(color_schedule, exam_colors, exam_color_conflicts)
     
     # initialize loop
     iteration = 0
@@ -90,7 +93,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter 
         if log:
             print("Iteration: %d" %iteration)
         if log:
-            print times
+            print color_schedule
         
         '''
             make proposal
@@ -98,34 +101,34 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter 
         
         # 1. choose random color and eligible time slot
         color = rd.choice(colors)
-        old_slot = times[color]
+        old_slot = color_schedule[color]
         color2 = None
         new_slot = rd.choice(statespace[color])
         while new_slot == old_slot:
             new_slot = rd.choice([ state for state in statespace[color] if state != old_slot ])
         # 2. find color if the slot is already taken. If so, swap them
         try: 
-            color2 = times.index(new_slot)
+            color2 = color_schedule.index(new_slot)
         except:
             pass
         if log:
             print color
             print color2
         
-        times[color] = new_slot
+        color_schedule[color] = new_slot
         if color2 is not None:
-            times[color2] = old_slot
+            color_schedule[color2] = old_slot
             
         if log:
-            print times
+            print color_schedule
         
         
-        assert len(set(times)) == len(times), "time table needs to be uniquely determined!" 
+        assert len(set(color_schedule)) == len(color_schedule), "time table needs to be uniquely determined!" 
         
         '''
             get objective value
         '''
-        value = obj3(times, exam_colors, exam_color_conflicts)
+        value = obj3(color_schedule, exam_colors, exam_color_conflicts)
         
         if log:
             print "Obj: %0.2f" % value
@@ -150,13 +153,13 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter 
                 if log_hist:
                     best_history.append(value)
                 best_value = value
-                best_times = deepcopy(times)
+                best_color_schedule = deepcopy(color_schedule)
                 
         else:
             # reject: swap back
-            times[color] = old_slot
+            color_schedule[color] = old_slot
             if color2 is not None:
-                times[color2] = new_slot
+                color_schedule[color2] = new_slot
 
     if log_hist:
         print "Beta(end):", beta
@@ -167,7 +170,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, times = None, max_iter 
         plt.savefig("plots/annealing.jpg")
         print "annealing history plot in plots/annealing.jpg"
         
-    return best_times, best_value
+    return best_color_schedule, best_value
 
 
 def schedule_times(coloring, data, beta_0 = 0.3, max_iter = 1e4, n_chains = 1, n_restarts = 1):
@@ -177,11 +180,11 @@ def schedule_times(coloring, data, beta_0 = 0.3, max_iter = 1e4, n_chains = 1, n
     color_schedules = []
     values = []
     for chain in range(n_chains):
-        times = None
+        color_schedule = None
         for restart in range(n_restarts):
-            times, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, times = times)
-        color_schedules[chain] = times
-        values[chain] = value
+            color_schedule, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, color_schedule = color_schedule)
+        color_schedules.append(deepcopy(color_schedule))
+        values.append(value)
     
     best_index, best_value = max( enumerate(values), key = lambda x : x[1] )
     
