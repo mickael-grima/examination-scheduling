@@ -16,6 +16,7 @@ import numpy as np
 import networkx as nx
 import random as rd
 import logging
+import math
 
 from ColorGraph import ColorGraph
 
@@ -27,7 +28,7 @@ from heuristics.tools import to_binary
 
 def time_heuristic(coloring, data, gamma=1):
     # create time schedule permuting the time solts for each coloring
-    color_schedule, time_value = schedule_times(coloring, data, beta_0=0.01, max_iter=1e4)
+    color_schedule, time_value = schedule_times(coloring, data, beta_0=0.01, max_iter=300)
 
     # if infeasible, return large objVal since we are minimizing
     if color_schedule is None:
@@ -39,12 +40,12 @@ def time_heuristic(coloring, data, gamma=1):
     return time_schedule, -time_value
 
 
-def compute_weight(value, max_value, min_value, max_speed=4.0):
+def compute_speed(value, max_value, min_value, max_speed=4.0):
     if value < min_value:
         logging.warning("compute_weight: value has to be larger than min_value")
         return 1.0
     else:
-        return 1.0 + max_speed * (max_value - value) / (max_value - min_value)
+        return math.log(1.0 + max_speed * (max_value - value) / (max_value - min_value))
 
 
 class Ant(object):
@@ -144,7 +145,7 @@ class AC:
             self.graph.reset_colours()
         return colorings
 
-    def update(self, values, best_index, max_speed=5.0):
+    def update(self, values, best_index, max_speed=1.1):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value
             @param best_index: best ant's index (obj value)
             @param max_speed: the maximal updating coefficient for edges
@@ -162,7 +163,7 @@ class AC:
         min_value = min([value for value in edges.itervalues()])
         max_value = max([value for value in edges.itervalues()])
         for edge in edges:
-            edges[edge] = compute_weight(value, max_value, min_value, max_speed=max_speed)
+            edges[edge] = compute_speed(value, max_value, min_value, max_speed=max_speed)
         self.update_edges_weight(edges)
 
     def update_edges_weight(self, edges_weight):
@@ -199,7 +200,7 @@ class AC:
             # save best value so far.. MINIMIZATION
             if values[best_index] < objVal:
                 y, objVal = ys[best_index], values[best_index]
-            print values, objVal
+            print self.edges_weight, objVal
 
         return y, objVal
 
