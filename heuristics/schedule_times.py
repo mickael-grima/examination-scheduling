@@ -42,18 +42,26 @@ def obj3(color_schedule, exam_colors, exam_color_conflicts):
 
   
 def simulated_annealing(exam_colors, data, beta_0 = 0.3, color_schedule = None, max_iter = 1e4, log = False, log_hist=False):
-    
+    '''
+        Simulated annealing
+        TODO: Description
+    '''
     h = data['h']
     conflicts = data['conflicts']
     color_exams = swap_color_dictionary(exam_colors)
+    
     assert list(exam_colors) == sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
+    assert len(color_exams) < sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
+    assert type(exam_colors) == dict, "ERROR: coloring needs to be a dictionary!"
+    assert type(data) == dict, "ERROR: data needs to be a dictionary!"
+    assert color_schedule is None or type(color_schedule) == list, "ERROR: color_schedule needs to be either None or a list!"
     
     # for an exam i and a color c count the number of conflicts between them
     exam_color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
     
     n_exams = len(exam_colors)
     colors = sorted(color_exams)
-    n_colors = len(colors)
+    n_colors = len(color_exams)
         
     assert n_colors <= len(h), "Currently only tables with less colors than timeslots are plannable" 
     
@@ -176,6 +184,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, color_schedule = None, 
 def schedule_times(coloring, data, beta_0 = 0.3, max_iter = 1e4, n_chains = 1, n_restarts = 1):
     '''
         Schedule times using simulated annealing
+        TODO: Description
     '''
     color_schedules = []
     values = []
@@ -219,8 +228,9 @@ if __name__ == '__main__':
     from time import time
     t1 = time()
     times, v1 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
+    times, v2 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, color_schedule= times, log_hist=log_hist)
     t1 = (time() - t1)*1.0
     rt1 = t1/max_iter
-    print "Time: %0.3f" %t1, "Value:", v1
+    print "Time: %0.3f" %t1, "Values:", v1, v2
     
     

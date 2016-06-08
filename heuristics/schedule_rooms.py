@@ -30,7 +30,6 @@ def obj1(x):
 
 def schedule_rooms(coloring, color_schedule, data):
     
-    return 0, 0
     # get exams for each color
     color_exams = swap_color_dictionary(coloring)
     
@@ -78,6 +77,7 @@ def schedule_rooms_in_period(exams_to_schedule, period, data):
 
     # z[i,k] = if exam i is written in room k
     for k in range(r):
+        print k, period
         if T[k][period] == 1:
             for i in exams_to_schedule:
                 z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))

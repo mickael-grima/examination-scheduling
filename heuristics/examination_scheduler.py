@@ -118,6 +118,6 @@ def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     
 if __name__ == '__main__':
     
-#    test_heuristic()
+    test_heuristic()
     test_optimize()
     
