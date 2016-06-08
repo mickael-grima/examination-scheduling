@@ -12,19 +12,22 @@ sys.path.append(PROJECT_PATH)
 import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
 from heuristics.tools import swap_color_dictionary
+from collections import defaultdict
 
-def obj1(x, n, r):
+#
+# Responsible team member: MAX
+#
+
+
+def obj1(x):
     '''
         Room objective
     '''
     # TODO: Can we just sum over whole x?
-    return sum( x[i,k] for i in range(n) for k in range(r) ) 
+    return sum( x[key] for key in x ) 
 
 
 def schedule_rooms(coloring, color_schedule, data):
-    
-    if time_schedule is None:
-        return None, None
     
     # get exams for each color
     color_exams = swap_color_dictionary(coloring)
@@ -34,7 +37,7 @@ def schedule_rooms(coloring, color_schedule, data):
         # TODO Combine x values!!!!!!!!
         # Stop if schedulre_rooms_in_period returns NONE,
         # return NONE in this function if one of the x is NONE
-        x = {}
+        x = defaultdict(int)
 
         x = schedule_rooms_in_period(data, color_exams[color], color_schedule[color])
         if x == None:
@@ -44,7 +47,7 @@ def schedule_rooms(coloring, color_schedule, data):
 
         print z
     
-    obj_val = obj1(x, data['n'], data['r'])
+    obj_val = obj1(x)
     return zgit , obj_val
 
 def schedule_rooms_in_period(data, exams_to_schedule, period):
@@ -95,7 +98,7 @@ def schedule_rooms_in_period(data, exams_to_schedule, period):
 
     # return best room schedule
     try:       
-        z={}
+        z=defaultdict(int)
         for k in range(r):
             if T[k][period] == 1:
                 for i in exams_to_schedule:
