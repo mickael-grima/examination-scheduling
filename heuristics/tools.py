@@ -43,3 +43,31 @@ def get_coloring(conflicts):
             graph.add_edge(c, d)
     return nx.coloring.greedy_color(graph)
         
+
+def to_binary(coloring, color_schedule, h):
+    '''
+        Convert color schedule to binary y_i,l variable
+    '''
+    y = defaultdict(int)
+    for i in coloring:
+        l = h.index(color_schedule[coloring[i]])
+        y[i,l] = 1.0
+    return y
+
+
+if __name__ == '__main__':
+    n = 10
+    p = 5
+    n_colors = 3
+    assert n_colors < p
+    
+    coloring = { i: i % n_colors for i in range(n) }
+    print coloring
+    h = [2*l for l in range(p)]
+    color_schedule = [ h[l] for l in range(n_colors) ]
+    
+    y = to_binary(coloring, color_schedule, h)
+    for i in range(n):
+        for l in range(p):
+            print (i,l), y[i,l]
+            

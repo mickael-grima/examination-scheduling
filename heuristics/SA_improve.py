@@ -116,12 +116,6 @@ def obj4(times, exam_colors, color_exams, color_conflicts):
   
     
   
-def to_binary(time_table, n, p):
-    y = defaultdict(int)
-    for color in time_table:
-        for i in time_table:
-            y[i,time_table[i]] = 1.0
-            
     
 
     
