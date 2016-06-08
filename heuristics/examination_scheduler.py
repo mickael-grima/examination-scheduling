@@ -19,38 +19,26 @@ import collections
 from model.instance import force_data_format
 
 from heuristics.AC import AC
-from heuristics.SA import simulated_annealing, swap_color_dictionary
+from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
-
-
-def obj1(x, n, r):
-    '''
-        Room objective
-    '''
-    # TODO: Can we just sum over whole x?
-    return sum( x[i,k] for i in range(n) for k in range(r) ) 
 
 
 def heuristic(coloring, data, gamma = 1):
     
     # create time schedule permuting the time solts for each coloring
-    time_schedule, value = simulated_annealing(coloring, data['h'])
-
-    # get exams for each color
-    color_exams = swap_color_dictionary(coloring)
+    time_schedule, time_value = schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4)
     
-    for color in color_exams:
-        x = schedule_rooms(data, color_exams[color], time_schedule[color])
-        # TODO Combine x values!
+    # create room schedule
+    room_schedule, room_value = schedule_rooms(coloring, time_schedule, data)
     
     # if infeasible, return large objVal since we are minimizing
-    if x is None:
+    if room_schedule is None or time_schedule is None:
         return None, None, 1e10
 
     # evaluate combined objectives
-    objVal = obj1(x, data['n'], data['r']) - gamma * value
+    obj_val = room_value - gamma * time_value
 
-    return x, y, objVal
+    return rooms, times, obj_val
 
 
 def optimize(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
@@ -83,3 +71,20 @@ def optimize(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
 
     return x, y, objVal
 
+
+if __name__ == '__main__':
+    
+    n = 25
+    r = 6
+    p = 30
+    prob_conflicts = 0.6
+    
+    rd.seed(42)
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    conflicts = data['conflicts']
+    exam_colors = get_coloring(conflicts)
+    n_colors = len(set(exam_colors[k] for k in exam_colors))
+    
+    print "Nothing happening here yet"
+    

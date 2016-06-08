@@ -11,27 +11,15 @@ sys.path.append(PROJECT_PATH)
 import numpy as np
 import random as rd
 from collections import defaultdict
-
-import networkx as nx
+from copy import deepcopy
 
 from model.instance import build_random_data
+from heuristics.tools import get_coloring, swap_color_dictionary
 
-from copy import deepcopy
 
 #
 # Responsible team member: ROLAND
 #
-
-
-def swap_color_dictionary(dic):
-    out = defaultdict(set)
-    for k, v in dic.items():
-         out[v].add(k)
-
-    for v in out:
-        out[v]=list(out[v])     
-    return dict(out)
-
 
 def obj2(times, exam_colors, conflicts):
     exam_times = [ times[exam_colors[i]] for i in exam_colors ]
@@ -147,7 +135,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
         if log:
             print np.exp(-beta * (value - old_value))
         
-        if rd.uniform(0,1) <= np.exp(-beta * (value - old_value)):
+        # TODO: Check: + beta because of maximization!!!
+        if rd.uniform(0,1) <= np.exp( beta * (value - old_value) ):
             old_value = value
             accepted += 1
             
@@ -177,64 +166,24 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.01, times = None, max_iter
     return best_times, best_value
 
 
+def schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4):
+    '''
+        Schedule times using simulated annealing
+    '''
+    color_schedule, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, times = None, log = False, log_hist=False)
+    times = [ color_schedule[coloring[i]] for i in coloring ]
+    
+    return times, value
+    
 
-def get_coloring(conflicts):
-    # greedy coloring
-    graph = nx.Graph()
-    for c in conflicts:
-        for d in conflicts[c]:
-            graph.add_edge(c, d)
-    return nx.coloring.greedy_color(graph)
-        
-
-def test_objectives():
-    
-    rd.seed(42)
-    n = 30
-    r = 20
-    p = 20 
-    prob_conflicts = 0.2
-    
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
-    
-    conflicts = data['conflicts']
-    exam_colors = get_coloring(conflicts)
-    n_colors = len(set(exam_colors[k] for k in exam_colors))
-    times, value = simulated_annealing(exam_colors, data, max_iter = 100)
-    
-    # exams per color
-    color_exams = swap_color_dictionary(exam_colors)
-    
-    # for an exam i and a color c count the number of conflicts between them
-    exam_color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
-    # for each color c get all colors d where there exists a conflict
-    #color_conflicts = get_color_conflicts(color_exams, conflicts)
-    
-    print n_colors
-    print conflicts
-    print exam_colors
-    ov2 = obj2(times, exam_colors, conflicts)
-    ov3 = obj3(times, exam_colors, exam_color_conflicts)
-    #ov4 = obj4(times, exam_colors, color_exams, color_conflicts)
-    assert ov2 == ov3, "ERROR: OBJECTIVES 2 and 3 DIFFER! %0.2f VS %0.2f" %(ov2, ov3)
-    #assert ov2 == ov4, "ERROR: OBJECTIVES 2 and 4 DIFFER! %0.2f VS %0.2f" %(ov2, ov4)
-    print "OBJECTIVE TEST OK"
-
-
-
-from time import time
 if __name__ == '__main__':
     
-    test_objectives()
-    #exit(0);
-    
-    
-    rd.seed(42)
     n = 25
     r = 6
     p = 30
     prob_conflicts = 0.6
     
+    rd.seed(42)
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     conflicts = data['conflicts']
@@ -242,38 +191,20 @@ if __name__ == '__main__':
     n_colors = len(set(exam_colors[k] for k in exam_colors))
     print n_colors
     
+    # annealing params
     beta_0 = 1e-3
+    max_iter = 1e3
+    print max_iter
+    
+    rd.seed(420)
     log_hist = False
     
-    max_iter = 1e1
-    print max_iter
-    rd.seed(420)
+    # run annealing
+    from time import time
     t1 = time()
     times, v1 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
     t1 = (time() - t1)*1.0
     rt1 = t1/max_iter
+    print "%0.3f" %t1, v1
     
-    #print t1
     
-    max_iter = 1e2
-    print max_iter
-    rd.seed(420)
-    t2 = time()
-    times, v2 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
-    t2 = (time() - t2)*1.0
-    rt2 = t2/max_iter
-    
-    #print t2
-    
-    max_iter = 1e2
-    print max_iter
-    rd.seed(420)
-    t3 = time()
-    times, v3 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
-    times, v3 = simulated_annealing(exam_colors, data, times = times, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist)
-    t3 = (time() - t3)*1.0
-    rt3 = t3/max_iter/2.
-    
-    print t1, t2, t3
-    print rt1, rt2, rt3
-    print v1, v2, v3
