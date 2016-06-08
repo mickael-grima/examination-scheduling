@@ -19,7 +19,7 @@ from model.instance import build_random_data
 from copy import deepcopy
 
 #
-# TODO: ROLAND
+# Responsible team member: ROLAND
 #
 
 
