@@ -23,39 +23,36 @@ from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
 
 
-def heuristic(coloring, data, gamma = 1):
+def time_heuristic(coloring, data):
     
     # create time schedule permuting the time solts for each coloring
     time_schedule, time_value = schedule_times(coloring, data, beta_0 = 0.01, max_iter = 1e4)
     
-    # create room schedule
-    room_schedule, room_value = schedule_rooms(coloring, time_schedule, data)
-    
     # if infeasible, return large objVal since we are minimizing
-    if room_schedule is None or time_schedule is None:
-        return None, None, 1e10
+    if time_schedule is None:
+        return None, 1e10
 
     # evaluate combined objectives
-    obj_val = room_value - gamma * time_value
+    obj_val = - time_value
 
-    return room_schedule, time_schedule, obj_val
+    return time_schedule, obj_val
 
 
-def optimize(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
+def optimize_time(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
     
     # init best values
-    x, y, objVal = None, None, 1e10
+    y, objVal = None, 1e10
 
     # iterate
     for epoch in range(epochs):
-        xs, ys, objVals = dict(), dict(), dict()
+        ys, objVals = dict(), dict()
 
         # Generate colourings
         colorings = ant_colony.generate_colorings()
 
         # evaluate all colorings
         for col, coloring in enumerate(colorings):
-            xs[col], ys[col], objVals[col] = heuristic(coloring, data, gamma)
+            ys[col], objVals[col] = time_heuristic(coloring, data, gamma)
 
         # search for best coloring
         # TODO: Replace by list() ??
@@ -67,25 +64,7 @@ def optimize(ant_colony, data, epochs=100, gamma = 1, reinitialize=False):
 
         # save best value so far.. MINIMIZATION
         if values[best_index] < objVal:
-            x, y, objVal = xs[best_index], ys[best_index], values[best_index]
+            y, objVal = ys[best_index], values[best_index]
 
-    return x, y, objVal
+    return y, objVal
 
-
-
-if __name__ == '__main__':
-    
-    n = 25
-    r = 6
-    p = 30
-    prob_conflicts = 0.6
-    
-    rd.seed(42)
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
-    
-    conflicts = data['conflicts']
-    exam_colors = get_coloring(conflicts)
-    n_colors = len(set(exam_colors[k] for k in exam_colors))
-    
-    print "Nothing happening here yet"
-    

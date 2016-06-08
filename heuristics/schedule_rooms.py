@@ -13,6 +13,12 @@ import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
 from heuristics.tools import swap_color_dictionary
 
+
+#
+# Responsible team member: MAX
+#
+
+
 def obj1(x, n, r):
     '''
         Room objective
