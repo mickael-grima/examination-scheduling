@@ -16,7 +16,6 @@ import numpy as np
 import networkx as nx
 import random as rd
 import logging
-import math
 
 from ColorGraph import ColorGraph
 
