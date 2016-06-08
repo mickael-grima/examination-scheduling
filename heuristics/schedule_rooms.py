@@ -50,7 +50,7 @@ def schedule_rooms(coloring, color_schedule, data):
         #for key in x:
         #    print key, x[key]
         if x == None:
-            return None
+            return None, sys.maxint
         else:
             z.update(x) 
 
