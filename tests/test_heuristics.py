@@ -36,15 +36,14 @@ class TestConstraints(unittest.TestCase):
     """
     def setUp(self):
         # self.data = build_small_input()
-        self.data = build_smart_random(n=15, p=20, r=15)
+        self.data = build_smart_random(n=15, p=10, r=10)
 
     def testColouringHeuristic(self):
         graph = ColorGraph()
         graph.build_graph(self.data['n'], self.data['conflicts'])
         graph.color_graph()
         x, y = {}, graph.build_variable()
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
-                        msg="conflict constraint failed")
+        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']), msg="conflict constraint failed")
 
     def testGenerateStartingSolution(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
@@ -66,7 +65,7 @@ class TestConstraints(unittest.TestCase):
         """ We test here the Ant Colony algorithm, without taking room scheduling in consideration
         """
         x = {}
-        y, _ = AC(self.data).optimize_time(epochs=50)
+        y, _ = AC(self.data).optimize_time(epochs=10)
         self.assertTrue(y, msg="dct y doesn't contain any variables")
         self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
                         msg="conflict constraint failed")

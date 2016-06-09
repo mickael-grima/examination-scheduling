@@ -16,7 +16,6 @@ import numpy as np
 import networkx as nx
 import random as rd
 import logging
-import math
 
 from ColorGraph import ColorGraph
 
@@ -40,12 +39,12 @@ def time_heuristic(coloring, data, gamma=1):
     return time_schedule, -time_value
 
 
-def compute_speed(value, max_value, min_value, max_speed=4.0):
-    if value < min_value:
-        logging.warning("compute_weight: value has to be larger than min_value")
-        return 1.0
-    else:
-        return math.log(1.0 + max_speed * (max_value - value) / (max_value - min_value))
+def compute_weight(value, **kwards):
+    """ function that make value positiv and that is decreasing when value increases
+    """
+    if kwards.get('max_value') is not None:
+        max_value = kwards['max_value']
+        return max_value - value
 
 
 class Ant(object):
@@ -59,6 +58,7 @@ class Ant(object):
         self.name = name
         self.starting_nodes = []
         self.traces = []
+        self.has_feasible_colouring = True
 
     def set_starting_node(self, starting_node):
         self.starting_nodes.append(starting_node)
@@ -70,7 +70,7 @@ class Ant(object):
         """
         nodes = {nod: weight for nod, weight in edges_weight.iteritems() if nod not in black_list}
         nodes = nodes or {nod: weight for nod, weight in edges_weight.iteritems()}
-        nb, n = 1.0 + rd.random() * (sum(nodes.itervalues()) - 1), 0
+        nb, n = rd.random() * sum(nodes.itervalues()), 0
         for nod, weight in nodes.iteritems():
             n += weight
             if n >= nb:
@@ -84,6 +84,8 @@ class Ant(object):
             generate a feasible coloring for this ant
         """
         # for each connex component
+        if not self.starting_nodes:
+            logging.warning("%s.generate_coloring: try to colour graph, but no starting nodes found")
         for node in self.starting_nodes:
             # start to visit the graph for one ant
             visited, current_node, nb = set(), node, 0
@@ -92,7 +94,7 @@ class Ant(object):
                 graph.color_node(current_node, data=data)
                 visited.add(current_node)
                 self.traces.append(current_node)
-                nod = self.walk_to_next_node(edges_weight[node], black_list=visited)
+                nod = self.walk_to_next_node(edges_weight[node], black_list=visited) or current_node
                 current_node = nod
                 nb = nb + 1 if current_node in visited else nb
         return {n: c for n, c in graph.colours.iteritems()}
@@ -132,9 +134,8 @@ class AC:
         # initialize the weight on edges
         for node in self.graph.graph.nodes():
             self.edges_weight.setdefault(node, {})
-            weight = len(self.graph.graph.neighbors(node))
             for neighbor in self.graph.graph.neighbors(node):
-                self.edges_weight[node][neighbor] = weight
+                self.edges_weight[node][neighbor] = 1.0
 
     def generate_colorings(self):
         """ Generate a feasible coloring for each ant
@@ -145,34 +146,30 @@ class AC:
             self.graph.reset_colours()
         return colorings
 
-    def update(self, values, best_index, max_speed=1.1):
+    def update(self, values, best_index, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value
             @param best_index: best ant's index (obj value)
             @param max_speed: the maximal updating coefficient for edges
+            @param nb_ants: how many ants do we consider to modify the edges' weight? if -1 we consider each of them
         """
-        # search for best coloring
-        edges = {}  # for each edge we attribute the sum of the ant's values who visited this edge
-        for i in range(len(values)):
+        # We first decrease the weight on the edges with evaporating parameter
+        for node, nodes in self.edges_weight.iteritems():
+            for n in nodes:
+                self.edges_weight[node][n] *= evaporating_factor
+
+        # We add the objective value we found to the edges' weight
+        nb_iter = min(nb_ants if nb_ants >= 0 else sys.maxint, len(self.ants), len(values))
+        max_value = max([v for v in values])
+        for i in range(nb_iter):
             ant, value = self.ants[i], values[i]
-            for j in range(len(ant.traces) - 1):
-                if self.graph.graph.has_edge(ant.traces[j], ant.traces[j + 1]):
-                    edges.setdefault((ant.traces[j], ant.traces[j + 1]), 0)
-                    edges[ant.traces[j], ant.traces[j + 1]] += value
-
-        # Update the graph. update before the coefficient of each edge
-        min_value = min([value for value in edges.itervalues()])
-        max_value = max([value for value in edges.itervalues()])
-        for edge in edges:
-            edges[edge] = compute_speed(value, max_value, min_value, max_speed=max_speed)
-        self.update_edges_weight(edges)
-
-    def update_edges_weight(self, edges_weight):
-        """ @param ant: bst ant, we update the weights function of its traces
-            update the pheromone for each ant. We multiply the current weight on the visiting edge by coeff
-        """
-        for node, neighbors in self.edges_weight.iteritems():
-            for neighbor, value in neighbors.iteritems():
-                self.edges_weight[node][neighbor] = value * edges_weight.get((node, neighbor), 1.0)
+            if ant.has_feasible_colouring:
+                visited = set()
+                for j in range(len(ant.traces) - 1):
+                    node, next_node = ant.traces[j], ant.traces[j + 1]
+                    if self.graph.graph.has_edge(node, next_node) and (node, next_node) not in visited:
+                        visited.add((node, next_node))
+                        visited.add((next_node, node))
+                        self.edges_weight[node][next_node] += compute_weight(value, max_value=max_value)
 
     def optimize_time(self, epochs=100, gamma=1, reinitialize=False):
         # init best values
@@ -200,7 +197,7 @@ class AC:
             # save best value so far.. MINIMIZATION
             if values[best_index] < objVal:
                 y, objVal = ys[best_index], values[best_index]
-            print self.edges_weight, objVal
+            print objVal, self.edges_weight
 
         return y, objVal
 
