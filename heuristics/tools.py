@@ -39,6 +39,7 @@ def get_coloring(conflicts):
     '''
     graph = nx.Graph()
     for c in conflicts:
+        graph.add_node(c)
         for d in conflicts[c]:
             graph.add_edge(c, d)
     return nx.coloring.greedy_color(graph)

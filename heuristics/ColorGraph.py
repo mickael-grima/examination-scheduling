@@ -117,23 +117,7 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    def check_rooms_constraint(self, node, colour, data):
-        """ @param node: node to colour
-            @param colour: colour for coloring node
-            @param capacities: rooms capacities
-            check if rooms capacities constraint is fullfilled for the nodes that already have colour as colour
-        """
-        nodes = [nod for nod, col in self.colours.iteritems() if col != colour] + [node]
-        c, s, n, r = data.get('c', []), data.get('s', []), len(nodes), data.get('r', 0)
-        s = sorted([(i, s[i]) for i in nodes], key=lambda x: x[1], reverse=True) if s else []
-        c = sorted([c[k] for k in range(r)], reverse=True)
-        i, k = 0, 0
-        while i < n and k < r:
-            if s[i][1] <= c[k]:
-                i += 1
-            k += 1
-        return i < n
-
+    
     def get_history_node_ordered(self):
         """ Give the list of node sorted such that first node was coloured first, ans so on
         """
@@ -203,18 +187,17 @@ class ColorGraph(object):
                     self.add_edge(i, j)
                 counter += 1
 
-    def color_node(self, node, data={}):
+
+    def color_node(self, node):
         """ Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
         """
         for col in self.ALL_COLOURS:
             # we check if every other neighbors don't have col as colour
             if self.check_neighbours(node, col):
-                # We check if the room constraint is fullfilled
-                if self.check_rooms_constraint(node, col, data):
-                    self.colours[node] = col
-                    break
-
+                self.colours[node] = col
+                
+                
     def color_graph(self):
         """ @param save: do we save the sequence?
             We solve the colouring graph problem with a greedy algorithm
@@ -307,3 +290,6 @@ class ColorGraph(object):
         self.colours = colours
         self.history = history
         return colours
+
+
+

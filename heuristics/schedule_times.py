@@ -36,7 +36,7 @@ def obj3(color_schedule, exam_colors, exam_color_conflicts):
     #d_n = [ 0 ] * len(exam_colors) 
     #for i in exam_colors:
         #if len(exam_color_conflicts[i]) > 0:
-            #d_n[i] = min( [abs(times[exam_colors[i]] - times[j]) for j in exam_color_conflicts[i]] )
+            #d_n[i] = min( [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in exam_color_conflicts[i]] )
     d_n = [ min( [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in exam_color_conflicts[i]] ) for i in exam_colors if len(exam_color_conflicts[i]) > 0]
     return sum(d_n)
 
@@ -57,7 +57,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, color_schedule = None, 
     assert color_schedule is None or type(color_schedule) == list, "ERROR: color_schedule needs to be either None or a list!"
     
     # for an exam i and a color c count the number of conflicts between them
-    exam_color_conflicts = [ set(exam_colors[j] for j in conflicts[i]) for i in exam_colors ]
+    exam_color_conflicts = { i: set(exam_colors[j] for j in conflicts[i]) for i in exam_colors }
     
     n_exams = len(exam_colors)
     colors = sorted(color_exams)

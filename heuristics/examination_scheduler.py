@@ -17,6 +17,8 @@ import random as rd
 import collections
 
 from model.instance import force_data_format, build_random_data
+import GurobiModel.GurobiLinear_v_8_removed_obj as gurobi
+from gurobipy import GurobiError
 
 from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
@@ -57,36 +59,67 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100):
     return x, y, obj_val
 
 
-def optimize(meta_heuristic, data, epochs=100, gamma = 1, max_iter = 100):
+def log_epoch(logger, epoch, **kwargs):
+    ''' 
+        Save epoch data in logger.
+        Logger[key] is a dictionary!
+    '''
+    for key in kwargs:
+        logger[key][epoch] = kwargs[key]
+        
+
+def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations = 10, verbose = False, log_history = False):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
-
+        
+    if log_history:
+        logger = collections.defaultdict(collections.defaultdict)
+    
     # iterate
     for epoch in range(epochs):
         
-        print epoch
+        if verbose:
+            print epoch
         
         xs, ys, obj_vals = dict(), dict(), dict()
 
         # Generate colourings
-        colorings = meta_heuristic.generate_colorings()
+        colorings = meta_heuristic.generate_colorings(ILP_test = True)
 
         # evaluate all colorings
         for col, coloring in enumerate(colorings):
-            xs[col], ys[col], obj_vals[col] = heuristic(coloring, data, gamma = gamma, max_iter = max_iter)
+            xs[col], ys[col], obj_vals[col] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations)
 
+        # filter infeasibles
+        values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
+        
+        # check feasibility
+        if len(values) == 0:
+            if log_history:
+                log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
+            continue
+        
+        #if verbose:
+            #print values
+        
         # search for best coloring
-        best_index, best_value = max( enumerate(obj_vals.values()), key=lambda x: x[1] )
+        best_index, best_value = min( values, key = lambda x: x[1] )
 
+        if log_history:
+            log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value, mean_value=np.mean(values), worst_value=max(values), n_feasible = 1.0 * len(values) / len(colorings)) 
+                      
         # Update pheromone traces
         meta_heuristic.update(obj_vals.values(), best_index)
 
         # save best value so far.. MINIMIZATION
         if best_value < obj_val:
             x, y, obj_val = xs[best_index], ys[best_index], best_value
-
-    return x, y, obj_val
+    
+    if log_history:
+        return x, y, obj_val, logger
+    else:
+        return x, y, obj_val
 
 
 def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
@@ -113,7 +146,7 @@ def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     print "VALUE:", v
     
     
-def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.2, seed = 42):
+def test_optimize(n = 15, r = 10, p = 15, prob_conflicts = 0.2, seed = 42):
     ''' 
         Test optimize with dummy meta heuristic 
     '''
@@ -122,12 +155,20 @@ def test_optimize(n = 15, r = 6, p = 15, prob_conflicts = 0.2, seed = 42):
     rd.seed(seed)
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
-    T = AC(data)
-    x, y, v = optimize(T, data, epochs=10, gamma = 0.01, max_iter = 10)
+    T = AC(data, num_ants = 100)
+    x, y, v = optimize(T, data, epochs=10, gamma = 0.1, annealing_iterations = 1, verbose = True)
     print "VALUE:", v
     
+    # Create and solve GUROBI model
+    try:        
+        model = gurobi.build_model(data, n_cliques = 30, verbose = False)      
+        model.optimize()
+        print('OPTIMUM: %g' % model.objVal)
+    except GurobiError:
+        print('Error reported')
     
-def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
+    
+def test_heuristic(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 42):
     
     print "Testing heuristics"
     
@@ -138,9 +179,33 @@ def test_heuristic(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     print "VALUE:", heuristic(coloring, data, gamma = 0.01)[2]
     
     
+def test_logging(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 420):
+    
+    print "Testing logging"
+    
+    rd.seed(seed)
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    T = AC(data, num_ants = 50)
+    x, y, v, logger = optimize(T, data, epochs=50, gamma = 0.1, annealing_iterations = 1, verbose = True, log_history = True)
+    
+    import matplotlib.pyplot as plt
+    # TODO: DEBUG Worst value 
+    for key in logger:
+        values = logger[key].values()
+        if key == "obj_val":
+            values.pop(0)
+            print values
+            
+        plt.clf()
+        plt.plot(values)
+        plt.ylabel(key)
+        plt.savefig("plots/%s.jpg" %key)
+        
 if __name__ == '__main__':
     
     #test_heuristic()
     #test_optimize_dummy()
-    test_optimize()
+    #test_optimize()
+    test_logging()
     
