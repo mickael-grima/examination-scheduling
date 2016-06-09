@@ -197,7 +197,6 @@ class AC:
             # save best value so far.. MINIMIZATION
             if values[best_index] < objVal:
                 y, objVal = ys[best_index], values[best_index]
-            print objVal, self.edges_weight
 
         return y, objVal
 

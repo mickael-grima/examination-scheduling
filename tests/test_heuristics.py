@@ -16,6 +16,7 @@ import unittest
 import random as rd
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
 from heuristics.AC import AC
+import heuristics.groups_heuristic as grouph
 import heuristics.examination_scheduler as scheduler
 from heuristics import tools
 from model.instance import build_smart_random, build_small_input, build_random_data
@@ -36,7 +37,7 @@ class TestConstraints(unittest.TestCase):
     """
     def setUp(self):
         # self.data = build_small_input()
-        self.data = build_smart_random(n=15, p=10, r=10)
+        self.data = build_smart_random(n=1500, p=60, r=150)
 
     def testColouringHeuristic(self):
         graph = ColorGraph()
@@ -45,7 +46,7 @@ class TestConstraints(unittest.TestCase):
         x, y = {}, graph.build_variable()
         self.assertTrue(test_conflicts(x, y, Q=self.data['Q']), msg="conflict constraint failed")
 
-    def testGenerateStartingSolution(self):
+    def TestGenerateStartingSolution(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
         """
         x, y = generate_starting_solution_by_maximal_time_slot_filling(self.data)
@@ -61,7 +62,7 @@ class TestConstraints(unittest.TestCase):
         self.assertTrue(test_one_exam_period_room(x, y, T=self.data['T']),
                         msg="one exam per period per room constraint failed")
 
-    def testACAlgorithm(self):
+    def TestACAlgorithm(self):
         """ We test here the Ant Colony algorithm, without taking room scheduling in consideration
         """
         x = {}
@@ -74,6 +75,20 @@ class TestConstraints(unittest.TestCase):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
         """
         x, y, _ = scheduler.optimize(AC(self.data), self.data)
+        n, r, p = self.data['n'], self.data['r'], self.data['p']
+        x, y = transform_variables(x, y, n=n, p=p, r=r)
+        self.assertTrue(x, msg="dct x doesn't contain any variables")
+        self.assertTrue(y, msg="dct y doesn't contain any variables")
+        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+                        msg="conflict constraint failed")
+        self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
+                        msg="seat capacity constraint failed")
+        self.assertTrue(test_one_exam_per_period(x, y), msg="one exam per period constraint failed")
+        self.assertTrue(test_one_exam_period_room(x, y, T=self.data['T']),
+                        msg="one exam per period per room constraint failed")
+
+    def testGreedyHeuristics(self):
+        x, y = grouph.optimize(self.data)
         n, r, p = self.data['n'], self.data['r'], self.data['p']
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")

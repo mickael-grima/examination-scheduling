@@ -27,7 +27,7 @@ class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
-        self.ALL_COLOURS = [i for i in range(20)]
+        self.ALL_COLOURS = [i for i in range(2000)]
 
         self.graph = nx.Graph()
         self.colours = {}
@@ -194,6 +194,7 @@ class ColorGraph(object):
             # we check if every other neighbors don't have col as colour
             if self.check_neighbours(node, col):
                 self.colours[node] = col
+                break
 
     def color_graph(self):
         """ @param save: do we save the sequence?
