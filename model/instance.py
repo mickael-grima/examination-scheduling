@@ -24,10 +24,14 @@ def force_data_format(func):
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
-
+        
+        assert len(conflicts) == n
+        
         # make sure the conflicts are symmetric!
         add = defaultdict(list)
         for k in conflicts:
+            if len(conflicts[k]) > 0:
+                assert max(conflicts[k]) < n
             for l in conflicts[k]:
                 if k > k and k not in conflicts[l]:
                     add[l] += [k]

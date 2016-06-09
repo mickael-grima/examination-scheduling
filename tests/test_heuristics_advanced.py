@@ -14,7 +14,7 @@ sys.path.append(path)
 import random as rd
 from model.instance import build_random_data
 from heuristics import tools
-from heuristics.schedule_times import schedule_times
+import heuristics.schedule_times as schedule_times
 
 def SA_test_objectives(n = 30, r = 20, p = 20, prob_conflicts = 0.2, seed = 42):
 
@@ -46,7 +46,9 @@ def SA_test_objectives(n = 30, r = 20, p = 20, prob_conflicts = 0.2, seed = 42):
 
 def SA_benchmark_annealing(n = 25, r = 6, p = 30, prob_conflicts = 0.2, seed = 420):
     
+    print "BENCHMARK ANNEALING"
     from time import time
+    rd.seed(seed)
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     conflicts = data['conflicts']
@@ -93,4 +95,4 @@ def SA_benchmark_annealing(n = 25, r = 6, p = 30, prob_conflicts = 0.2, seed = 4
 
 if __name__ == '__main__':
     SA_test_objectives()
-    SA_benchmark_annealing()
+   # SA_benchmark_annealing()

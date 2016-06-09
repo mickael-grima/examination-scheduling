@@ -40,7 +40,7 @@ from model.instance import build_random_data
 
              
     
-def build_model(data, n_cliques = 0):
+def build_model(data, n_cliques = 0, verbose = True):
     
     # Load Data Format
     n = data['n']
@@ -56,7 +56,8 @@ def build_model(data, n_cliques = 0):
     model = Model("ExaminationScheduling")
     
     
-    print("Building variables...")
+    if verbose:
+        print("Building variables...")
     
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
@@ -77,15 +78,18 @@ def build_model(data, n_cliques = 0):
     model.update() 
 
     # adding constraints as found in MidTerm.pdf
-    print("Building constraints...")    
+    if verbose:
+        print("Building constraints...")    
     
-    print("c1: connecting variables x and y")
+    if verbose:
+        print("c1: connecting variables x and y")
     for i in range(n):
         for l in range(p):
             model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= 12 * y[i, l], "c1a")
             model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) >= y[i, l], "c1b")
             
-    print("c2: each exam at exactly one time")
+    if verbose:
+        print("c2: each exam at exactly one time")
     for i in range(n):
         model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1 , "c2")
 
@@ -95,17 +99,20 @@ def build_model(data, n_cliques = 0):
             -for all exams in a given clique only one can be written
     """
     
-    print("c3: avoid conflicts")
+    if verbose:
+        print("c3: avoid conflicts")
     for i in range(n):
         for l in range(p):
             # careful!! Big M changed!
             model.addConstr(quicksum([ y[j,l] for j in conflicts[i] ]) <= (1 - y[i, l]) * sum(conflicts[i]), "c3")
     
-    print("c4: seats for all students")
+    if verbose:
+        print("c4: seats for all students")
     for i in range(n):
         model.addConstr( quicksum([ x[i, k, l] * c[k] for k in range(r) for l in range(p) if T[k][l] == 1 ]) >= s[i], "c4")
     
-    print("c5: only one exam per room per period")
+    if verbose:
+        print("c5: only one exam per room per period")
     for k in range(r):
         for l in range(p):
             if T[k][l] == 1:
@@ -129,14 +136,19 @@ def build_model(data, n_cliques = 0):
     #             model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
     #             #print "c_lique_%s_%s_%s" % (counter,clique,l)
 
-    print("All constrained built - OK")
+    if verbose:
+        print("All constrained built - OK")
 
     # objective: minimize number of used rooms
-    print("Building Objective...")
+    if verbose:
+        print("Building Objective...")
     obj1 = quicksum([ x[i,k,l] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
 
     model.setObjective( obj1, GRB.MINIMIZE)
 
+    if not verbose:
+        model.params.OutputFlag = 0
+    
     # Set Parameters
     #print("Setting Parameters...")
     model.params.barconvtol = 1
@@ -151,7 +163,6 @@ def build_model(data, n_cliques = 0):
     #model.params.method = 1
     model.params.barconvtol = 0.1
     model.params.MIPFocus = 1
-
     # return
     return(model)
 
