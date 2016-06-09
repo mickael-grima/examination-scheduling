@@ -63,6 +63,7 @@ def schedule_rooms(coloring, color_schedule, data):
     obj_val = obj1(z)
     return z , obj_val
 
+
 def schedule_rooms_in_period(exams_to_schedule, period, data):
     #print period
     '''

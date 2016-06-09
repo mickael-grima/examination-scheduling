@@ -17,7 +17,7 @@ import networkx as nx
 import random as rd
 import logging
 
-from ColorGraph import ColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary
@@ -77,7 +77,7 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight, data={}):
+    def generate_coloring(self, graph, edges_weight, data={}, ILP_test = False):
         """ @param graph: graph to color
             @param edges_weight: weight on the edges for each node
             @cparam capacities: capacities of the rooms. If empty, we don't consider them
@@ -91,7 +91,7 @@ class Ant(object):
             visited, current_node, nb = set(), node, 0
             while nb < 2 or current_node not in visited:
                 # color the node
-                graph.color_node(current_node, data=data)
+                graph.color_node(current_node, data=data, ILP = ILP_test)
                 visited.add(current_node)
                 self.traces.append(current_node)
                 nod = self.walk_to_next_node(edges_weight[node], black_list=visited) or current_node
@@ -116,7 +116,7 @@ class AC:
         self.gamma = gamma
         self.ants = [Ant(name='Ant%s' % i) for i in range(num_ants)]
         self.num_ants = num_ants
-        self.graph = ColorGraph()
+        self.graph = ConstrainedColorGraph()
         self.edges_weight = {}  # weight on the edges
 
         self.initialize()
@@ -137,12 +137,12 @@ class AC:
             for neighbor in self.graph.graph.neighbors(node):
                 self.edges_weight[node][neighbor] = 1.0
 
-    def generate_colorings(self):
+    def generate_colorings(self, ILP_test = False):
         """ Generate a feasible coloring for each ant
         """
         colorings = []
         for ant in self.ants:
-            colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data))
+            colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data, ILP_test=ILP_test))
             self.graph.reset_colours()
         return colorings
 
@@ -170,6 +170,7 @@ class AC:
                         visited.add((node, next_node))
                         visited.add((next_node, node))
                         self.edges_weight[node][next_node] += compute_weight(value, max_value=max_value)
+
 
     def optimize_time(self, epochs=100, gamma=1, reinitialize=False):
         # init best values

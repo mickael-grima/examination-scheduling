@@ -13,11 +13,13 @@ sys.path.append(path)
 
 import unittest
 
+import random as rd
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
 from heuristics.AC import AC
 import heuristics.examination_scheduler as scheduler
-import heuristics.time_scheduler as timescheduler
-from model.instance import build_smart_random, build_small_input
+from heuristics import tools
+from model.instance import build_smart_random, build_small_input, build_random_data
+import heuristics.schedule_times as schedule_times
 from heuristics.ColorGraph import ColorGraph
 
 from utils.tools import transform_variables
