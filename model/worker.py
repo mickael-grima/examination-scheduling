@@ -69,7 +69,7 @@ def compare(data):
 
 def test_compare():
     n = 1500
-    r = 65
+    r = 60
     p = 60
     tseed = 295
 
