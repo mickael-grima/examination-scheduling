@@ -65,7 +65,7 @@ class ConstrainedColorGraph(ColorGraph):
         return i < len(nodes)
 
 
-    def color_node(self, node, data={}, ILP=False):
+    def color_node(self, node, data={}, check_constraints = True, ILP=False):
         """ 
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
@@ -74,7 +74,10 @@ class ConstrainedColorGraph(ColorGraph):
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, col):
                 # We check if the room constraint is fullfilled
-                if ILP and self.check_room_constraints_ILP(node, col, data):
+                if not check_constraints:
+                    self.colours[node] = col
+                    break
+                elif ILP and self.check_room_constraints_ILP(node, col, data):
                     self.colours[node] = col
                     break
                 elif self.check_rooms_constraint(node, col, data):

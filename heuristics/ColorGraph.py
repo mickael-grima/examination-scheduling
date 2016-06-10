@@ -77,6 +77,12 @@ class ColorGraph(object):
             self.colours = self.history[step]
             self.draw(save=save, ind=step)
 
+    def nodes(self):
+        """ return a dictionnary {node: degree}
+        """
+        return self.graph.nodes()
+    
+    
     def get_degree(self):
         """ return a dictionnary {node: degree}
         """

@@ -15,6 +15,7 @@ sys.path.append(PROJECT_PATH)
 import numpy as np
 import random as rd
 import collections
+from time import time
 
 from model.instance import force_data_format, build_random_data
 import GurobiModel.GurobiLinear_v_8_removed_obj as gurobi
@@ -24,7 +25,7 @@ from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
 from heuristics.tools import to_binary, get_coloring
-
+from heuristics.RandomHeuristic import RandomHeuristic, SAHeuristic
 
 def heuristic(coloring, data, gamma = 1, max_iter = 100):
     '''
@@ -76,6 +77,8 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
     if log_history:
         logger = collections.defaultdict(collections.defaultdict)
     
+    best_value_duration = 0
+    
     # iterate
     for epoch in range(epochs):
         
@@ -85,7 +88,7 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
         xs, ys, obj_vals = dict(), dict(), dict()
 
         # Generate colourings
-        colorings = meta_heuristic.generate_colorings(ILP_test = True)
+        colorings = meta_heuristic.generate_colorings()
 
         # evaluate all colorings
         for col, coloring in enumerate(colorings):
@@ -107,20 +110,32 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
         best_index, best_value = min( values, key = lambda x: x[1] )
 
         if log_history:
-            log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value, mean_value=np.mean(values), worst_value=max(values), n_feasible = 1.0 * len(values) / len(colorings)) 
+            worst_index, worst_value = max( values, key = lambda x: x[1] )
+            log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value, mean_value=np.mean(map(lambda x:x[1],values)), worst_value=worst_value, n_feasible = 1.0 * len(values) / len(colorings)) 
                       
         # Update pheromone traces
         meta_heuristic.update(obj_vals.values(), best_index)
 
+        if best_value != sys.maxint:
+            best_value_duration += 1
+        
         # save best value so far.. MINIMIZATION
         if best_value < obj_val:
-            x, y, obj_val = xs[best_index], ys[best_index], best_value
+            x, y, obj_val = xs[best_index], ys[best_index], best_value    
+            best_value_duration = 0
+    
+        #if best_value != sys.maxint and epoch > 0.5*epochs:
+            #if 1.0*best_value_duration/epoch > 0.5:
+                #break
+    
     
     if log_history:
         return x, y, obj_val, logger
     else:
         return x, y, obj_val
 
+
+        
 
 def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
     ''' 
@@ -179,7 +194,35 @@ def test_heuristic(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 42):
     print "VALUE:", heuristic(coloring, data, gamma = 0.01)[2]
     
     
-def test_logging(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 420):
+def test_random(n = 45, r = 11, p = 12, prob_conflicts = 0.3, seed = 42):
+    
+    print "Testing random heuristic meta heuristic optimization"
+    
+    rd.seed(seed)
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    T = RandomHeuristic(data, n_colorings = 10)
+    
+    t = time()
+    x, y, v, logger = optimize(T, data, epochs = 50, gamma = 1, annealing_iterations = 500, verbose = True, log_history = True)
+    print "Time:", time()-t
+    
+    import matplotlib.pyplot as plt
+    # TODO: DEBUG Worst value 
+    for key in logger:
+        print key
+        values = logger[key].values()
+        values = filter(lambda x: x < sys.maxint, values)
+        #print ", ".join(map(lambda x: "%0.2f" %x, values))
+            
+        plt.clf()
+        plt.plot(values)
+        plt.ylabel(key)
+        plt.savefig("%s/heuristics/plots/%s.jpg" %(PROJECT_PATH, key))
+    print "VALUE:", v
+      
+    
+def test_logging(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 42):
     
     print "Testing logging"
     
@@ -187,11 +230,12 @@ def test_logging(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 420):
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     T = AC(data, num_ants = 50)
-    x, y, v, logger = optimize(T, data, epochs=50, gamma = 0.1, annealing_iterations = 1, verbose = True, log_history = True)
-    
+    x, y, v, logger = optimize(T, data, epochs=100, gamma = 1, annealing_iterations = 200, verbose = True, log_history = True)
+    print logger
     import matplotlib.pyplot as plt
     # TODO: DEBUG Worst value 
     for key in logger:
+        print key
         values = logger[key].values()
         if key == "obj_val":
             values.pop(0)
@@ -200,12 +244,13 @@ def test_logging(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 420):
         plt.clf()
         plt.plot(values)
         plt.ylabel(key)
-        plt.savefig("plots/%s.jpg" %key)
+        plt.savefig("%s/heuristics/plots/%s.jpg" %(PROJECT_PATH, key))
+        
         
 if __name__ == '__main__':
     
     #test_heuristic()
     #test_optimize_dummy()
     #test_optimize()
-    test_logging()
-    
+    #test_logging()
+    test_random()
