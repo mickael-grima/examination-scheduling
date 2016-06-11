@@ -27,8 +27,10 @@ class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
+        
         self.ALL_COLOURS = [i for i in range(20)]
-
+        self.WHITE = -1
+        
         self.graph = nx.Graph()
         self.colours = {}
         self.revert = True
@@ -42,12 +44,12 @@ class ColorGraph(object):
         Add node to self.graph
         """
         self.graph.add_node(node)
-        self.colours.setdefault(node, -1)
+        self.colours.setdefault(node, self.WHITE)
 
     def add_edge(self, node1, node2):
         self.graph.add_edge(node1, node2)
-        self.colours.setdefault(node1, -1)
-        self.colours.setdefault(node2, -1)
+        self.colours.setdefault(node1, self.WHITE)
+        self.colours.setdefault(node2, self.WHITE)
 
     def reset_history(self):
         """ reinitialized self.history to an empty dictionnary
@@ -55,10 +57,11 @@ class ColorGraph(object):
         self.history = {}
 
     def reset_colours(self):
-        """ Reset all the colours to white
+        """ 
+            Reset all the colours to white
         """
         for col in self.colours:
-            self.colours[col] = -1
+            self.colours[col] = self.WHITE
 
     def reset(self):
         """ do both reset_colours and reset_history
@@ -77,6 +80,12 @@ class ColorGraph(object):
             self.colours = self.history[step]
             self.draw(save=save, ind=step)
 
+    def nodes(self):
+        """ return a dictionnary {node: degree}
+        """
+        return self.graph.nodes()
+    
+    
     def get_degree(self):
         """ return a dictionnary {node: degree}
         """
@@ -124,7 +133,7 @@ class ColorGraph(object):
         res = []
         for step, history in self.history.iteritems():
             for node, colour in history.iteritems():
-                if colour != -1 and node not in res:
+                if colour != self.WHITE and node not in res:
                     res.append(node)
         return res
 
@@ -219,7 +228,7 @@ class ColorGraph(object):
         for node in lookup_order:
 
             # respect initial condition
-            if self.colours[node] != -1:
+            if self.colours[node] != self.WHITE:
                 continue
 
             self.color_node(node)

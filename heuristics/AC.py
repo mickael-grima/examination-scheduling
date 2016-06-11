@@ -77,7 +77,7 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight, data={}, ILP_test = False):
+    def generate_coloring(self, graph, edges_weight, data={}):
         """ @param graph: graph to color
             @param edges_weight: weight on the edges for each node
             @cparam capacities: capacities of the rooms. If empty, we don't consider them
@@ -91,7 +91,7 @@ class Ant(object):
             visited, current_node, nb = set(), node, 0
             while nb < 2 or current_node not in visited:
                 # color the node
-                graph.color_node(current_node, data=data, ILP = ILP_test)
+                graph.color_node(current_node, data=data)
                 visited.add(current_node)
                 self.traces.append(current_node)
                 nod = self.walk_to_next_node(edges_weight[node], black_list=visited) or current_node
@@ -137,16 +137,16 @@ class AC:
             for neighbor in self.graph.graph.neighbors(node):
                 self.edges_weight[node][neighbor] = 1.0
 
-    def generate_colorings(self, ILP_test = False):
+    def generate_colorings(self):
         """ Generate a feasible coloring for each ant
         """
         colorings = []
         for ant in self.ants:
-            colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data, ILP_test=ILP_test))
+            colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data))
             self.graph.reset_colours()
         return colorings
-
-    def update(self, values, best_index, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
+    
+    def update(self, values, best_index = None, time_slots = None, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value
             @param best_index: best ant's index (obj value)
             @param max_speed: the maximal updating coefficient for edges
