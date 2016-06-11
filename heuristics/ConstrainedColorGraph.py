@@ -20,7 +20,7 @@ from heuristics.schedule_rooms import schedule_rooms_in_period
 
 class ConstrainedColorGraph(ColorGraph):
     
-    def check_room_constraints_ILP(self, node, color, data):
+    def check_room_constraints_ILP(self, node, color, data, periods = None):
         """ 
             Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
             Use ILP in order to get this feasibility
@@ -28,13 +28,16 @@ class ConstrainedColorGraph(ColorGraph):
             @param color: color for coloring node
             @param capacities: rooms capacities
         """
-        
+        period = 0
+        if periods is not None and color < len(periods):
+            period = periods[color]
+            
         # get all nodes with that color, and solve ILP
         nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
-        # schedule rooms for period 0 
-        # TODO: Period should be replaced by dummy period!
+        
+        # schedule rooms 
         # TODO: Give start solution ?!?
-        return schedule_rooms_in_period(nodes, 0, data) is not None
+        return schedule_rooms_in_period(nodes, period, data) is not None
       
       
     def check_rooms_constraint(self, node, color, data):
@@ -65,7 +68,7 @@ class ConstrainedColorGraph(ColorGraph):
         return i < len(nodes)
 
 
-    def color_node(self, node, data={}, check_constraints = True, ILP=False):
+    def color_node(self, node, data={}, check_constraints = True, periods = None):
         """ 
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
@@ -77,7 +80,7 @@ class ConstrainedColorGraph(ColorGraph):
                 if not check_constraints:
                     self.colours[node] = col
                     break
-                elif ILP and self.check_room_constraints_ILP(node, col, data):
+                elif periods is not None and self.check_room_constraints_ILP(node, col, data, periods = periods):
                     self.colours[node] = col
                     break
                 elif self.check_rooms_constraint(node, col, data):

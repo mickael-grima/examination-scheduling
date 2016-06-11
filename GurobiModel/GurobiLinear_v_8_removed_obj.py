@@ -151,18 +151,26 @@ def build_model(data, n_cliques = 0, verbose = True):
     
     # Set Parameters
     #print("Setting Parameters...")
-    model.params.barconvtol = 1
-    model.params.nodelimit = 1
-    
-
-    model.setParam(GRB.Param.Threads, 1)
  
     # max presolve agressivity
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
-    model.params.barconvtol = 0.1
-    model.params.MIPFocus = 1
+    #model.params.MIPFocus = 1
+    # model.params.TuneTimeLimit = 200
+
+
+    # # Tune the model
+    # model.tune()
+
+    # if model.tuneResultCount > 0:
+
+    #     # Load the best tuned parameters into the model
+    #     model.getTuneResult(0)
+
+    #     # Write tuned parameters to a file
+    #     model.write('tune1.prm')
+
     # return
     return(model)
 

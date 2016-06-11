@@ -34,8 +34,8 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100):
         @Param: data is the data and setup of the problem
         @Param: gamma is the weighting of room and time objectives
         @Returnvalues:
-        x[i,k]: binary room variable
-        y[i,l]: binary time variable
+        room_schedule: binary. 1 if exami i in room k
+        color_schedule: dict of ints
         obj_val: combined objective
     '''
     # create time schedule permuting the time solts for each coloring
@@ -45,19 +45,16 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100):
         return None, None, sys.maxint
     
     # create room schedule
-    x, room_value = schedule_rooms(coloring, color_schedule, data)
+    room_schedule, room_value = schedule_rooms(coloring, color_schedule, data)
     
     # if infeasible, return large obj_val since we are minimizing
-    if x is None:
+    if room_schedule is None:
         return None, None, sys.maxint
 
-    # build binary variable 
-    y = to_binary(coloring, color_schedule, data['h'])
-    
     # evaluate combined objectives
     obj_val = room_value - gamma * time_value
 
-    return x, y, obj_val
+    return room_schedule, color_schedule, obj_val
 
 
 def log_epoch(logger, epoch, **kwargs):
@@ -86,14 +83,19 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
             print epoch
         
         xs, ys, obj_vals = dict(), dict(), dict()
+        color_schedules = dict()
 
         # Generate colourings
         colorings = meta_heuristic.generate_colorings()
 
         # evaluate all colorings
-        for col, coloring in enumerate(colorings):
-            xs[col], ys[col], obj_vals[col] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations)
-
+        for ind, coloring in enumerate(colorings):
+            
+            xs[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations)
+            # build binary variable 
+            ys[ind] = to_binary(coloring, color_schedules[ind], data['h'])
+        
+    
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
         
@@ -103,9 +105,6 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
                 log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
             continue
         
-        #if verbose:
-            #print values
-        
         # search for best coloring
         best_index, best_value = min( values, key = lambda x: x[1] )
 
@@ -113,8 +112,8 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
             worst_index, worst_value = max( values, key = lambda x: x[1] )
             log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value, mean_value=np.mean(map(lambda x:x[1],values)), worst_value=worst_value, n_feasible = 1.0 * len(values) / len(colorings)) 
                       
-        # Update pheromone traces
-        meta_heuristic.update(obj_vals.values(), best_index)
+        # Update meta heuristic
+        meta_heuristic.update(obj_vals.values(), best_index = best_index, time_slots = color_schedules)
 
         if best_value != sys.maxint:
             best_value_duration += 1
@@ -136,121 +135,7 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
 
 
         
-
-def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, seed = 42):
-    ''' 
-        Test optimize with dummy meta heuristic 
-    '''
-    print "Testing dummy meta heuristic optimization"
-    
-    class TestHeuristic:
-        def __init__(self, data):
-            self.data = data
-        def generate_colorings(self):
-            conflicts = self.data['conflicts']
-            return [ get_coloring(conflicts) ]
-        def update(self, values, best_index = None):
-            #print "Do nothing. Value is", values[best_index]
-            pass
-    
-    rd.seed(seed)
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
-    
-    T = TestHeuristic(data)
-    x, y, v = optimize(T, data, epochs=10, gamma = 0.01)
-    print "VALUE:", v
-    
-    
-def test_optimize(n = 15, r = 10, p = 15, prob_conflicts = 0.2, seed = 42):
-    ''' 
-        Test optimize with dummy meta heuristic 
-    '''
-    print "Testing ant colony meta heuristic optimization"
-    
-    rd.seed(seed)
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
-    
-    T = AC(data, num_ants = 100)
-    x, y, v = optimize(T, data, epochs=10, gamma = 0.1, annealing_iterations = 1, verbose = True)
-    print "VALUE:", v
-    
-    # Create and solve GUROBI model
-    try:        
-        model = gurobi.build_model(data, n_cliques = 30, verbose = False)      
-        model.optimize()
-        print('OPTIMUM: %g' % model.objVal)
-    except GurobiError:
-        print('Error reported')
-    
-    
-def test_heuristic(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 42):
-    
-    print "Testing heuristics"
-    
-    rd.seed(seed)
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
-    
-    coloring = get_coloring(data['conflicts'])
-    print "VALUE:", heuristic(coloring, data, gamma = 0.01)[2]
-    
-    
-def test_random(n = 45, r = 11, p = 12, prob_conflicts = 0.3, seed = 42):
-    
-    print "Testing random heuristic meta heuristic optimization"
-    
-    rd.seed(seed)
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
-    
-    T = RandomHeuristic(data, n_colorings = 10)
-    
-    t = time()
-    x, y, v, logger = optimize(T, data, epochs = 50, gamma = 1, annealing_iterations = 500, verbose = True, log_history = True)
-    print "Time:", time()-t
-    
-    import matplotlib.pyplot as plt
-    # TODO: DEBUG Worst value 
-    for key in logger:
-        print key
-        values = logger[key].values()
-        values = filter(lambda x: x < sys.maxint, values)
-        #print ", ".join(map(lambda x: "%0.2f" %x, values))
-            
-        plt.clf()
-        plt.plot(values)
-        plt.ylabel(key)
-        plt.savefig("%s/heuristics/plots/%s.jpg" %(PROJECT_PATH, key))
-    print "VALUE:", v
-      
-    
-def test_logging(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 42):
-    
-    print "Testing logging"
-    
-    rd.seed(seed)
-    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
-    
-    T = AC(data, num_ants = 50)
-    x, y, v, logger = optimize(T, data, epochs=100, gamma = 1, annealing_iterations = 200, verbose = True, log_history = True)
-    print logger
-    import matplotlib.pyplot as plt
-    # TODO: DEBUG Worst value 
-    for key in logger:
-        print key
-        values = logger[key].values()
-        if key == "obj_val":
-            values.pop(0)
-            print values
-            
-        plt.clf()
-        plt.plot(values)
-        plt.ylabel(key)
-        plt.savefig("%s/heuristics/plots/%s.jpg" %(PROJECT_PATH, key))
-        
         
 if __name__ == '__main__':
     
-    #test_heuristic()
-    #test_optimize_dummy()
-    #test_optimize()
-    #test_logging()
-    test_random()
+    print "Nothing implemented here.\nRun 'tests/test_scheduler.py' instead!"

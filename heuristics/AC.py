@@ -145,8 +145,8 @@ class AC:
             colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data, ILP_test=ILP_test))
             self.graph.reset_colours()
         return colorings
-
-    def update(self, values, best_index, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
+    
+    def update(self, values, best_index = None, time_slots = None, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value
             @param best_index: best ant's index (obj value)
             @param max_speed: the maximal updating coefficient for edges

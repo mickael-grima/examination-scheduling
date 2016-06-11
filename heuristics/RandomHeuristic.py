@@ -16,6 +16,7 @@ import numpy as np
 import networkx as nx
 import random as rd
 import logging
+from collections import defaultdict
 
 from ConstrainedColorGraph import ConstrainedColorGraph
 
@@ -25,13 +26,12 @@ from heuristics.tools import to_binary
 import numpy as np
 
 from sklearn.ensemble import RandomForestRegressor
+from MetaHeuristic import MetaHeuristic
 
-
-class RandomHeuristic:
+class RandomHeuristic(MetaHeuristic):
     
     def __init__(self, data, n_colorings=50):
-        self.data = data
-        self.n_colorings = n_colorings
+        MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
         self.graph = ConstrainedColorGraph()
         self.graph.build_graph(self.data['n'], self.data['conflicts'])        
         
@@ -48,16 +48,47 @@ class RandomHeuristic:
         return colorings
     
     
-    def update(self, values, best_index = None):
+    def update(self, values, best_index = None, time_slots = None):
         #print "Do nothing. Value is", values[best_index]
         pass
     
+class RandomHeuristicAdvanced(RandomHeuristic):
+    
+    def __init__(self, data, n_colorings=50):
+        RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
+        self.graph = ConstrainedColorGraph()
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])      
+        self.periods = { i: None for i in range(n_colorings) }
+    
+    
+    def generate_colorings(self):
+        colorings = []
+        nodes = self.graph.nodes()
+        for i in range(self.n_colorings):
+            rd.shuffle(nodes)
+            self.graph.reset_colours()
+            for node in nodes:
+                self.graph.color_node(node, data=self.data, check_constraints = True, periods = self.periods[i])
+            colorings.append({n: c for n, c in self.graph.colours.iteritems()})
+                
+        return colorings
+    
+    
+    def update(self, values, best_index = None, time_slots = None):
+        
+        if self.periods is None:
+            self.periods = defaultdict(list)
+        
+        for i in range(len(values)):
+            if time_slots[i] is not None:
+                self.periods[i] = [self.data['h'].index(color) for color in time_slots[i]]
+            
+        
     
 class ForestHeuristic:
     
     def __init__(self, data, n_colorings=50):
-        self.data = data
-        self.n_colorings = n_colorings
+        MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
         self.graph = ConstrainedColorGraph()
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
         self.next_X = []
@@ -86,7 +117,7 @@ class ForestHeuristic:
         return colorings
     
     
-    def update(self, values, best_index = None):
+    def update(self, values, best_index = None, time_slots = None):
         
         for i, value in enumerate(values):
             if value < sys.maxint:
@@ -110,8 +141,7 @@ class ForestHeuristic:
 class SAHeuristic:
     
     def __init__(self, data, n_colorings=50):
-        self.data = data
-        self.n_colorings = n_colorings
+        MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
         self.graph = ConstrainedColorGraph()
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
         self.visiting = []
@@ -150,7 +180,7 @@ class SAHeuristic:
         self.iteration += 1
         return colorings
     
-    def update(self, values, best_index = None):
+    def update(self, values, best_index = None, time_slots = None):
         if len(self.old_values) == 0:
             self.old_values = values
             pass

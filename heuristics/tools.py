@@ -49,6 +49,9 @@ def to_binary(coloring, color_schedule, h):
     '''
         Convert color schedule to binary y_i,l variable
     '''
+    if color_schedule is None:
+        return None
+    
     y = defaultdict(int)
     for i in coloring:
         l = h.index(color_schedule[coloring[i]])
