@@ -14,10 +14,9 @@ from collections import defaultdict
 from copy import deepcopy
 
 from model.instance import build_random_data
-from heuristics.tools import get_coloring, swap_color_dictionary, get_color_conflicts
+from heuristics.tools import get_coloring, swap_color_dictionary
 from heuristics.schedule_rooms import schedule_rooms_in_period
-from heuristics.improve_annealing import get_changed_colors
-
+from heuristics import improve_annealing 
 #
 # Responsible team member: ROLAND
 #
@@ -27,38 +26,27 @@ from heuristics.improve_annealing import get_changed_colors
 
 def obj2(color_schedule, exam_colors, conflicts, h_max = None):
     
+    # sum min distance to neighboring conflict nodes
+    
     d_n = [ 0 ] * len(exam_colors) 
     for i in exam_colors:
         if len(conflicts[i]) > 0:
             d_n[i] = min( [abs(color_schedule[exam_colors[i]] - color_schedule[exam_colors[j]]) for j in conflicts[i]] )
     
-    #d_n = [  for i in exam_colors if len(conflicts[i]) > 0 ]
     if h_max is not None:
         return d_n, 1.0*sum(d_n)/h_max
     else:
         return d_n, sum(d_n)
     
     
-def obj3(color_schedule, exam_colors, color_conflicts, h_max = None, conflicts=None, d_n = None, change_colors = None):
-    # TODO: Can this even be speeded up?
-    # TODO: If only colors can be considered, speed up about 10x!!!!
-    # TODO: Dont do this everytime ( swap, track changes ) 
-    #for i in exam_colors:
-        #print i
-        #if conflicts is not None:
-            #print conflicts[i]
-        #print color_conflicts[exam_colors[i]]
-    #print color_schedule
-    #print exam_colors
+def obj3(color_schedule, exam_colors, color_conflicts, h_max = None):
+    
+    # sum min distance to neighboring color nodes
+    
     d_n = [ 0 ] * len(exam_colors) 
     for i in exam_colors:
-        if len(color_conflicts[exam_colors[i]]) > 0:
-            d_n[i] = min( [abs(color_schedule[exam_colors[i]] - color_schedule[d]) for d in color_conflicts[exam_colors[i]]] )
-            #print i, d_n[i]
-        #if conflicts is not None and len(conflicts[i]) > 0:
-            #print i, min( [abs(color_schedule[exam_colors[i]] - color_schedule[exam_colors[j]]) for j in conflicts[i]] )
-    
-    #d_n = [ min( [abs(color_schedule[exam_colors[i]] - color_schedule[d]) for d in color_conflicts[exam_colors[i]]] ) for i in exam_colors if len(color_conflicts[exam_colors[i]]) > 0]
+        if len(color_conflicts[i]) > 0:
+            d_n[i] = min( [abs(color_schedule[exam_colors[i]] - color_schedule[d]) for d in color_conflicts[i]] )
     
     if h_max is not None:
         return d_n, 1.0*sum(d_n)/h_max
@@ -66,122 +54,82 @@ def obj3(color_schedule, exam_colors, color_conflicts, h_max = None, conflicts=N
         return d_n, sum(d_n)
 
 
-def obj4(color_schedule, exam_colors, color_conflicts, d_n = None, change_colors = None, h_max = None):
-    # TODO: Can this even be speeded up?
-    # TODO: If only colors can be considered, speed up about 10x!!!!
-    # TODO: Dont do this everytime ( swap, track changes ) 
-    #d_n = [ 0 ] * len(exam_colors) 
-    #for i in exam_colors:
-        #if len(color_conflicts[exam_colors[i]]) > 0:
-            #d_n[i] = min( [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in color_conflicts[exam_colors[i]]] )
+def obj4(color_schedule, exam_colors, color_conflicts, h_max = None, d_n = None, change_colors = None):
+    
+    # sum min distance only consider changed colors!
     
     if d_n is None or change_colors is None:
-        #TODO: Obj 3
-        d_n = [ 0 ] * len(exam_colors)
-        for i in exam_colors:
-            if len(color_conflicts[exam_colors[i]]) > 0:
-                d_n[i] = min( [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in color_conflicts[exam_colors[i]]] )
-    else:
-                
-        #print change_colors
-        for i in exam_colors:
-            
-                #lol = [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in color_conflicts[exam_colors[i]]]
-                #print "1", i, d_n[i], min(lol)
-            if exam_colors[i] in change_colors:
-                if len(color_conflicts[exam_colors[i]]) > 0:    
-                    lol = [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in color_conflicts[exam_colors[i]]]
-                    #print "2", i, d_n[i], min(lol)
-                    d_n[i] = min( lol )
-       
-    if h_max is not None:
-        return d_n, 1.0*sum(d_n)/h_max
-    else:
-        return d_n, sum(d_n)
-
-
-def obj5(color_schedule, exam_colors, color_conflicts, d_n = None, change_colors = None, h_max = None):
-    # TODO: Can this even be speeded up?
-    # TODO: If only colors can be considered, speed up about 10x!!!!
-    # TODO: Dont do this everytime ( swap, track changes ) 
+        return obj3(color_schedule, exam_colors, color_conflicts, h_max = None)
     
-    if d_n is None or change_colors is None:
-        #TODO: Obj 3
-        d_n = [ 0 ] * len(exam_colors)
-        for i in exam_colors:
-            if len(color_conflicts[exam_colors[i]]) > 0:
+    #print change_colors
+    for i in exam_colors:    
+        if exam_colors[i] in change_colors:
+            if len(color_conflicts[exam_colors[i]]) > 0:    
                 d_n[i] = min( [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in color_conflicts[exam_colors[i]]] )
-    else:
-        #print change_colors
-        for i in exam_colors:
-                #lol = [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in color_conflicts[exam_colors[i]]]
-                #print "1", i, d_n[i], min(lol)
-            if exam_colors[i] in change_colors:
-                if len(color_conflicts[exam_colors[i]]) > 0:    
-                    lol = [abs(color_schedule[exam_colors[i]] - color_schedule[j]) for j in color_conflicts[exam_colors[i]]]
-                    #print "2", i, d_n[i], min(lol)
-                    d_n[i] = min( lol )
-       
+    
     if h_max is not None:
         return d_n, 1.0*sum(d_n)/h_max
     else:
         return d_n, sum(d_n)
 
-  
+
 def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, color_schedule = None, color_exams = None, max_iter = 1e4, log = False, log_hist=False):
     '''
         Simulated annealing
         TODO: Description
         @Param statespace: dictionary with list of possible states for each color
+        
+        Pseudocode:
+        1. choose random color and eligible time slot
+        2. find color if the slot is already taken. If so, swap them
+        3. calculate objective
+        4. accept proposal? If not, revert swap
     '''
+    
     h = data['h']
+    h_max = max(h)
     conflicts = data['conflicts']
-    if color_exams is None:
-        color_exams = swap_color_dictionary(exam_colors)
+    n_exams = len(exam_colors)
+    colors = sorted(set(exam_colors.values()))
+    n_colors = len(colors)
     
     assert list(exam_colors) == sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
-    assert len(color_exams) < sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
     assert type(exam_colors) == dict, "ERROR: coloring needs to be a dictionary!"
     assert type(data) == dict, "ERROR: data needs to be a dictionary!"
     assert color_schedule is None or type(color_schedule) == list, "ERROR: color_schedule needs to be either None or a list!"
-    
-    # for an exam i and a color c set if there is a conflicts between them
-    exam_color_conflicts = { i: set(exam_colors[j] for j in conflicts[i]) for i in exam_colors }
-    
-    color_conflicts = get_color_conflicts(color_exams, exam_colors, conflicts)
-        
-    n_exams = len(exam_colors)
-    colors = sorted(color_exams)
-    n_colors = len(color_exams)
-        
     assert n_colors <= len(h), "Currently only tables with less colors than timeslots are plannable" 
+    if statespace is not None:
+        for color in exam_colors:
+            assert len(statespace[color]) > 1, "Error: statespace needs to contain more than one state for each colors!"
+            
+    if color_exams is None:
+        color_exams = swap_color_dictionary(exam_colors)
+    
+    # get conflicts of colors
+    color_conflicts = improve_annealing.get_color_conflicts(color_exams, exam_colors, conflicts)
     
     # the state space for each coloring, calculated from the 
     # TODO: Implement in data and here!
-    
     if statespace is None:
         statespace = { color: h for color in colors }
+    
     
     # initialize the time slots randomly
     # TODO: Careful! Does not consider the statespace so far! Might be infeasible
     if color_schedule is None:
         color_schedule = rd.sample( h, n_colors )
     
+    # best values found so far
+    best_color_schedule = deepcopy(color_schedule)
+    d_n, best_value = obj4(color_schedule, exam_colors, color_conflicts, h_max)
+    
     # initialization and parameters simulated annealing
     beta = beta_0
     schedule = lambda t: beta_0 * np.log(1+np.log(1+t))
     #schedule = lambda t: beta_0 * np.log(1+t)
     
-    # best values found so far
-    best_color_schedule = deepcopy(color_schedule)
-    d_n, best_value = obj4(color_schedule, exam_colors, color_conflicts, h_max = max(h))
-    #print obj3(color_schedule, exam_colors, color_conflicts, h_max = max(h))
-    #print best_value
-    #print d_n
-    
     # initialize loop
     iteration = 0
-    counter = 0
     value = best_value
     old_value = best_value
     if log_hist:
@@ -191,45 +139,41 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
     best_value_duration = 0
     
     while iteration < max_iter:
+        
         iteration += 1
-        counter += 1
-            
-        beta = schedule(counter)
+        beta = schedule(iteration)
+        
         if log:
             print("Iteration: %d" %iteration)
-        if log:
             print color_schedule
         
         '''
             make proposal
         '''
-        #print color_schedule
-        # 1. choose random color and eligible time slot
         color = rd.choice(colors)
         old_slot = color_schedule[color]
-        color2 = None
         new_slot = rd.choice(statespace[color])
         while new_slot == old_slot:
             new_slot = rd.choice(statespace[color])
-        # 2. find color if the slot is already taken. If so, swap them
+            
+        color2 = None
         try: 
             color2 = color_schedule.index(new_slot)
         except:
             pass
         
-        # get indices of changes (do this before the actual changes!)
+        # get indices of changes (Important: do this before the actual changes!)
         change_colors = None
-        change_colors = get_changed_colors(color_schedule, color, new_slot, color_conflicts, exact = False)
+        change_colors = improve_annealing.get_changed_colors(color_schedule, color, new_slot)
         
-        if log:
-            print color
-            print color2
-        # write changes
+        # actually perform changes
         color_schedule[color] = new_slot
         if color2 is not None:
             color_schedule[color2] = old_slot
             
         if log:
+            print color
+            print color2
             print color_schedule
         #print color_schedule
         #print color_exams
@@ -239,24 +183,21 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
         '''
             get objective value
         '''
-        d_n, value = obj4(color_schedule, exam_colors, color_conflicts, d_n = d_n, change_colors = change_colors, h_max = max(h))
-        #print "_"
-        #print value
+        d_n, value = obj4(color_schedule, exam_colors, color_conflicts, h_max = h_max, d_n = d_n, change_colors = change_colors)
         
         
-        
-        if log:
-            print "Obj: %0.2f" % value
         '''
             acceptance step
         '''
+        
         if log:
+            print "Obj: %0.2f" % value
             print np.exp(-beta * (value - old_value))
         
         # exp(+ beta) because of maximization!!!
         if rd.uniform(0,1) <= np.exp( beta * (value - old_value) ):
-            old_value = value
             accepted += 1
+            old_value = value
             
             if log_hist:
                 history.append(value)
@@ -265,21 +206,22 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
             
             # save value if better than best
             if value > best_value:
-                if log:
-                    print("better!")
-                if log_hist:
-                    best_history.append(value)
                 best_value = value
                 best_color_schedule = deepcopy(color_schedule)
                 best_value_duration = 0
     
-            # best value is attained 50% of the time, stop optimizing
+                if log:
+                    print("better!")
+                if log_hist:
+                    best_history.append(value)
+                
+            # TODO: best value is attained 50% of the time, stop optimizing
             #if iteration > 0.3*max_iter and 1.0*best_value_duration/iteration > 0.5:
                 ##print "Wuhu!", iteration
                 #break
     
         else:
-            # reject: swap back
+            # reject: revert state change, swap back
             color_schedule[color] = old_slot
             if color2 is not None:
                 color_schedule[color2] = new_slot
@@ -292,9 +234,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
         plt.ylabel('obj values')
         plt.savefig("plots/annealing.jpg")
         print "annealing history plot in plots/annealing.jpg"
-        
-    #print best_value
-    #print obj3(best_color_schedule, exam_colors, color_conflicts, h_max = max(h))[1]
+       
     return best_color_schedule, best_value
 
 

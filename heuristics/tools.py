@@ -58,16 +58,6 @@ def to_binary(coloring, color_schedule, h):
 
 
 
-def get_color_conflicts(color_exams, exam_colors, conflicts):
-    # TODO: TEST!
-    # get a list of exam conflicts between colors
-    
-    
-    color_conflicts = defaultdict(list)
-    for c in color_exams:
-        color_conflicts[c] = set(exam_colors[j] for i in color_exams[c] for j in conflicts[i])
-    return color_conflicts
-    
 
 if __name__ == '__main__':
     n = 10
