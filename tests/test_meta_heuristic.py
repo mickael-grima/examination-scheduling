@@ -53,5 +53,6 @@ if __name__ == '__main__':
         for color in colorings:
             values = color.values()
             m = max(values)
-            assert all( [(t >= 0) and (t <= m) for t in values] ), "Error: Color values need to be in range"
+            assert all( [t >= 0 for t in values] ), "Error: Some nodes are left white!!! Nodes need all be colored!!"
+            assert all( [t <= m for t in values] ), "Error: Color values need to be in range"
         print "OK"
