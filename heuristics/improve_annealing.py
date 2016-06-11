@@ -21,7 +21,7 @@ def get_change_indices(color_schedule, i):
         Get slot indices where the min heuristic changes
     '''
     n_colors = len(color_schedule)
-    assert i >= 0 and i < n_colors
+    assert i >= 0 and i < n_colors, i
     
     change = set()
     change.add(i)

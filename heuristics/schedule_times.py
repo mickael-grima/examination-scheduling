@@ -99,8 +99,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
     assert color_schedule is None or type(color_schedule) == list, "ERROR: color_schedule needs to be either None or a list!"
     assert n_colors <= len(h), "Currently only tables with less colors than timeslots are plannable" 
     if statespace is not None:
-        for color in exam_colors:
-            assert len(statespace[color]) > 1, "Error: statespace needs to contain more than one state for each colors!"
+        assert len(statespace[color]) > 1, "Error: statespace needs to contain more than one state for each colors!"
+    for color in exam_colors:
+        assert (exam_colors[color] >= 0) and (exam_colors[color] <= n_colors), "Error: Colors need to be in range 0, n_colors"
             
     if color_exams is None:
         color_exams = swap_color_dictionary(exam_colors)
