@@ -31,6 +31,29 @@ def swap_color_dictionary(dic):
     return dict(out)
 
 
+
+def get_similar_periods(data):
+    '''
+        For each period return those periods which have the same room conditions
+    '''
+    p = data['p']
+    T = data['T']
+    room_footprint = defaultdict(list)
+    rooms = defaultdict(list)
+    for period in range(p):
+        rooms[period] = [ T[k][period] for k in range(data['r']) ]
+        room_footprint[''.join(map(str,rooms[period]))].append(period)
+    
+    similar_periods = defaultdict(list)
+    for period in range(p):
+        similar_periods[period] = [l for l in room_footprint[''.join(map(str,rooms[period]))] if l != period]
+    #for key in similar_periods:
+        #print key, similar_periods[key]
+    
+    return similar_periods
+        
+        
+
 def get_coloring(conflicts):
     '''
         Generate greedy coloring

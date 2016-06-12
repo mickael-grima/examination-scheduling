@@ -13,12 +13,83 @@ import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
 from heuristics.tools import swap_color_dictionary, get_coloring
 from collections import defaultdict
-#from schedule_times import simulated_annealing
 
 #
 # Responsible team member: MAX
 #
 
+
+
+def schedule_greedy(exams_to_schedule, period, data, verbose = False):
+    '''
+        Schedule rooms in greedy fashion:
+        1. Sort all exams and all rooms descending in the size of the students
+        2. Give the largest exam the largest room
+        3. If there are students left to be scheduled, insert the remaining ones in the listed in order
+        4. repeat until all exams are planned
+    '''
+    s = data['s']
+    c = data['c']
+    students = [ s[i] for i in exams_to_schedule ]
+    rooms = [ k for k in range(data['r']) if data['T'][k][period] == 1 ]
+    capacities = [ c[k] for k in rooms ]
+    
+    if len(rooms) < len(exams_to_schedule):
+        return None
+    
+    if verbose:
+        print exams_to_schedule
+        print students
+        print rooms
+        print capacities
+    
+    # sort students 
+    stud_perm = sorted( zip(exams_to_schedule, students), key=lambda x:-x[1] )
+    room_perm = sorted( zip(rooms, capacities), key=lambda x:-x[1] )
+    
+    exams = [ ex[0] for ex in stud_perm ]
+    sizes = [ ex[1] for ex in stud_perm ]
+    
+    if verbose:
+        print stud_perm
+        print room_perm
+    
+    exams_to_rooms = defaultdict(list)
+    index = 0
+    while( len(exams) > 0 ):
+        
+        exam = exams[index]
+        size = sizes[index]
+        
+        # check feasibility
+        if len(room_perm) == 0:
+            if verbose: print "Infeasible!"
+            return None
+        
+        # assign exams greedily
+        # TODO: Maybe it would make sense to not use the largest available room because
+        # TODO: this increases the risk of difficult rearrangements
+        exams_to_rooms[exam] += [room_perm[0][0]]
+        if size > room_perm[0][1]:
+            sizes[index] -= room_perm[0][1]
+            # resort
+            # TODO: Das geht auch klueger!
+            stud_perm = sorted(zip(exams, sizes), key=lambda x:-x[1])
+            exams = [ ex[0] for ex in stud_perm ]
+            sizes = [ ex[1] for ex in stud_perm ]
+        else:
+            exams.pop(0)
+            sizes.pop(0)
+        room_perm.pop(0)
+    
+    if verbose:
+        for key in exams_to_rooms:
+            print key, exams_to_rooms[key]
+    
+    return exams_to_rooms
+    
+    
+    
 
 def obj1(x):
     '''
@@ -138,7 +209,7 @@ if __name__ == '__main__':
     tseed = 37800
 
     from model.instance import build_smart_random
-    data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
+    data = build_smart_random(n=n, r=r, p=p, tseed=tseed, build_Q=False) 
 
     coloring = get_coloring(data['conflicts'])
 

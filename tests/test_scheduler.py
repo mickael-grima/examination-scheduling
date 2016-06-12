@@ -48,16 +48,17 @@ def test_heuristic(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 42):
     coloring = get_coloring(data['conflicts'])
     print "VALUE:", heuristic(coloring, data, gamma = 0.01)[2]
     
-    
+from heuristics.tools import get_similar_periods
 def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500, do_plot=False):
-    
-    #print "Testing meta heuristic"
     
     t = time()
     x, y, v, logger = optimize(Heuristic, data, epochs = epochs, gamma = 0.1, annealing_iterations = annealing_iterations, verbose = False, log_history = True)
     print "Time:", time()-t
     print "VALUE:", v
-    
+    if 'n_feasible' in logger:
+        values = logger['n_feasible'].values()
+        values = filter(lambda x: x < sys.maxint, values)
+        print "mean(feasible):", np.mean(values)
     # TODO: DEBUG Worst value 
     if do_plot:
         import matplotlib.pyplot as plt
@@ -65,6 +66,7 @@ def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500
             print key
             values = logger[key].values()
             values = filter(lambda x: x < sys.maxint, values)
+            print np.mean(values)
             #print ", ".join(map(lambda x: "%0.2f" %x, values))
                 
             plt.clf()
@@ -123,14 +125,14 @@ def test_ant_colony(n = 15, r = 5, p = 15, prob_conflicts = 0.6, seed = 42):
         
 if __name__ == '__main__':
     
-    n = 15
-    r = 5 
+    n = 50
+    r = 30
     p = 15
-    prob = 0.6
+    prob = 0.3
     seed = 42
     
-    test_heuristic(n,r,p,prob,seed)
-    test_optimize_dummy(n,r,p,prob,seed)
+    #test_heuristic(n,r,p,prob,seed)
+    #test_optimize_dummy(n,r,p,prob,seed)
     test_random(n,r,p,prob,seed)
-    test_random_advance(n,r,p,prob,seed)
+    #test_random_advance(n,r,p,prob,seed)
     #test_ant_colony(n,r,p,prob,seed) 

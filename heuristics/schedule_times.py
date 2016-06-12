@@ -15,7 +15,7 @@ from copy import deepcopy
 
 from model.instance import build_random_data
 from heuristics.tools import get_coloring, swap_color_dictionary
-from heuristics.schedule_rooms import schedule_rooms_in_period
+from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 from heuristics import improve_annealing 
 #
 # Responsible team member: ROLAND
@@ -73,7 +73,7 @@ def obj4(color_schedule, exam_colors, color_conflicts, h_max = None, d_n = None,
         return d_n, sum(d_n)
 
 
-def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, color_schedule = None, color_exams = None, max_iter = 1e4, log = False, log_hist=False):
+def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, color_schedule = None, color_exams = None, max_iter = 1e4, log = False, log_hist=False, debug = False):
     '''
         Simulated annealing
         TODO: Description
@@ -93,16 +93,20 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
     colors = sorted(set(exam_colors.values()))
     n_colors = len(colors)
     
-    assert list(exam_colors) == sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
-    assert type(exam_colors) == dict, "ERROR: coloring needs to be a dictionary!"
-    assert type(data) == dict, "ERROR: data needs to be a dictionary!"
-    assert color_schedule is None or type(color_schedule) == list, "ERROR: color_schedule needs to be either None or a list!"
-    assert n_colors <= len(h), "Currently only tables with less colors than timeslots are plannable" 
-    if statespace is not None:
-        assert len(statespace[color]) > 1, "Error: statespace needs to contain more than one state for each colors!"
-    for color in exam_colors:
-        assert (exam_colors[color] >= 0) and (exam_colors[color] <= n_colors), "Error: Colors need to be in range 0, n_colors"
-            
+    if debug:
+        assert list(exam_colors) == sorted(exam_colors), "Error: Dictionary keys need to be sorted!!"
+        assert type(exam_colors) == dict, "ERROR: coloring needs to be a dictionary!"
+        assert type(data) == dict, "ERROR: data needs to be a dictionary!"
+        assert color_schedule is None or type(color_schedule) == list, "ERROR: color_schedule needs to be either None or a list!"
+        assert n_colors <= len(h), "Currently only tables with less colors than timeslots are plannable" 
+        if statespace is not None:
+            for color in color_exams:
+                assert len(statespace[color]) > 1, "Error: statespace needs to contain more than one state for each colors!"
+                for slot in statespace[color]:
+                    assert schedule_greedy(color_exams[color], h.index(slot), data, verbose = False) is not None
+        for exam in exam_colors:
+            assert (exam_colors[exam] >= 0) and (exam_colors[exam] <= n_colors), "Error: Colors need to be in range 0, n_colors"
+                
     if color_exams is None:
         color_exams = swap_color_dictionary(exam_colors)
     
@@ -114,11 +118,19 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
     if statespace is None:
         statespace = { color: h for color in colors }
     
-    
     # initialize the time slots randomly
-    # TODO: Careful! Does not consider the statespace so far! Might be infeasible
+    # (TODO: Careful! Does not consider the statespace so far! Might be infeasible)
     if color_schedule is None:
-        color_schedule = rd.sample( h, n_colors )
+        infeasible = True
+        while infeasible:
+            color_schedule = rd.sample( h, n_colors )
+            infeasible = False
+            for color in statespace:
+                if color_schedule[color] not in statespace[color]:
+                    if log: print "Infeasible start point"
+                    infeasible = True
+                    break
+            
     
     # best values found so far
     best_color_schedule = deepcopy(color_schedule)
@@ -151,18 +163,32 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
         '''
             make proposal
         '''
-        color = rd.choice(colors)
-        old_slot = color_schedule[color]
-        new_slot = rd.choice(statespace[color])
-        while new_slot == old_slot:
+
+        # loop until feasible
+        feasible = False
+        count_feas = 0
+        while not feasible:
+                
+            color = rd.choice(colors)
+            old_slot = color_schedule[color]
             new_slot = rd.choice(statespace[color])
+            while new_slot == old_slot:
+                new_slot = rd.choice(statespace[color])
+                
+            color2 = None
+            try: 
+                color2 = color_schedule.index(new_slot)
+            except:
+                pass
             
-        color2 = None
-        try: 
-            color2 = color_schedule.index(new_slot)
-        except:
-            pass
-        
+            if color2 is None:
+                feasible = True # due to definition of statespace
+            elif old_slot in statespace[color2]:
+                feasible = True # due to definition of statespace
+            count_feas += 1
+            
+        if log and count_feas > 1: print "while", count_feas
+            
         # get indices of changes (Important: do this before the actual changes!)
         change_colors = None
         change_colors = improve_annealing.get_changed_colors(color_schedule, color, new_slot)
@@ -239,7 +265,42 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, statespace = None, colo
     return best_color_schedule, best_value
 
 
-def schedule_times(coloring, data, beta_0 = 0.3, max_iter = 1e4, n_chains = 1, n_restarts = 1, check_feasibility=False):
+def build_statespace(color_exams, data):
+    
+    h = data['h']
+    
+    statespace = { color: [] for color in color_exams }
+    
+    if 'similar_periods' not in data:
+        for color in color_exams:
+            for period, time in enumerate(h):
+                if schedule_greedy(color_exams[color], period, data) is not None:
+                    statespace[color].append(time)
+            if len(statespace[color]) == 0:
+                return None
+    else:
+        similar_periods = data['similar_periods']
+        
+        for color in color_exams:
+            
+            periods = range(data['p'])
+            while len(periods) > 0:
+                period = periods[0]
+                feasible = schedule_greedy(color_exams[color], period, data) is not None
+                if feasible:
+                    statespace[color].append(h[period])
+                        
+                for period2 in similar_periods[period]:
+                    if period2 != period and feasible:
+                        statespace[color].append(h[period2])
+                    periods.remove(period2)
+            
+            if len(statespace[color]) == 0:
+                return None
+    
+    return statespace
+
+def schedule_times(coloring, data, beta_0 = 0.3, max_iter = 1e4, n_chains = 1, n_restarts = 1, check_feasibility=True):
     '''
         Schedule times using simulated annealing
         TODO: Description
@@ -248,19 +309,16 @@ def schedule_times(coloring, data, beta_0 = 0.3, max_iter = 1e4, n_chains = 1, n
     # build statespace
     statespace = None
     color_exams = swap_color_dictionary(coloring)
-    if check_feasibility:
-        #print "check"
-        h = data['h']
-        colors = list(set(coloring.values()))
-        statespace = { color: [] for color in colors }
-        for color in colors:
-            for period, time in enumerate(h):
-                if schedule_rooms_in_period(color_exams[color], period, data) is not None:
-                    statespace[color].append(time)
-            if len(statespace[color]) == 0:
-                return None, None
-        #print "check done"
     
+    # TODO TEST SCHEDULER WITH check_feasibility RETURNS WORS RESULT THEN WITHOUT!!!
+
+    if check_feasibility:
+        #print "building statespace"
+        statespace = build_statespace(color_exams, data)
+        if statespace is None:
+            print "infeasible color"
+            return None, None
+        
     color_schedules = []
     values = []
     for chain in range(n_chains):
