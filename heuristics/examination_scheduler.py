@@ -25,7 +25,6 @@ from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
 from heuristics.tools import to_binary, get_coloring
-from heuristics.RandomHeuristic import RandomHeuristic, SAHeuristic
 
 def heuristic(coloring, data, gamma = 1, max_iter = 100):
     '''
@@ -88,7 +87,7 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
         # Generate colourings
         colorings = meta_heuristic.generate_colorings()
 
-        # evaluate all colorings
+        ## evaluate all colorings
         for ind, coloring in enumerate(colorings):
             
             xs[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations)
@@ -134,7 +133,16 @@ def optimize(meta_heuristic, data, epochs=100, gamma = 1, annealing_iterations =
         return x, y, obj_val
 
 
-        
+    
+    
+      
+      
+      
+      
+      
+      
+      
+      
         
 if __name__ == '__main__':
     
