@@ -154,9 +154,9 @@ if __name__ == '__main__':
     prob = 0.3
     seed = 42
     
-    n = 15
-    r = 6
-    p = 15
+    n = 300
+    r = 30
+    p = 30
     prob = 0.2
     
     #n = 150
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     
     #test_heuristic(n,r,p,prob,seed)
     #test_optimize_dummy(n,r,p,prob,seed)
-    #test_random(n,r,p,prob,epochs, annealing_iterations, seed)
+    test_random(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_SA(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
-    test_ant_colony(n,r,p,prob,seed) 
+    #test_ant_colony(n,r,p,prob,seed) 
