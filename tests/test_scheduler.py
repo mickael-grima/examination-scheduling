@@ -7,6 +7,7 @@ paths = os.getcwd().split('/')
 path = ''
 for p in paths:
     path += '%s/' % p
+    
     if p == 'examination-scheduling':
         break
 sys.path.append(path)
@@ -77,7 +78,10 @@ def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500
             plt.clf()
             plt.plot(values)
             plt.ylabel(key)
-            plt.savefig("%s/heuristics/plots/%s.png" %(PROJECT_PATH, key))
+            try:
+                plt.savefig("%s/heuristics/plots/%s.png" %(PROJECT_PATH, key))
+            except:
+                plt.savefig("%s\heuristics\plots\%s.png" %( PROJECT_PATH[:-1] , key))
     
     
 def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, epochs = 100, annealing_iterations = 500, seed = 42):
