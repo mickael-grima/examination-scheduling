@@ -27,6 +27,22 @@ from heuristics.schedule_rooms import schedule_rooms
 from heuristics.tools import to_binary, get_coloring, swap_color_dictionary
 from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 
+# def compare_periods(data):
+
+#     p = data['p']
+#     r = data['r']
+#     c = data['c']
+#     T = data['T']
+
+
+#     c_sum = {}
+#     r_sum = {}
+#     for l in range(p):
+#         c_sum[l] = sum(c[k] for k in range(r) if T[k][l] == 1)
+#         r_sum[l] = sum(1 for k in range(r) if T[k][l] == 1)
+
+#     return c_sum, r_sum
+
 
 def build_statespace(coloring, data):
     '''
