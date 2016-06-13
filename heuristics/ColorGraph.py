@@ -27,10 +27,9 @@ class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
-        
-        self.ALL_COLOURS = [i for i in range(20)]
+        self.ALL_COLOURS = [i for i in range(2000)]
         self.WHITE = -1
-        
+
         self.graph = nx.Graph()
         self.colours = {}
         self.revert = True
@@ -57,7 +56,7 @@ class ColorGraph(object):
         self.history = {}
 
     def reset_colours(self):
-        """ 
+        """
             Reset all the colours to white
         """
         for col in self.colours:
@@ -126,7 +125,6 @@ class ColorGraph(object):
             return(False)
         return(True)
 
-    
     def get_history_node_ordered(self):
         """ Give the list of node sorted such that first node was coloured first, ans so on
         """
@@ -196,7 +194,6 @@ class ColorGraph(object):
                     self.add_edge(i, j)
                 counter += 1
 
-
     def color_node(self, node):
         """ Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
@@ -205,8 +202,8 @@ class ColorGraph(object):
             # we check if every other neighbors don't have col as colour
             if self.check_neighbours(node, col):
                 self.colours[node] = col
-                
-                
+                break
+
     def color_graph(self):
         """ @param save: do we save the sequence?
             We solve the colouring graph problem with a greedy algorithm
@@ -299,6 +296,3 @@ class ColorGraph(object):
         self.colours = colours
         self.history = history
         return colours
-
-
-

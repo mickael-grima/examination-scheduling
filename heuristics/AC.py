@@ -77,7 +77,7 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight, data={}):
+    def generate_coloring(self, graph, edges_weight, data={}, ILP_test=False):
         """ @param graph: graph to color
             @param edges_weight: weight on the edges for each node
             @cparam capacities: capacities of the rooms. If empty, we don't consider them
@@ -91,7 +91,7 @@ class Ant(object):
             visited, current_node, nb = set(), node, 0
             while nb < 2 or current_node not in visited:
                 # color the node
-                graph.color_node(current_node, data=data)
+                graph.color_node(current_node, data=data, ILP=ILP_test)
                 visited.add(current_node)
                 self.traces.append(current_node)
                 nod = self.walk_to_next_node(edges_weight[node], black_list=visited) or current_node
@@ -137,7 +137,7 @@ class AC:
             for neighbor in self.graph.graph.neighbors(node):
                 self.edges_weight[node][neighbor] = 1.0
 
-    def generate_colorings(self):
+    def generate_colorings(self, ILP_test=False):
         """ Generate a feasible coloring for each ant
         """
         colorings = []
@@ -145,8 +145,8 @@ class AC:
             colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data))
             self.graph.reset_colours()
         return colorings
-    
-    def update(self, values, best_index = None, time_slots = None, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
+
+    def update(self, values, best_index=None, time_slots=None, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value
             @param best_index: best ant's index (obj value)
             @param max_speed: the maximal updating coefficient for edges
@@ -170,7 +170,6 @@ class AC:
                         visited.add((node, next_node))
                         visited.add((next_node, node))
                         self.edges_weight[node][next_node] += compute_weight(value, max_value=max_value)
-
 
     def optimize_time(self, epochs=100, gamma=1, reinitialize=False):
         # init best values
@@ -198,7 +197,6 @@ class AC:
             # save best value so far.. MINIMIZATION
             if values[best_index] < objVal:
                 y, objVal = ys[best_index], values[best_index]
-            print objVal, self.edges_weight
 
         return y, objVal
 
