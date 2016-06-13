@@ -69,15 +69,15 @@ def attribute_time_and_room(groups_exams, data):
     x = {(i, k, l): 0.0 for i in range(n) for k in range(r) for l in range(p)}
     y = {(i, l): 0.0 for i in range(n) for l in range(p)}
     for time, exams in groups_exams:
-        exams = sorted(exams, key=lambda ex: s[ex], reverse=True)
         rooms_ind = filter(lambda x: T[x][time] > 0, range(r))
-        rooms = sorted([(k, c[k]) for k in rooms_ind], key=lambda x: x[1], reverse=True)
         i, k, seats = 0, 0, [seat for seat in s]
-        while i < len(exams) and k < len(rooms):
-            seats[exams[i]] = max(seats[exams[i]] - rooms[k][1], 0)
-            x[exams[i], rooms[k][0], time] = 1.0
-            y[exams[i], time] = 1.0
-            if seats[exams[i]] <= rooms[k][1]:
+        while i < len(exams) and k < len(rooms_ind):
+            exams = sorted(exams, key=lambda ex: seats[ex], reverse=True)
+            rooms = sorted([(kk, c[kk]) for kk in rooms_ind], key=lambda x: x[1], reverse=True)
+            exam = exams[i]
+            seats[exam] = max(seats[exam] - rooms[k][1], 0)
+            x[exam, rooms[k][0], time], y[exam, time] = 1.0, 1.0
+            if seats[exam] <= rooms[k][1]:
                 i += 1
             k += 1
     return x, y

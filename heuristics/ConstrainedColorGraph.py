@@ -32,16 +32,14 @@ class ConstrainedColorGraph(ColorGraph):
             period = periods[color]
 
         # get all nodes with that color, and solve ILP
-        nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
+        nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
 
         # schedule rooms
         # TODO: Give start solution ?!?
         return schedule_rooms_in_period(nodes, period, data) is not None
 
-      
-      
-    def check_room_constraints_greedy(self, node, color, data, periods = None):
-        """ 
+    def check_room_constraints_greedy(self, node, color, data, periods=None):
+        """
             Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
             Use ILP in order to get this feasibility
             @param node: node to color
@@ -52,14 +50,13 @@ class ConstrainedColorGraph(ColorGraph):
             period = periods[color]
         else:
             period = 0
-        
+
         # get all nodes with that color, and solve ILP
-        nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
-        
-        # schedule rooms 
+        nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
+
+        # schedule rooms
         # TODO: Give start solution ?!?
         return schedule_greedy(nodes, period, data) is not None
-      
 
     def check_rooms_constraint(self, node, color, data):
         """
@@ -84,7 +81,7 @@ class ConstrainedColorGraph(ColorGraph):
                 i += 1
             k += 1
 
-        # TODO: Why does i < len(nodes) tell us that the room constrint is fulfilled? Please explain!!
+        # Do we have exams without rooms
         return i < len(nodes)
 
     def color_node(self, node, data={}, check_constraints=True, periods=None):
@@ -99,8 +96,7 @@ class ConstrainedColorGraph(ColorGraph):
                 if not check_constraints:
                     self.colours[node] = col
                     break
-                elif periods is not None and self.check_room_constraints_greedy(node, col, data, periods = periods):
-
+                elif periods is not None and self.check_room_constraints_greedy(node, col, data, periods=periods):
                     self.colours[node] = col
                     break
                 elif self.check_rooms_constraint(node, col, data):

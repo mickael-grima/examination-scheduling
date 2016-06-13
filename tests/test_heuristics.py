@@ -62,7 +62,7 @@ class TestConstraints(unittest.TestCase):
         self.assertTrue(test_one_exam_period_room(x, y, T=self.data['T']),
                         msg="one exam per period per room constraint failed")
 
-    def TestACAlgorithm(self):
+    def testACAlgorithm(self):
         """ We test here the Ant Colony algorithm, without taking room scheduling in consideration
         """
         x = {}
