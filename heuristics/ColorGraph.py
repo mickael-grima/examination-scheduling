@@ -27,6 +27,7 @@ class ColorGraph(object):
     def __init__(self):
         self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
+
         self.ALL_COLOURS = [i for i in range(2000)]
         self.WHITE = -1
 

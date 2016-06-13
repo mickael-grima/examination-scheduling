@@ -37,6 +37,7 @@ def get_change_indices(color_schedule, i):
         # i is the largest element
         change.add(perm[n_colors-2][0])
     else:
+        
         # find i position in sorted array
         j = 1
         while perm[j][0] != i and j < n_colors-2:
@@ -44,6 +45,10 @@ def get_change_indices(color_schedule, i):
         
         # now we have perm[j][0] == i and perm[j][1] == color_schedule[i]
         assert perm[j][0] == i and perm[j][1] == color_schedule[i]
+        
+        change.add(perm[j-1][0])
+        change.add(perm[j+1][0])
+        return change
         
         # check next smallest element left
         if j == 1:
@@ -66,14 +71,14 @@ def get_change_indices(color_schedule, i):
     return change
 
 
-def get_changed_colors(color_schedule, i, new_value, color_conflicts=None, log = False):
+def get_changed_colors_old(color_schedule, color, new_value, color_conflicts=None, log = False):
     '''
         Calculate the indices of the nodes which are affected by annealing permutation.
         This is a result of the nearest neighbor heuristic.
     '''
     
     # get indices which change by the permutation
-    change = get_change_indices(color_schedule, i)
+    change = get_change_indices(color_schedule, color)
         
     # the color is present -> Swap positions
     if new_value in color_schedule:
@@ -82,25 +87,69 @@ def get_changed_colors(color_schedule, i, new_value, color_conflicts=None, log =
     else:
         # new positions, external color:
         # set new color, get change, then revert to old color
-        old_value = color_schedule[i]
-        color_schedule[i] = new_value
-        change.update(get_change_indices(color_schedule, i))
-        color_schedule[i] = old_value
+        old_value = color_schedule[color]
+        color_schedule[color] = new_value
+        change.update(get_change_indices(color_schedule, color))
+        color_schedule[color] = old_value
         
     if log:
         print color_schedule
-        print i, new_value
+        print color, new_value
         print change
             
     # TODO: add conflicts (deprecated?)
     if color_conflicts is not None:
         for i in copy.deepcopy(change):
             if len(color_conflicts[i]) > 0:
-                change += color_conflicts[i]
-                
+                change.update(color_conflicts[i])
+        
+        j = None
+        if new_value in color_schedule:
+            j = color_schedule.index(new_value)
+        
+        change = set()
+        for exam in color_conflicts:
+            if color in color_conflicts[exam]:
+                change.add(exam)
+            if j is not None and j in color_conflicts[exam]:
+                change.add(exam) 
+        print "change",  change
+        
     return sorted(change)
 
 
+
+
+
+def get_changed_colors(color1, color2, new_slot, color_exams, color_conflicts, color_schedule, log = False):
+    '''
+        Calculate the indices of the nodes which are affected by annealing permutation.
+        This is a result of the nearest neighbor heuristic.
+    '''
+    
+    change = set()
+    change.update(color_exams[color1])
+    
+    for exam in color_conflicts:
+        if color1 in color_conflicts[exam]:
+            change.add(exam)
+        
+    if color2 is not None: 
+        change.update(color_exams[color2])
+        for exam in color_conflicts:
+            if color2 is not None and color2 in color_conflicts[exam]:
+                change.add(exam) 
+    else:
+        perm = sorted(enumerate(color_schedule), key=lambda x : x[1])
+        i = 0
+        while i < len(color_schedule)-1 and perm[i][1] < new_slot:
+            i += 1
+        
+        change.update(color_exams[perm[i][0]])
+        if i > 0:
+            change.update(color_exams[perm[i-1][0]])
+        
+    return sorted(change)
 
 
 if __name__ == "__main__":

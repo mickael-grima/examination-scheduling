@@ -48,7 +48,7 @@ class RandomHeuristic(MetaHeuristic):
         self.graph = ConstrainedColorGraph()
         self.graph.build_graph(self.data['n'], self.data['conflicts'])        
 
-        
+    
     def generate_colorings(self):
         '''
             Generate colorings in purely random fashion. Does not check room constraints
@@ -69,8 +69,6 @@ class RandomHeuristic(MetaHeuristic):
             Pure chance -> Nothing to be intelligent about here ;)
         '''
         pass
-
-
 
     
 class RandomHeuristicAdvanced(RandomHeuristic):
@@ -94,7 +92,6 @@ class RandomHeuristicAdvanced(RandomHeuristic):
             for node in nodes:
                 self.graph.color_node(node, data=self.data, check_constraints = True, periods = self.periods[i])
             colorings.append({n: c for n, c in self.graph.colours.iteritems()})
-                
         return colorings
     
     
