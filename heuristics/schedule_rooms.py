@@ -13,7 +13,7 @@ import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
 from heuristics.tools import swap_color_dictionary, get_coloring
 from collections import defaultdict
-
+import timeit
 #
 # Responsible team member: MAX
 #
@@ -28,6 +28,7 @@ def schedule_greedy(exams_to_schedule, period, data, verbose = False):
         3. If there are students left to be scheduled, insert the remaining ones in the listed in order
         4. repeat until all exams are planned
     '''
+
     s = data['s']
     c = data['c']
     students = [ s[i] for i in exams_to_schedule ]
@@ -46,7 +47,7 @@ def schedule_greedy(exams_to_schedule, period, data, verbose = False):
     # sort students 
     stud_perm = sorted( zip(exams_to_schedule, students), key=lambda x:-x[1] )
     room_perm = sorted( zip(rooms, capacities), key=lambda x:-x[1] )
-    
+
     exams = [ ex[0] for ex in stud_perm ]
     sizes = [ ex[1] for ex in stud_perm ]
     
