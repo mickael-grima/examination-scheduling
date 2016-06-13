@@ -25,6 +25,7 @@ from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
 from heuristics.tools import to_binary, get_coloring
+from heuristics.check_feasibility import build_statespace
 
 def heuristic(coloring, data, gamma = 1, max_iter = 100):
     '''
@@ -37,10 +38,15 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100):
         color_schedule: dict of ints
         obj_val: combined objective
     '''
+    
+    # check feasibility
+    statespace, color_exams = build_statespace(coloring, data)
+    
     # create time schedule permuting the time solts for each coloring
-    color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter)
+    color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, statespace = statespace, color_exams = color_exams)
     
     if color_schedule is None:
+        #print "infeas color"
         return None, None, sys.maxint
     
     # create room schedule
@@ -48,6 +54,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100):
     
     # if infeasible, return large obj_val since we are minimizing
     if room_schedule is None:
+        #print "infeas room"
         return None, None, sys.maxint
 
     # evaluate combined objectives
@@ -94,12 +101,12 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             # build binary variable 
             ys[ind] = to_binary(coloring, color_schedules[ind], data['h'])
         
-    
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
         
         # check feasibility
         if len(values) == 0:
+            #print "infeasible"
             if log_history:
                 log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
             continue
@@ -109,7 +116,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
 
         if log_history:
             worst_index, worst_value = max( values, key = lambda x: x[1] )
-            log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value)#, mean_value=np.mean(map(lambda x:x[1],values)), worst_value=worst_value, n_feasible = 1.0 * len(values) / len(colorings)) 
+            log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value, n_feasible = 1.0 * len(values) / len(colorings))#, mean_value=np.mean(map(lambda x:x[1],values)), worst_value=worst_value, ) 
                       
         # Update meta heuristic
         meta_heuristic.update(obj_vals.values(), best_index = best_index, time_slots = color_schedules)
