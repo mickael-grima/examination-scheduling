@@ -15,7 +15,6 @@ from copy import deepcopy
 
 from model.instance import build_random_data
 from heuristics.tools import get_coloring, swap_color_dictionary
-from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 #
 # Responsible team member: ROLAND
 #
@@ -360,80 +359,28 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         plt.clf()
         plt.plot(history)
         plt.ylabel('obj values')
-        plt.savefig("%sheuristics/plots/annealing.jpg"%PROJECT_PATH)
+        plt.savefig("%sheuristics/plots/annealing.png"%PROJECT_PATH)
         
         plt.clf()
         plt.plot(best_history)
         plt.ylabel('best history')
-        plt.savefig("%sheuristics/plots/annealing_best.jpg"%PROJECT_PATH)
+        plt.savefig("%sheuristics/plots/annealing_best.png"%PROJECT_PATH)
         
         plt.clf()
         plt.plot(acceptance_rates)
         plt.ylabel('best history')
-        plt.savefig("%sheuristics/plots/annealing_rate_accept.jpg"%PROJECT_PATH)
-        #print "annealing history plot in plots/annealing.jpg"
+        plt.savefig("%sheuristics/plots/annealing_rate_accept.png"%PROJECT_PATH)
+        #print "annealing history plot in plots/annealing.png"
        
     return best_color_schedule, best_value
 
 
-
-def build_statespace(color_exams, data):
-    '''
-        Build statespace by checking feasibility for every color and every possible time slot.
-        If the similar_periods field is present in the data, this is spead up by considering duplicate times slots.
-    '''
-    h = data['h']
-    
-    statespace = { color: [] for color in color_exams }
-    
-    if 'similar_periods' not in data:
-        for color in color_exams:
-            for period, time in enumerate(h):
-                if schedule_greedy(color_exams[color], period, data) is not None:
-                    statespace[color].append(time)
-            if len(statespace[color]) == 0:
-                return None
-    else:
-        similar_periods = data['similar_periods']
-        
-        for color in color_exams:
-            
-            periods = range(data['p'])
-            while len(periods) > 0:
-                period = periods[0]
-                feasible = schedule_greedy(color_exams[color], period, data) is not None
-                if feasible:
-                    statespace[color].append(h[period])
-                        
-                for period2 in similar_periods[period]:
-                    if period2 != period and feasible:
-                        statespace[color].append(h[period2])
-                    periods.remove(period2)
-            
-            if len(statespace[color]) == 0:
-                return None
-    
-    return statespace
-
-
-
-def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n_restarts = 1, check_feasibility=False):
+def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n_restarts = 1, statespace = None, color_exams = None):
     '''
         Schedule times using simulated annealing
         TODO: Description
     '''
     
-    # build statespace
-    statespace = None
-    color_exams = swap_color_dictionary(coloring)
-    
-    if check_feasibility:
-        print "building statespace"
-        statespace = build_statespace(color_exams, data)
-        if statespace is None:
-            print "infeasible color"
-            return None, None
-        
     color_schedules = []
     values = []
     for chain in range(n_chains):

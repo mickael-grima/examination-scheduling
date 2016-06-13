@@ -100,7 +100,6 @@ class ConstrainedColorGraph(ColorGraph):
                     self.colours[node] = col
                     break
                 elif periods is not None and self.check_room_constraints_greedy(node, col, data, periods = periods):
-
                     self.colours[node] = col
                     break
                 elif self.check_rooms_constraint(node, col, data):

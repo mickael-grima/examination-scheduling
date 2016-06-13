@@ -50,17 +50,17 @@ def get_data_for_tests(n, r, p, prob_conflicts, seed=None):
         rd.seed(seed)
     return build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
       
-def run(data, epochs=1, annealing_iterations=500, n_colorings = 40):
-    #t = time()
-    Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
+def run(data, annealing_iterations=1000, epochs=1, n_colorings = 1):
+    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     x, y, v, logger = optimize(Heuristic, data, epochs = epochs, gamma = 0.1, annealing_iterations = annealing_iterations, verbose = False, log_history = True)
-    #print "Time:", time()-t
-    #print "VALUE:", v    
     return x,y,v
 
 
-def master(comm, size, status, data):
-    #print "MASTER"
+def master(comm, size, status, data, n_jobs):
+    '''
+        The master sends jobs to the children. It sends data only once in order to minimize communication.
+        It returns the complete history of the optimisation.
+    '''
     
     xs = []
     ys = []
@@ -78,12 +78,12 @@ def master(comm, size, status, data):
         comm.send(obj = data, dest = i, tag = WORKTAG)
         pending[i] = True
     
-    
     # kill slaves which are not used
     for i in range(1,size):
         if not pending[i]:
             comm.send(obj=None, dest=i, tag=DIETAG)
-            
+         
+         
     # send jobs while there is work to do  
     while len(jobs) > 0 and any(pending):
         
@@ -118,13 +118,16 @@ def master(comm, size, status, data):
     for i in range(1,size):
         comm.send(obj=None, dest=i, tag=DIETAG)
     
-    print min(vs)
+    return xs, ys, vs
+        
         
 def slave(comm, rank, size, status):
-    #print "SLAVE"
+    '''
+        Slave expects tasks. 
+        Data needs to be sent only once, as long as it is not modified (which should be the case for examination scheduling problem)
+    '''
     data = None
     while 1:
-        
         # receive
         if data is None:
             data = comm.recv(None, source=0, tag=MPI.ANY_TAG, status=status)
@@ -136,7 +139,12 @@ def slave(comm, rank, size, status):
             
         if status.Get_tag() == DIETAG: 
             break
-        x, y, v = run(data)
+        # get results
+        x, y, v = run(data, annealing_iterations=1000, epochs=1, n_colorings = 1)
+        #print v
+        # send results to master
+        # TODO: This could be done only for the best index if data is stored in slave.
+        # TODO: Only do this if the communication is the overhead!!
         comm.send(obj=(x, y, v), dest=0)
     
 
@@ -152,7 +160,7 @@ if __name__=="__main__":
     p = 15
     prob = 0.2
     
-    n_jobs = 11
+    n_jobs = 410
     
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
@@ -162,8 +170,10 @@ if __name__=="__main__":
     if rank == 0:
         rd.seed(42)
         data = get_data_for_tests(n, r, p, prob)
-        master(comm, size, status, data)
-        
+        xs, ys, vs = master(comm, size, status, data, n_jobs)
+        print map(lambda x: "%0.2f"%x, filter(lambda x: x < sys.maxint, vs))
+        best_index, best_value = min( enumerate(vs), key=lambda x:x[1] )
+        print best_value
     else:
         slave(comm, rank, size, status)
         

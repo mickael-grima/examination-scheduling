@@ -67,7 +67,7 @@ class RandomHeuristic(MetaHeuristic):
     def update(self, values, best_index = None, time_slots = None):
         '''
             Pure chance -> Nothing to be intelligent about here ;)
-        '''
+        ''' 
         pass
 
     
@@ -162,7 +162,7 @@ class ForestHeuristic:
         pass
     '''
 
-class SAHeuristic:
+class SAHeuristic(MetaHeuristic):
     '''
         Use simulated annealing for optimizing the coloring step.
     '''
@@ -173,7 +173,7 @@ class SAHeuristic:
         self.visiting = []
         self.visiting_old = []
         self.old_values = []
-        self.beta_0 = 0.3
+        self.beta_0 = 20
         self.beta = self.beta_0
         self.schedule = lambda t: self.beta_0 * np.log(1+np.log(1+t))
     
