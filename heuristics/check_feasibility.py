@@ -44,7 +44,8 @@ def build_statespace(coloring, data):
     if 'similar_periods' not in data:
         for color in color_exams:
             for period, time in enumerate(h):
-                if schedule_greedy(color_exams[color], period, data) is not None:
+                feasible = schedule_greedy(color_exams[color], period, data) is not None
+                if feasible:
                     statespace[color].append(time)
             if len(statespace[color]) == 0:
                 return None, None
