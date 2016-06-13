@@ -92,7 +92,6 @@ class RandomHeuristicAdvanced(RandomHeuristic):
             for node in nodes:
                 self.graph.color_node(node, data=self.data, check_constraints = True, periods = self.periods[i])
             colorings.append({n: c for n, c in self.graph.colours.iteritems()})
-                
         return colorings
     
     

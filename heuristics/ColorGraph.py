@@ -28,7 +28,7 @@ class ColorGraph(object):
         self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
         
-        self.ALL_COLOURS = [i for i in range(20)]
+        self.ALL_COLOURS = [i for i in range(2000)]
         self.WHITE = -1
         
         self.graph = nx.Graph()
