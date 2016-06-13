@@ -19,7 +19,7 @@ class ConstrainedColorGraph(ColorGraph):
     def __init__(self):
         super(ConstrainedColorGraph, self).__init__()
 
-    def check_room_constraints_ILP(self, node, color, data):
+    def check_room_constraints_ILP(self, node, color, data, periods=None):
         """
             Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
             Use ILP in order to get this feasibility
@@ -27,12 +27,16 @@ class ConstrainedColorGraph(ColorGraph):
             @param color: color for coloring node
             @param capacities: rooms capacities
         """
+        period = 0
+        if periods is not None and color < len(periods):
+            period = periods[color]
+
         # get all nodes with that color, and solve ILP
-        nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
-        # schedule rooms for period 0
-        # TODO: Period should be replaced by dummy period!
+        nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
+
+        # schedule rooms
         # TODO: Give start solution ?!?
-        return schedule_rooms_in_period(nodes, 0, data) is not None
+        return schedule_rooms_in_period(nodes, period, data) is not None
 
     def check_rooms_constraint(self, node, color, data):
         """
@@ -60,7 +64,7 @@ class ConstrainedColorGraph(ColorGraph):
         # TODO: Why does i < len(nodes) tell us that the room constrint is fulfilled? Please explain!!
         return i < len(nodes)
 
-    def color_node(self, node, data={}, ILP=False):
+    def color_node(self, node, data={}, check_constraints=True, periods=None):
         """
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
@@ -69,7 +73,10 @@ class ConstrainedColorGraph(ColorGraph):
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, col):
                 # We check if the room constraint is fullfilled
-                if ILP and self.check_room_constraints_ILP(node, col, data):
+                if not check_constraints:
+                    self.colours[node] = col
+                    break
+                elif periods is not None and self.check_room_constraints_ILP(node, col, data, periods=periods):
                     self.colours[node] = col
                     break
                 elif self.check_rooms_constraint(node, col, data):

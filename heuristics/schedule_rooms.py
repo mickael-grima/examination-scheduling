@@ -13,7 +13,7 @@ import itertools
 from gurobipy import Model, quicksum, GRB, GurobiError
 from heuristics.tools import swap_color_dictionary, get_coloring
 from collections import defaultdict
-from schedule_times import simulated_annealing
+#from schedule_times import simulated_annealing
 
 #
 # Responsible team member: MAX
@@ -64,7 +64,7 @@ def schedule_rooms(coloring, color_schedule, data):
     return z , obj_val
 
 
-def schedule_rooms_in_period(exams_to_schedule, period, data):
+def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     #print period
     '''
         schedule_rooms needs to be called for every single period
@@ -109,7 +109,8 @@ def schedule_rooms_in_period(exams_to_schedule, period, data):
 
     model.setObjective( obj1, GRB.MINIMIZE)
     
-    model.params.OutputFlag = 0
+    if not verbose:
+        model.params.OutputFlag = 0
     
     model.optimize()
 
@@ -141,9 +142,9 @@ if __name__ == '__main__':
 
     coloring = get_coloring(data['conflicts'])
 
-    color_schedule, value = simulated_annealing(coloring, data, max_iter = 100)
+    #color_schedule, value = simulated_annealing(coloring, data, max_iter = 100)
 
-    schedule_rooms(coloring, color_schedule, data)
+    #schedule_rooms(coloring, color_schedule, data)
 
     #schedule_rooms_in_period([i for i in range(n)], 0, data)
     
