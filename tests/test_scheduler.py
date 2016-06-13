@@ -57,12 +57,17 @@ def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500
     print "VALUE:", v
     if 'n_feasible' in logger:
         values = logger['n_feasible'].values()
+        print len(values)
         values = filter(lambda x: x < sys.maxint, values)
+        print len(values)
         print "mean(feasible):", np.mean(values)
+        
     # TODO: DEBUG Worst value 
     if do_plot:
         import matplotlib.pyplot as plt
         for key in logger:
+            if key == 'n_feasible':
+                continue
             print key
             values = logger[key].values()
             values = filter(lambda x: x < sys.maxint, values)
@@ -72,7 +77,7 @@ def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500
             plt.clf()
             plt.plot(values)
             plt.ylabel(key)
-            plt.savefig("%s/heuristics/plots/%s.jpg" %(PROJECT_PATH, key))
+            plt.savefig("%s/heuristics/plots/%s.png" %(PROJECT_PATH, key))
     
     
 def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, epochs = 100, annealing_iterations = 500, seed = 42):
@@ -96,14 +101,6 @@ def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, epochs = 10
     test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
         
     
-def test_random_advance(n = 45, r = 11, p = 12, prob_conflicts = 0.3, epochs = 100, annealing_iterations = 500, seed = 42):
-    
-    print "Advanced Random Heuristic"
-    data = get_data_for_tests(n, r, p, prob_conflicts, seed)
-    
-    T = RandomHeuristicAdvanced(data, n_colorings = 2)
-    test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
-      
       
 def test_random(n = 45, r = 11, p = 12, prob_conflicts = 0.3, epochs = 100, annealing_iterations = 500, seed = 42):
     
@@ -114,6 +111,25 @@ def test_random(n = 45, r = 11, p = 12, prob_conflicts = 0.3, epochs = 100, anne
     test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
     
     
+def test_random_advance(n = 45, r = 11, p = 12, prob_conflicts = 0.3, epochs = 100, annealing_iterations = 500, seed = 42):
+    
+    print "Advanced Random Heuristic"
+    data = get_data_for_tests(n, r, p, prob_conflicts, seed)
+    
+    T = RandomHeuristicAdvanced(data, n_colorings = 2)
+    test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
+      
+      
+def test_SA(n = 45, r = 11, p = 12, prob_conflicts = 0.3, epochs = 100, annealing_iterations = 500, seed = 42):
+    
+    print "Simulated Annealing Random Heuristic"
+    print "Does not work?"
+    data = get_data_for_tests(n, r, p, prob_conflicts, seed)
+    
+    T = SAHeuristic(data, n_colorings = 2)
+    test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
+      
+      
 def test_ant_colony(n = 15, r = 5, p = 15, prob_conflicts = 0.6, epochs = 100, annealing_iterations = 500, seed = 42):
     
     print "Ant Colony"
@@ -125,14 +141,19 @@ def test_ant_colony(n = 15, r = 5, p = 15, prob_conflicts = 0.6, epochs = 100, a
         
 if __name__ == '__main__':
     
-    epochs = 2000
-    annealing_iterations = 1500 
+    epochs = 100
+    annealing_iterations = 1000 
     
     n = 15
     r = 13
     p = 8
     prob = 0.3
     seed = 42
+    
+    n = 15
+    r = 6
+    p = 15
+    prob = 0.2
     
     #n = 150
     #r = 130
@@ -149,6 +170,7 @@ if __name__ == '__main__':
     
     #test_heuristic(n,r,p,prob,seed)
     #test_optimize_dummy(n,r,p,prob,seed)
-    test_random(n,r,p,prob,epochs, annealing_iterations, seed)
+    #test_random(n,r,p,prob,epochs, annealing_iterations, seed)
+    #test_SA(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
-    #test_ant_colony(n,r,p,prob,seed) 
+    test_ant_colony(n,r,p,prob,seed) 

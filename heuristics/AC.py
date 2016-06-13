@@ -77,7 +77,7 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight, data={}, ILP_test=False):
+    def generate_coloring(self, graph, edges_weight, data={}):
         """ @param graph: graph to color
             @param edges_weight: weight on the edges for each node
             @cparam capacities: capacities of the rooms. If empty, we don't consider them
@@ -91,7 +91,7 @@ class Ant(object):
             visited, current_node, nb = set(), node, 0
             while nb < 2 or current_node not in visited:
                 # color the node
-                graph.color_node(current_node, data=data, ILP=ILP_test)
+                graph.color_node(current_node, data=data)
                 visited.add(current_node)
                 self.traces.append(current_node)
                 nod = self.walk_to_next_node(edges_weight[node], black_list=visited) or current_node
@@ -137,7 +137,7 @@ class AC:
             for neighbor in self.graph.graph.neighbors(node):
                 self.edges_weight[node][neighbor] = 1.0
 
-    def generate_colorings(self, ILP_test=False):
+    def generate_colorings(self):
         """ Generate a feasible coloring for each ant
         """
         colorings = []
