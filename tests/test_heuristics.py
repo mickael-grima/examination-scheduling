@@ -37,7 +37,7 @@ class TestConstraints(unittest.TestCase):
     """
     def setUp(self):
         # self.data = build_small_input()
-        self.data = build_smart_random(n=1500, p=60, r=150)
+        self.data = build_smart_random(n=150, p=20, r=150)
 
     def testColouringHeuristic(self):
         graph = ColorGraph()
