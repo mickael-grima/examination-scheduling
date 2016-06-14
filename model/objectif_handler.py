@@ -14,11 +14,10 @@ def time_obj(y, data):
     """ We return the objectif value concerning the time
     """
     n, p = data.get('n', 0), data.get('p', 0)
-    h = data.get('h', [])
-    d = {(i, j): sum(h[l] / 2 * abs(y.get((i, l), 0.0) - y.get((j, l), 0.0)) ** 2 for l in range(p))
-         for i in range(n) for j in range(i + 1, n)}
-    print y, d
-    return sum(min(d[i, j] for j in range(i + 1, n)) for i in range(n))
+    h, conflicts = data.get('h', []), data.get('conflicts', {})
+    H = [sum(h[l] * y[i, l] for l in range(p)) for i in range(n)]
+    m = filter(bool, [[abs(H[i] - H[j]) for j in range(i + 1, n) if j in conflicts[i]] for i in range(n - 1)])
+    return sum([min(mm) for mm in m])
 
 
 def main_obj(x, y, data, gamma=1.0):
