@@ -138,6 +138,7 @@ def test_ant_colony(n = 15, r = 5, p = 15, prob_conflicts = 0.6, epochs = 100, a
     
     print "Ant Colony"
     data = get_data_for_tests(n, r, p, prob_conflicts, seed)
+
     
     T = AC(data, num_ants = 20)
     test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
