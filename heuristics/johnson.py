@@ -24,7 +24,7 @@ from ConstrainedColorGraph import ConstrainedColorGraph
 
 class Johnson:
     
-    def __init__(self, data,n_colorings=50):
+    def __init__(self, data,n_colorings=10):
         self.data = data
         self.n_colorings = n_colorings
         self.graph = ConstrainedColorGraph()
@@ -45,14 +45,14 @@ class Johnson:
                 conf_num[i] += 1                
                 conf_num[conflict] += 1
         
-        for i in range(self.n_colorings):
+        for j in range(self.n_colorings):
             # reset node ordering and coloring
             nodes = self.graph.nodes()
             self.graph.reset_colours()
 
             # set parameter alpha and compute exam value for ordering
-            alpha = (i+1)/self.n_colorings * 0.5
-            #print alpha
+            alpha = float(j)/float(self.n_colorings-1) * 0.5
+            print alpha
             vals = np.array(data['s'])*alpha + np.array(conf_num)
             #print vals
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     n = 10
     r = 10
     p = 10
-    tseed = 295
+    tseed = 200
 
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
