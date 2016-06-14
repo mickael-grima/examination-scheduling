@@ -25,7 +25,7 @@ from heuristics.tools import to_binary
 
 import numpy as np
 
-from sklearn.ensemble import RandomForestRegressor
+#from sklearn.ensemble import RandomForestRegressor
 
 class MetaHeuristic:
 
@@ -67,7 +67,7 @@ class RandomHeuristic(MetaHeuristic):
     def update(self, values, best_index = None, time_slots = None):
         '''
             Pure chance -> Nothing to be intelligent about here ;)
-        '''
+        ''' 
         pass
 
     
@@ -108,10 +108,9 @@ class RandomHeuristicAdvanced(RandomHeuristic):
             
         
     
+    '''
 class ForestHeuristic:
-    '''
         Use Random Forest Regression in coloring step.
-    '''
     def __init__(self, data, n_colorings=50):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
         self.graph = ConstrainedColorGraph()
@@ -161,9 +160,9 @@ class ForestHeuristic:
         
         #print "Do nothing. Value is", values[best_index]
         pass
-    
+    '''
 
-class SAHeuristic:
+class SAHeuristic(MetaHeuristic):
     '''
         Use simulated annealing for optimizing the coloring step.
     '''
@@ -174,7 +173,7 @@ class SAHeuristic:
         self.visiting = []
         self.visiting_old = []
         self.old_values = []
-        self.beta_0 = 0.3
+        self.beta_0 = 20
         self.beta = self.beta_0
         self.schedule = lambda t: self.beta_0 * np.log(1+np.log(1+t))
     
