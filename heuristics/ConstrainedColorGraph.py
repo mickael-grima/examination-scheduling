@@ -33,14 +33,8 @@ class ConstrainedColorGraph(ColorGraph):
             period = periods[color]
 
         # get all nodes with that color, and solve ILP
-<<<<<<< HEAD
-        nodes = self.color_exams[color] + [node]
-        #nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
-        
-=======
         nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
 
->>>>>>> 6272496f7147da18d7d663fda27a612489cc4c01
         # schedule rooms
         # TODO: Give start solution ?!?
         return schedule_rooms_in_period(nodes, period, data) is not None
@@ -59,16 +53,9 @@ class ConstrainedColorGraph(ColorGraph):
             period = 0
 
         # get all nodes with that color, and solve ILP
-<<<<<<< HEAD
-        nodes = self.color_exams[color] + [node]
-        #nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
-        
-        # schedule rooms 
-=======
         nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
 
         # schedule rooms
->>>>>>> 6272496f7147da18d7d663fda27a612489cc4c01
         # TODO: Give start solution ?!?
         return schedule_greedy(nodes, period, data) is not None
 
