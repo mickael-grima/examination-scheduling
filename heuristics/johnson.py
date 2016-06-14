@@ -32,21 +32,33 @@ class Johnson:
 
     def generate_colorings(self):
         # Generate colourings using Johnson's rule: 
-        # Order the exams by alpha*s_i + conf_numb
+        # Order the exams by alpha*s_i + conf_num
 
         colorings = []
+        conflicts = data['conflicts']
 
+        # find number of conflicts for all exams
+        conf_num = data['n']*[0]
+        # go over conflict dictionary and save conflicts
+        for i in conflicts:
+            for conflict in conflicts[i]:
+                conf_num[i] += 1                
+                conf_num[conflict] += 1
+        
         for i in range(self.n_colorings):
             # reset node ordering and coloring
             nodes = self.graph.nodes()
             self.graph.reset_colours()
 
-            # set parameter alpha = {0.01,0.02, ... ,0.5} and compute exam value for ordering
-            alpha = (i+1)*0.01
-            vals = [alpha*d for d in data['s']]
+            # set parameter alpha and compute exam value for ordering
+            alpha = (i+1)/self.n_colorings * 0.5
+            #print alpha
+            vals = np.array(data['s'])*alpha + np.array(conf_num)
+            #print vals
 
             # sort nodes by vals
             nodes = [elmts[0] for elmts in sorted(zip(nodes, vals), key=itemgetter(1), reverse=True)]
+            #print nodes
 
             # compute coloring
             for node in nodes:
@@ -54,7 +66,7 @@ class Johnson:
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
 
         return colorings
-
+        
     def update(self, values, best_index = None):
         # no update necessary yet as of now
         pass
@@ -70,8 +82,7 @@ if __name__ == '__main__':
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
-    num_ants = 10
     js = Johnson(data)
     colorings = js.generate_colorings()
-    # print colorings
+    print colorings
     
