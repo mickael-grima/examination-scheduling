@@ -15,6 +15,7 @@ from copy import deepcopy
 
 from model.instance import build_random_data
 from heuristics.tools import get_coloring, swap_color_dictionary
+from heuristics.schedule_rooms import schedule_greedy
 #
 # Responsible team member: ROLAND
 #
@@ -182,7 +183,7 @@ def get_color_conflicts(color_exams, exam_colors, conflicts):
         
         
 
-def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_threshold = 0.2, statespace = None, color_schedule = None, color_exams = None, log = False, log_hist=False, debug = False):
+def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_threshold = 0.2, statespace = None, color_schedule = None, color_exams = None, log = False, log_hist=False, debug = True):
     '''
         Simulated annealing
         @Param exam_colors: coloring of conflict graph
@@ -380,7 +381,6 @@ def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n
         Schedule times using simulated annealing
         TODO: Description
     '''
-    
     color_schedules = []
     values = []
     for chain in range(n_chains):

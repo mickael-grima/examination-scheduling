@@ -57,9 +57,7 @@ def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500
     print "VALUE:", v
     if 'n_feasible' in logger:
         values = logger['n_feasible'].values()
-        print len(values)
         values = filter(lambda x: x < sys.maxint, values)
-        print len(values)
         print "mean(feasible):", np.mean(values)
         
     # TODO: DEBUG Worst value 
@@ -68,10 +66,10 @@ def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500
         for key in logger:
             if key == 'n_feasible':
                 continue
-            print key
+            #print key
             values = logger[key].values()
             values = filter(lambda x: x < sys.maxint, values)
-            print np.mean(values)
+            #print np.mean(values)
             #print ", ".join(map(lambda x: "%0.2f" %x, values))
                 
             plt.clf()
@@ -172,5 +170,5 @@ if __name__ == '__main__':
     #test_optimize_dummy(n,r,p,prob,seed)
     #test_random(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_SA(n,r,p,prob,epochs, annealing_iterations, seed)
-    #test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
-    test_ant_colony(n,r,p,prob,seed) 
+    test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
+    #test_ant_colony(n,r,p,prob,seed) 

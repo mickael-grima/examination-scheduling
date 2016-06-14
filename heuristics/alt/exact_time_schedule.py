@@ -114,7 +114,7 @@ def exact_time_schedule(data, exam_colors, n_cliques = 0):
 
     # objective: minimize number of used rooms
     print("Building Objective...")
-    obj1 = quicksum([ x[i] for i in range(n)]) 
+    obj1 = quicksum([ w[i] for i in range(n)]) 
 
     model.setObjective( obj1, GRB.MAXIMIZE)
 
