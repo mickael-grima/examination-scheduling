@@ -174,9 +174,5 @@ if __name__ == '__main__':
     #test_optimize_dummy(n,r,p,prob,seed)
     test_random(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_SA(n,r,p,prob,epochs, annealing_iterations, seed)
-<<<<<<< HEAD
-    test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
-=======
     #test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
->>>>>>> 6272496f7147da18d7d663fda27a612489cc4c01
-    #test_ant_colony(n,r,p,prob,seed) 
+    test_ant_colony(n,r,p,prob,seed) 
