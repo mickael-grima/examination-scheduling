@@ -81,3 +81,14 @@ def test_conflicts(x, y, Q=[], **indices):
                 for l in range(p):
                     res = res and sum([y[i, l] * y[j, l] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
     return res
+
+
+def is_feasible(x, y, data):
+    """ for each type of constraint return if it is feasible or not
+    """
+    return {
+        'one exam per period': test_one_exam_per_period(x, y),
+        'one exam per period per room': test_one_exam_period_room(x, y, T=data['T']),
+        'conflicts': test_conflicts(x, y, Q=data['Q']),
+        'enough seat': test_enough_seat(x, y, c=data['c'], s=data['s'])
+    }

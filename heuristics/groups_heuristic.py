@@ -40,14 +40,14 @@ def attribute_time_and_room(groups_exams, data):
 
     # we attribuate the rooms to the groups function of the time slots we found
     for ind, dct in groups_exams.iteritems():
-        # sort roomsand exams, get times
-        exams, times = sorted(dct['exams'], key=lambda ex: s[ex], reverse=True), dct['times']
-        rooms_ind = filter(lambda x: T[x][times[0]] > 0, range(r))
-        rooms = sorted([(k, c[k]) for k in rooms_ind], key=lambda x: x[1], reverse=True)
-
-        # We attribuate the rooms to the exams
+        rooms_ind = filter(lambda x: T[x][dct['times'][0]] > 0, range(r))
         i, k, seats = 0, 0, [seat for seat in s]
-        while i < len(exams) and k < len(rooms):
+        while i < len(dct['exams']) and k < len(rooms_ind):
+            # sort roomsand exams, get times
+            exams, times = sorted(dct['exams'], key=lambda ex: s[ex], reverse=True), dct['times']
+            rooms = sorted([(kk, c[kk]) for kk in rooms_ind], key=lambda x: x[1], reverse=True)
+
+            # We attribuate the rooms to the exams
             seats[exams[i]] = max(seats[exams[i]] - rooms[k][1], 0)
             x[exams[i], rooms[k][0], times[0]] = 1.0
             y[exams[i], times[0]] = 1.0
@@ -64,6 +64,7 @@ def optimize(data, gamma=1.0):
     n = data.get('n', 0)
 
     # We first solve the coloring problem
+    # TODO: try to randomize, maybe ILP
     prob = ColorGraph()
     prob.build_graph(n, data['conflicts'])
     prob.color_graph()
