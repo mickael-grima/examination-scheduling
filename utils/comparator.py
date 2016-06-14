@@ -35,7 +35,7 @@ from tools import update_variable, transform_variables
 from model.objectif_handler import main_obj
 from model.constraints_handler import is_feasible
 
-RESULTS_FILE = '%sutils/data/performance'
+RESULTS_FILE = '%sutils/data/performance' % PROJECT_PATH
 MODELS = {  # model from folder GurobiModel
     'GurobiLinear_v_1': gl1.build_model,
     'GurobiLinear_v_2_Q': gl2.build_model,
@@ -125,7 +125,7 @@ def compute_performance(problem_name, data, with_test=False, **kwards):
         src.write('-------------------------------------\n')
         src.write('@@@ GENERAL @@@\n')
         src.write('Problem: %s\n' % problem_name)
-        src.write('Date: %s\n' % time.strftime('%d/%m/%Y"'))
+        src.write('Date: %s\n' % time.strftime('%d/%m/%Y'))
         src.write('\n')
         src.write('@@@ DATA @@@\n')
         src.write('dimensions: n=%s, p=%s, r=%s\n' % (data['n'], data['p'], data['r']))
