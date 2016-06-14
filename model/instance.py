@@ -10,7 +10,8 @@ import random as rd
 import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
-import copy
+import logging
+
 
 def force_data_format(func):
     """ decorator that force the format of data
@@ -24,9 +25,10 @@ def force_data_format(func):
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
-        
-        assert len(conflicts) == n
-        
+
+        if len(conflicts) != n:
+            logging.warning("corect_format: conflicts has not the required length")
+
         # make sure the conflicts are symmetric!
         add = defaultdict(list)
         for k in conflicts:

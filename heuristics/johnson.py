@@ -11,8 +11,11 @@ sys.path.append(PROJECT_PATH)
 import networkx as nx
 import numpy as np
 
-from heuristics.AC import AC
-from heuristics.graph_coloring import greedy_coloring
+from operator import itemgetter
+
+from ConstrainedColorGraph import ConstrainedColorGraph
+# from heuristics.AC import AC
+# from heuristics.graph_coloring import greedy_coloring
 
 
 #
@@ -21,14 +24,51 @@ from heuristics.graph_coloring import greedy_coloring
 
 class Johnson:
     
-    def __init__(self, data):
+    def __init__(self, data,n_colorings=10):
         self.data = data
+        self.n_colorings = n_colorings
+        self.graph = ConstrainedColorGraph()
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])
+
     def generate_colorings(self):
-        # TODO: Generate colourings
-        conflicts = self.data['conflicts']
-        return [ get_coloring(conflicts) ]
+        # Generate colourings using Johnson's rule: 
+        # Order the exams by alpha*s_i + conf_num
+
+        colorings = []
+        conflicts = data['conflicts']
+
+        # find number of conflicts for all exams
+        conf_num = data['n']*[0]
+        # go over conflict dictionary and save conflicts
+        for i in conflicts:
+            for conflict in conflicts[i]:
+                conf_num[i] += 1                
+                conf_num[conflict] += 1
+        
+        for j in range(self.n_colorings):
+            # reset node ordering and coloring
+            nodes = self.graph.nodes()
+            self.graph.reset_colours()
+
+            # set parameter alpha and compute exam value for ordering
+            alpha = float(j)/float(self.n_colorings-1) * 0.5
+            print alpha
+            vals = np.array(data['s'])*alpha + np.array(conf_num)
+            #print vals
+
+            # sort nodes by vals
+            nodes = [elmts[0] for elmts in sorted(zip(nodes, vals), key=itemgetter(1), reverse=True)]
+            #print nodes
+
+            # compute coloring
+            for node in nodes:
+                self.graph.color_node(node, data=self.data, check_constraints = False)
+            colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
+
+        return colorings
+        
     def update(self, values, best_index = None):
-        #print "Do something. Value is", values[best_index]
+        # no update necessary yet as of now
         pass
         
 
@@ -37,13 +77,12 @@ if __name__ == '__main__':
     n = 10
     r = 10
     p = 10
-    tseed = 295
+    tseed = 200
 
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
-    num_ants = 10
-    ac = Johnson(data)
-    colorings = ac.generate_colorings(num_ants)
+    js = Johnson(data)
+    colorings = js.generate_colorings()
     print colorings
     

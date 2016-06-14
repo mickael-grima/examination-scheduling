@@ -25,7 +25,7 @@ from heuristics.tools import to_binary
 
 import numpy as np
 
-from sklearn.ensemble import RandomForestRegressor
+#from sklearn.ensemble import RandomForestRegressor
 
 class MetaHeuristic:
 
@@ -109,10 +109,9 @@ class RandomHeuristicAdvanced(RandomHeuristic):
             
         
     
+    '''
 class ForestHeuristic:
-    '''
         Use Random Forest Regression in coloring step.
-    '''
     def __init__(self, data, n_colorings=50):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
         self.graph = ConstrainedColorGraph()
@@ -162,7 +161,7 @@ class ForestHeuristic:
         
         #print "Do nothing. Value is", values[best_index]
         pass
-    
+    '''
 
 class SAHeuristic(MetaHeuristic):
     '''

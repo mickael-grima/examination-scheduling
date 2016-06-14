@@ -7,6 +7,7 @@ paths = os.getcwd().split('/')
 path = ''
 for p in paths:
     path += '%s/' % p
+    
     if p == 'examination-scheduling':
         break
 sys.path.append(path)
@@ -75,7 +76,10 @@ def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500
             plt.clf()
             plt.plot(values)
             plt.ylabel(key)
-            plt.savefig("%s/heuristics/plots/%s.png" %(PROJECT_PATH, key))
+            try:
+                plt.savefig("%s/heuristics/plots/%s.png" %(PROJECT_PATH, key))
+            except:
+                plt.savefig("%s\heuristics\plots\%s.png" %( PROJECT_PATH[:-1] , key))
     
     
 def test_optimize_dummy(n = 15, r = 6, p = 15, prob_conflicts = 0.6, epochs = 100, annealing_iterations = 500, seed = 42):
@@ -146,11 +150,11 @@ if __name__ == '__main__':
     r = 13
     p = 8
     prob = 0.3
-    seed = 42
+    seed = 9464
     
-    n = 15
-    r = 6
-    p = 15
+    n = 30
+    r = 10
+    p = 100
     prob = 0.2
     
     #n = 150
@@ -168,7 +172,11 @@ if __name__ == '__main__':
     
     #test_heuristic(n,r,p,prob,seed)
     #test_optimize_dummy(n,r,p,prob,seed)
-    #test_random(n,r,p,prob,epochs, annealing_iterations, seed)
+    test_random(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_SA(n,r,p,prob,epochs, annealing_iterations, seed)
+<<<<<<< HEAD
     test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
+=======
+    #test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
+>>>>>>> 6272496f7147da18d7d663fda27a612489cc4c01
     #test_ant_colony(n,r,p,prob,seed) 

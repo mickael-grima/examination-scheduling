@@ -1,0 +1,17 @@
+-------------------------------------
+@@@ GENERAL @@@
+Problem: greedy_heuristic
+Date: 14/06/2016"
+
+@@@ DATA @@@
+dimensions: n=150, p=20, r=150
+conflicts average per exam: 0
+opening hours average per room: 0
+
+Test result: NOT TESTED
+
+@@@ PERFORMANCE @@@
+Running time: 0.330438137054
+Objective value: -410.0
+-------------------------------------
+

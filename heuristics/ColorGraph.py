@@ -84,8 +84,7 @@ class ColorGraph(object):
         """ return a dictionnary {node: degree}
         """
         return self.graph.nodes()
-    
-    
+
     def get_degree(self):
         """ return a dictionnary {node: degree}
         """
@@ -176,7 +175,8 @@ class ColorGraph(object):
         for i in range(nb_nodes):
             self.add_node(i)
             for j in conflicts[i]:
-                self.add_edge(i, j)
+                if i != j:
+                    self.add_edge(i, j)
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         """ @param nb_nodes: number of nodes of the constructed graph
