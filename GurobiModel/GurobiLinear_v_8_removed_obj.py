@@ -118,23 +118,6 @@ def build_model(data, n_cliques = 0, verbose = True):
             if T[k][l] == 1:
                 model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")    
     
-    
-    # print("c8: Building %d clique constraints" %n_cliques)
-    # if n_cliques > 0:
-    #     G = nx.Graph()
-    #     for i in range(n):
-    #         G.add_node(i)
-            
-    #     for i in range(n):
-    #         for j in conflicts[i]:
-    #             G.add_edge(i,j)
-                
-    #     cliques = nx.find_cliques(G) # generator
-        
-    #     for counter, clique in itertools.izip(range(n_cliques), cliques):
-    #         for l in range(l):
-    #             model.addConstr( quicksum([ y[i, l] for i in clique ]) <= 1, "c_lique_%s_%s_%s" % (counter,clique,l))
-    #             #print "c_lique_%s_%s_%s" % (counter,clique,l)
 
     if verbose:
         print("All constrained built - OK")
@@ -157,7 +140,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
     #model.params.MIPFocus = 1
-    # model.params.TuneTimeLimit = 200
+    #model.params.cuts = 0
 
 
     # # Tune the model

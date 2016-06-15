@@ -25,6 +25,7 @@ from GurobiModel.GurobiLinear_v_4_Cliques import build_model as build_linear_mod
 from GurobiModel.GurobiLinear_v_5_changed_obj import build_model as build_linear_model_5
 from GurobiModel.GurobiLinear_v_6_removed_c6 import build_model as build_linear_model_6
 from GurobiModel.GurobiLinear_v_8_removed_obj import build_model as build_linear_model_8
+from GurobiModel.GurobiLinear_v_10_location import build_model as build_linear_model_10
 
 from model.instance import build_smart_random
 
@@ -34,6 +35,7 @@ def compare(data):
     """
     # Select models to compare
     problems = {
+        'Linear Advanced Location': build_linear_model_10,
          'Linear Advanced removed obj': build_linear_model_8,
     #     'Linear Advanced removed c6': build_linear_model_6,
     #    'Linear Advanced changed obj': build_linear_model_5,
@@ -68,12 +70,13 @@ def compare(data):
 
 
 def test_compare():
-    n = 1500
-    r = 60
-    p = 60
+    n = 200
+    r = 30
+    p = 40
     tseed = 295
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
+    print data['location']
     time, objectives = compare(data)
 
     print("")

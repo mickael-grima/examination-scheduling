@@ -146,14 +146,14 @@ def build_simple_data(**kwards):
 def build_smart_random(**kwards):
     """ Generate smart random data
         kwards = {'n': , 'r': ,'p': , 'tseed':, 'w': }
-            w = where (01    = Innenstadt,
-                       02    = Garching,
-                       02-81 = Hochbrueck)
+            w = where (1    = Innenstadt,
+                       2    = Garching,
+                       3	= Hochbrueck,)
 
     """
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
-    n, r, p, w = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0), kwards.get('w', ["01", "02", "02-81"])
+    n, r, p, w = kwards.get('n', 0), kwards.get('r', 0), kwards.get('p', 0), kwards.get('w', ["1", "2", "3", "4", "5", "6", "7"])
     data = {'n': n, 'r': r, 'p': p}
 
     #create possible number of participants, increase probability that number of participants is between 150 and 300
@@ -166,10 +166,13 @@ def build_smart_random(**kwards):
     # get number of students participating
     data['s'] = np.random.choice(num, n)
 
+    data['w'] = np.random.choice([["1"], ["2"], ["3"], ["2","3"], ["1","2"], ["1","3"], ["1","2","3"]], n , p=[0.5, 0.3, 0.05, 0.05, 0, 0, 0.05])
+
     # get room capacity from real data
     data['c'] = np.random.choice(num, r)
     data['c'] = sorted(data['c'], reverse=True)
-    #data['c'] = get_random_room_capacity(r,w)
+    
+    data['location'] = np.random.choice(["1", "2", "3"], r , p=[0.6, 0.35, 0.05])
     
     # hours between starting day and starting periods are fixed equal to 2
     data['h'] = [ 2*l for l in range(p)]
