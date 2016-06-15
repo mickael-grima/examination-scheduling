@@ -13,6 +13,7 @@ import random
 import networkx as nx
 import math 
 from time import time
+import timeit
     
 from gurobipy import Model, quicksum, GRB, GurobiError
 from model.instance import build_random_data
@@ -49,6 +50,8 @@ def build_model(data, n_cliques = 0, verbose = True):
     s = data['s']
     c = data['c']
     h = data['h']
+    w = data['w']
+    location = data['location']
     conflicts = data['conflicts']
     locking_times = data['locking_times']
     T = data['T']
@@ -61,11 +64,12 @@ def build_model(data, n_cliques = 0, verbose = True):
     
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
-    for i in range(n):
-        for k in range(r):
-            for l in range(p):
-                if T[k][l] == 1:
-                    x[i,k,l] = model.addVar(vtype=GRB.BINARY, name="x_%s_%s_%s" % (i,k,l))
+    for k in range(r):
+        for l in range(p):
+            if T[k][l] == 1:
+                for i in range(n):
+                    if location[k] in w[i]:
+                        x[i,k,l] = model.addVar(vtype=GRB.BINARY, name="x_%s_%s_%s" % (i,k,l))
     
     # y[i,l] = 1 if exam i is at time l
     y = {}
@@ -77,6 +81,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     # integrate new variables
     model.update() 
 
+    start = timeit.default_timer()
     # adding constraints as found in MidTerm.pdf
     if verbose:
         print("Building constraints...")    
@@ -85,8 +90,8 @@ def build_model(data, n_cliques = 0, verbose = True):
         print("c1: connecting variables x and y")
     for i in range(n):
         for l in range(p):
-            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= 12 * y[i, l], "c1a")
-            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) >= y[i, l], "c1b")
+            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 and location[k] in w[i] ]) <= 12 * y[i, l], "c1a")
+            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 and location[k] in w[i] ]) >= y[i, l], "c1b")
             
     if verbose:
         print("c2: each exam at exactly one time")
@@ -109,25 +114,29 @@ def build_model(data, n_cliques = 0, verbose = True):
     if verbose:
         print("c4: seats for all students")
     for i in range(n):
-        model.addConstr( quicksum([ x[i, k, l] * c[k] for k in range(r) for l in range(p) if T[k][l] == 1 ]) >= s[i], "c4")
+        model.addConstr( quicksum([ x[i, k, l] * c[k] for k in range(r) for l in range(p) if T[k][l] == 1 and location[k] in w[i] ]) >= s[i], "c4")
     
     if verbose:
         print("c5: only one exam per room per period")
     for k in range(r):
         for l in range(p):
             if T[k][l] == 1:
-                model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")    
+                model.addConstr( quicksum([ x[i, k, l] for i in range(n) if location[k] in w[i] ]) <= 1, "c5")    
     
 
     if verbose:
         print("All constrained built - OK")
 
+    
+
     # objective: minimize number of used rooms
     if verbose:
         print("Building Objective...")
-    obj1 = quicksum([ x[i,k,l] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
+    obj1 = quicksum([ x[i,k,l] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 and location[k] in w[i]]) 
 
     model.setObjective( obj1, GRB.MINIMIZE)
+
+    print timeit.default_timer()-start
 
     if not verbose:
         model.params.OutputFlag = 0
@@ -141,6 +150,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     #model.params.method = 1
     #model.params.MIPFocus = 1
     #model.params.cuts = 0
+    model.params.OutputFlag = 1
 
 
     # # Tune the model
