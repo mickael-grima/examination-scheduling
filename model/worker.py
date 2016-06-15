@@ -26,6 +26,8 @@ from GurobiModel.GurobiLinear_v_5_changed_obj import build_model as build_linear
 from GurobiModel.GurobiLinear_v_6_removed_c6 import build_model as build_linear_model_6
 from GurobiModel.GurobiLinear_v_8_removed_obj import build_model as build_linear_model_8
 from GurobiModel.GurobiLinear_v_10_location import build_model as build_linear_model_10
+from GurobiModel.GurobiLinear_v_11_model_speed import build_model as build_linear_model_11
+from GurobiModel.GurobiLinear_v_12_smaller_M import build_model as build_linear_model_12
 
 from model.instance import build_smart_random
 
@@ -35,13 +37,15 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear Advanced Location': build_linear_model_10,
-         'Linear Advanced removed obj': build_linear_model_8,
-    #     'Linear Advanced removed c6': build_linear_model_6,
-    #    'Linear Advanced changed obj': build_linear_model_5,
-    #    'Linear Advanced': build_linear_model_3,
-    #    'Linear Advanced Cliques': build_linear_model_4,    
-    #  'GurobiQ_neu': build_nonlinear_model
+        'Linear smaller M': build_linear_model_12,
+        'Linear model speed': build_linear_model_11,
+    #    'Linear Location': build_linear_model_10,
+    #   'Linear Advanced removed obj': build_linear_model_8,
+    #   'Linear Advanced removed c6': build_linear_model_6,
+    #   'Linear Advanced changed obj': build_linear_model_5,
+    #   'Linear Advanced': build_linear_model_3,
+    #   'Linear Advanced Cliques': build_linear_model_4,    
+    #   'GurobiQ_neu': build_nonlinear_model
     }
 
     times = dict()
@@ -70,13 +74,12 @@ def compare(data):
 
 
 def test_compare():
-    n = 200
-    r = 30
+    n = 250
+    r = 43
     p = 40
-    tseed = 295
+    tseed = 33
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
-    print data['location']
     time, objectives = compare(data)
 
     print("")

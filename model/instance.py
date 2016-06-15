@@ -21,6 +21,8 @@ def force_data_format(func):
         n = data.get('n', 0)
         r = data.get('r', 0)
         p = data.get('p', 0)
+        w = data.get('w', [["0"] for i in range(n)])
+        location = data.get('location', ["0" for k in range(r)])
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
@@ -69,7 +71,9 @@ def force_data_format(func):
             'locking_times': locking_times,
             's': list(data.get('s', [])),
             'c': list(data.get('c', [])),
-            'h': list(data.get('h', []))
+            'h': list(data.get('h', [])),
+            'w': w,
+            'location' : location
         }
         return res
     return correct_format
@@ -146,7 +150,8 @@ def build_simple_data(**kwards):
 def build_smart_random(**kwards):
     """ Generate smart random data
         kwards = {'n': , 'r': ,'p': , 'tseed':, 'w': }
-            w = where (1    = Innenstadt,
+            w = where (0    = not defined
+            		   1    = Innenstadt,
                        2    = Garching,
                        3	= Hochbrueck,)
 
@@ -166,7 +171,7 @@ def build_smart_random(**kwards):
     # get number of students participating
     data['s'] = np.random.choice(num, n)
 
-    data['w'] = np.random.choice([["1"], ["2"], ["3"], ["2","3"], ["1","2"], ["1","3"], ["1","2","3"]], n , p=[0.5, 0.3, 0.05, 0.05, 0, 0, 0.05])
+    data['w'] = np.random.choice([["1"], ["2"], ["3"], ["2","3"], ["1","2"], ["1","3"], ["1","2","3"]], n , p=[0.2, 0.1, 0.05, 0.05, 0, 0, 0.6])
 
     # get room capacity from real data
     data['c'] = np.random.choice(num, r)
@@ -180,7 +185,7 @@ def build_smart_random(**kwards):
     # create a conflict by probybility 1/5
     data['conflicts'] = defaultdict(list)
     for i in range(n):
-        data['conflicts'][i] = [ j for j in range(i+1,n) if rd.random() <= 0.2 ]
+        data['conflicts'][i] = [ j for j in range(i+1,n) if rd.random() <= 0.1 ]
     
     #close some rooms by probability 1/10
     data['locking_times'] = defaultdict(list)
