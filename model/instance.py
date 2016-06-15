@@ -171,13 +171,13 @@ def build_smart_random(**kwards):
     # get number of students participating
     data['s'] = np.random.choice(num, n)
 
-    data['w'] = np.random.choice([["1"], ["2"], ["3"], ["2","3"], ["1","2"], ["1","3"], ["1","2","3"]], n , p=[0.2, 0.1, 0.05, 0.05, 0, 0, 0.6])
-
     # get room capacity from real data
     data['c'] = np.random.choice(num, r)
     data['c'] = sorted(data['c'], reverse=True)
-    
-    data['location'] = np.random.choice(["1", "2", "3"], r , p=[0.6, 0.35, 0.05])
+
+    if kwards.get('locations') == True:
+    	data['w'] = np.random.choice([["1"], ["2"], ["3"], ["2","3"], ["1","2"], ["1","3"], ["1","2","3"]], n , p=[0.2, 0.1, 0.05, 0.05, 0, 0, 0.6])
+    	data['location'] = np.random.choice(["1", "2", "3"], r , p=[0.6, 0.35, 0.05])
     
     # hours between starting day and starting periods are fixed equal to 2
     data['h'] = [ 2*l for l in range(p)]
