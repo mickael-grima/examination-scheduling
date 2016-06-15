@@ -124,14 +124,20 @@ def build_model(data, n_cliques = 0, verbose = True):
         model.addConstr( c2 == 1 , "c2")
         model.addConstr(c4 >= s[i], "c4")
 
+    sumrooms = {}
     for l in range(p):
+        sumrooms[l] = 0
+        cover_inequalities = LinExpr()
         for k in range(r):   
             if T[k][l] == 1:
+                sumrooms[l] += 1
                 c5 = LinExpr()
                 for i in range(n):
                     if location[k] in w[i]:
                         c5.addTerms(1,x[i,k,l])
                 model.addConstr( c5 <= 1, "c5")  
+                cover_inequalities += c5
+        model.addConstr(cover_inequalities <= sumrooms[l], "cover_inequalities")
 
 
     model.setObjective( obj, GRB.MINIMIZE)
@@ -156,9 +162,28 @@ def build_model(data, n_cliques = 0, verbose = True):
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
     #model.params.MIPFocus = 1
-    #model.params.cuts = 0
+
     model.params.OutputFlag = 1
     model.params.Method = 3
+
+
+    # cuts
+    model.params.cuts = 0
+    model.params.cliqueCuts = 0
+    model.params.coverCuts = 0
+    model.params.flowCoverCuts = 0
+    model.params.FlowPathcuts = 0
+    model.params.GUBCoverCuts = 0
+    model.params.impliedCuts = 2
+    model.params.MIPSepCuts = 0
+    model.params.MIRCuts = 0
+    model.params.ModKCuts = 0
+    model.params.NetworkCuts = 0
+    model.params.SUBMIPCuts = 0
+    model.params.ZeroHalfCuts = 0
+
+    model.params.TimeLimit = 30
+
 
 
     # # Tune the model

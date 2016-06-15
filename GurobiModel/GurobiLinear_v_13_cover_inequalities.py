@@ -124,14 +124,20 @@ def build_model(data, n_cliques = 0, verbose = True):
         model.addConstr( c2 == 1 , "c2")
         model.addConstr(c4 >= s[i], "c4")
 
+    sumrooms = {}
     for l in range(p):
+        sumrooms[l] = 0
+        cover_inequalities = LinExpr()
         for k in range(r):   
             if T[k][l] == 1:
+                sumrooms[l] += 1
                 c5 = LinExpr()
                 for i in range(n):
                     if location[k] in w[i]:
                         c5.addTerms(1,x[i,k,l])
                 model.addConstr( c5 <= 1, "c5")  
+                cover_inequalities += c5
+        model.addConstr(cover_inequalities <= sumrooms[l], "cover_inequalities")
 
 
     model.setObjective( obj, GRB.MINIMIZE)
@@ -156,7 +162,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
     #model.params.MIPFocus = 1
-    #model.params.cuts = 0
+
     model.params.OutputFlag = 1
     model.params.Method = 3
 

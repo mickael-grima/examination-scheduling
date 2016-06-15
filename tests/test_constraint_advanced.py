@@ -24,6 +24,7 @@ import GurobiModel.GurobiLinear_v_5_changed_obj as gl5
 import GurobiModel.GurobiLinear_v_6_removed_c6 as gl6
 import GurobiModel.GurobiLinear_v_7_new_obj as gl7
 import GurobiModel.GurobiLinear_v_8_removed_obj as gl8
+import GurobiModel.GurobiLinear_v_13_cover_inequalities as gl13
 
 
 class TestConstraints():
@@ -45,6 +46,7 @@ class TestConstraints():
         glprob6 = gl6.build_model(self.data)
         glprob7 = gl7.build_model(self.data)
         glprob8 = gl8.build_model(self.data)
+        glprob13 = gl13.build_model(self.data)
         # Solve problems
         lprob.optimize()
         loprob.optimize()
@@ -58,6 +60,7 @@ class TestConstraints():
         glprob6.optimize()
         glprob7.optimize()
         glprob8.optimize()
+        glprob13.optimize()
         self.problems = {
             'OneExamPerPeriod': [lprob, loprob, rprob, cprob, glprob1, glprob2, glprob3, glprob4, glprob5, glprob6,
                                  glprob7, glprob8],
