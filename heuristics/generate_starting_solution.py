@@ -70,10 +70,10 @@ def attribute_time_and_room(groups_exams, data):
     y = {(i, l): 0.0 for i in range(n) for l in range(p)}
     for time, exams in groups_exams:
         rooms_ind = filter(lambda x: T[x][time] > 0, range(r))
+        rooms = sorted([(kk, c[kk]) for kk in rooms_ind], key=lambda x: x[1], reverse=True)
         i, k, seats = 0, 0, [seat for seat in s]
-        while i < len(exams) and k < len(rooms_ind):
+        while i < len(exams) and k < len(rooms):
             exams = sorted(exams, key=lambda ex: seats[ex], reverse=True)
-            rooms = sorted([(kk, c[kk]) for kk in rooms_ind], key=lambda x: x[1], reverse=True)
             exam = exams[i]
             seats[exam] = max(seats[exam] - rooms[k][1], 0)
             x[exam, rooms[k][0], time], y[exam, time] = 1.0, 1.0

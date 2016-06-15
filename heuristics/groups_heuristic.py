@@ -41,11 +41,11 @@ def attribute_time_and_room(groups_exams, data):
     # we attribuate the rooms to the groups function of the time slots we found
     for ind, dct in groups_exams.iteritems():
         rooms_ind = filter(lambda x: T[x][dct['times'][0]] > 0, range(r))
+        rooms = sorted([(kk, c[kk]) for kk in rooms_ind], key=lambda x: x[1], reverse=True)
         i, k, seats = 0, 0, [seat for seat in s]
-        while i < len(dct['exams']) and k < len(rooms_ind):
+        while i < len(dct['exams']) and k < len(rooms):
             # sort roomsand exams, get times
             exams, times = sorted(dct['exams'], key=lambda ex: s[ex], reverse=True), dct['times']
-            rooms = sorted([(kk, c[kk]) for kk in rooms_ind], key=lambda x: x[1], reverse=True)
 
             # We attribuate the rooms to the exams
             seats[exams[i]] = max(seats[exams[i]] - rooms[k][1], 0)
