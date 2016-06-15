@@ -43,6 +43,8 @@ from GurobiModel.GurobiLinear_v_14_cuts10 import build_model as build_linear_mod
 from GurobiModel.GurobiLinear_v_14_cuts11 import build_model as build_linear_model_14c11
 from GurobiModel.GurobiLinear_v_14_cuts12 import build_model as build_linear_model_14c12
 
+from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linear_model_15
+
 
 
 from model.instance import build_smart_random
@@ -53,19 +55,8 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear Cover cliqueCuts': build_linear_model_14c1,
-        'Linear Cover coverCuts': build_linear_model_14c2,
-        'Linear Cover flowCoverCuts': build_linear_model_14c3,
-        'Linear Cover FlowPathcuts': build_linear_model_14c4,
-        'Linear Cover GUBCoverCuts': build_linear_model_14c5,
-        'Linear Cover impliedCuts': build_linear_model_14c6,
-        'Linear Cover MIPSepCuts': build_linear_model_14c7,
-        'Linear Cover MIRCuts': build_linear_model_14c8,
-        'Linear Cover ModKCuts': build_linear_model_14c9,
-        'Linear Cover NetworkCuts': build_linear_model_14c10,
-        'Linear Cover SUBMIPCuts': build_linear_model_14c11,
-        'Linear Cover ZeroHalfCuts': build_linear_model_14c12,
-        'Linear Cover inequalities': build_linear_model_13,
+        'Linear more covers': build_linear_model_15,
+    #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
     #    'Linear Location': build_linear_model_10,
@@ -89,7 +80,6 @@ def compare(data):
         problem = problems[prob_name](data)
         # Optimize selected model
         t = time()
-        problem.params.TimeLimit= 10
         problem.optimize()
         times[prob_name] = time() - t
 
@@ -103,8 +93,8 @@ def compare(data):
 
 
 def test_compare():
-    n = 50
-    r = 20
+    n = 300
+    r = 30
     p = 20
     tseed = 3
 
