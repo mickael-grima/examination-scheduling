@@ -35,11 +35,14 @@ def force_data_format(func):
             if len(conflicts[k]) > 0:
                 assert max(conflicts[k]) < n
             for l in conflicts[k]:
-                if k > k and k not in conflicts[l]:
-                    add[l] += [k]
+                if k not in conflicts[l]:
+                    conflicts[l] += [k]
+            conflicts[k] = sorted(conflicts[k])
+        
         for k in conflicts:
-            conflicts[k] = sorted(set(conflicts[k] + add[k]))
-
+            for l in conflicts[k]:
+                assert k in conflicts[l]
+        
         # conflicts matrix dense format (dont build if option is set)
         if 'build_Q' in data and not data['build_Q']:
             Q = None
