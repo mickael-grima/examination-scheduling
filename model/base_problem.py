@@ -20,6 +20,10 @@ class BaseProblem(object):
         self.available_constants = []
         self.logger = logging
 
+    def get_variables(self):
+        for _, dct in self.vars.iteritems():
+            yield {key: get_value(var) for key, var in dct.iteritems()}
+
     def update_variable(self):
         """ Rewrite variable in order to have only the values
         """
