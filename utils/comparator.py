@@ -118,6 +118,9 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
 
     # Test if the constraints are fullfilled
     if with_test:
+        print x
+        print y
+        print data
         constraints_test = is_feasible(x, y, data)
         test_result = 'FAILED' if [value for value in constraints_test.itervalues() if not value] else 'SUCCEED'
     else:
@@ -131,7 +134,7 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
         src.write('-------------------------------------\n')
         src.write('@@@ GENERAL @@@\n')
         src.write('Problem: %s\n' % problem_name)
-        src.write('Date: %s\n' % time.strftime('%d/%m/%Y'))
+        src.write('Date: %s\n' % time.strftime('%d/%m/%Y - %H:%M:%S'))
         src.write('\n')
         src.write('@@@ DATA @@@\n')
         src.write('dimensions: n=%s, p=%s, r=%s\n' % (data['n'], data['p'], data['r']))

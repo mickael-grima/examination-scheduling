@@ -63,7 +63,7 @@ class ColouringGraphProblem(BaseProblem):
                 self.vars['x'][node, color] = self.problem.addVar(vtype=gb.GRB.BINARY, name='x[%s, %s]' % (node, color))
         # y[j] = 1 represents taht color j is used at least one time
         self.vars.setdefault('y', {})
-        for color in range(self.dimensions['n']):
+        for color in range(self.dimensions['c']):
             self.vars['y'][color] = self.problem.addVar(vtype=gb.GRB.BINARY, name='y[%s]' % color)
         self.problem.update()
 
@@ -80,7 +80,7 @@ class ColouringGraphProblem(BaseProblem):
         # Color is said to be used if at least onenode is colored with this color
         for node in range(self.dimensions['n']):
             for c in range(self.dimensions['c']):
-                self.problem.addConstr(self.vars['y'][c] >= 1 - self.vars['x'][node, c])
+                self.problem.addConstr(self.vars['y'][c] >= self.vars['x'][node, c])
 
     def build_objectif(self):
         # we minimize the number of used colors

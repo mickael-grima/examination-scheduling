@@ -127,6 +127,10 @@ def transform_variables(x, y, **dimensions):
         logging.warning('dict x contains no variables')
         return {}, {}
     if len(x.keys()[0]) == 3:
-        return {(i, k): 1.0 if sum([x[i, k, l] > 0 for l in range(p)]) else 0.0 for i in range(n) for k in range(r)}, y
+        x_ = {(i, k): 1.0 if sum([x[i, k, l] > 0 for l in range(p)]) else 0.0 for i in range(n) for k in range(r)}
+        y_ = {(i, l): y.get((i, l), 0.0) for i in range(n) for l in range(p)}
+        return x_, y_
     else:
-        return x, y
+        x_ = {(i, k): x.get((i, k), 0.0) for i in range(n) for k in range(r)}
+        y_ = {(i, l): y.get((i, l), 0.0) for i in range(n) for l in range(p)}
+        return x_, y_

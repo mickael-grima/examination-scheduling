@@ -58,7 +58,7 @@ def test_one_exam_period_room(x, y, T=[], **indices):
     return res
 
 
-def test_conflicts(x, y, Q=[], **indices):
+def test_conflicts(x, y, conflicts={}, **indices):
     """ Test here the constraint: no student has to write two exams or more at the same time
     """
     n, r, p = tools.get_dimensions_from(x, y)
@@ -67,19 +67,19 @@ def test_conflicts(x, y, Q=[], **indices):
         l = indices.get('l')
         if indices.get('i') is not None:
             i = indices.get('i')
-            res = sum([y[i, l] * y[j, l] * Q[i][j] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
+            res = sum([y[i, l] * y[j, l] for j in conflicts[i]]) == 0
         else:
             for i in range(n):
-                res = res and sum([y[i, l] * y[j, l] * Q[i][j]for j in range(n) if Q[i][j] == 1 and i != j]) == 0
+                res = res and sum([y[i, l] * y[j, l] for j in conflicts[i]]) == 0
     else:
         if indices.get('i') is not None:
             i = indices.get('i')
             for l in range(p):
-                res = res and sum([y[i, l] * y[j, l] * Q[i][j] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
+                res = res and sum([y[i, l] * y[j, l] for j in conflicts[i]]) == 0
         else:
             for i in range(n):
                 for l in range(p):
-                    res = res and sum([y[i, l] * y[j, l] for j in range(n) if Q[i][j] == 1 and i != j]) == 0
+                    res = res and sum([y[i, l] * y[j, l] for j in conflicts[i]]) == 0
     return res
 
 
@@ -89,6 +89,6 @@ def is_feasible(x, y, data):
     return {
         'one exam per period': test_one_exam_per_period(x, y),
         'one exam per period per room': test_one_exam_period_room(x, y, T=data['T']),
-        'conflicts': test_conflicts(x, y, Q=data['Q']),
+        'conflicts': test_conflicts(x, y, conflicts=data['conflicts']),
         'enough seat': test_enough_seat(x, y, c=data['c'], s=data['s'])
     }

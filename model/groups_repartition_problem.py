@@ -39,9 +39,10 @@ class GroupsRepartitionProblem(BaseProblem):
 
     def build_objectif(self):
         c, p = self.dimensions['c'], self.dimensions['p']
-        v, h, Q = self.constants['v'], self.constants['h'], self.constants['conflicts']
-        obj_room = gb.quicksum(v.get(i, 0) * self.vars['x'][i, l] for i in range(c) for l in range(p))
-        dist = [Q.get((i, j), 0) * gb.quicksum(h[l] * (self.vars['x'][i, l] - self.vars['x'][j, l]) for l in range(p)) for i in range(c) for j in range(c)]
-        obj = self.gamma * gb.quicksum(dist) - obj_room
+        h, Q = self.constants['h'], self.constants['conflicts']
+        obj_room = gb.quicksum(self.vars['x'][i, l] for i in range(c) for l in range(p))
+        dist = {(i, j): Q.get((i, j), 0) * gb.quicksum(h[l] * (self.vars['x'][i, l] - self.vars['x'][j, l]) for l in range(p))
+                for i in range(c) for j in range(c)}
+        obj = self.gamma * gb.quicksum([dist[i, j] * dist[i, j] for i in range(c) for j in range(c)]) - obj_room
         self.problem.setObjective(obj, gb.GRB.MAXIMIZE)
         return True
