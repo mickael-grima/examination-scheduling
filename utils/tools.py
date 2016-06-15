@@ -109,7 +109,7 @@ def update_variable(problem, **dimensions):
     except:
         logging.exception("update_variable: impossible to update the variable of the given problem %s"
                           % problem.ModelName)
-    return ({}, {})
+    return {}, {}
 
 
 def transform_variables(x, y, **dimensions):
