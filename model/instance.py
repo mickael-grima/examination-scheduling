@@ -10,7 +10,6 @@ import random as rd
 import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
-import logging
 
 
 def force_data_format(func):
@@ -32,18 +31,13 @@ def force_data_format(func):
                 conflicts[i] = [j for j in range(n) if Q[i][j]]
 
         # make sure the conflicts are symmetric!
-        add = defaultdict(list)
         for k in conflicts:
             if len(conflicts[k]) > 0:
                 assert max(conflicts[k]) < n
             for l in conflicts[k]:
-                if k > k and k not in conflicts[l]:
-                    add[l] += [k]
-        for k in conflicts:
-            conflicts[k] = sorted(set(conflicts[k] + add[k]))
-
-        if len(conflicts) != n:
-            logging.warning("corect_format: conflicts has not the required length")
+                if k not in conflicts[l]:
+                    conflicts[l] += [k]
+            conflicts[k] = sorted(conflicts[k])
 
         # conflicts matrix dense format (dont build if option is set)
         if 'build_Q' in data and not data['build_Q']:

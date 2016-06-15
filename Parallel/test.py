@@ -160,7 +160,7 @@ if __name__=="__main__":
     p = 15
     prob = 0.2
     
-    n_jobs = 410
+    n_jobs = 1000
     
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()

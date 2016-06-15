@@ -130,23 +130,13 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
     
         if best_value != sys.maxint and best_value_duration > lazy_threshold * epochs:
             break
-    
-    
+        
     if log_history:
         return x, y, obj_val, logger
     else:
         return x, y, obj_val
 
 
-    
-    
-      
-      
-      
-      
-      
-      
-      
       
         
 if __name__ == '__main__':

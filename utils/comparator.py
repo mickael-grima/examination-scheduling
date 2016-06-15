@@ -56,6 +56,7 @@ HEURISTICS = {  # heuristics
     'greedy_heuristic': greedy_heuristic,
     'groups_heuristic': groups_heuristic
 }
+LIST_MODELS = [m for m in MODELS.iterkeys()] + [m for m in HEURISTICS.iterkeys()]
 
 
 def call_heuristic(problem_name, data, **kwards):
@@ -150,15 +151,21 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
 
 def main():
     p = ArgumentParser()
-    p.add_argument('-m', '--mode', required=True, help='<Required> give the name of the problem/heuristics to perform')
+    p.add_argument('-m', '--mode', required=True,
+                   help='<Required> give the name of the problem/heuristics to perform.'
+                   'The name are %s. The rank could also be given'
+                   % str({i: LIST_MODELS[i] for i in range(len(LIST_MODELS))}))
     p.add_argument('-n', '--n', required=True, help='<Required> number of exams')
     p.add_argument('-r', '--r', required=True, help='<Required> number of rooms')
     p.add_argument('-p', '--p', required=True, help='<Required> number of timeslots')
     args = p.parse_args()
 
     # data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p))
-    data = build_small_input()
-    compute_performance(args.mode, data, with_test=True)
+    data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p), tseed=1)
+    if args.mode.isdigit():
+        compute_performance(LIST_MODELS[int(args.mode)], data, with_test=True)
+    else:
+        compute_performance(args.mode, data, with_test=True)
 
 
 if __name__ == '__main__':
