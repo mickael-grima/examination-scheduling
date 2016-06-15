@@ -45,7 +45,7 @@ class TestConstraints(unittest.TestCase):
         graph.build_graph(self.data['n'], self.data['conflicts'])
         graph.color_graph()
         x, y = {}, graph.build_variable()
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']), msg="conflict constraint failed")
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']), msg="conflict constraint failed")
 
     def testGenerateStartingSolution(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
@@ -55,7 +55,7 @@ class TestConstraints(unittest.TestCase):
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
         self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
@@ -69,7 +69,7 @@ class TestConstraints(unittest.TestCase):
         x = {}
         y, _ = AC(self.data).optimize_time(epochs=10)
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
 
     def testHeuristics(self):
@@ -80,7 +80,7 @@ class TestConstraints(unittest.TestCase):
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
         self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
@@ -92,12 +92,9 @@ class TestConstraints(unittest.TestCase):
         x, y = group.optimize(self.data)
         n, r, p = self.data['n'], self.data['r'], self.data['p']
         x, y = transform_variables(x, y, n=n, p=p, r=r)
-        print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-        print is_feasible(x, y, self.data)
-        print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
         self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")

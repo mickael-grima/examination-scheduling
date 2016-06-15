@@ -13,6 +13,7 @@ sys.path.append(PROJECT_PATH)
 
 from ColorGraph import ColorGraph
 from model.groups_repartition_problem import GroupsRepartitionProblem
+from model.colouring_problem import ColouringGraphProblem
 import sys
 
 
@@ -23,10 +24,12 @@ def build_groups_data(groups, data):
     groups_data['h'] = data['h']  # Starting time of each time slot
     groups_data['v'] = {}  # value corresponding at the number of student for each group
     groups_data['conflicts'] = {}  # sum of the conflicts between two groups for each couple of groups
-    for index, group in groups.iteritems():
+    for index in range(len(groups)):
+        group = groups[index]
         groups_data['v'].setdefault(index, {})
         groups_data['v'][index] = sum(data['s'][i] for i in group)
-        for ind, gr in groups.iteritems():
+        for ind in range(len(groups)):
+            gr = groups[ind]
             groups_data['conflicts'][index, ind] = sum(data['Q'][i][j] for i in group for j in gr)
     return groups_data
 
@@ -61,20 +64,16 @@ def optimize(data, gamma=1.0):
     """ Generate first groups of exams that can be scheduled in parallel, and then fill
         the rooms in order that a minimal among of place is not used for each time slot
     """
-    n = data.get('n', 0)
+    n, p = data.get('n', 0), data.get('p', 0)
 
     # We first solve the coloring problem
-    # TODO: try to randomize, maybe ILP
-    prob = ColorGraph()
-    prob.build_graph(n, data['conflicts'])
-    prob.color_graph()
-    groups, index, i = {}, {}, 0  # group of parallel exams
-    for exam, colour in prob.colours.iteritems():
-        if colour not in index:
-            index.setdefault(colour, i)
-            i += 1
-        groups.setdefault(index[colour], [])
-        groups[index[colour]].append(exam)
+    prob = ColouringGraphProblem()
+    prob.build_problem(data)
+    prob.optimize()
+    x, y = sorted([var for var in prob.get_variables()], key=lambda x: len([val for val in x.itervalues()]),
+                  reverse=True)
+    groups = {j: [i for i in range(n) if x[i, j] == 1.0] for j in range(p) if sum(x[i, j] for i in range(n)) > 0}
+    groups = [group for group in groups.itervalues()]
 
     # optimize the repartition of groups over the time slots
     groups_data = build_groups_data(groups, data)
