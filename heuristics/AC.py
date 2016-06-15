@@ -63,7 +63,7 @@ class Ant(object):
     def set_starting_node(self, starting_node, neighbors):
         self.starting_nodes[starting_node] = neighbors
 
-    def walk_to_next_node(self, edges_weight, white_list=[]):
+    def walk_to_next_node(self, node, edges_weight, white_list=[]):
         """ @option black_list: node to not visit. I node has no other neighbor than the one in white_list
                                 we consider only the white_list
             for a given weigths, we return the next node to visit
@@ -86,19 +86,27 @@ class Ant(object):
         # for each connex component
         if not self.starting_nodes:
             logging.warning("%s.generate_coloring: try to colour graph, but no starting nodes found")
+        count_node = {}
         for node, neighbors in self.starting_nodes.iteritems():
             # start to visit the graph for one ant
-            visited, current_node = set(neighbors), node
-            visited.remove(node)
-            while visited:
+            not_seen, current_node = set(neighbors), node
+            while not_seen:
                 # color the node
-                if current_node in visited:
+                if current_node is None:
+                    raise Exception("current_node is None")
+                if current_node in not_seen:
                     graph.color_node(current_node, data=data, check_constraints=check_constraints)
-                    visited.remove(current_node)
-                    print len(visited)
+                    not_seen.remove(current_node)
+                count_node.setdefault(current_node, 0)
+                count_node[current_node] += 1
                 self.traces.append(current_node)
-                current_node = self.walk_to_next_node(edges_weight[node], white_list=visited) or current_node
-        return {n: c for n, c in graph.colours.iteritems()}
+                current_node = self.walk_to_next_node(current_node, edges_weight[current_node], white_list=not_seen)
+        res = {}
+        for n, c in graph.colours.iteritems():
+            if c < 0:
+                raise Exception('Color negative found: colour=%s, node=%s' % (c, n))
+            res[n] = c
+        return res
 
 
 class AC:
@@ -128,15 +136,18 @@ class AC:
         # build the graph function of the data
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
         components = [comp for comp in nx.connected_components(self.graph.graph)]
+
         # for each ant, we add a starting node for each connex component
         for ant in self.ants:
             for nodes in components:
                 ant.set_starting_node(rd.choice(list(nodes)), nodes)
+
         # initialize the weight on edges
         for node in self.graph.graph.nodes():
             self.edges_weight.setdefault(node, {})
             for neighbor in self.graph.graph.neighbors(node):
-                self.edges_weight[node][neighbor] = 1.0
+                if node != neighbor:
+                    self.edges_weight[node][neighbor] = 1.0
 
     def generate_colorings(self, check_constraints=False):
         """ Generate a feasible coloring for each ant
@@ -214,5 +225,5 @@ if __name__ == '__main__':
 
     # TODO: Construct meaningful tests
     num_ants = 10
-    ac = AC(data)
-    colorings = ac.generate_colorings(num_ants)
+    ac = AC(data, num_ants=num_ants)
+    y, obj = ac.optimize_time()

@@ -90,6 +90,7 @@ class RandomHeuristicAdvanced(RandomHeuristic):
             rd.shuffle(nodes)
             self.graph.reset_colours()
             for node in nodes:
+            #    print self.periods
                 self.graph.color_node(node, data=self.data, check_constraints = True, periods = self.periods[i])
             colorings.append({n: c for n, c in self.graph.colours.iteritems()})
         return colorings

@@ -11,6 +11,8 @@ for p in PATHS:
         break
 sys.path.append(PROJECT_PATH)
 
+from argparse import ArgumentParser
+
 from model.linear_problem import LinearProblem
 from model.linear_one_variable_problem import LinearOneVariableProblem
 from model.cuting_plane_problem import CutingPlaneProblem
@@ -34,6 +36,7 @@ import time
 from tools import update_variable, transform_variables
 from model.objectif_handler import main_obj
 from model.constraints_handler import is_feasible
+from model.instance import build_smart_random, build_small_input
 
 RESULTS_FILE = '%sutils/data/performance' % PROJECT_PATH
 MODELS = {  # model from folder GurobiModel
@@ -53,6 +56,7 @@ HEURISTICS = {  # heuristics
     'greedy_heuristic': greedy_heuristic,
     'groups_heuristic': groups_heuristic
 }
+LIST_MODELS = [m for m in MODELS.iterkeys()] + [m for m in HEURISTICS.iterkeys()]
 
 
 def call_heuristic(problem_name, data, **kwards):
@@ -73,7 +77,7 @@ def call_heuristic(problem_name, data, **kwards):
     return x, y
 
 
-def compute_performance(problem_name, data, with_test=False, **kwards):
+def compute_performance(problem_name, data, with_test=True, **kwards):
     """ @param problem: name of the problem, can be:
         part of:
             PROBLEMS = {
@@ -84,8 +88,10 @@ def compute_performance(problem_name, data, with_test=False, **kwards):
         for variables x, y: compute the time needed to solve the problem, and the value we get
     """
     # compute some numbers about data
-    conflicts_average = 0  # conflicts average: average over the line of 1's number
-    opening_average = 0  # average over the room's available timeslots
+    # conflicts average: average over the line of 1's number
+    conflicts_average = sum(sum(tab) for tab in data['Q']) / float(len(data['Q']))
+    # average over the room's available timeslots
+    opening_average = sum(sum(tab) for tab in data['T']) / float(len(data['T']))
 
     # How much time to solve the problem ?
     if problem_name in MODELS:
@@ -93,7 +99,7 @@ def compute_performance(problem_name, data, with_test=False, **kwards):
         t_start = time.time()
         problem.optimize()
         delta_t = time.time() - t_start
-        x, y = update_variable(problem)
+        x, y = update_variable(problem, n=data['n'], r=data['r'], p=data['p'])
 
     elif problem_name in HEURISTICS:
         t_start = time.time()
@@ -105,7 +111,7 @@ def compute_performance(problem_name, data, with_test=False, **kwards):
                               log_history=kwards.get('log_history', False),
                               num_ants=kwards.get('num_ants', 10))
         delta_t = time.time() - t_start
-        x, y = transform_variables(x, y)
+        x, y = transform_variables(x, y, n=data['n'], r=data['r'], p=data['p'])
 
     else:
         raise Exception("compute_performance: problem's name %s is not an existing problem" % problem_name)
@@ -113,7 +119,7 @@ def compute_performance(problem_name, data, with_test=False, **kwards):
     # Test if the constraints are fullfilled
     if with_test:
         constraints_test = is_feasible(x, y, data)
-        test_result = 'FAILED' if [value for value in constraints_test.itervalues() if value] else 'SUCCEED'
+        test_result = 'FAILED' if [value for value in constraints_test.itervalues() if not value] else 'SUCCEED'
     else:
         test_result = 'NOT TESTED'
 
@@ -132,11 +138,35 @@ def compute_performance(problem_name, data, with_test=False, **kwards):
         src.write('conflicts average per exam: %s\n' % conflicts_average)
         src.write('opening hours average per room: %s\n' % opening_average)
         src.write('\n')
+        src.write('@@@ TEST @@@\n')
         src.write('Test result: %s\n' % test_result)
         if test_result == 'FAILED':
-            src.write('Cause of failure: %s' % ', '.join([cstr for cstr, v in constraints_test.iteritems() if v]))
+            src.write('Cause of failure: %s\n' % ', '.join([cstr for cstr, v in constraints_test.iteritems() if not v]))
         src.write('\n')
         src.write('@@@ PERFORMANCE @@@\n')
         src.write('Running time: %s\n' % delta_t)
         src.write('Objective value: %s\n' % obj)
         src.write('-------------------------------------\n\n')
+
+
+def main():
+    p = ArgumentParser()
+    p.add_argument('-m', '--mode', required=True,
+                   help='<Required> give the name of the problem/heuristics to perform.'
+                   'The name are %s. The rank could also be given'
+                   % str({i: LIST_MODELS[i] for i in range(len(LIST_MODELS))}))
+    p.add_argument('-n', '--n', required=True, help='<Required> number of exams')
+    p.add_argument('-r', '--r', required=True, help='<Required> number of rooms')
+    p.add_argument('-p', '--p', required=True, help='<Required> number of timeslots')
+    args = p.parse_args()
+
+    # data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p))
+    data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p), tseed=1)
+    if args.mode.isdigit():
+        compute_performance(LIST_MODELS[int(args.mode)], data, with_test=True)
+    else:
+        compute_performance(args.mode, data, with_test=True)
+
+
+if __name__ == '__main__':
+    main()
