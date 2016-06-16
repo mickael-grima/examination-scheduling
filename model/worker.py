@@ -44,6 +44,8 @@ from GurobiModel.GurobiLinear_v_14_cuts11 import build_model as build_linear_mod
 from GurobiModel.GurobiLinear_v_14_cuts12 import build_model as build_linear_model_14c12
 
 from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linear_model_15
+from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_model_16
+from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
 
 
 
@@ -55,7 +57,9 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear more covers': build_linear_model_15,
+        'Linear Pertubate': build_linear_model_17,
+    #    'Linear symmetrie': build_linear_model_16,
+    #    'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
@@ -87,16 +91,17 @@ def compare(data):
         try:
             objectives[prob_name] = problem.objVal
         except:
+
             objectives[prob_name] = 0
 
     return times, objectives
 
 
 def test_compare():
-    n = 300
-    r = 30
-    p = 20
-    tseed = 3
+    n = 1500 
+    r = 60
+    p = 60
+    tseed = 34332
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
     time, objectives = compare(data)

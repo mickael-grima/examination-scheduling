@@ -80,6 +80,11 @@ def build_model(data, n_cliques = 0, verbose = True):
     # integrate new variables
     model.update() 
 
+    # for i in range(p+5):
+    #     for l in range(i-5):
+    #         y[i, l].setAttr("BranchPriority", s[i])
+
+    # model.update() 
 
 
     start = timeit.default_timer()
@@ -87,6 +92,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     # not very readable but same constraints as in GurbiLinear_v_10: speeded up model building by 2 for small problems (~400 exams) and more for huger problem ~1500 exams
     if verbose:
         print("Building constraints...")    
+
     
     obj = LinExpr()
     sumconflicts = {}
@@ -140,6 +146,28 @@ def build_model(data, n_cliques = 0, verbose = True):
                 cover_inequalities += c5
         model.addConstr(cover_inequalities <= sumrooms[l], "cover_inequalities")
 
+    # if p <= n:
+    #     for l in range(p-5):
+    #         model.addConstr( quicksum(y[l,i] for i in range(l+5)) >= 1, "break symmetrie")
+
+    # Break Symmetry
+    # First only use small rooms in a period if all bigger rooms are already used
+    # TODO Do for every location 
+
+    s_sorted = sorted(range(len(c)), key = lambda k: c[k])
+
+    for l in range(p):
+        for index, k in enumerate(s_sorted):
+            #print k, index
+            s1 = LinExpr()
+            if index < len(s_sorted)-1:
+                if T[k][l] == 1 and T[s_sorted[index+1]][l] == 1:
+                    for i in range(n):
+                    #    if location[k] in w[i]:
+                        s1.addTerms([1,-1], [x[i,k,l], x[i,s_sorted[index+1],l]])
+            model.addConstr( s1 <= 0 , "s1")
+
+
     model.setObjective( obj, GRB.MINIMIZE)
 
     print timeit.default_timer()-start
@@ -166,6 +194,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     model.params.OutputFlag = 1
     model.params.Method = 3
     model.params.MIPFocus = 1
+    model.params.threads = 4
 
 
     # cuts
