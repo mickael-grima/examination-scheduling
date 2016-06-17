@@ -7,10 +7,12 @@ Sub main()
     
     Dim lr As Long
     
+    Application.ScreenUpdating = False
+    
     Set sht = ThisWorkbook.ActiveSheet
     Set csht = Sheets.Add
     csht.Name = "Conflicts"
-
+    
     
     'get last row
     lr = sht.Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
@@ -21,6 +23,7 @@ Sub main()
     
     crng.RemoveDuplicates Columns:=Array(1)
     
+    
     'Call ImportWorksheet
     
     Call RemoveRows(csht, sht)
@@ -29,6 +32,7 @@ Sub main()
     
     Call FormatConflictMatrix(csht, sht)
     
+    Application.ScreenUpdating = True
     
 End Sub
 
@@ -168,6 +172,8 @@ Sub makeSymmetric(csht As Worksheet, sht As Worksheet, lr As Long, clr As Long)
         For j = i To clr
             If i = j Then
                 csht.Cells(i, j).Value = sht.Cells(Range(sht.Cells(2, 1), sht.Cells(lr, 1)).Find(What:=csht.Cells(i, 1).Value, MatchCase:=True).Row, 5).Value
+                csht.Cells(clr + 1, j).Value = sht.Cells(Range(sht.Cells(2, 1), sht.Cells(lr, 1)).Find(What:=csht.Cells(i, 1).Value, MatchCase:=True).Row, 5).Value
+                csht.Cells(i, clr + 1) = sht.Cells(Range(sht.Cells(2, 1), sht.Cells(lr, 1)).Find(What:=csht.Cells(i, 1).Value, MatchCase:=True).Row, 5).Value
             ElseIf Not IsEmpty(csht.Cells(i, j).Value) Then
                 csht.Cells(j, i).Value = csht.Cells(i, j).Value
             ElseIf Not IsEmpty(csht.Cells(j, i).Value) Then
@@ -177,9 +183,37 @@ Sub makeSymmetric(csht As Worksheet, sht As Worksheet, lr As Long, clr As Long)
         Next j
     Next i
 
+Call SortMatrix(csht, sht, lr, clr)
 
 End Sub
+Sub SortMatrix(csht As Worksheet, sht As Worksheet, lr As Long, clr As Long)
 
+    Dim foundAll As Boolean
+    foundAll = False
+    Dim matrix As Range
+    Dim room1 As String
+    Dim room2 As String
+    Dim nextE As Long
+    Dim myarray As Variant
+
+    Set matrix = Range(csht.Cells(2, 1), csht.Cells(clr, clr + 1))
+    matrix.Sort key1:=Range(csht.Cells(2, clr + 1), csht.Cells(clr + 1, clr + 1)), order1:=xlDescending
+    
+    Set matrix = Range(csht.Cells(1, 1), csht.Cells(clr + 1, clr + 1))
+    
+    myarray = matrix.Value
+    
+    matrix.Value = Application.WorksheetFunction.Transpose(myarray)
+    
+    Set matrix = Range(csht.Cells(2, 1), csht.Cells(clr, clr + 1))
+    matrix.Sort key1:=Range(csht.Cells(2, clr + 1), csht.Cells(clr + 1, clr + 1)), order1:=xlDescending
+    
+    csht.Columns(clr + 1).EntireColumn.Delete
+    csht.Rows(clr + 1).EntireRow.Delete
+    
+
+
+End Sub
 
 Sub RemoveR()
 
