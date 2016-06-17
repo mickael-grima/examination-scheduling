@@ -68,8 +68,8 @@ class ConstrainedColorGraph(ColorGraph):
             @param capacities: rooms capacities
         """
         # get all nodes with that color
-        nodes = self.color_exams[color] + [node]
-        #nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
+        #nodes = self.color_exams[color] + [node]
+        nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
         
         c, s, r = data.get('c', []), data.get('s', []), data.get('r', 0)
 
@@ -98,14 +98,15 @@ class ConstrainedColorGraph(ColorGraph):
                 # We check if the room constraint is fullfilled
                 color_this_node = False
                 if not check_constraints:
+                    #print "dont check constraints"
                     color_this_node = True
                 elif periods is not None and self.check_room_constraints_greedy(node, col, data, periods = periods):
                     color_this_node = True
                 elif self.check_rooms_constraint(node, col, data):
                     color_this_node = True
-                elif check_constraints:
-                    # dont know why it works, but it works ^^°
-                    color_this_node = True
+                #elif check_constraints:
+                    ## dont know why it works, but it works ^^°
+                    #color_this_node = True
                     
                 # if the node can be colored, to so and add them to color exams list
                 if color_this_node:

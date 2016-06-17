@@ -34,7 +34,7 @@ from model.constraints_handler import (
 
 from heuristics.examination_scheduler import *
 from heuristics.MetaHeuristic import *
-    
+from heuristics.johnson import Johnson
 def get_data_for_tests(n, r, p, prob_conflicts, seed):
     rd.seed(seed)
     return build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
@@ -142,6 +142,16 @@ def test_ant_colony(n = 15, r = 5, p = 15, prob_conflicts = 0.6, epochs = 100, a
     test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
     
         
+      
+def test_johnson(n = 15, r = 5, p = 15, prob_conflicts = 0.6, epochs = 100, annealing_iterations = 500, seed = 42):
+    
+    print "Johnson"
+    data = get_data_for_tests(n, r, p, prob_conflicts, seed)
+    
+    T = Johnson(data, n_colorings = 30)
+    test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
+    
+        
 if __name__ == '__main__':
     
     epochs = 20
@@ -153,16 +163,18 @@ if __name__ == '__main__':
     prob = 0.3
     seed = 9464
     
-    n = 30
-    r = 10
-    p = 100
-    prob = 0.2
+    #n = 30
+    #r = 10
+    #p = 100
+    #prob = 0.5
     
     #n = 150
     #r = 130
     #p = 80
     #prob = 0.3
     #seed = 42
+    #johnson ca 148.881012658
+
     
     #n = 300
     #r = 260
@@ -173,7 +185,8 @@ if __name__ == '__main__':
     
     #test_heuristic(n,r,p,prob,seed)
     #test_optimize_dummy(n,r,p,prob,seed)
-    test_random(n,r,p,prob,epochs, annealing_iterations, seed)
+    test_random(n,r,p,prob,epochs=1, annealing_iterations=annealing_iterations,seed=seed)
     #test_SA(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
-    test_ant_colony(n,r,p,prob, epochs, annealing_iterations,seed) 
+    #test_ant_colony(n,r,p,prob, epochs, annealing_iterations,seed) 
+    test_johnson(n,r,p,prob, epochs=1, annealing_iterations=annealing_iterations,seed=seed) 

@@ -27,6 +27,7 @@ from heuristics.schedule_rooms import schedule_rooms
 from heuristics.tools import to_binary, get_coloring
 from heuristics.check_feasibility import build_statespace
 
+from model.constraints_handler import is_feasible
 def heuristic(coloring, data, gamma = 1, max_iter = 100):
     '''
         The heuristiv which iteratively solves first the time scheduling problem, and afterwards the room scheduling problems.
@@ -100,7 +101,12 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             xs[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations)
             # build binary variable 
             ys[ind] = to_binary(coloring, color_schedules[ind], data['h'])
-        
+            
+            if xs[ind] is not None:
+                print is_feasible(xs[ind], ys[ind], data)
+            else:
+                print "None infeasible"
+                
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
         
