@@ -24,7 +24,7 @@ Sub main()
     crng.RemoveDuplicates Columns:=Array(1)
     
     
-    'Call ImportWorksheet
+    Call ImportWorksheet
     
     Call RemoveRows(csht, sht)
     
@@ -133,7 +133,7 @@ Dim cfsht As Worksheet
 
 csht.Copy After:=csht
 Set cfsht = ThisWorkbook.ActiveSheet
-cfsht.Name = "ConlictsFormat"
+cfsht.Name = "ConflictsFormat"
 
 clr = csht.Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
 
