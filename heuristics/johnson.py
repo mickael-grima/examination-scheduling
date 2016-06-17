@@ -14,7 +14,7 @@ import numpy as np
 from operator import itemgetter
 
 from ConstrainedColorGraph import ConstrainedColorGraph
-# from heuristics.AC import AC
+from heuristics.MetaHeuristic import MetaHeuristic
 # from heuristics.graph_coloring import greedy_coloring
 
 
@@ -22,11 +22,10 @@ from ConstrainedColorGraph import ConstrainedColorGraph
 # TODO: ALEX
 #
 
-class Johnson:
+class Johnson(MetaHeuristic):
     
     def __init__(self, data,n_colorings=10):
-        self.data = data
-        self.n_colorings = n_colorings
+        MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
         self.graph = ConstrainedColorGraph()
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
 
@@ -35,39 +34,41 @@ class Johnson:
         # Order the exams by alpha*s_i + conf_num
 
         colorings = []
-        conflicts = data['conflicts']
+        conflicts = self.data['conflicts']
 
         # find number of conflicts for all exams
-        conf_num = data['n']*[0]
+        conf_num = [0] * self.data['n']
         # go over conflict dictionary and save conflicts
+        # Assumes symmetric conflict data
         for i in conflicts:
-            for conflict in conflicts[i]:
-                conf_num[i] += 1                
-                conf_num[conflict] += 1
-        
+            conf_num[i] = len(conflicts[i])
+            
+        start = -1
+        end = 1
+        alpha = list(np.arange(start=start, stop=end, step = (end-start)/float(self.n_colorings)))
         for j in range(self.n_colorings):
             # reset node ordering and coloring
             nodes = self.graph.nodes()
             self.graph.reset_colours()
 
             # set parameter alpha and compute exam value for ordering
-            alpha = float(j)/float(self.n_colorings-1) * 0.5
-            print alpha
-            vals = np.array(data['s'])*alpha + np.array(conf_num)
-            #print vals
+            print alpha[j]
+            vals = np.array(self.data['s'])*alpha[j] + np.array(conf_num)
+            #print map(lambda x: "%0.2f"%x, sorted(vals))
 
             # sort nodes by vals
             nodes = [elmts[0] for elmts in sorted(zip(nodes, vals), key=itemgetter(1), reverse=True)]
-            #print nodes
-
+            print nodes
+            
             # compute coloring
             for node in nodes:
                 self.graph.color_node(node, data=self.data, check_constraints = False)
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
-
+            #print self.graph.colours.values()
+        print len(colorings)
         return colorings
         
-    def update(self, values, best_index = None):
+    def update(self, values, best_index = None, time_slots = None):
         # no update necessary yet as of now
         pass
         

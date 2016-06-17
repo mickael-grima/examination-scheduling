@@ -60,7 +60,8 @@ class RandomHeuristic(MetaHeuristic):
             self.graph.reset_colours()
             for node in nodes:
                 self.graph.color_node(node, data=self.data, check_constraints = False)
-            colorings.append({n: c for n, c in self.graph.colours.iteritems()})                
+            colorings.append({n: c for n, c in self.graph.colours.iteritems()})      
+            #print self.graph.colours.values()
         return colorings
     
     
