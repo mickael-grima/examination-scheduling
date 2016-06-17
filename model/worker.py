@@ -46,6 +46,8 @@ from GurobiModel.GurobiLinear_v_14_cuts12 import build_model as build_linear_mod
 from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linear_model_15
 from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_model_16
 from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
+from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_linear_model_18
+
 
 
 
@@ -57,7 +59,8 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear Pertubate': build_linear_model_17,
+        'Linear Lexicographic': build_linear_model_18,
+    #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
     #    'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
