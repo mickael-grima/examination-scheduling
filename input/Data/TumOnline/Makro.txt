@@ -1,0 +1,141 @@
+Sub main()
+    Dim sht As Worksheet
+    Dim csht As Worksheet
+    Dim rng As Range
+    Dim crng As Range
+    
+    
+    Dim lr As Long
+    
+    Set sht = ThisWorkbook.ActiveSheet
+    Set csht = Sheets.Add
+    csht.Name = "Conflicts"
+
+    
+    'get last row
+    lr = sht.Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
+    Set rng = sht.Range(sht.Cells(2, 1), sht.Cells(lr, 1))
+    Set crng = csht.Range(csht.Cells(2, 1), csht.Cells(lr, 1))
+    'copy lectures to conflict matrix
+    rng.Copy crng
+    
+    crng.RemoveDuplicates Columns:=Array(1)
+    
+    Call ImportWorksheet
+    
+    Call RemoveRows(csht)
+    
+    Call createConflicMatrix(csht, sht, lr)
+    
+    
+End Sub
+
+
+
+Sub ImportWorksheet()
+    ' This macro will import a file into this workbook
+    Dim wb As Workbook
+    
+    Filename = "Szenarioergebnis SoSe 2016.xlsx"
+    TabName = "Szenarioergebnis SoSe 2016"
+    ControlFile = ActiveWorkbook.Name
+    Workbooks.Open Filename:=ThisWorkbook.Path & "\" & Filename
+    
+    Sheets(TabName).Copy After:=Workbooks(ControlFile).Sheets(1)
+    Windows(Filename).Activate
+    ActiveWorkbook.Close SaveChanges:=False
+    Windows(ControlFile).Activate
+
+End Sub
+
+Sub RemoveRows(csht As Worksheet, sht As Worksheet)
+
+    Dim i As Integer
+    Dim room As String
+    Dim vrange As Range
+    Dim lr As Long
+    Dim ssht As Worksheet
+    i = 2
+    
+    Set ssht = ThisWorkbook.Sheets("Szenarioergebnis SoSe 2016")
+    lr = ssht.Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
+    
+    Do While csht.Cells(i, 1).Value <> ""
+        room = csht.Cells(i, 1).Value
+        Set vrange = ssht.Range(ssht.Cells(2, 1), ssht.Cells(lr, 1)).Find(What:=room, MatchCase:=True)
+        
+        
+        
+        If vrange Is Nothing Then
+            'MsgBox (room)
+            csht.Rows(i).EntireRow.Delete
+        Else
+            i = i + 1
+        End If
+                
+    Loop
+
+End Sub
+
+Sub createConflicMatrix(csht As Worksheet, sht As Worksheet, lastRow As Long)
+
+    Dim rng As Range
+    Dim lr As Long
+
+    lr = csht.Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
+    Set rng = sht.Range(csht.Cells(2, 1), csht.Cells(lr, 1))
+    
+    rng.Copy
+    csht.Range(csht.Cells(1, 2), csht.Cells(1, lr)).PasteSpecial Transpose:=True
+
+End Sub
+
+Sub fillConflicMatrix(csht As Worksheet, sht As Worksheet, lr As Long, lastRow As Long)
+
+    Dim foundAll As Boolean
+    foundAll = False
+    Dim vrange As Range
+    Dim room1 As String
+    Dim room2 As String
+    Dim nextE As Long
+    nectE = 0
+    
+
+    For i = 2 To lr
+        room1 = csht.Cells(1, i).Value
+        For j = 2 To lr
+            room2 = csht.Cells(j, 1).Value
+            Do While foundAll = False
+                Set vrange = Range(sht.Cells(1, 2), sht.Cells(1, lastRow)).Find(What:=room, After:=nextE, MatchCase:=True)
+                
+                If vrange Is Nothing Then
+                    foundAll = True
+                Else
+                ...
+                End If
+            Loop
+            foundAll = False
+        Next j
+    Next i
+    
+
+End Sub
+
+
+Sub RemoveR()
+
+    Dim i As Integer
+    i = 2
+    
+    Do While csht.Cells(i, 1).Value <> ""
+        If (InStr(4, csht.Cells(i, 1).Value, "-") >= 4 Or InStr(csht.Cells(i, 1).Value, "_") >= 4) Then
+            csht.Cells(i, 2).Value = "Here"
+            Rows(i).EntireRow.Delete
+        Else
+            i = i + 1
+        End If
+        
+    Loop
+
+End Sub
+
