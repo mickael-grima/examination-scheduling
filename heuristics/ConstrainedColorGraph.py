@@ -15,6 +15,7 @@ from heuristics.ColorGraph import ColorGraph
 from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 from collections import defaultdict
 
+
 class ConstrainedColorGraph(ColorGraph):
     def __init__(self):
         super(ConstrainedColorGraph, self).__init__()

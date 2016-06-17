@@ -25,6 +25,29 @@ from GurobiModel.GurobiLinear_v_4_Cliques import build_model as build_linear_mod
 from GurobiModel.GurobiLinear_v_5_changed_obj import build_model as build_linear_model_5
 from GurobiModel.GurobiLinear_v_6_removed_c6 import build_model as build_linear_model_6
 from GurobiModel.GurobiLinear_v_8_removed_obj import build_model as build_linear_model_8
+from GurobiModel.GurobiLinear_v_10_location import build_model as build_linear_model_10
+from GurobiModel.GurobiLinear_v_11_model_speed import build_model as build_linear_model_11
+from GurobiModel.GurobiLinear_v_12_smaller_M import build_model as build_linear_model_12
+from GurobiModel.GurobiLinear_v_13_cover_inequalities import build_model as build_linear_model_13
+
+from GurobiModel.GurobiLinear_v_14_cuts1 import build_model as build_linear_model_14c1
+from GurobiModel.GurobiLinear_v_14_cuts2 import build_model as build_linear_model_14c2
+from GurobiModel.GurobiLinear_v_14_cuts3 import build_model as build_linear_model_14c3
+from GurobiModel.GurobiLinear_v_14_cuts4 import build_model as build_linear_model_14c4
+from GurobiModel.GurobiLinear_v_14_cuts5 import build_model as build_linear_model_14c5
+from GurobiModel.GurobiLinear_v_14_cuts6 import build_model as build_linear_model_14c6
+from GurobiModel.GurobiLinear_v_14_cuts7 import build_model as build_linear_model_14c7
+from GurobiModel.GurobiLinear_v_14_cuts8 import build_model as build_linear_model_14c8
+from GurobiModel.GurobiLinear_v_14_cuts9 import build_model as build_linear_model_14c9
+from GurobiModel.GurobiLinear_v_14_cuts10 import build_model as build_linear_model_14c10
+from GurobiModel.GurobiLinear_v_14_cuts11 import build_model as build_linear_model_14c11
+from GurobiModel.GurobiLinear_v_14_cuts12 import build_model as build_linear_model_14c12
+
+from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linear_model_15
+from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_model_16
+from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
+
+
 
 from model.instance import build_smart_random
 
@@ -34,12 +57,19 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-         'Linear Advanced removed obj': build_linear_model_8,
-    #     'Linear Advanced removed c6': build_linear_model_6,
-    #    'Linear Advanced changed obj': build_linear_model_5,
-    #    'Linear Advanced': build_linear_model_3,
-    #    'Linear Advanced Cliques': build_linear_model_4,    
-    #  'GurobiQ_neu': build_nonlinear_model
+        'Linear Pertubate': build_linear_model_17,
+    #    'Linear symmetrie': build_linear_model_16,
+    #    'Linear more covers': build_linear_model_15,
+    #    'Linear Cover inequalities': build_linear_model_13,
+    #    'Linear smaller M': build_linear_model_12,
+    #    'Linear model speed': build_linear_model_11,
+    #    'Linear Location': build_linear_model_10,
+    #   'Linear Advanced removed obj': build_linear_model_8,
+    #   'Linear Advanced removed c6': build_linear_model_6,
+    #   'Linear Advanced changed obj': build_linear_model_5,
+    #   'Linear Advanced': build_linear_model_3,
+    #   'Linear Advanced Cliques': build_linear_model_4,    
+    #   'GurobiQ_neu': build_nonlinear_model
     }
 
     times = dict()
@@ -54,7 +84,6 @@ def compare(data):
         problem = problems[prob_name](data)
         # Optimize selected model
         t = time()
-
         problem.optimize()
         times[prob_name] = time() - t
 
@@ -62,16 +91,17 @@ def compare(data):
         try:
             objectives[prob_name] = problem.objVal
         except:
+
             objectives[prob_name] = 0
 
     return times, objectives
 
 
 def test_compare():
-    n = 1500
+    n = 1500 
     r = 60
     p = 60
-    tseed = 295
+    tseed = 34332
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
     time, objectives = compare(data)

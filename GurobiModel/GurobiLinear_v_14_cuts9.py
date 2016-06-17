@@ -13,8 +13,9 @@ import random
 import networkx as nx
 import math 
 from time import time
+import timeit
     
-from gurobipy import Model, quicksum, GRB, GurobiError
+from gurobipy import Model, quicksum, GRB, GurobiError, LinExpr
 from model.instance import build_random_data
 
 '''
@@ -49,6 +50,8 @@ def build_model(data, n_cliques = 0, verbose = True):
     s = data['s']
     c = data['c']
     h = data['h']
+    w = data['w']
+    location = data['location']
     conflicts = data['conflicts']
     locking_times = data['locking_times']
     T = data['T']
@@ -61,11 +64,12 @@ def build_model(data, n_cliques = 0, verbose = True):
     
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
-    for i in range(n):
-        for k in range(r):
-            for l in range(p):
-                if T[k][l] == 1:
-                    x[i,k,l] = model.addVar(vtype=GRB.BINARY, name="x_%s_%s_%s" % (i,k,l))
+    for k in range(r):
+        for l in range(p):
+            if T[k][l] == 1:
+                for i in range(n):
+                    if location[k] in w[i]:
+                        x[i,k,l] = model.addVar(vtype=GRB.BINARY, name="x_%s_%s_%s" % (i,k,l))
     
     # y[i,l] = 1 if exam i is at time l
     y = {}
@@ -77,57 +81,75 @@ def build_model(data, n_cliques = 0, verbose = True):
     # integrate new variables
     model.update() 
 
-    # adding constraints as found in MidTerm.pdf
+    start = timeit.default_timer()
+
+    # not very readable but same constraints as in GurbiLinear_v_10: speeded up model building by 2 for small problems (~400 exams) and more for huger problem ~1500 exams
     if verbose:
         print("Building constraints...")    
     
-    if verbose:
-        print("c1: connecting variables x and y")
+    obj = LinExpr()
+    sumconflicts = {}
+    maxrooms = {}
     for i in range(n):
+        sumconflicts[i] = sum(conflicts[i])
+        if s[i] <= 50:
+            maxrooms[i] = 1
+        elif s[i] <= 100:
+            maxrooms[i] = 2
+        elif s[i] <= 400:
+            maxrooms[i] = 7
+        elif s[i] <= 700:
+            maxrooms[i] = 9
+        else:
+            maxrooms[i] = 12
+        c2 = LinExpr()
+        c4 = LinExpr()
         for l in range(p):
-            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) <= 12 * y[i, l], "c1a")
-            model.addConstr( quicksum([ x[i, k, l] for k in range(r) if T[k][l] == 1 ]) >= y[i, l], "c1b")
-            
-    if verbose:
-        print("c2: each exam at exactly one time")
-    for i in range(n):
-        model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1 , "c2")
+            c1 = LinExpr()
+            c1 = LinExpr()
+            c3 = LinExpr()
+            for k in range(r):
+                if T[k][l] == 1 and location[k] in w[i]:
+                    c1.addTerms(1, x[i, k, l])
+                    c4.addTerms(c[k],x[i,k,l])
+            obj += c1
+            model.addConstr(c1 <= maxrooms[i]* y[i,l], "c1a")
+            model.addConstr(c1 >= y[i,l], "C1b")
 
-    """
-    Idea:   -instead of saving a conflict Matrix, save Cliques of exams that cannot be written at the same time
-            -then instead of saying of one exam is written in a given period all conflicts cannot be written in the same period we could say
-            -for all exams in a given clique only one can be written
-    """
-    
-    if verbose:
-        print("c3: avoid conflicts")
-    for i in range(n):
-        for l in range(p):
-            # careful!! Big M changed!
-            model.addConstr(quicksum([ y[j,l] for j in conflicts[i] ]) <= (1 - y[i, l]) * sum(conflicts[i]), "c3")
-    
-    if verbose:
-        print("c4: seats for all students")
-    for i in range(n):
-        model.addConstr( quicksum([ x[i, k, l] * c[k] for k in range(r) for l in range(p) if T[k][l] == 1 ]) >= s[i], "c4")
-    
-    if verbose:
-        print("c5: only one exam per room per period")
-    for k in range(r):
-        for l in range(p):
+            for j in conflicts[i]:
+                c3.addTerms(1,y[j,l])
+            model.addConstr(c3 <= (1 - y[i,l])*sumconflicts[i], "c3")
+
+            c2.addTerms(1,y[i,l])
+        model.addConstr( c2 == 1 , "c2")
+        model.addConstr(c4 >= s[i], "c4")
+
+    sumrooms = {}
+    for l in range(p):
+        sumrooms[l] = 0
+        cover_inequalities = LinExpr()
+        for k in range(r):   
             if T[k][l] == 1:
-                model.addConstr( quicksum([ x[i, k, l] for i in range(n)  ]) <= 1, "c5")    
+                sumrooms[l] += 1
+                c5 = LinExpr()
+                for i in range(n):
+                    if location[k] in w[i]:
+                        c5.addTerms(1,x[i,k,l])
+                model.addConstr( c5 <= 1, "c5")  
+                cover_inequalities += c5
+        model.addConstr(cover_inequalities <= sumrooms[l], "cover_inequalities")
+
+
+    model.setObjective( obj, GRB.MINIMIZE)
+
+    print timeit.default_timer()-start
+ 
     
 
     if verbose:
-        print("All constrained built - OK")
+        print("All constrained and objective built - OK")
 
-    # objective: minimize number of used rooms
-    if verbose:
-        print("Building Objective...")
-    obj1 = quicksum([ x[i,k,l] for i,k,l in itertools.product(range(n), range(r), range(p)) if T[k][l] == 1 ]) 
-
-    model.setObjective( obj1, GRB.MINIMIZE)
+    
 
     if not verbose:
         model.params.OutputFlag = 0
@@ -140,7 +162,28 @@ def build_model(data, n_cliques = 0, verbose = True):
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.method = 1
     #model.params.MIPFocus = 1
-    #model.params.cuts = 0
+
+    model.params.OutputFlag = 1
+    model.params.Method = 3
+
+
+    # cuts
+    model.params.cuts = 0
+    model.params.cliqueCuts = 0
+    model.params.coverCuts = 0
+    model.params.flowCoverCuts = 0
+    model.params.FlowPathcuts = 0
+    model.params.GUBCoverCuts = 0
+    model.params.impliedCuts = 0
+    model.params.MIPSepCuts = 0
+    model.params.MIRCuts = 0
+    model.params.ModKCuts = 2
+    model.params.NetworkCuts = 0
+    model.params.SUBMIPCuts = 0
+    model.params.ZeroHalfCuts = 0
+
+    model.params.TimeLimit = 30
+
 
 
     # # Tune the model

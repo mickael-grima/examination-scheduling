@@ -16,7 +16,7 @@ import unittest
 import random as rd
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
 from heuristics.AC import AC
-import heuristics.groups_heuristic as grouph
+import heuristics.groups_heuristic as group
 import heuristics.examination_scheduler as scheduler
 from heuristics import tools
 from model.instance import build_smart_random, build_small_input, build_random_data
@@ -28,7 +28,8 @@ from model.constraints_handler import (
     test_conflicts,
     test_enough_seat,
     test_one_exam_per_period,
-    test_one_exam_period_room
+    test_one_exam_period_room,
+    is_feasible
 )
 
 
@@ -37,16 +38,16 @@ class TestConstraints(unittest.TestCase):
     """
     def setUp(self):
         # self.data = build_small_input()
-        self.data = build_smart_random(n=150, p=20, r=150)
+        self.data = build_smart_random(n=15, p=20, r=15, tseed=1)
 
     def testColouringHeuristic(self):
         graph = ColorGraph()
         graph.build_graph(self.data['n'], self.data['conflicts'])
         graph.color_graph()
         x, y = {}, graph.build_variable()
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']), msg="conflict constraint failed")
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']), msg="conflict constraint failed")
 
-    def TestGenerateStartingSolution(self):
+    def testGenerateStartingSolution(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
         """
         x, y = generate_starting_solution_by_maximal_time_slot_filling(self.data)
@@ -54,7 +55,7 @@ class TestConstraints(unittest.TestCase):
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
         self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
@@ -68,10 +69,10 @@ class TestConstraints(unittest.TestCase):
         x = {}
         y, _ = AC(self.data).optimize_time(epochs=10)
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
 
-    def TestHeuristics(self):
+    def testHeuristics(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
         """
         x, y, _ = scheduler.optimize(AC(self.data), self.data)
@@ -79,7 +80,7 @@ class TestConstraints(unittest.TestCase):
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
         self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
@@ -88,12 +89,12 @@ class TestConstraints(unittest.TestCase):
                         msg="one exam per period per room constraint failed")
 
     def testGreedyHeuristics(self):
-        x, y = grouph.optimize(self.data)
+        x, y = group.optimize(self.data)
         n, r, p = self.data['n'], self.data['r'], self.data['p']
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, Q=self.data['Q']),
+        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
         self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
