@@ -52,6 +52,7 @@ from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_lin
 
 
 from model.instance import build_smart_random
+from model.instance import build_real_data
 
 
 def compare(data):
@@ -106,7 +107,7 @@ def test_compare():
     p = 20
     tseed = 34332
 
-    data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
+    data = build_real_data(n=n, r=r, p=p, tseed=tseed)
     time, objectives = compare(data)
 
     print("")

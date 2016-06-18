@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+import os
+PATHS = os.getcwd().split('/')
+PROJECT_PATH = ''
+for p in PATHS:
+    PROJECT_PATH += '%s' % p
+    if p == 'examination-scheduling':
+        break
+sys.path.append(PROJECT_PATH)
+
 # this script produce instances:
 #   - we get it from files
 #   - we produce it randomly
@@ -10,6 +20,7 @@ import random as rd
 import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
+from inputData.readTumOnline import read_real_data
 
 
 def force_data_format(func):
@@ -151,9 +162,9 @@ def build_smart_random(**kwards):
     """ Generate smart random data
         kwards = {'n': , 'r': ,'p': , 'tseed':, 'w': }
             w = where (0    = not defined
-            		   1    = Innenstadt,
+                       1    = Innenstadt,
                        2    = Garching,
-                       3	= Hochbrueck,)
+                       3    = Hochbrueck,)
 
     """
     np.random.seed(kwards.get('tseed', 1))
@@ -176,8 +187,8 @@ def build_smart_random(**kwards):
     data['c'] = sorted(data['c'], reverse=True)
 
     if kwards.get('locations') == True:
-    	data['w'] = np.random.choice([["1"], ["2"], ["3"], ["2","3"], ["1","2"], ["1","3"], ["1","2","3"]], n , p=[0.2, 0.1, 0.05, 0.05, 0, 0, 0.6])
-    	data['location'] = np.random.choice(["1", "2", "3"], r , p=[0.6, 0.35, 0.05])
+        data['w'] = np.random.choice([["1"], ["2"], ["3"], ["2","3"], ["1","2"], ["1","3"], ["1","2","3"]], n , p=[0.2, 0.1, 0.05, 0.05, 0, 0, 0.6])
+        data['location'] = np.random.choice(["1", "2", "3"], r , p=[0.6, 0.35, 0.05])
     
     # hours between starting day and starting periods are fixed equal to 2
     data['h'] = [ 2*l for l in range(p)]
@@ -195,8 +206,19 @@ def build_smart_random(**kwards):
     return data
 
 @force_data_format
-def build_real_data():
-	read_real_data()
+def build_real_data(**kwards):
+    data = read_real_data()
+
+    data['p'] = 50
+
+    np.random.seed(kwards.get('tseed', 1))
+    rd.seed(kwards.get('tseed', 1))
+
+    #close some rooms by probability 5/100
+    data['locking_times'] = defaultdict(list)
+    for k in range(r):
+        data['locking_times'][k] = [ l for l in range(p) if rd.random() <= 0.05 ]
+
 
    
     return data
