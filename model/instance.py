@@ -194,3 +194,9 @@ def build_smart_random(**kwards):
     
     return data
 
+@force_data_format
+def build_real_data():
+	read_real_data()
+
+   
+    return data

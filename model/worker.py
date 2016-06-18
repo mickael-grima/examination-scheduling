@@ -62,7 +62,7 @@ def compare(data):
         'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
-    #    'Linear more covers': build_linear_model_15,
+        'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
@@ -101,9 +101,9 @@ def compare(data):
 
 
 def test_compare():
-    n = 1500 
-    r = 60
-    p = 60
+    n = 300 
+    r = 20
+    p = 20
     tseed = 34332
 
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed)
