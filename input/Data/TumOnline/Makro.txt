@@ -24,7 +24,7 @@ Sub main()
     crng.RemoveDuplicates Columns:=Array(1)
     
     
-    Call ImportWorksheet
+    'Call ImportWorksheet
     
     Call RemoveRows(csht, sht)
     
@@ -165,7 +165,6 @@ Sub makeSymmetric(csht As Worksheet, sht As Worksheet, lr As Long, clr As Long)
     Dim room1 As String
     Dim room2 As String
     Dim nextE As Long
-
     
 
     For i = 2 To clr
@@ -207,6 +206,13 @@ Sub SortMatrix(csht As Worksheet, sht As Worksheet, lr As Long, clr As Long)
     
     Set matrix = Range(csht.Cells(2, 1), csht.Cells(clr, clr + 1))
     matrix.Sort key1:=Range(csht.Cells(2, clr + 1), csht.Cells(clr + 1, clr + 1)), order1:=xlDescending
+    
+        
+    Dim nsht As Worksheet
+    Set nsht = Sheets.Add
+    nsht.Name = "Students"
+    
+    Range(csht.Cells(2, clr + 1), csht.Cells(clr, clr + 1)).Copy Range(nsht.Cells(1, 1), nsht.Cells(clr, 1))
     
     csht.Columns(clr + 1).EntireColumn.Delete
     csht.Rows(clr + 1).EntireRow.Delete
