@@ -51,8 +51,12 @@ from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_lin
 
 
 
+
 from model.instance import build_smart_random
 from model.instance import build_real_data
+from model.instance import build_real_data_sample
+
+
 
 
 def compare(data):
@@ -63,7 +67,7 @@ def compare(data):
         'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
-        'Linear more covers': build_linear_model_15,
+    #   'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
@@ -91,6 +95,13 @@ def compare(data):
         problem.optimize()
         times[prob_name] = time() - t
 
+        for i in range(data['n']):
+            for k in range(data['r']):
+                for l in range(data['p']):
+                    v = problem.getVarByName('x_%s_%s_%s' % (i,k,l))
+                    if not v is None and v.x == 1:
+                        print('%s %g' % (v.varName, v.x))
+
         # Save objective value
         try:
             objectives[prob_name] = problem.objVal
@@ -102,12 +113,16 @@ def compare(data):
 
 
 def test_compare():
-    n = 300 
+    n = 100 
     r = 20
-    p = 20
-    tseed = 34332
+    p = 10
+    tseed = 5656
 
-    data = build_real_data(n=n, r=r, p=p, tseed=tseed)
+    #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
+    #data = build_real_data(tseed=tseed)
+    data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
+    print data['c']
+    print data['s']
     time, objectives = compare(data)
 
     print("")

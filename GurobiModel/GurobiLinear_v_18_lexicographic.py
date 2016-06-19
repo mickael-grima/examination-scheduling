@@ -30,10 +30,10 @@ from model.instance import build_random_data
 	***************  POSSIBLE IMPROVEMENTS    ***************
 	
 	-Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
-	-Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similiar [to discuss]
+	-Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similar [to discuss]
 	-Idea for linking variables x and y
 		*c1b creates l*i constraints this could be reduced to only i constraints
-		*reason
+		*reaso
 			+"c1a" says if one exam takes place in some period than y_i,l cannot be zero 
 			+ then constraint c2 forces all other y_i,l to be 0 anyway
 			+ now say for all i sum(x_i,k,l for all k and for all l) >= 1 this forces at least one y_i,l to be 1 - this only has i constraints but more columns
@@ -55,6 +55,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     conflicts = data['conflicts']
     locking_times = data['locking_times']
     T = data['T']
+    similar = data['similar']
     
     model = Model("ExaminationScheduling")
     
@@ -119,8 +120,8 @@ def build_model(data, n_cliques = 0, verbose = True):
             for k in range(r):
                 if T[k][l] == 1 and location[k] in w[i]:
                     # print k, c[k], 1-(1/(pow(2,s_sorted.index(k))))
-                    c1.addTerms( 1-(1/(pow(2,s_sorted.index(k)))) , x[i, k, l])
-                    obj.addTerms(1, x[i,k,l])
+                    obj.addTerms( 1-(1/(pow(2,s_sorted.index(k)))) , x[i, k, l])
+                    c1.addTerms(1, x[i,k,l])
                     c4.addTerms(c[k],x[i,k,l])
             model.addConstr(c1 <= maxrooms[i]* y[i,l], "c1a")
             model.addConstr(c1 >= y[i,l], "C1b")
@@ -153,24 +154,35 @@ def build_model(data, n_cliques = 0, verbose = True):
     # First only use small rooms in a period if all bigger rooms are already used
     # TODO Do for every location 
 
+
+    if not similar[0] is None:
+        for i in range(i-1):
+            for l in range(p):
+                model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similar), "s1")
+
+
+
     # for l in range(p):
     #     for index, k in enumerate(s_sorted):
     #         #print k, index
     #         s1 = LinExpr()
     #         if index < len(s_sorted)-1:
-    #             if T[k][l] == 1 and T[s_sorted[index+1]][l] == 1:
-    #                 for i in range(n):
-    #                 #    if location[k] in w[i]:
-    #                     s1.addTerms([1,-1], [x[i,k,l], x[i,s_sorted[index+1],l]])
+    #             if T[k][l] == 1:
+    #                 for k2 in range(r-index):
+    #                     if T[s_sorted[index+k2]][l] == 1:
+    #                         for i in range(n):
+    #                         #    if location[k] in w[i]:
+    #                             s1.addTerms([1,-1], [x[i,k,l], x[i,s_sorted[index+k2],l]])
+    #                         break
     #         model.addConstr( s1 <= 0 , "s1")
 
-    # if p <= n:
-    #     for l in range(p-2):
-    #         model.addConstr( quicksum(y[l,i] for i in range(l+2)) >= 1, "break symmetrie")
+    #if p <= n:
+    #    for l in range(p):
+    #        model.addConstr( quicksum(y[l,i] for i in range(l)) >= 1, "s1")
 
-    for l in range(p-1):
-        for i in range(n):
-            model.addConstr( y[i,l] - quicksum(y[i,l+1] for i in range(l,n)) <= 0, "l1")
+    # for l in range(p-1):
+    #     for i in range(n):
+    #         model.addConstr( y[i,l] - quicksum(y[i,l+1] for i in range(l,n)) <= 0, "l1")
 
 
 
@@ -194,7 +206,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     # max presolve agressivity
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
-    #model.params.method = 1
+    model.params.method = 3
     #model.params.MIPFocus = 1
 
     model.params.OutputFlag = 1
@@ -202,12 +214,12 @@ def build_model(data, n_cliques = 0, verbose = True):
 
 
     # cuts
-    model.params.cuts = 0
+   # model.params.cuts = 0
     #model.params.coverCuts = 2
     #model.params.CutPasses = 4
 
     # heuristics
-    model.params.heuristics = 0
+    #model.params.heuristics = 0
 
     #model.params.symmetry = 2
 
