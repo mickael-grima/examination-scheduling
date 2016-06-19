@@ -6,7 +6,7 @@ import os
 PATHS = os.getcwd().split('/')
 PROJECT_PATH = ''
 for p in PATHS:
-    PROJECT_PATH += '%s' % p
+    PROJECT_PATH += '%s/' % p
     if p == 'examination-scheduling':
         break
 sys.path.append(PROJECT_PATH)
@@ -20,7 +20,7 @@ import random as rd
 import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
-from inputData.readTumOnline import read_real_data
+from inputData.read import read_real_data
 
 
 def force_data_format(func):
@@ -34,6 +34,7 @@ def force_data_format(func):
         p = data.get('p', 0)
         w = data.get('w', [["0"] for i in range(n)])
         location = data.get('location', ["0" for k in range(r)])
+        similar = data.get('similiar', [None for l in range(p)])
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
@@ -84,7 +85,8 @@ def force_data_format(func):
             'c': list(data.get('c', [])),
             'h': list(data.get('h', [])),
             'w': w,
-            'location' : location
+            'location' : location,
+            'similar' : similar
         }
         return res
     return correct_format
@@ -202,11 +204,15 @@ def build_smart_random(**kwards):
     data['locking_times'] = defaultdict(list)
     for k in range(r):
         data['locking_times'][k] = [ l for l in range(p) if rd.random() <= 0.1 ]
+
+    data = detect_similar_periods(data)
     
     return data
 
 @force_data_format
 def build_real_data(**kwards):
+
+    print "Reading data..."
     data = read_real_data()
 
     data['p'] = 50
@@ -214,11 +220,65 @@ def build_real_data(**kwards):
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
 
-    #close some rooms by probability 5/100
+    #close some rooms by probability 10/100
     data['locking_times'] = defaultdict(list)
-    for k in range(r):
-        data['locking_times'][k] = [ l for l in range(p) if rd.random() <= 0.05 ]
+    for k in range(data['r']):
+        data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
 
-
+    data = detect_similar_periods(data)
    
     return data
+
+@force_data_format
+def build_real_data_sample(**kwards):
+
+    print "Reading data..."
+    data = read_real_data()
+
+    n = kwards.get('n', 0)
+    r = kwards.get('r', 0)
+
+    np.random.seed(kwards.get('tseed', 1))
+    rd.seed(kwards.get('tseed', 1))
+
+    data['p'] = kwards.get('p', 0)
+
+
+    choose_exams = sorted(np.random.choice(range(data['n']), n, replace=False))
+    choose_rooms = sorted(np.random.choice(range(data['r']), r, replace=False))
+
+    data['c'] = [data['c'][i] for i in choose_rooms]
+    data['n'] = n
+    data['s'] = [data['s'][i] for i in choose_exams]
+    data['r'] = r
+
+    data['Q'] = [ [data['Q'][i][j] for j in choose_exams] for i in choose_exams]
+
+
+
+
+
+    #close some rooms by probability 10/100
+    data['locking_times'] = defaultdict(list)
+    for k in range(data['r']):
+        data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
+
+    data = detect_similar_periods(data)
+   
+    return data
+
+
+def detect_similar_periods(data):
+    roomnumber = {}
+    roomcapacities = {}
+    for l in range(data['p']):
+        roomnumber[l] = sum([1 for k in range(data['r']) if not l in data['locking_times'][k] ])
+        roomcapacities[l] = sum([data['c'][k] for k in range(data['r']) if not l in data['locking_times'][k] ])
+    
+    data['similar'] = defaultdict(list)
+    for l in range(data['p']):
+        data['similar'][l] = [l2 for l2 in range(data['p']) if (roomnumber[l2] <= roomnumber[l]+2 and roomnumber[l2] >= roomnumber[l]-2) and (roomcapacities[l2] <= roomcapacities[l]+100 and roomcapacities[l2] >= roomcapacities[l]-100) and l != l2 ]  
+    
+
+    return data
+
