@@ -62,7 +62,7 @@ class Johnson(MetaHeuristic):
             
             # compute coloring
             for node in nodes:
-                self.graph.color_node(node, data=self.data, check_constraints = False)
+                self.graph.color_node(node, data=self.data, check_constraints = False, check_max_rooms_and_slots = True)
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
             #print self.graph.colours.values()
         print len(colorings)

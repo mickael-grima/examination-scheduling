@@ -97,11 +97,6 @@ class ConstrainedColorGraph(ColorGraph):
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, col):
 
-                if check_max_rooms_and_slots:
-                    # check whether we need more colours than available time slots
-                    if col > data['p']:
-                        break
-
                 # We check if the room constraint is fullfilled
                 color_this_node = False
                 if not check_constraints:
