@@ -52,13 +52,13 @@ class Johnson(MetaHeuristic):
             self.graph.reset_colours()
 
             # set parameter alpha and compute exam value for ordering
-            print alpha[j]
+            #print alpha[j]
             vals = np.array(self.data['s'])*alpha[j] + np.array(conf_num)
             #print map(lambda x: "%0.2f"%x, sorted(vals))
 
             # sort nodes by vals
             nodes = [elmts[0] for elmts in sorted(zip(nodes, vals), key=itemgetter(1), reverse=True)]
-            print nodes
+            #print nodes
             
             # compute coloring
             for node in nodes:

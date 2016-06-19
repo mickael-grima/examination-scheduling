@@ -99,7 +99,7 @@ class ConstrainedColorGraph(ColorGraph):
 
                 if check_max_rooms_and_slots:
                     # check whether we need more colours than available time slots
-                    if col > data['p']
+                    if col > data['p']:
                         break
 
                 # We check if the room constraint is fullfilled
