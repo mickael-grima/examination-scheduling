@@ -220,7 +220,7 @@ def build_real_data(**kwards):
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
 
-    #close some rooms by probability 5/100
+    #close some rooms by probability 10/100
     data['locking_times'] = defaultdict(list)
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
@@ -258,7 +258,7 @@ def build_real_data_sample(**kwards):
 
 
 
-    #close some rooms by probability 5/100
+    #close some rooms by probability 10/100
     data['locking_times'] = defaultdict(list)
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
