@@ -165,16 +165,16 @@ def build_model(data, n_cliques = 0, verbose = True):
 
     model.params.OutputFlag = 1
     model.params.Method = 3
-    model.params.MIPFocus = 1
+    #model.params.MIPFocus = 1
 
 
     # cuts
-    model.params.cuts = 0
+    #model.params.cuts = 0
     #model.params.coverCuts = 2
     #model.params.CutPasses = 4
 
     # heuristics
-    model.params.heuristics = 0
+    #model.params.heuristics = 0
 
     #model.params.symmetry = 2
 
