@@ -215,7 +215,7 @@ def build_real_data(**kwards):
     print "Reading data..."
     data = read_real_data()
 
-    data['p'] = 50
+    data['p'] = kwards.get('tseed', 30)
 
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
