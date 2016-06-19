@@ -78,6 +78,7 @@ class ConstrainedColorGraph(ColorGraph):
         students = sorted([(i, s[i]) for i in nodes], key=lambda x: x[1], reverse=True) if s else []
         capacities = sorted([c[k] for k in range(r)], reverse=True)
 
+        #TODO: talk about whether this does what we want it to do
         i, k = 0, 0
         while i < len(nodes) and k < r:
             if students[i][1] <= capacities[k]:
@@ -87,7 +88,7 @@ class ConstrainedColorGraph(ColorGraph):
         # Do we have exams without rooms
         return i < len(nodes)
 
-    def color_node(self, node, data={}, check_constraints=True, periods=None):
+    def color_node(self, node, data={}, check_constraints=True, periods=None, check_max_rooms_and_slots=False):
         """
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
@@ -95,6 +96,7 @@ class ConstrainedColorGraph(ColorGraph):
         for col in self.ALL_COLOURS:
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, col):
+
                 # We check if the room constraint is fullfilled
                 color_this_node = False
                 if not check_constraints:
@@ -108,7 +110,7 @@ class ConstrainedColorGraph(ColorGraph):
                     ## dont know why it works, but it works ^^°
                     #color_this_node = True
                     
-                # if the node can be colored, to so and add them to color exams list
+                # if the node can be colored, do so and add it to color exams list
                 if color_this_node:
                     self.colours[node] = col
                     self.color_exams[col].append(node)
