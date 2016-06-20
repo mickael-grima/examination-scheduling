@@ -98,6 +98,12 @@ class ConstrainedColorGraph(ColorGraph):
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, col):
 
+                self.colours[node] = col
+                self.color_exams[col].append(node)
+                break
+
+                '''
+                #OLD CODE
                 # We check if the room constraint is fullfilled
                 color_this_node = False
                 if not check_constraints:
@@ -114,7 +120,7 @@ class ConstrainedColorGraph(ColorGraph):
                     self.colours[node] = col
                     self.color_exams[col].append(node)
                     break
-
+                '''
 
 
 class EqualizedColorGraph(ConstrainedColorGraph):

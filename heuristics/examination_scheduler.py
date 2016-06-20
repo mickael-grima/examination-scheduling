@@ -94,19 +94,19 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
 
         # Generate colourings
         colorings = meta_heuristic.generate_colorings()
-
         ## evaluate all colorings
+
         for ind, coloring in enumerate(colorings):
             
             xs[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations)
             # build binary variable 
             ys[ind] = to_binary(coloring, color_schedules[ind], data['h'])
-            
+            '''
             if xs[ind] is not None:
                 print is_feasible(xs[ind], ys[ind], data)
             else:
                 print "None feasible"
-                
+            '''
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
         
@@ -116,7 +116,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             if log_history:
                 log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
             continue
-        
+
         # search for best coloring
         best_index, best_value = min( values, key = lambda x: x[1] )
 
