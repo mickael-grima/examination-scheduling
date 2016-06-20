@@ -28,7 +28,7 @@ from heuristics.tools import to_binary, get_coloring
 from heuristics.check_feasibility import build_statespace
 
 from model.constraints_handler import is_feasible
-def heuristic(coloring, data, gamma = 1, max_iter = 100):
+def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10):
     '''
         The heuristiv which iteratively solves first the time scheduling problem, and afterwards the room scheduling problems.
         @Param: coloring dictionary which gives the color for each exam i
@@ -44,7 +44,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100):
     statespace, color_exams = build_statespace(coloring, data)
     
     # create time schedule permuting the time solts for each coloring
-    color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, statespace = statespace, color_exams = color_exams)
+    color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, beta_0 = beta_0, statespace = statespace, color_exams = color_exams)
     
     if color_schedule is None:
         #print "infeas color"
@@ -73,7 +73,7 @@ def log_epoch(logger, epoch, **kwargs):
         logger[key][epoch] = kwargs[key]
         
 
-def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, lazy_threshold = 0.2, verbose = False, log_history = False):
+def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 0.2, verbose = False, log_history = False):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
@@ -98,7 +98,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
 
         for ind, coloring in enumerate(colorings):
             
-            xs[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations)
+            xs[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0)
             # build binary variable 
             ys[ind] = to_binary(coloring, color_schedules[ind], data['h'])
             '''

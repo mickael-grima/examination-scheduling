@@ -1,64 +1,64 @@
-Name,Name_lang,Sitzplaetze,Klausurplaetze_eng,ID_Raum,ID_Gebaeude,Gebaeude,ID_Raumgruppe,ID_Campus,Campus
-Audimax,Audimax,1000,250,0509.EG.980,05,,HS_Innenstadt,01,Innenstadt
-1200,Carl-von-Linde-Hörsaal,843,210,0502.01.200,05,,HS_Innenstadt,01,Innenstadt
-N1190,Hans Heinrich-Meinke Hörsaal,420,105,0101.01.190,01,Nord,HS_Innenstadt,01,Innenstadt
-2300,Friedrich von Thiersch Hörsaal,361,90,0503.02.300,05,,HS_Innenstadt,01,Innenstadt
-2750,Karl Max von Bauernfeind Hörsaal,319,90,0507.03.750,05,,HS_Innenstadt,01,Innenstadt
-N1179,Wilhelm-Nusselt-Hörsaal,308,77,0101.01.179,01,Nord,HS_Innenstadt,01,Innenstadt
-N1189,Hans-Piloty-Hörsaal,308,77,0101.01.189,01,Nord,HS_Innenstadt,01,Innenstadt
-0360,Theodor-Fischer-Hörsaal,200,59,0503.EG.360,05,,HS_Innenstadt,01,Innenstadt
-N1070,Lothar-Rohde-Hörsaal,220,55,0101.01.070,01,Nord,HS_Innenstadt,01,Innenstadt
-N1080,August-Föppl-Hörsaal,220,55,0101.01.080,01,Nord,HS_Innenstadt,01,Innenstadt
-1100,Hörsaal ohne exp. Bühne,200,50,0501.01.100,05,,HS_Innenstadt,01,Innenstadt
-1180,Hörsaal ohne exp. Bühne,200,50,0501.01.180,05,,HS_Innenstadt,01,Innenstadt
-0602,"Theresianum, 0602",200,50,0506.EG.602,05,,HS_Innenstadt,01,Innenstadt
-0606,"Theresianum, 0606",200,50,0506.EG.606,05,,HS_Innenstadt,01,Innenstadt
-2770,Hörsaal,180,45,0507.02.770,05,,HS_Innenstadt,01,Innenstadt
-0220,Hörsaal m. Exp.-Bühne,175,47,0502.EG.220,05,,HS_Innenstadt,01,Innenstadt
-1260,Hörsaal o. Exp.-Bühne,143,35,0502.01.260,05,,HS_Innenstadt,01,Innenstadt
-2370,HS 2370,143,35,0503.02.370,05,,HS_Innenstadt,01,Innenstadt
-1402,Hörsaal o. Exp.-Bühne,110,27,0504.01.402,05,,HS_Innenstadt,01,Innenstadt
-N1090,N 1090,110,27,0101.01.090,01,Nord,HS_Innenstadt,01,Innenstadt
-N1095,N 1095,110,27,0101.01.095,01,Nord,HS_Innenstadt,01,Innenstadt
-0601,"Theresianum, 0601",100,26,0506.EG.601,05,,HS_Innenstadt,01,Innenstadt
-0670,"Theresianum, 0670ZG",100,25,0506.EG.670,05,,HS_Innenstadt,01,Innenstadt
-1601,"Theresianum, 1601, Hörsaal",100,25,0506.01.601,05,,HS_Innenstadt,01,Innenstadt
-MensaArcisSaalWest,Mensa Arcisstr. - kleiner Speisesaal,98,98,0206.01.103A,02,Mensa,Mensa_Arcis,01,Innenstadt
-MensaArcisSaalOst,Mensa Arcisstr. - großer Speisesaal,166,166,0206.01.103,02,Mensa,Mensa_Arcis,01,Innenstadt
-2100,Übungsraum (ähnlich Zeichensaal),80,40,0501.02.100,05,,HS_Innenstadt,01,Innenstadt
-2760,Hörsaal (zu klein für PRKOORD),96,24,0507.02.760,05,,HS_Innenstadt,01,Innenstadt
-CH_21010,Hans-Fischer-Hörsaal,319,77,5401.01.101K,54,CH,Garching,02,Garching
-CH_22210,Ivar-Ugi-Hörsaal,122,32,5402.01.221K,54,CH,Garching,02,Garching
-CH_27402,Walter-Hieber-Hörsaal,118,32,5407.01.740B,54,CH,Garching,02,Garching
-CH_26411,Emil-Erlenmeyer-Hörsaal,118,25,5406.01.641A,54,CH,Garching,02,Garching
-CH_22209,Übungsraum,40,10,5402.01.220J,54,CH,Garching,02,Garching
-CH_26410,Übungsraum,40,10,5406.01.641K,54,CH,Garching,02,Garching
-CH_27401,Übungsraum,40,10,5406.01.641K,54,CH,Garching,02,Garching
-MI_HS_1,00.02.001 MI Hörsaal 1,522,136,5602.EG.001,56,MA-IN,Garching,02,Garching
-MI_HS_2,00.04.011 MI Hörsaal 2,100,27,5604.EG.011,56,MA-IN,Garching,02,Garching
-MI_HS_3,"00.06.011, MI Hörsaal 3",100,27,5606.EG.011,56,MA-IN,Garching,02,Garching
-MI_I1,"101, Interims Hörsaal 1",449,110,5620.01.101,56,MA-IN,Garching,02,Garching
-MI_I2,"102, Interims Hörsaal 2",286,77,5620.01.102,56,MA-IN,Garching,02,Garching
-MW_2001,Rudolf-Diesel-Hörsaal Physik,873,221,5510.02.001,55,MW,Garching,02,Garching
-MW_0001,Gustav-Niemann-Hörsaal,698,178,5510.EG.001,55,MW,Garching,02,Garching
-MW_1801,Ernst-Schmidt-Hörsaal,401,102,5508.01.801,55,MW,Garching,02,Garching
-MW_350,Egbert-von-Hoyer-Hörsaal,180,49,5503.EG.350,55,MW,Garching,02,Garching
-MW_1250,Hörsaal,88,26,5502.01.250,55,MW,Garching,02,Garching
-MW_0250,Ludwig-Prandtl-Hörsaal,88,26,5502.EG.250,55,MW,Garching,02,Garching
-MW_1450,Willy-Messerschmitt-Zeichensaal,90,52,5504.01.450,55,MW,MW_Zeichnen,02,Garching
-MW_1550,Georg-Kühne-Zeichensaal,100,52,5505.01.550,55,MW,MW_Zeichnen,02,Garching
-MW_1350,Ludwig-Burmester-Zeichensaal,58,52,5503.01.350,55,MW,MW_Zeichnen,02,Garching
-MW_2050,Zeichen-/Hörsaal,60,50,5510.02.050,55,MW,MW_Zeichnen,02,Garching
-MW_1050,Johann-Bauschinger-Zeichensaal,90,48,5510.01.050,55,MW,MW_Zeichnen,02,Garching
-MW_2350,Zeichensaal Galerie,0,0,5503.02.350,55,MW,Garching,02,Garching
-MW_2450,Zeichensaal Galerie,30,30,5504.02.450,55,MW,Garching,02,Garching
-MW_2550,Zeichensaal Galerie,0,0,5505.02.550,55,MW,Garching,02,Garching
-MW_0337,Seminarraum,32,0,5503.EG.337,55,MW,Garching,02,Garching
-PH_HS_1,Hörsaal 1,395,101,5101.EG.501,51,PH,Garching,02,Garching
-PH_HS_2,Hörsaal 2,194,52,5101.EG.502,51,PH,Garching,02,Garching
-PH_HS_3,Hörsaal 3,74,21,5101.EG.503,51,PH,Garching,02,Garching
-Mensa_Garching,Mensa Garching,249,249,5302.EG.001,53,Mensa-Garching,Mensa_Garching,02,Garching
-PR_35_HS_1,BC2 0.01.16,77,39,8102.EG.116,81,Hochbrück,Hochbrueck,02-81,Garching-Hochbrück
-PR_35_HS_2,BC2 0.01.17,209,56,8102.EG.117,81,Hochbrück,Hochbrueck,02-81,Garching-Hochbrück
-PR_37_3.5.06,Seminarraum 3,96,36,8102.03.506,81,Hochbrück,Hochbrueck,02-81,Garching-Hochbrück
-PR_37_3.1.08,Seminarraum 1,79,36,8102.03.108,81,Hochbrück,Hochbrueck,02-81,Garching-Hochbrück
+Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
+Audimax;Audimax;1000;250;0509.EG.980;05;;HS_Innenstadt;01;Innenstadt
+1200;Carl-von-Linde-Hörsaal;843;210;0502.01.200;05;;HS_Innenstadt;01;Innenstadt
+N1190;Hans Heinrich-Meinke Hörsaal;420;105;0101.01.190;01;Nord;HS_Innenstadt;01;Innenstadt
+2300;Friedrich von Thiersch Hörsaal;361;90;0503.02.300;05;;HS_Innenstadt;01;Innenstadt
+2750;Karl Max von Bauernfeind Hörsaal;319;90;0507.03.750;05;;HS_Innenstadt;01;Innenstadt
+N1179;Wilhelm-Nusselt-Hörsaal;308;77;0101.01.179;01;Nord;HS_Innenstadt;01;Innenstadt
+N1189;Hans-Piloty-Hörsaal;308;77;0101.01.189;01;Nord;HS_Innenstadt;01;Innenstadt
+0360;Theodor-Fischer-Hörsaal;200;59;0503.EG.360;05;;HS_Innenstadt;01;Innenstadt
+N1070;Lothar-Rohde-Hörsaal;220;55;0101.01.070;01;Nord;HS_Innenstadt;01;Innenstadt
+N1080;August-Föppl-Hörsaal;220;55;0101.01.080;01;Nord;HS_Innenstadt;01;Innenstadt
+1100;Hörsaal ohne exp. Bühne;200;50;0501.01.100;05;;HS_Innenstadt;01;Innenstadt
+1180;Hörsaal ohne exp. Bühne;200;50;0501.01.180;05;;HS_Innenstadt;01;Innenstadt
+0602;Theresianum, 0602;200;50;0506.EG.602;05;;HS_Innenstadt;01;Innenstadt
+0606;Theresianum, 0606;200;50;0506.EG.606;05;;HS_Innenstadt;01;Innenstadt
+2770;Hörsaal;180;45;0507.02.770;05;;HS_Innenstadt;01;Innenstadt
+0220;Hörsaal m. Exp.-Bühne;175;47;0502.EG.220;05;;HS_Innenstadt;01;Innenstadt
+1260;Hörsaal o. Exp.-Bühne;143;35;0502.01.260;05;;HS_Innenstadt;01;Innenstadt
+2370;HS 2370;143;35;0503.02.370;05;;HS_Innenstadt;01;Innenstadt
+1402;Hörsaal o. Exp.-Bühne;110;27;0504.01.402;05;;HS_Innenstadt;01;Innenstadt
+N1090;N 1090;110;27;0101.01.090;01;Nord;HS_Innenstadt;01;Innenstadt
+N1095;N 1095;110;27;0101.01.095;01;Nord;HS_Innenstadt;01;Innenstadt
+0601;Theresianum, 0601;100;26;0506.EG.601;05;;HS_Innenstadt;01;Innenstadt
+0670;Theresianum, 0670ZG;100;25;0506.EG.670;05;;HS_Innenstadt;01;Innenstadt
+1601;Theresianum, 1601, Hörsaal;100;25;0506.01.601;05;;HS_Innenstadt;01;Innenstadt
+MensaArcisSaalWest;Mensa Arcisstr. - kleiner Speisesaal;98;98;0206.01.103A;02;Mensa;Mensa_Arcis;01;Innenstadt
+MensaArcisSaalOst;Mensa Arcisstr. - großer Speisesaal;166;166;0206.01.103;02;Mensa;Mensa_Arcis;01;Innenstadt
+2100;Übungsraum (ähnlich Zeichensaal);80;40;0501.02.100;05;;HS_Innenstadt;01;Innenstadt
+2760;Hörsaal (zu klein für PRKOORD);96;24;0507.02.760;05;;HS_Innenstadt;01;Innenstadt
+CH_21010;Hans-Fischer-Hörsaal;319;77;5401.01.101K;54;CH;Garching;02;Garching
+CH_22210;Ivar-Ugi-Hörsaal;122;32;5402.01.221K;54;CH;Garching;02;Garching
+CH_27402;Walter-Hieber-Hörsaal;118;32;5407.01.740B;54;CH;Garching;02;Garching
+CH_26411;Emil-Erlenmeyer-Hörsaal;118;25;5406.01.641A;54;CH;Garching;02;Garching
+CH_22209;Übungsraum;40;10;5402.01.220J;54;CH;Garching;02;Garching
+CH_26410;Übungsraum;40;10;5406.01.641K;54;CH;Garching;02;Garching
+CH_27401;Übungsraum;40;10;5406.01.641K;54;CH;Garching;02;Garching
+MI_HS_1;00.02.001 MI Hörsaal 1;522;136;5602.EG.001;56;MA-IN;Garching;02;Garching
+MI_HS_2;00.04.011 MI Hörsaal 2;100;27;5604.EG.011;56;MA-IN;Garching;02;Garching
+MI_HS_3;00.06.011, MI Hörsaal 3;100;27;5606.EG.011;56;MA-IN;Garching;02;Garching
+MI_I1;101, Interims Hörsaal 1;449;110;5620.01.101;56;MA-IN;Garching;02;Garching
+MI_I2;102, Interims Hörsaal 2;286;77;5620.01.102;56;MA-IN;Garching;02;Garching
+MW_2001;Rudolf-Diesel-Hörsaal Physik;873;221;5510.02.001;55;MW;Garching;02;Garching
+MW_0001;Gustav-Niemann-Hörsaal;698;178;5510.EG.001;55;MW;Garching;02;Garching
+MW_1801;Ernst-Schmidt-Hörsaal;401;102;5508.01.801;55;MW;Garching;02;Garching
+MW_350;Egbert-von-Hoyer-Hörsaal;180;49;5503.EG.350;55;MW;Garching;02;Garching
+MW_1250;Hörsaal;88;26;5502.01.250;55;MW;Garching;02;Garching
+MW_0250;Ludwig-Prandtl-Hörsaal;88;26;5502.EG.250;55;MW;Garching;02;Garching
+MW_1450;Willy-Messerschmitt-Zeichensaal;90;52;5504.01.450;55;MW;MW_Zeichnen;02;Garching
+MW_1550;Georg-Kühne-Zeichensaal;100;52;5505.01.550;55;MW;MW_Zeichnen;02;Garching
+MW_1350;Ludwig-Burmester-Zeichensaal;58;52;5503.01.350;55;MW;MW_Zeichnen;02;Garching
+MW_2050;Zeichen-/Hörsaal;60;50;5510.02.050;55;MW;MW_Zeichnen;02;Garching
+MW_1050;Johann-Bauschinger-Zeichensaal;90;48;5510.01.050;55;MW;MW_Zeichnen;02;Garching
+MW_2350;Zeichensaal Galerie;0;0;5503.02.350;55;MW;Garching;02;Garching
+MW_2450;Zeichensaal Galerie;30;30;5504.02.450;55;MW;Garching;02;Garching
+MW_2550;Zeichensaal Galerie;0;0;5505.02.550;55;MW;Garching;02;Garching
+MW_0337;Seminarraum;32;0;5503.EG.337;55;MW;Garching;02;Garching
+PH_HS_1;Hörsaal 1;395;101;5101.EG.501;51;PH;Garching;02;Garching
+PH_HS_2;Hörsaal 2;194;52;5101.EG.502;51;PH;Garching;02;Garching
+PH_HS_3;Hörsaal 3;74;21;5101.EG.503;51;PH;Garching;02;Garching
+Mensa_Garching;Mensa Garching;249;249;5302.EG.001;53;Mensa-Garching;Mensa_Garching;02;Garching
+PR_35_HS_1;BC2 0.01.16;77;39;8102.EG.116;81;Hochbrück;Hochbrueck;02-81;Garching-Hochbrück
+PR_35_HS_2;BC2 0.01.17;209;56;8102.EG.117;81;Hochbrück;Hochbrueck;02-81;Garching-Hochbrück
+PR_37_3.5.06;Seminarraum 3;96;36;8102.03.506;81;Hochbrück;Hochbrueck;02-81;Garching-Hochbrück
+PR_37_3.1.08;Seminarraum 1;79;36;8102.03.108;81;Hochbrück;Hochbrueck;02-81;Garching-Hochbrück
