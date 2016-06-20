@@ -105,7 +105,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             if xs[ind] is not None:
                 print is_feasible(xs[ind], ys[ind], data)
             else:
-                print "None infeasible"
+                print "None feasible"
                 
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))

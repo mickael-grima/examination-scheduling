@@ -145,7 +145,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         """
         ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
         ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
-        print ordered_colors
+        #print ordered_colors
 
         if len(ordered_colors) < data['p']:
             for col in self.ALL_COLOURS:
