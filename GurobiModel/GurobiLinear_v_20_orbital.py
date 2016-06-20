@@ -58,16 +58,24 @@ def build_model(data, n_cliques = 0, verbose = True):
     y = {}
     for i in range(n):
         for l in range(p):
-            y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))    
+            y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
+
+
+    #Orbit variable for orbital branching
+    o = {}
+    for i in range(n):
+        for l in range(p):
+            for k in range(r):
+                o[i,k,l] = model.addVar(vtype=GRB.BINARY, name="o_%s" % (i))     
 
     # integrate new variables
     model.update() 
 
-    for i in range(p):
-        for l in range(i):
-            y[i, l].setAttr("BranchPriority", s[i])
+    for i in range(n):
+        for l in range(p):
+            for k in range(r):
+             o[i,k,l].setAttr("BranchPriority", sys.maxint)
 
-    model.update() 
 
 
     start = timeit.default_timer()
@@ -133,6 +141,17 @@ def build_model(data, n_cliques = 0, verbose = True):
         model.addConstr(cover_inequalities <= sumrooms[l], "cover_inequalities")
 
 
+    for l in range(p):
+        for k in range(r):
+            if T[k][l] == 1:
+                for i in range(n):
+                    c6 = LinExpr()
+                    #print similare[i]
+                    for j in similare[i]:
+                        if j >= 0:
+                            c6.addTerms(1,x[i,k,l])
+                    model.addConstr(c6*sum(similare[i]) >= o[i,k,l], "symmetrie break")
+
 
 
     model.setObjective( obj, GRB.MINIMIZE)
@@ -158,14 +177,15 @@ def build_model(data, n_cliques = 0, verbose = True):
     # max presolve agressivity
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
-    model.params.symmetrie = 2
+    #model.params.symmetrie = 2
     model.params.method = 3
     #model.params.MIPFocus = 1
 
     model.params.OutputFlag = 1
     model.params.MIPFocus = 1
 
-
+    model.params.heuristics = 0
+    #model.params.cuts = 0
 
 
     return(model)

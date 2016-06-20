@@ -66,7 +66,7 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-    #    'Linear orbital': build_linear_model_20,
+        'Linear orbital': build_linear_model_20,
     #    'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
@@ -100,38 +100,41 @@ def compare(data):
 
         count_rooms = 0
 
-        today = datetime.datetime.today()
-        file = open("%sresults\Result_%s_%s_%s_%s_%s_%s.txt" % (PROJECT_PATH, today.year, today.month, today.day, today.hour, today.minute, prob_name ), 'a+')
-        print PROJECT_PATH
 
-        file.write("Number of exams: %s" % data['n'])
-        file.write('\n')
-        file.write("Number of rooms: %s" % data['r'])
-        file.write('\n')
-        file.write("Number of periods: %s" % data['p'])
-        file.write('\n')
-        file.write("Students per Exam: %s" % data['s'])
-        file.write('\n')
-        file.write("capacity per Room: %s" % data['c'])
-        file.write('\n')
-        file.write("Conflicts: %s" % data['Q'])
-        file.write('\n')
-        file.write("locking times: %s" % data['T'])
-        file.write('\n')
+        try:
+            today = datetime.datetime.today()
+            file = open("%sresults\Result_%s_%s_%s_%s_%s_%s.txt" % (PROJECT_PATH, today.year, today.month, today.day, today.hour, today.minute, prob_name ), 'a+')
+
+            file.write("Number of exams: %s" % data['n'])
+            file.write('\n')
+            file.write("Number of rooms: %s" % data['r'])
+            file.write('\n')
+            file.write("Number of periods: %s" % data['p'])
+            file.write('\n')
+            file.write("Students per Exam: %s" % data['s'])
+            file.write('\n')
+            file.write("capacity per Room: %s" % data['c'])
+            file.write('\n')
+            file.write("Conflicts: %s" % data['Q'])
+            file.write('\n')
+            file.write("locking times: %s" % data['T'])
+            file.write('\n')
 
 
-        for i in range(data['n']):
-            for k in range(data['r']):
-                for l in range(data['p']):
-                    v = problem.getVarByName('x_%s_%s_%s' % (i,k,l))
-                    if not v is None and v.x == 1:
-                        count_rooms += 1
-                        file.write('%s %g' % (v.varName, v.x))
-                        file.write('\n')
+            for i in range(data['n']):
+                for k in range(data['r']):
+                    for l in range(data['p']):
+                        v = problem.getVarByName('x_%s_%s_%s' % (i,k,l))
+                        if not v is None and v.x == 1:
+                            count_rooms += 1
+                            file.write('%s %g' % (v.varName, v.x))
+                            file.write('\n')
 
-        file.write('\n')
-        file.write('\n')
-        file.write("Number of rooms used: %s" % (count_rooms))
+            file.write('\n')
+            file.write('\n')
+            file.write("Number of rooms used: %s" % (count_rooms))
+        except:
+            print "Couldnt write data"
 
         # Save objective value
         try:
@@ -144,14 +147,14 @@ def compare(data):
 
 
 def test_compare():
-    n = 800 
-    r = 60
-    p = 40
-    tseed = 5656
+    n = 600 
+    r = 35
+    p = 35
+    tseed = 55
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
-    data = build_real_data(tseed=tseed)
-    #data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
+    #data = build_real_data(tseed=tseed)
+    data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
     print data['c']
     print data['s']
     time, objectives = compare(data)

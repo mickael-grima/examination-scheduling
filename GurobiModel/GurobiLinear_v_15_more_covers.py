@@ -168,6 +168,9 @@ def build_model(data, n_cliques = 0, verbose = True):
     model.params.Method = 3
     #model.params.MIPFocus = 1
 
+    model.params.heuristics = 0
+    #model.params.cuts = 0
+
 
     # cuts
     #model.params.cuts = 0

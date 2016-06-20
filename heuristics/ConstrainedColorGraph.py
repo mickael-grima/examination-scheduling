@@ -14,6 +14,7 @@ sys.path.append(PROJECT_PATH)
 from heuristics.ColorGraph import ColorGraph
 from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 from collections import defaultdict
+from operator import itemgetter
 
 
 class ConstrainedColorGraph(ColorGraph):
@@ -74,21 +75,21 @@ class ConstrainedColorGraph(ColorGraph):
         c, s, r = data.get('c', []), data.get('s', []), data.get('r', 0)
 
         # sort students and capacities
-        # TODO: Why? Please explain this!!
         students = sorted([(i, s[i]) for i in nodes], key=lambda x: x[1], reverse=True) if s else []
         capacities = sorted([c[k] for k in range(r)], reverse=True)
 
-        #TODO: talk about whether this does what we want it to do
+        #WARNING: ERROR!
         i, k = 0, 0
         while i < len(nodes) and k < r:
             if students[i][1] <= capacities[k]:
                 i += 1
             k += 1
+        #WARNING: ERROR!
 
         # Do we have exams without rooms
         return i < len(nodes)
 
-    def color_node(self, node, data={}, check_constraints=True, periods=None, check_max_rooms_and_slots=False):
+    def color_node(self, node, data={}, check_constraints=True, periods=None):
         """
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
@@ -104,11 +105,9 @@ class ConstrainedColorGraph(ColorGraph):
                     color_this_node = True
                 elif periods is not None and self.check_room_constraints_greedy(node, col, data, periods = periods):
                     color_this_node = True
+                # this does not work!
                 elif self.check_rooms_constraint(node, col, data):
                     color_this_node = True
-                #elif check_constraints:
-                    ## dont know why it works, but it works ^^°
-                    #color_this_node = True
                     
                 # if the node can be colored, do so and add it to color exams list
                 if color_this_node:
@@ -123,24 +122,48 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         super(EqualizedColorGraph, self).__init__(n_colours=n_colours)
         self.color_exams = defaultdict(list)
         self.color_count = [0]*self.n_colours
+    '''
+        differences to color_node of ConstrainedColorGraph
+        - checks for max. number of available periods directly
+        - checks for max. number of available rooms directly
+        - tries to fill colors evenly with exams 
+    ''' 
 
-    def color_node(self, node, data={}, check_constraints=True, periods=None, check_max_rooms_and_slots=False):
+    def reset_colours(self):
+        """
+            Reset all the colours to white and reset the color_count
+        """
+        for col in self.colours:
+            self.colours[col] = self.WHITE
+        self.color_count = [0 for c in self.color_count]
+
+
+    def color_node(self, node, data={}, check_constraints=True, periods=None):
         """
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
         """
-        for col in self.ALL_COLOURS:
-            
-            # stop if more colours than periods are needed
-            if col >= data['p']:
-                break
+        ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
+        ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
+        print ordered_colors
+
+        if len(ordered_colors) < data['p']:
+            for col in self.ALL_COLOURS:
+                if self.color_count[col] > 0:
+                    continue
+                self.colours[node] = col
+                self.color_count[col] += 1
+                return
+
+        for col in ordered_colors:
 
             # continue if the current color already has too many exams
             if self.color_count[col] >= data['r']:
                 continue
 
-            # we check if every other neighbors don't have col as color
+            # we check whether any other neighbor has col as color
             if self.check_neighbours(node, col):
+                # color the node
                 self.colours[node] = col
                 self.color_count[col] += 1
                 break
