@@ -8,6 +8,8 @@ __pycache__/
 
 # data uncompressed
 input/Data/Archive/*
+input/Data/TumOnlineOld
+input/Data/TumOnline/Source
 
 #results
 results/*

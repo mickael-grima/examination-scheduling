@@ -34,9 +34,9 @@ def force_data_format(func):
         p = data.get('p', 0)
         w = data.get('w', [["0"] for i in range(n)])
         location = data.get('location', ["0" for k in range(r)])
-        similarp = data.get('similiarp', [[-1] for l in range(p)])
-        similare = data.get('similiare', [[-1] for i in range(n)])
-        similarr = data.get('similiarr', [[-1] for k in range(r)])
+        similarp = data.get('similarp', [[-1] for l in range(p)])
+        similare = data.get('similare', [[-1] for i in range(n)])
+        similarr = data.get('similarr', [[-1] for k in range(r)])
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
@@ -233,7 +233,7 @@ def build_real_data(**kwards):
     print data['r']
     print data['p']
 
-    #data = detect_similarities(data)
+    data = detect_similarities(data)
    
     return data
 
@@ -301,7 +301,7 @@ def detect_similar_exams(data):
     data['similare'] = defaultdict(list)
 
     for i in range(data['n']):
-        data['similare'][i] = [j for j in range(data['n']) if i != j and data['s'][j] <= data['s'][i]+10 ]  
+        data['similare'][i] = [j for j in range(data['n']) if i != j and data['s'][j] <= data['s'][i]+6 and data['s'][j] >= data['s'][i]-3 ]  
     
 
     return data
