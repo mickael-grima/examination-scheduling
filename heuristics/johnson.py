@@ -10,13 +10,13 @@ sys.path.append(PROJECT_PATH)
 
 import networkx as nx
 import numpy as np
+import time
 
 from operator import itemgetter
 
-from ConstrainedColorGraph import EqualizedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
 from heuristics.MetaHeuristic import MetaHeuristic
 # from heuristics.graph_coloring import greedy_coloring
-
 
 #
 # TODO: ALEX
@@ -33,6 +33,7 @@ class Johnson(MetaHeuristic):
         # Generate colourings using Johnson's rule: 
         # Order the exams by alpha*s_i + conf_num
 
+        start_time = time.time()
         colorings = []
         conflicts = self.data['conflicts']
 
@@ -43,8 +44,8 @@ class Johnson(MetaHeuristic):
         for i in conflicts:
             conf_num[i] = len(conflicts[i])
             
-        start = -1
-        end = 1
+        start = 0
+        end = 0.5
         alpha = list(np.arange(start=start, stop=end, step = (end-start)/float(self.n_colorings)))
         for j in range(self.n_colorings):
             # reset node ordering and coloring
@@ -52,20 +53,19 @@ class Johnson(MetaHeuristic):
             self.graph.reset_colours()
 
             # set parameter alpha and compute exam value for ordering
-            #print alpha[j]
             vals = np.array(self.data['s'])*alpha[j] + np.array(conf_num)
-            #print map(lambda x: "%0.2f"%x, sorted(vals))
 
             # sort nodes by vals
             nodes = [elmts[0] for elmts in sorted(zip(nodes, vals), key=itemgetter(1), reverse=True)]
-            #print nodes
             
             # compute coloring
             for node in nodes:
                 self.graph.color_node(node, data=self.data, check_constraints = False)
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
-            #print self.graph.colours.values()
-        #print len(colorings)
+
+        end_time = time.time()
+        print(end_time - start_time)
+        print len(colorings)
         return colorings
         
     def update(self, values, best_index = None, time_slots = None):

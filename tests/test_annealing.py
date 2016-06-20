@@ -168,3 +168,16 @@ def test_changed_colors(seed=42):
 if __name__ == '__main__':
     SA_test_objectives()
     #SA_benchmark_annealing()
+
+    n = 10
+    r = 10
+    p = 5
+    tseed = 200
+
+    from model.instance import build_smart_random
+    from heuristics.johnson import Johnson
+    data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
+
+    js = Johnson(data, n_colorings = 1, n_colors = p)
+    colorings = js.generate_colorings()
+    print colorings
