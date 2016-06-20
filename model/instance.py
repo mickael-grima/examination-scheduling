@@ -219,7 +219,7 @@ def build_real_data(**kwards):
     print "Reading data..."
     data = read_real_data()
 
-    data['p'] = kwards.get('tseed', 30)
+    data['p'] = kwards.get('p', 40)
 
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
@@ -229,7 +229,11 @@ def build_real_data(**kwards):
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
 
-    data = detect_similarities(data)
+    print data['n']
+    print data['r']
+    print data['p']
+
+    #data = detect_similarities(data)
    
     return data
 

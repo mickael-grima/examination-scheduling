@@ -66,11 +66,11 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear orbital': build_linear_model_20,
+    #    'Linear orbital': build_linear_model_20,
     #    'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
-    #   'Linear more covers': build_linear_model_15,
+       'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
@@ -144,9 +144,9 @@ def compare(data):
 
 
 def test_compare():
-    n = 400 
-    r = 40
-    p = 50
+    n = 800 
+    r = 60
+    p = 40
     tseed = 5656
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)

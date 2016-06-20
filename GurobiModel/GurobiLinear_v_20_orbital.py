@@ -158,6 +158,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     # max presolve agressivity
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
+    model.params.symmetrie = 2
     model.params.method = 3
     #model.params.MIPFocus = 1
 
