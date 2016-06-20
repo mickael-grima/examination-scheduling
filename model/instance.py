@@ -38,7 +38,7 @@ def force_data_format(func):
         similare = data.get('similare', [[-1] for i in range(n)])
         similarr = data.get('similarr', [[-1] for k in range(r)])
 
-        Q = data.get('Q')
+        Q = data.get('Q', None)
         conflicts = data.get('conflicts', defaultdict(list))
 
         # build conflicts from Q
@@ -59,7 +59,7 @@ def force_data_format(func):
         if 'build_Q' in data and not data['build_Q']:
             Q = None
         else:
-            if not Q:
+            if Q is not None:
                 Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
             else:
                 for i in range(n):
@@ -222,17 +222,13 @@ def build_real_data(**kwards):
     print "Reading data..."
     data = read_real_data()
     
-    data['h'] = read_times()
+    #data['p'] = kwards.get('p', 40)
+    data['h'], data['locking_times'], data['c'] = read_times()
     data['p'] = len(data['h'])
     
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
     
-    #close some rooms by probability 10/100
-    data['locking_times'] = defaultdict(list)
-    for k in range(data['r']):
-        data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
-
     print data['n']
     print data['r']
     print data['p']
@@ -242,30 +238,6 @@ def build_real_data(**kwards):
     return data
 
 
-
-@force_data_format
-def build_real_data(**kwards):
-
-    print "Reading data..."
-    data = read_real_data()
-    
-    data['p'] = kwards.get('p', 40)
-    
-    np.random.seed(kwards.get('tseed', 1))
-    rd.seed(kwards.get('tseed', 1))
-    
-    #close some rooms by probability 10/100
-    data['locking_times'] = defaultdict(list)
-    for k in range(data['r']):
-        data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
-
-    print data['n']
-    print data['r']
-    print data['p']
-
-    data = detect_similarities(data)
-   
-    return data
 
 @force_data_format
 def build_real_data_sample(**kwards):
