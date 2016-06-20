@@ -345,11 +345,11 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         
         if log: print best_value_duration/float(max_iter)
         # TODO: best value is attained 50% of the time, stop optimizing
-        if log_hist and best_value_duration/float(max_iter) > lazy_threshold:
+        if log_hist and lazy_threshold < 1.0 and best_value_duration/float(max_iter) > lazy_threshold:
             if log: print "Wuhu!", iteration
             break
 
-
+    print log_hist
     if log_hist:
         print "End beta:", beta
         print "iterations:", iteration
@@ -397,7 +397,7 @@ def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n
 
 if __name__ == '__main__':
     
-    n = 1500
+    n = 150
     r = 60
     p = 60
     
@@ -407,13 +407,30 @@ if __name__ == '__main__':
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
     
     conflicts = data['conflicts']
-    exam_colors = get_coloring(conflicts)
-    n_colors = len(set(exam_colors[k] for k in exam_colors))
-    print "Colors:", n_colors
+    coloring = get_coloring(conflicts)
     
+    from time import time
+    from model.instance import build_smart_random
+    from heuristics.johnson import Johnson
+    n_colorings = 10
+    
+    js = Johnson(data, n_colorings = n_colorings, n_colors = p)
+    colorings = js.generate_colorings()
+    #print colorings
+    for i in range(n_colorings):
+        
+        coloring = colorings[i]
+        
+        n_colors = len(set(coloring.values()))
+        if n_colors == p:
+            break
+    
+    n_colors = len(set(coloring.values()))
+    print "Colors:", n_colors
+        
     # annealing params
-    max_iter = 1000
-    beta_0 = 10
+    max_iter = 6000
+    beta_0 = 100
     print "Start beta: %f" %beta_0
     print "Iterations: %d" %max_iter
     
@@ -424,8 +441,8 @@ if __name__ == '__main__':
     n_runs = 1
     t1 = time()
     for i in range(n_runs):
-        times, v1 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, log_hist=(i == 0), log=False)
-    #times, v2 = simulated_annealing(exam_colors, data, beta_0 = beta_0, max_iter = max_iter, color_schedule= times, log_hist=log_hist)
+        times, v1 = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, log_hist=(i == 0), log=False)
+    #times, v2 = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, color_schedule= times, log_hist=log_hist)
     t1 = (time() - t1)*1.0/n_runs
     rt1 = t1/max_iter
     print "Time: %0.3f" %t1, "Value:", v1

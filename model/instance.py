@@ -95,7 +95,6 @@ def force_data_format(func):
         return res
     return correct_format
 
-
 @force_data_format
 def build_random_data(**kwards):
     """ @param n, r, p: number of exams, rooms, periods
@@ -212,6 +211,7 @@ def build_smart_random(**kwards):
     data = detect_similar_periods(data)
     
     return data
+
 
 
 from inputData.readMoses import read_times

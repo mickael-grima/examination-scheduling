@@ -100,9 +100,9 @@ for(i in seq(1, N2, 1)) {
     print(i)
     begin_tag = raumsp$TAG[i]
     end_tag = raumsp$BIS_TAG[i]
-    
+    print(end_tag)
     if( is.na(end_tag) ) { end_tag = begin_tag }
-    
+    print(end_tag)
     begin_zeit = raumsp$ZEIT_VON[i]
     end_zeit = raumsp$ZEIT_BIS[i]
     print(end_zeit)
