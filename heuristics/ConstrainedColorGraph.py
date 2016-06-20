@@ -17,8 +17,8 @@ from collections import defaultdict
 
 
 class ConstrainedColorGraph(ColorGraph):
-    def __init__(self):
-        super(ConstrainedColorGraph, self).__init__()
+    def __init__(self, n_colours=2000):
+        super(ConstrainedColorGraph, self).__init__(n_colours = n_colours)
         self.color_exams = defaultdict(list)
 
     def check_room_constraints_ILP(self, node, color, data, periods=None):
@@ -115,3 +115,23 @@ class ConstrainedColorGraph(ColorGraph):
                     self.colours[node] = col
                     self.color_exams[col].append(node)
                     break
+
+
+
+class EqualizedColorGraph(ConstrainedColorGraph):
+    def __init__(self, n_colours=2000):
+        super(EqualizedColorGraph, self).__init__(n_colours=n_colours)
+        self.color_exams = defaultdict(list)
+
+
+
+    def color_node(self, node, data={}, check_constraints=True, periods=None, check_max_rooms_and_slots=False):
+        """
+            Check the colors of the neighbors, and color the node with a different color.
+            If capacities is not empty, we color the node respecting the capacities room constraint
+        """
+        for col in self.ALL_COLOURS:
+            # we check if every other neighbors don't have col as color
+            if self.check_neighbours(node, col):
+                self.colours[node] = col
+                break

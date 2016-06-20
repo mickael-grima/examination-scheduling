@@ -24,11 +24,12 @@ plt.axis('off')
 
 
 class ColorGraph(object):
-    def __init__(self):
+    def __init__(self, n_colours=2000):
         self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
 
-        self.ALL_COLOURS = [i for i in range(2000)]
+        self.n_colours = n.colours
+        self.ALL_COLOURS = [i for i in range(n_colours)]
         self.WHITE = -1
 
         self.graph = nx.Graph()
