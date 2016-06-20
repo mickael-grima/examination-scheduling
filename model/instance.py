@@ -41,10 +41,10 @@ def force_data_format(func):
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
 
-        if not conflicts:
-            conflicts = {}
+        # build conflicts from Q
+        if len(conflicts) == 0:
             for i in range(n):
-                conflicts[i] = [j for j in range(n) if Q[i][j]]
+                conflicts[i] = [j for j in range(n) if Q[i][j] == 1]
 
         # make sure the conflicts are symmetric!
         for k in conflicts:
@@ -213,17 +213,45 @@ def build_smart_random(**kwards):
     
     return data
 
+
+
 @force_data_format
 def build_real_data(**kwards):
 
     print "Reading data..."
     data = read_real_data()
-
+    
     data['p'] = kwards.get('p', 40)
-
+    
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
+    
+    #close some rooms by probability 10/100
+    data['locking_times'] = defaultdict(list)
+    for k in range(data['r']):
+        data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
 
+    print data['n']
+    print data['r']
+    print data['p']
+
+    #data = detect_similarities(data)
+   
+    return data
+
+
+
+@force_data_format
+def build_real_data(**kwards):
+
+    print "Reading data..."
+    data = read_real_data()
+    
+    data['p'] = kwards.get('p', 40)
+    
+    np.random.seed(kwards.get('tseed', 1))
+    rd.seed(kwards.get('tseed', 1))
+    
     #close some rooms by probability 10/100
     data['locking_times'] = defaultdict(list)
     for k in range(data['r']):

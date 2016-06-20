@@ -16,19 +16,43 @@ import re
 import numpy as np
 import pickle
 
-rows = defaultdict(list)
-colnames = list()
 
-with open("%sinput/Data/SzenarioergebnisSoSe2016.csv"%PROJECT_PATH) as ergebnis:
-    for line in ergebnis:
-        line = re.split(';', line)
-        prfgnbr = line[0]
-        line.pop(0)
-        if re.match('.*PRFG-NUMMER.*', prfgnbr):
-            colnames = line
-        else:
-            rows[prfgnbr] = filter(lambda x: len(x) > 0 and not re.match("\n", x), line)
+def read_times(data = None):
+
+    colnames = list()
+
+    start_times = defaultdict(float)
+    end_times = defaultdict(float)
+    mid_times = defaultdict(float)
+
+    with open("%sinputData/Data/prfg_times.csv"%PROJECT_PATH) as ergebnis:
+        for line in ergebnis:
+            line = re.sub('\"', '', line)
+            line = re.sub('\n', '', line)
+            line = re.split(',', line)
+            
+            line.pop(0)
+            prfgnbr = line[0]
+            if re.match('.*PRFG.NUMMER.*', prfgnbr):
+                colnames = line
+            else:
+                start_times[prfgnbr] = float(line[1])
+                end_times[prfgnbr] = float(line[2])
+                mid_times[prfgnbr] = float(line[3])
+                
+    duration = abs(np.array(start_times.values()) - np.array(end_times.values()) )
+
+    h = sorted(set(start_times.values()))
     
+    return h
+    
+
+#print np.histogram(duration, bins = 20)
+#print max(duration)
+#print set(duration)
+
+
+exit(0)
 
 # exam data
 exam_names = defaultdict(str)
