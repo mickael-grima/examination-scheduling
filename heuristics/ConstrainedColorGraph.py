@@ -122,8 +122,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
     def __init__(self, n_colours=2000):
         super(EqualizedColorGraph, self).__init__(n_colours=n_colours)
         self.color_exams = defaultdict(list)
-
-
+        self.color_count = [0]*self.n_colours
 
     def color_node(self, node, data={}, check_constraints=True, periods=None, check_max_rooms_and_slots=False):
         """
@@ -131,7 +130,17 @@ class EqualizedColorGraph(ConstrainedColorGraph):
             If capacities is not empty, we color the node respecting the capacities room constraint
         """
         for col in self.ALL_COLOURS:
+            
+            # stop if more colours than periods are needed
+            if col >= data['p']:
+                break
+
+            # continue if the current color already has too many exams
+            if self.color_count[col] >= data['r']:
+                continue
+
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, col):
                 self.colours[node] = col
+                self.color_count[col] += 1
                 break

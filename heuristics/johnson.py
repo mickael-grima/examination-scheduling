@@ -26,7 +26,7 @@ class Johnson(MetaHeuristic):
     
     def __init__(self, data, n_colorings=10, n_colors=2000):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = ConstrainedColorGraph(n_colours = n_colors)
+        self.graph = EqualizedColorGraph(n_colours = n_colors)
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
 
     def generate_colorings(self):
