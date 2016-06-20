@@ -48,6 +48,7 @@ from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linea
 from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_model_16
 from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
 from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_linear_model_18
+from GurobiModel.GurobiLinear_v_20_orbital import build_model as build_linear_model_20
 
 
 
@@ -65,7 +66,8 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear Lexicographic': build_linear_model_18,
+    #    'Linear orbital': build_linear_model_20,
+    #    'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
        'Linear more covers': build_linear_model_15,
@@ -142,14 +144,14 @@ def compare(data):
 
 
 def test_compare():
-    n = 130 
-    r = 20
-    p = 15
+    n = 800 
+    r = 60
+    p = 40
     tseed = 5656
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
-    #data = build_real_data(tseed=tseed)
-    data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
+    data = build_real_data(tseed=tseed)
+    #data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
     print data['c']
     print data['s']
     time, objectives = compare(data)

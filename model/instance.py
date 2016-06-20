@@ -34,7 +34,9 @@ def force_data_format(func):
         p = data.get('p', 0)
         w = data.get('w', [["0"] for i in range(n)])
         location = data.get('location', ["0" for k in range(r)])
-        similar = data.get('similiar', [None for l in range(p)])
+        similarp = data.get('similiarp', [[-1] for l in range(p)])
+        similare = data.get('similiare', [[-1] for i in range(n)])
+        similarr = data.get('similiarr', [[-1] for k in range(r)])
 
         Q = data.get('Q')
         conflicts = data.get('conflicts', defaultdict(list))
@@ -86,7 +88,9 @@ def force_data_format(func):
             'h': list(data.get('h', [])),
             'w': w,
             'location' : location,
-            'similar' : similar
+            'similarp' : similarp,
+            'similare' : similare,
+            'similarr' : similarr
         }
         return res
     return correct_format
@@ -215,7 +219,7 @@ def build_real_data(**kwards):
     print "Reading data..."
     data = read_real_data()
 
-    data['p'] = kwards.get('tseed', 30)
+    data['p'] = kwards.get('p', 40)
 
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
@@ -225,7 +229,11 @@ def build_real_data(**kwards):
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
 
-    data = detect_similar_periods(data)
+    print data['n']
+    print data['r']
+    print data['p']
+
+    #data = detect_similarities(data)
    
     return data
 
@@ -263,8 +271,12 @@ def build_real_data_sample(**kwards):
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
 
-    data = detect_similar_periods(data)
+    data = detect_similarities(data)
    
+    return data
+
+def detect_similarities(data):
+    data = detect_similar_periods(detect_similar_exams(detect_similar_rooms(data)))
     return data
 
 
@@ -275,9 +287,32 @@ def detect_similar_periods(data):
         roomnumber[l] = sum([1 for k in range(data['r']) if not l in data['locking_times'][k] ])
         roomcapacities[l] = sum([data['c'][k] for k in range(data['r']) if not l in data['locking_times'][k] ])
     
-    data['similar'] = defaultdict(list)
+    data['similarp'] = defaultdict(list)
     for l in range(data['p']):
-        data['similar'][l] = [l2 for l2 in range(data['p']) if (roomnumber[l2] <= roomnumber[l]+2 and roomnumber[l2] >= roomnumber[l]-2) and (roomcapacities[l2] <= roomcapacities[l]+100 and roomcapacities[l2] >= roomcapacities[l]-100) and l != l2 ]  
+        data['similarp'][l] = [l2 for l2 in range(data['p']) if (roomnumber[l2] <= roomnumber[l]+2 and roomnumber[l2] >= roomnumber[l]-2) and (roomcapacities[l2] <= roomcapacities[l]+100 and roomcapacities[l2] >= roomcapacities[l]-100) and l != l2 ]  
+    
+
+    return data
+
+
+def detect_similar_exams(data):
+    # We use an extended notion of similar two exams A and B count as similiar if A has similar or less students participation in a it than B
+    
+    data['similare'] = defaultdict(list)
+
+    for i in range(data['n']):
+        data['similare'][i] = [j for j in range(data['n']) if i != j and data['s'][j] <= data['s'][i]+10 ]  
+    
+
+    return data
+
+def detect_similar_rooms(data):
+    # We use an extended notion of similar two exams A and B count as similiar if A has similar or less students participation in a it than B
+    
+    data['similarr'] = defaultdict(list)
+
+    for k in range(data['r']):
+        data['similarr'][k] = [k2 for k2 in range(data['r']) if k != k2 and data['c'][k2] <= data['c'][k] +20 and data['c'][k2] >= data['c'][k] -20  ]  
     
 
     return data

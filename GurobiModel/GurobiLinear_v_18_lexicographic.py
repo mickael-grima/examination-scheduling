@@ -55,7 +55,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     conflicts = data['conflicts']
     locking_times = data['locking_times']
     T = data['T']
-    similar = data['similar']
+    similarp = data['similarp']
     
     model = Model("ExaminationScheduling")
     
@@ -155,10 +155,10 @@ def build_model(data, n_cliques = 0, verbose = True):
     # TODO Do for every location 
 
 
-    if not similar[0] is None:
+    if similarp[0] >= 0:
         for i in range(i-1):
             for l in range(p):
-                model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similar), "s1")
+                model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similarp), "s1")
 
 
 

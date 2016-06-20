@@ -65,6 +65,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
     for k in range(r):
+        print k
         for l in range(p):
             if T[k][l] == 1:
                 for i in range(n):

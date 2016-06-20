@@ -9,6 +9,9 @@ __pycache__/
 # data uncompressed
 input/Data/Archive/*
 
+#results
+results/*
+
 # plots
 plots/
 *.gif
