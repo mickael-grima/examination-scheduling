@@ -24,9 +24,9 @@ from heuristics.MetaHeuristic import MetaHeuristic
 
 class Johnson(MetaHeuristic):
     
-    def __init__(self, data,n_colorings=10):
+    def __init__(self, data, n_colorings=10, n_colors=2000):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = ConstrainedColorGraph()
+        self.graph = EqualizedColorGraph(n_colours = n_colors)
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
 
     def generate_colorings(self):
@@ -65,7 +65,7 @@ class Johnson(MetaHeuristic):
                 self.graph.color_node(node, data=self.data, check_constraints = False, check_max_rooms_and_slots = True)
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
             #print self.graph.colours.values()
-        print len(colorings)
+        #print len(colorings)
         return colorings
         
     def update(self, values, best_index = None, time_slots = None):
