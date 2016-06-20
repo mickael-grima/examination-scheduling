@@ -14,6 +14,7 @@ sys.path.append(PROJECT_PATH)
 from heuristics.ColorGraph import ColorGraph
 from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 from collections import defaultdict
+from operator import itemgetter
 
 
 class ConstrainedColorGraph(ColorGraph):
@@ -128,18 +129,27 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         - tries to fill colors evenly with exams 
     ''' 
 
+    def reset_colours(self):
+        """
+            Reset all the colours to white and reset the color_count
+        """
+        for col in self.colours:
+            self.colours[col] = self.WHITE
+        self.color_count = [0 for c in self.color_count]
+
+
     def color_node(self, node, data={}, check_constraints=True, periods=None):
         """
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
         """
-        ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, color_count), key=itemgetter(1))]
-        ordered_colors = [col in ordered_colors if self.color_count[col] > 0]
+        ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
+        ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
         print ordered_colors
 
         if len(ordered_colors) < data['p']:
             for col in self.ALL_COLOURS:
-                if color_count[col] > 0:
+                if self.color_count[col] > 0:
                     continue
                 self.colours[node] = col
                 self.color_count[col] += 1

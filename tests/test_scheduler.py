@@ -185,7 +185,7 @@ if __name__ == '__main__':
     
     #test_heuristic(n,r,p,prob,seed)
     #test_optimize_dummy(n,r,p,prob,seed)
-    #test_random(n,r,p,prob,epochs=1, annealing_iterations=annealing_iterations,seed=seed)
+    test_random(n,r,p,prob,epochs=1, annealing_iterations=annealing_iterations,seed=seed)
     #test_SA(n,r,p,prob,epochs, annealing_iterations, seed)
     #test_random_advance(n,r,p,prob, epochs, annealing_iterations,seed)
     #test_ant_colony(n,r,p,prob, epochs, annealing_iterations,seed) 

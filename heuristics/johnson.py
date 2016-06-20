@@ -13,7 +13,7 @@ import numpy as np
 
 from operator import itemgetter
 
-from ConstrainedColorGraph import ConstrainedColorGraph
+from ConstrainedColorGraph import EqualizedColorGraph
 from heuristics.MetaHeuristic import MetaHeuristic
 # from heuristics.graph_coloring import greedy_coloring
 
@@ -26,7 +26,7 @@ class Johnson(MetaHeuristic):
     
     def __init__(self, data, n_colorings=10, n_colors=2000):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = EqualizedColorGraph(n_colours = n_colours)
+        self.graph = EqualizedColorGraph(n_colours = n_colors)
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
 
     def generate_colorings(self):
@@ -62,7 +62,7 @@ class Johnson(MetaHeuristic):
             
             # compute coloring
             for node in nodes:
-                self.graph.color_node(node, data=self.data, check_constraints = False, check_max_rooms_and_slots = True)
+                self.graph.color_node(node, data=self.data, check_constraints = False)
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
             #print self.graph.colours.values()
         #print len(colorings)
@@ -77,13 +77,13 @@ if __name__ == '__main__':
     
     n = 10
     r = 10
-    p = 10
+    p = 5
     tseed = 200
 
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
-    js = Johnson(data, n_colours = p)
+    js = Johnson(data, n_colorings = 2, n_colors = p)
     colorings = js.generate_colorings()
     print colorings
     
