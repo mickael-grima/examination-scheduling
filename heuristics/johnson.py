@@ -59,8 +59,14 @@ class Johnson(MetaHeuristic):
             nodes = [elmts[0] for elmts in sorted(zip(nodes, vals), key=itemgetter(1), reverse=True)]
             
             # compute coloring
+            fail = False
             for node in nodes:
                 self.graph.color_node(node, data=self.data, check_constraints = False)
+                if self.graph.colours[node] == self.graph.WHITE:
+                    fail = True
+                    break
+            if fail:
+                break
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
 
         end_time = time.time()
