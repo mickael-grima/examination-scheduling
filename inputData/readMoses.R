@@ -31,7 +31,6 @@ for(i in seq(1, N, 1)) {
     begin = get_time(termin, ergebnis$BEGINN_ZEIT[i])
     ende = get_time(termin, ergebnis$ENDE_ZEIT[i])
     mid = begin + 0.5*(ende - begin)
-    print(mid)
     
     if(difftime(mid, get_time(termin, slot_begin_1)) >= 0 && difftime(mid, get_time(termin, slot_ende_1)) <= 0) {
         ergebnis[i, "startDate"] = paste(get_time(termin, slot_begin_1))
@@ -62,7 +61,7 @@ ergebnis$endHours = abs(difftime(ergebnis$endDate, begin, units="hours"))
 ergebnis$midHours = abs(difftime(ergebnis$midDate, begin, units="hours"))
 ergebnis$diffWeeks = round(difftime(ergebnis$startDate, begin, units="weeks"))
 
-write.csv(ergebnis[,c("PRFG.NUMMER", "startHours", "endHours", "midHours")], file="Data/prfg_times.csv")
+write.csv(ergebnis[,c("PRFG.NUMMER", "startHours", "endHours", "midHours", "diffWeeks")], file="Data/prfg_times.csv")
 # 
 # rooms = ergebnis[,grep(pattern="ORT_CODE_.*", x=names(ergebnis), value=TRUE)]
 # rooms = sort(Reduce(union, rooms))[-1]

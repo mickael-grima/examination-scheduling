@@ -214,6 +214,7 @@ def build_smart_random(**kwards):
     return data
 
 
+from inputData.readMoses import read_times
 
 @force_data_format
 def build_real_data(**kwards):
@@ -221,7 +222,8 @@ def build_real_data(**kwards):
     print "Reading data..."
     data = read_real_data()
     
-    data['p'] = kwards.get('p', 40)
+    data['h'] = read_times()
+    data['p'] = len(data['h'])
     
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
