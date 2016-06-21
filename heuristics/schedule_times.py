@@ -309,7 +309,6 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
             acceptance step.
             exp(+ beta) because of maximization!
         '''
-        
         if log:
             print "Obj: %0.2f" % value
             print np.exp(-beta * (value - old_value))
@@ -349,7 +348,6 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
             if log: print "Wuhu!", iteration
             break
 
-    print log_hist
     if log_hist:
         print "End beta:", beta
         print "iterations:", iteration

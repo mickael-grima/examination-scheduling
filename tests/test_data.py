@@ -13,6 +13,7 @@ sys.path.append(path)
 
 import unittest
 from model.instance import *
+from inputData import examination_data
 
 
 class TestConstraints(unittest.TestCase):
@@ -50,6 +51,15 @@ class TestConstraints(unittest.TestCase):
             self.assertIsNotNone(data.get(dim))
             self.assertTrue(data[dim] > 0)
 
+    def test_real_data(self):
+        data = examination_data.read_data()
+        for cst in self.constants:
+            self.assertIsNotNone(data.get(cst))
+            self.assertTrue(len(data[cst]) > 0)
+        for dim in self.dimensions:
+            self.assertIsNotNone(data.get(dim))
+            self.assertTrue(data[dim] > 0)
+    
     def test(self):
         data = build_smart_random(n=10, p=10, r=10)
         for cst in self.constants:
