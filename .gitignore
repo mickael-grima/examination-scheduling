@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#second worker
+model/worker2.py
+
 # data uncompressed
 input/Data/Archive/*
 input/Data/TumOnlineOld/*
