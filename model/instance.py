@@ -141,7 +141,7 @@ def build_small_input():
               [1, 0, 1, 1, 0]],  # Conflicts matrix
         'T': [[1, 0, 1],
               [1, 1, 0],
-              [1, 1, 0]],  # Opening times for rooms
+              [1, 1, 1]],  # Opening times for rooms
         'h': [0, 2, 4]  # number of hours before period
     }
     return small_input
@@ -213,8 +213,8 @@ def build_smart_random(**kwards):
     return data
 
 
-
-from inputData.readMoses import read_times
+# This line throws an error!
+# from inputData.readMoses import read_times
 
 @force_data_format
 def build_real_data(**kwards):
