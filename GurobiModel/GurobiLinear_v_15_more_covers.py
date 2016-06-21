@@ -162,7 +162,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     #model.params.MIPFocus = 1
 
     model.params.heuristics = 0
-    model.params.cuts = 0
+    #model.params.cuts = 0
 
     return(model)
 

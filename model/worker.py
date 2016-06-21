@@ -97,8 +97,8 @@ def compare(data):
         t = time()
         #problem.params.cuts = 0
         problem.optimize()
-        problem.computeIIS()
-        problem.write("model.ilp")
+        # problem.computeIIS()
+        #problem.write("model.ilp")
         times[prob_name] = time() - t
 
         count_rooms = 0
@@ -150,14 +150,14 @@ def compare(data):
 
 
 def test_compare():
-    n = 50 
-    r = 50
-    p = 50
-    tseed = 534645
+    n = 200
+    r = 20
+    p = 20
+    tseed = 4644
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
-    #data = build_real_data(tseed=tseed)
-    data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
+    data = build_real_data(tseed=tseed)
+    #data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
     time, objectives = compare(data)
 
     print("")

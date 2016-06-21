@@ -63,17 +63,17 @@ def build_model(data, n_cliques = 0, verbose = True):
     #Orbit variable for orbital branching
     o = {}
     for i in range(n):
-        for l in range(p):
-            for k in range(r):
-                o[i,k,l] = model.addVar(vtype=GRB.BINARY, name="o_%s_%s_%s" % (i,k,l))     
+        for k in range(r):
+            for l in range(p):
+                o[i,k,l] = model.addVar(vtype=GRB.BINARY, name="o_%s_%s" % (i,l))     
 
     # integrate new variables
     model.update() 
 
     for i in range(n):
-        for l in range(p):
-            for k in range(r):
-             o[i,k,l].setAttr("BranchPriority", 100000000)
+        for k in range(r):
+            for l in range(p):
+                o[i,k,l].setAttr("BranchPriority", 10000*s[i])
 
 
 
@@ -142,15 +142,23 @@ def build_model(data, n_cliques = 0, verbose = True):
 
 
     for l in range(p):
+        print l
         for k in range(r):
+            print k
             if T[k][l] == 1:
                 for i in range(n):
                     c6 = LinExpr()
-                    for i2 in similare[i]:
-                        for k2 in similarr[k]:
-                            if i2 >= 0 and k2 >=0 and conflicts[i] <= conflicts[j] and T[k2][l] == 1:
-                                c6.addTerms(1,x[i2,k2,l])
-                    model.addConstr(c6 <= o[i,k,l]*len(similare[i])*len(similarr[k]), "symmetrie break")
+                    for i2 in range(n):
+                        if s[i2] >= s[i] and conflicts[i] <= conflicts[i2]:
+                            for k2 in similarr[k]:
+                                if k2 >= 0:
+                                    c6.addTerms(1,x[i2,k,l])
+                    model.addConstr(c6 <= o[i,k,l]*n, "symmetrie break")
+
+    for i in range(p-2):
+        for l in range(p):
+            model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similarp[l]), "s1")
+
 
     model.setObjective( obj, GRB.MINIMIZE)
 
@@ -177,13 +185,14 @@ def build_model(data, n_cliques = 0, verbose = True):
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.symmetrie = 2
     model.params.method = 3
+    #model.params.presolve = 0
     #model.params.MIPFocus = 1
 
     model.params.OutputFlag = 1
     #model.params.MIPFocus = 1
 
     model.params.heuristics = 0
-    model.params.cuts = 0
+    #model.params.cuts = 0
 
 
     return(model)
@@ -192,9 +201,9 @@ def build_model(data, n_cliques = 0, verbose = True):
 
 if __name__ == "__main__":
     
-    n = 300
-    r = 20
-    p = 20  
+    n = 200
+    r = 30
+    p = 30  
 
     # generate data
     random.seed(42)

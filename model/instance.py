@@ -302,7 +302,7 @@ def detect_similar_exams(data):
     data['similare'] = defaultdict(list)
 
     for i in range(data['n']):
-        data['similare'][i] = [j for j in range(data['n']) if data['s'][j] <= data['s'][i]+20 and data['s'][j] >= data['s'][i]-20 ]  
+        data['similare'][i] = [j for j in range(data['n']) if data['s'][j] <= data['s'][i]+50 and data['s'][j] >= data['s'][i]-50 ]  
     
 
     return data
