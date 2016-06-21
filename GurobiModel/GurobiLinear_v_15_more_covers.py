@@ -65,7 +65,6 @@ def build_model(data, n_cliques = 0, verbose = True):
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
     for k in range(r):
-        print k
         for l in range(p):
             if T[k][l] == 1:
                 for i in range(n):
@@ -120,7 +119,8 @@ def build_model(data, n_cliques = 0, verbose = True):
 
             for j in conflicts[i]:
                 c3.addTerms(1,y[j,l])
-            model.addConstr(c3 <= (1 - y[i,l])*sumconflicts[i], "c3")
+            if not conflicts[i]:
+                model.addConstr(c3 <= (1 - y[i,l])*sumconflicts[i], "c3")
 
             c2.addTerms(1,y[i,l])
         model.addConstr( c2 == 1 , "c2")
@@ -155,47 +155,15 @@ def build_model(data, n_cliques = 0, verbose = True):
     if not verbose:
         model.params.OutputFlag = 0
     
-    # Set Parameters
-    #print("Setting Parameters...")
- 
-    # max presolve agressivity
-    #model.params.presolve = 2
-    # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
-    #model.params.method = 1
+    model.params.method = 3
     #model.params.MIPFocus = 1
 
     model.params.OutputFlag = 1
-    model.params.Method = 3
     #model.params.MIPFocus = 1
 
     model.params.heuristics = 0
-    #model.params.cuts = 0
+    model.params.cuts = 0
 
-
-    # cuts
-    #model.params.cuts = 0
-    #model.params.coverCuts = 2
-    #model.params.CutPasses = 4
-
-    # heuristics
-    #model.params.heuristics = 0
-
-    #model.params.symmetry = 2
-
-
-
-    # # Tune the model
-    # model.tune()
-
-    # if model.tuneResultCount > 0:
-
-    #     # Load the best tuned parameters into the model
-    #     model.getTuneResult(0)
-
-    #     # Write tuned parameters to a file
-    #     model.write('tune1.prm')
-
-    # return
     return(model)
 
 
