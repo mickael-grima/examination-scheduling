@@ -53,7 +53,7 @@ from heuristics.tools import get_similar_periods
 def test_meta_heuristic(Heuristic, data, epochs = 50, annealing_iterations = 500, do_plot=True):
     
     t = time()
-    x, y, v, logger = optimize(Heuristic, data, epochs = epochs, gamma = 0.1, annealing_iterations = annealing_iterations, verbose = False, log_history = True)
+    x, y, v, logger = optimize(Heuristic, data, epochs = epochs, gamma = 0.5, annealing_iterations = annealing_iterations, verbose = False, log_history = True)
     print "Time:", time()-t
     print "VALUE:", v
     if 'n_feasible' in logger:
@@ -108,8 +108,8 @@ def test_random(n = 45, r = 11, p = 12, prob_conflicts = 0.3, epochs = 100, anne
     
     print "Random Heuristic"
     data = get_data_for_tests(n, r, p, prob_conflicts, seed)
-    
-    T = RandomHeuristic(data, n_colorings = 30)
+
+    T = RandomHeuristic(data, n_colorings = 10)
     test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
     
     
@@ -148,7 +148,7 @@ def test_johnson(n = 15, r = 5, p = 15, prob_conflicts = 0.6, epochs = 100, anne
     print "Johnson"
     data = get_data_for_tests(n, r, p, prob_conflicts, seed)
     
-    T = Johnson(data, n_colorings = 30)
+    T = Johnson(data, n_colorings = 10, n_colors = data['p'])
     test_meta_heuristic(T, data, epochs = epochs, annealing_iterations = annealing_iterations)
     
         
@@ -168,12 +168,12 @@ if __name__ == '__main__':
     #p = 100
     #prob = 0.5
     
-    #n = 150
-    #r = 130
-    #p = 80
-    #prob = 0.3
-    #seed = 42
-    #johnson ca 148.881012658
+    n = 150
+    r = 130
+    p = 80
+    prob = 0.3
+    seed = 42
+    # johnson ca 148.881012658
 
     
     #n = 300

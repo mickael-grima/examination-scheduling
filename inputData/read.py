@@ -18,11 +18,11 @@ def read_real_data():
         wb = openpyxl.load_workbook('%s\inputData\Data\TumOnline\Read15S.xlsx' % (PROJECT_PATH))
     except:
         wb = openpyxl.load_workbook('%s/inputData/Data/TumOnline/Read15S.xlsx' % (PROJECT_PATH))
-
+    
     ws = wb.get_sheet_by_name('Conflicts')
     ws2 = wb.get_sheet_by_name('Students')
     ws3 = wb.get_sheet_by_name('Raum')
-
+    
     maxRow = ws.max_row
     maxRow3 = ws3.max_row
 
@@ -38,7 +38,6 @@ def read_real_data():
     # create room capacities
     data['c'] = sorted([ int(ws3["D%s" % (k)].value) for k in range(2,maxRow3+1)], reverse=True)
 
-    
     return data
 
 

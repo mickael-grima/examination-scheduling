@@ -38,13 +38,13 @@ def force_data_format(func):
         similare = data.get('similare', [[-1] for i in range(n)])
         similarr = data.get('similarr', [[-1] for k in range(r)])
 
-        Q = data.get('Q')
+        Q = data.get('Q', None)
         conflicts = data.get('conflicts', defaultdict(list))
 
-        if not conflicts:
-            conflicts = {}
+        # build conflicts from Q
+        if len(conflicts) == 0:
             for i in range(n):
-                conflicts[i] = [j for j in range(n) if Q[i][j]]
+                conflicts[i] = [j for j in range(n) if Q[i][j] == 1]
 
         # make sure the conflicts are symmetric!
         for k in conflicts:
@@ -59,7 +59,7 @@ def force_data_format(func):
         if 'build_Q' in data and not data['build_Q']:
             Q = None
         else:
-            if not Q:
+            if Q is not None:
                 Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
             else:
                 for i in range(n):
@@ -94,7 +94,6 @@ def force_data_format(func):
         }
         return res
     return correct_format
-
 
 @force_data_format
 def build_random_data(**kwards):
@@ -142,7 +141,7 @@ def build_small_input():
               [1, 0, 1, 1, 0]],  # Conflicts matrix
         'T': [[1, 0, 1],
               [1, 1, 0],
-              [1, 1, 0]],  # Opening times for rooms
+              [1, 1, 1]],  # Opening times for rooms
         'h': [0, 2, 4]  # number of hours before period
     }
     return small_input
@@ -213,29 +212,32 @@ def build_smart_random(**kwards):
     
     return data
 
+
+# This line throws an error!
+# from inputData.readMoses import read_times
+
 @force_data_format
 def build_real_data(**kwards):
 
     print "Reading data..."
     data = read_real_data()
-
-    data['p'] = kwards.get('p', 40)
-
+    
+    #data['p'] = kwards.get('p', 40)
+    data['h'], data['locking_times'], data['c'] = read_times()
+    data['p'] = len(data['h'])
+    
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
-
-    #close some rooms by probability 10/100
-    data['locking_times'] = defaultdict(list)
-    for k in range(data['r']):
-        data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
-
+    
     print data['n']
     print data['r']
     print data['p']
 
-    data = detect_similarities(data)
+    #data = detect_similarities(data)
    
     return data
+
+
 
 @force_data_format
 def build_real_data_sample(**kwards):

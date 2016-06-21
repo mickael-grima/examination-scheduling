@@ -98,6 +98,12 @@ class ConstrainedColorGraph(ColorGraph):
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, col):
 
+                self.colours[node] = col
+                self.color_exams[col].append(node)
+                break
+
+                '''
+                #OLD CODE
                 # We check if the room constraint is fullfilled
                 color_this_node = False
                 if not check_constraints:
@@ -114,7 +120,7 @@ class ConstrainedColorGraph(ColorGraph):
                     self.colours[node] = col
                     self.color_exams[col].append(node)
                     break
-
+                '''
 
 
 class EqualizedColorGraph(ConstrainedColorGraph):
@@ -145,7 +151,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         """
         ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
         ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
-        print ordered_colors
+        #print ordered_colors
 
         if len(ordered_colors) < data['p']:
             for col in self.ALL_COLOURS:

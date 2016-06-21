@@ -11,6 +11,7 @@ for p in paths:
         break
 sys.path.append(path)
 
+
 import random as rd
 from model.instance import build_random_data
 from heuristics import tools
@@ -166,5 +167,41 @@ def test_changed_colors(seed=42):
 
 
 if __name__ == '__main__':
-    SA_test_objectives()
+    #SA_test_objectives()
     #SA_benchmark_annealing()
+    
+    
+    n = 10
+    r = 10
+    p = 5
+    prob_conflicts = 0.2
+    tseed = 200
+    from time import time
+    from model.instance import build_smart_random
+    from heuristics.johnson import Johnson
+    data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob_conflicts, build_Q = False)
+    
+    js = Johnson(data, n_colorings = 1, n_colors = p)
+    colorings = js.generate_colorings()
+    print colorings
+    coloring = colorings[0]
+
+    conflicts = data['conflicts']
+    coloring = tools.get_coloring(conflicts)
+
+    n_colors = len(set(coloring[k] for k in coloring))
+    print n_colors
+
+    beta_0 = 0.1
+    log_hist = True
+    print log_hist
+    max_iter = 6000
+    print max_iter
+    rd.seed(tseed)
+    t1 = time()
+    times, v1 = schedule_times.simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, log_hist=log_hist, lazy_threshold=1.0)
+    t1 = (time() - t1)*1.0
+    print t1
+    print v1
+
+
