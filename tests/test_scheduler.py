@@ -17,7 +17,6 @@ import unittest
 import random as rd
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
 from heuristics.AC import AC
-import heuristics.examination_scheduler as scheduler
 from heuristics import tools
 from model.instance import build_smart_random, build_small_input, build_random_data
 import heuristics.schedule_times as schedule_times
@@ -32,7 +31,7 @@ from model.constraints_handler import (
     test_one_exam_period_room
 )
 
-from heuristics.examination_scheduler import *
+from heuristics.schedule_exams import *
 from heuristics.MetaHeuristic import *
 from heuristics.johnson import Johnson
 def get_data_for_tests(n, r, p, prob_conflicts, seed):

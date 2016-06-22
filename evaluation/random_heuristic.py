@@ -14,7 +14,7 @@ sys.path.append(PROJECT_PATH)
 from time import time
 from inputData import examination_data
 from heuristics.MetaHeuristic import RandomHeuristic
-from heuristics.examination_scheduler import optimize
+from heuristics.schedule_times import optimize
 from heuristics.johnson import Johnson
 from heuristics.AC import AC
 
