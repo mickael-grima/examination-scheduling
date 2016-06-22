@@ -75,10 +75,15 @@ def to_binary(coloring, color_schedule, h):
     if color_schedule is None:
         return None
     
+    hdict = {}
+    for i, hi in enumerate(h):
+        hdict[hi] = i
+        
     y = defaultdict(int)
     for i in coloring:
-        l = h.index(color_schedule[coloring[i]])
+        l = hdict[color_schedule[coloring[i]]]
         y[i,l] = 1.0
+    
     return y
 
 
