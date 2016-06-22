@@ -24,11 +24,12 @@ from gurobipy import GurobiError
 from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
-from heuristics.tools import to_binary, get_coloring
+import heuristics.tools as tools
 from heuristics.check_feasibility import build_statespace
 
-from model.constraints_handler import is_feasible
-def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10):
+import model.constraints_handler as constraints
+
+def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=False):
     '''
         The heuristiv which iteratively solves first the time scheduling problem, and afterwards the room scheduling problems.
         @Param: coloring dictionary which gives the color for each exam i
@@ -46,22 +47,25 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10):
     # create time schedule permuting the time solts for each coloring
     color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, beta_0 = beta_0, statespace = statespace, color_exams = color_exams)
     
-    if color_schedule is None:
-        #print "infeas color"
-        return None, None, sys.maxint
+    # build binary variable 
+    y_binary = tools.to_binary(coloring, color_schedule, data['h'])
+    
+    if y_binary is None or not all(constraints.time_feasible(y_binary, data).values()):
+        print constraints.time_feasible(y_binary, data)
+        return None, None, None, sys.maxint
     
     # create room schedule
     room_schedule, room_value = schedule_rooms(coloring, color_schedule, data)
     
     # if infeasible, return large obj_val since we are minimizing
-    if room_schedule is None:
-        #print "infeas room"
-        return None, None, sys.maxint
+    if room_schedule is None or not all(constraints.room_feasible(room_schedule, data).values()):
+        print constraints.room_feasible(room_schedule, data)
+        return None, None, None, sys.maxint
 
     # evaluate combined objectives
     obj_val = room_value - gamma * time_value
-
-    return room_schedule, color_schedule, obj_val
+        
+    return room_schedule, y_binary, color_schedule, obj_val
 
 
 def log_epoch(logger, epoch, **kwargs):
@@ -73,7 +77,7 @@ def log_epoch(logger, epoch, **kwargs):
         logger[key][epoch] = kwargs[key]
         
 
-def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 0.2, verbose = False, log_history = False):
+def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 0.2, verbose = False, log_history = False, debug=False):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
@@ -94,19 +98,13 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
 
         # Generate colourings
         colorings = meta_heuristic.generate_colorings()
+        
         ## evaluate all colorings
-
         for ind, coloring in enumerate(colorings):
             
-            xs[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0)
-            # build binary variable 
-            ys[ind] = to_binary(coloring, color_schedules[ind], data['h'])
-            '''
-            if xs[ind] is not None:
-                print is_feasible(xs[ind], ys[ind], data)
-            else:
-                print "None feasible"
-            '''
+            # evaluate heuristic
+            xs[ind], ys[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0)
+            
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
         
