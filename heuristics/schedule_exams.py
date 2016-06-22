@@ -29,11 +29,9 @@ import model.constraints_handler as constraints
 from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 
 
-def build_statespace(coloring, data):
-    '''
-        Build statespace by checking feasibility for every color and every possible time slot.
-        If the similar_periods field is present in the data, this is spead up by considering duplicate times slots.
-    '''
+
+def build_statespace_similar_periods(coloring, data):
+    
     h = data['h']
     
     # refactor dicts
@@ -41,39 +39,56 @@ def build_statespace(coloring, data):
     
     # empty statespace -> init
     statespace = { color: [] for color in color_exams }
-
-    if 'similar_periods' not in data:
-        for color in color_exams:
-            for period, time in enumerate(h):
-                feasible = schedule_greedy(color_exams[color], period, data) is not None
-                if feasible:
-                    statespace[color].append(time)
-            if len(statespace[color]) == 0:
-                return None, None
-    else:
-        similar_periods = data['similar_periods']
+    
+    # get similar periods
+    similar_periods = data['similar_periods']
+    
+    for color in color_exams:
         
-        for color in color_exams:
-            
-            periods = range(data['p'])
-            while len(periods) > 0:
-                period = periods[0]
-                feasible = schedule_greedy(color_exams[color], period, data) is not None
-                if feasible:
-                    statespace[color].append(h[period])
-                        
-                for period2 in similar_periods[period]:
-                    if period2 != period and feasible:
-                        statespace[color].append(h[period2])
-                    periods.remove(period2)
-            
-            if len(statespace[color]) == 0:
-                return None, None
+        periods = range(data['p'])
+        while len(periods) > 0:
+            period = periods[0]
+            feasible = schedule_greedy(color_exams[color], period, data) is not None
+            if feasible:
+                statespace[color].append(h[period])
+                    
+            for period2 in similar_periods[period]:
+                if period2 != period and feasible:
+                    statespace[color].append(h[period2])
+                periods.remove(period2)
+        
+        if len(statespace[color]) == 0:
+            return None, None
 
     return statespace, color_exams
 
 
+def build_statespace(coloring, data):
+    '''
+        Build statespace by checking feasibility for every color and every possible time slot.
+        If the similar_periods field is present in the data, this is spead up by considering duplicate times slots.
+    '''
+    
+    if 'similar_periods' in data:
+        return build_statespace_similar_periods(coloring, data)
+    
+    h = data['h']
+    
+    # refactor dicts
+    color_exams = tools.swap_color_dictionary(coloring)
+    
+    # empty statespace -> init
+    statespace = { color: [] for color in color_exams }
+    
+    for color in color_exams:
+        for period, time in enumerate(h):
+            feasible = schedule_greedy(color_exams[color], period, data) is not None
+            if feasible:
+                statespace[color].append(time)
+        if len(statespace[color]) == 0:
+            return None, None
 
+    return statespace, color_exams
 
 
 
@@ -90,7 +105,9 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     '''
     
     # check feasibility
+    print "space"
     statespace, color_exams = build_statespace(coloring, data)
+    print statespace is None
     
     # create time schedule permuting the time solts for each coloring
     color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, beta_0 = beta_0, statespace = statespace, color_exams = color_exams)
