@@ -37,25 +37,26 @@ def force_data_format(func):
         similarr = data.get('similarr', [[-1] for k in range(r)])
 
         Q = data.get('Q', None)
-
         conflicts = data.get('conflicts', defaultdict(list))
-
-        # build conflicts from Q
-        if len(conflicts) == 0:
+        
+        assert Q is not None or len(conflicts) > 0
+        
+        if len(conflicts) == 0:  # build conflicts from Q
             for i in range(n):
-                if type(Q) == defaultdict:
-                    conflicts[i] = [j for j in range(n) if Q[i, j] == 1]
-                else:
-                    conflicts[i] = [j for j in range(n) if Q[i][j] == 1]
-                    
-        # make sure the conflicts are symmetric!
-        for k in conflicts:
-            if len(conflicts[k]) > 0:
-                assert max(conflicts[k]) < n
-            for l in conflicts[k]:
-                if k not in conflicts[l]:
-                    conflicts[l] += [k]
-            conflicts[k] = sorted(conflicts[k])
+                for j in range(i+1,n):
+                    if Q[i][j] == 1 or Q[j][i] == 1:
+                        if j not in conflicts[i]:
+                            conflicts[i].append(j)
+                        if i not in conflicts[j]:
+                            conflicts[j].append(i)
+        else:    # make sure the conflicts are symmetric!
+            for k in conflicts:
+                if len(conflicts[k]) > 0:
+                    assert max(conflicts[k]) < n
+                for l in conflicts[k]:
+                    if k not in conflicts[l]:
+                        conflicts[l] += [k]
+                conflicts[k] = sorted(conflicts[k])
 
         # conflicts matrix dense format (dont build if option is set)
         if 'build_Q' in data and not data['build_Q']:

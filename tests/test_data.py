@@ -53,6 +53,20 @@ class TestConstraints(unittest.TestCase):
 
     def test_real_data(self):
         data = examination_data.read_data()
+        
+        n = data['n']
+        Q = data['Q']
+        conflicts = data['conflicts']
+        
+        for i in range(n):
+            for j in range(n):
+                if Q[i][j] == 1:
+                    assert j in conflicts[i]
+                    assert i in conflicts[j]
+                else:
+                    assert j not in conflicts[i]
+                    assert i not in conflicts[j]
+
         for cst in self.constants:
             self.assertIsNotNone(data.get(cst))
             self.assertTrue(len(data[cst]) > 0)
