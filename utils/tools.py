@@ -32,18 +32,36 @@ def convert_to_table(variables, *dim):
     return res
 
 
+def get_dimensions_from_x(x):
+    """ @param variables: variable from gurobi
+        return the maximal number or each rank in the tuple key
+    """
+    n, r = set(), set()
+    for key, _ in x.iteritems():
+        n.add(key[0])
+        r.add(key[1])
+    return len(n), len(r)
+
+
+def get_dimensions_from_y(y):
+    """ @param variables: variable from gurobi
+        return the maximal number or each rank in the tuple key
+    """
+    n, p = set(), set()
+    for key, _ in y.iteritems():
+        n.add(key[0])
+        p.add(key[1])
+    return len(n), len(p)
+
+
 def get_dimensions_from(x, y):
     """ @param variables: variable from gurobi
         return the maximal number or each rank in the tuple key
     """
-    n, r, p = set(), set(), set()
-    for key, _ in x.iteritems():
-        n.add(key[0])
-        r.add(key[1])
-    for key, _ in y.iteritems():
-        n.add(key[0])
-        p.add(key[1])
-    return len(n), len(r), len(p)
+    n1, r = get_dimensions_from_x(x)
+    n2, p = get_dimensions_from_y(y)
+    assert n1==n2
+    return n1, r, p
 
 
 def get_value(var):

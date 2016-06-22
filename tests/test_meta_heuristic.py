@@ -47,7 +47,6 @@ if __name__ == '__main__':
     data = build_random_data( n=n, r=r, p=p, prob_conflicts=prob, build_Q = False)
     
     for H, name in zip([RandomHeuristic, RandomHeuristicAdvanced, AC], ["Random", "RandomAdvanced", "AC"]):
-        print name + ":"
         T = H(data, 400)
         colorings = T.generate_colorings()
         for color in colorings:
@@ -55,4 +54,6 @@ if __name__ == '__main__':
             m = max(values)
             assert all( [t >= 0 for t in values] ), "Error: Some nodes are left white!!! Nodes need all be colored!!"
             assert all( [t <= m for t in values] ), "Error: Color values need to be in range"
-        print "OK"
+        print "OK:", name
+        
+        

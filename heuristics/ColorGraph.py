@@ -95,7 +95,7 @@ class ColorGraph(object):
     def get_chromatic_number(self):
         """ return the number of colours used
         """
-        return len(set([self.colours[x] for x in self.colours]))
+        return len(set(self.colours.values()))
 
     def get_max_ind_set(self):
         """ for the given colouring give the maximum independant set size

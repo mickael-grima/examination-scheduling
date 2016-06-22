@@ -77,7 +77,7 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight, data={}, check_constraints=False):
+    def generate_coloring(self, graph, edges_weight, data={}, mode = 0):
         """ @param graph: graph to color
             @param edges_weight: weight on the edges for each node
             @cparam capacities: capacities of the rooms. If empty, we don't consider them
@@ -95,7 +95,7 @@ class Ant(object):
                 if current_node is None:
                     raise Exception("current_node is None")
                 if current_node in not_seen:
-                    graph.color_node(current_node, data=data, check_constraints=check_constraints)
+                    graph.color_node(current_node, data=data, mode=mode)
                     not_seen.remove(current_node)
                 count_node.setdefault(current_node, 0)
                 count_node[current_node] += 1
@@ -149,13 +149,13 @@ class AC:
                 if node != neighbor:
                     self.edges_weight[node][neighbor] = 1.0
 
-    def generate_colorings(self, check_constraints=False):
+    def generate_colorings(self, mode=0):
         """ Generate a feasible coloring for each ant
         """
         colorings = []
         for ant in self.ants:
             colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data,
-                             check_constraints=check_constraints))
+                             mode=mode))
             self.graph.reset_colours()
         return colorings
 

@@ -15,112 +15,80 @@ from heuristics.ColorGraph import ColorGraph
 from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 from collections import defaultdict
 from operator import itemgetter
+import random as rd
+        
+
+
+def check_rooms_constraint(nodes, data):
+    """
+        Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
+        @param nodes: nodes with that to color
+    """
+    
+    c, s, r = data.get('c', []), data.get('s', []), data.get('r', 0)
+
+    # sort students and capacities
+    students = sorted([(i, s[i]) for i in nodes], key=lambda x: x[1], reverse=True) if s else []
+    capacities = sorted([c[k] for k in range(r)], reverse=True)
+
+    #WARNING: ERROR!
+    i, k = 0, 0
+    while i < len(nodes) and k < r:
+        if students[i][1] <= capacities[k]:
+            i += 1
+        k += 1
+    #WARNING: ERROR!
+
+    # Do we have exams without rooms
+    return i < len(nodes)
 
 
 class ConstrainedColorGraph(ColorGraph):
     def __init__(self, n_colours=2000):
         super(ConstrainedColorGraph, self).__init__(n_colours = n_colours)
-        self.color_exams = defaultdict(list)
-
-    def check_room_constraints_ILP(self, node, color, data, periods=None):
+        
+    def check_room_constraints(self, node, color, data, mode = 1, periods = None):
         """
             Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
             Use ILP in order to get this feasibility
             @param node: node to color
             @param color: color for coloring node
-            @param capacities: rooms capacities
+            @param periods: period for given color
         """
+        assert mode > 0 and mode < 3, mode
+        
         period = 0
         if periods is not None and color < len(periods):
             period = periods[color]
-
-        # get all nodes with that color, and solve ILP
-        nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
-
-        # schedule rooms
-        # TODO: Give start solution ?!?
-        return schedule_rooms_in_period(nodes, period, data) is not None
-
-    def check_room_constraints_greedy(self, node, color, data, periods=None):
-        """
-            Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
-            Use ILP in order to get this feasibility
-            @param node: node to color
-            @param color: color for coloring node
-            @param capacities: rooms capacities
-        """
-        if periods is not None and color < len(periods):
-            period = periods[color]
-        else:
-            period = 0
-
-        # get all nodes with that color, and solve ILP
-        nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
-
-        # schedule rooms
-        # TODO: Give start solution ?!?
-        return schedule_greedy(nodes, period, data) is not None
-
-    def check_rooms_constraint(self, node, color, data):
-        """
-            Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
-            @param node: node to color
-            @param color: color for coloring node
-            @param capacities: rooms capacities
-        """
-        # get all nodes with that color
-        #nodes = self.color_exams[color] + [node]
-        nodes = [node for node, col in self.colours.iteritems() if col == color] + [node]
         
-        c, s, r = data.get('c', []), data.get('s', []), data.get('r', 0)
+        # get all nodes with that color
+        nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
+        if mode == 1: # greedy scheduling heuristic
+            return schedule_greedy(nodes, period, data) is not None
+        elif mode == 1: # ILP
+            return schedule_rooms_in_period(nodes, period, data) is not None
+        elif mode == 2:
+            return check_rooms_constraint(nodes, data)
 
-        # sort students and capacities
-        students = sorted([(i, s[i]) for i in nodes], key=lambda x: x[1], reverse=True) if s else []
-        capacities = sorted([c[k] for k in range(r)], reverse=True)
 
-        #WARNING: ERROR!
-        i, k = 0, 0
-        while i < len(nodes) and k < r:
-            if students[i][1] <= capacities[k]:
-                i += 1
-            k += 1
-        #WARNING: ERROR!
-
-        # Do we have exams without rooms
-        return i < len(nodes)
-
-    def color_node(self, node, data={}, check_constraints=True, periods=None):
+    def color_node(self, node, data={}, mode=0, periods=None):
         """
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
+            @ Param mode:
+                0 - Don't check constraints
+                1 - Use greedy scheduling for checking constraints
+                2 - Use ILP feasibility
+                3 - Use hand picked heuristic
         """
-        for col in self.ALL_COLOURS:
+        #rd.shuffle(self.ALL_COLOURS)
+        for color in self.ALL_COLOURS:
             # we check if every other neighbors don't have col as color
-            if self.check_neighbours(node, col):
-
-                self.colours[node] = col
-                self.color_exams[col].append(node)
-                break
-
-                '''
-                #OLD CODE
-                # We check if the room constraint is fullfilled
-                color_this_node = False
-                if not check_constraints:
-                    #print "dont check constraints"
-                    color_this_node = True
-                elif periods is not None and self.check_room_constraints_greedy(node, col, data, periods = periods):
-                    color_this_node = True
-                # this does not work!
-                elif self.check_rooms_constraint(node, col, data):
-                    color_this_node = True
-                    
-                # if the node can be colored, do so and add it to color exams list
-                if color_this_node:
-                    self.colours[node] = col
-                    self.color_exams[col].append(node)
+            if self.check_neighbours(node, color):
+                if mode == 0 or self.check_room_constraints(node, color, data, mode = mode, periods = periods):
+                    self.colours[node] = color
                     break
-                '''
+
 
 
 class EqualizedColorGraph(ConstrainedColorGraph):
@@ -144,7 +112,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         self.color_count = [0 for c in self.color_count]
 
 
-    def color_node(self, node, data={}, check_constraints=True, periods=None):
+    def color_node(self, node, data={}, mode=0, periods=None):
         """
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
@@ -169,7 +137,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
 
             # we check whether any other neighbor has col as color
             if self.check_neighbours(node, col):
-                # color the node
-                self.colours[node] = col
-                self.color_count[col] += 1
-                break
+                if mode == 0 or self.check_room_constraints(node, col, data, mode = mode, periods = periods):
+                    self.colours[node] = col
+                    self.color_count[col] += 1
+                    break
