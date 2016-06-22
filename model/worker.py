@@ -66,7 +66,7 @@ def compare(data):
     """
     # Select models to compare
     problems = {
-        'Linear orbital': build_linear_model_20,
+    #    'Linear orbital': build_linear_model_20,
     #    'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
@@ -95,7 +95,10 @@ def compare(data):
         problem = problems[prob_name](data)
         # Optimize selected model
         t = time()
+        #problem.params.cuts = 0
         problem.optimize()
+        # problem.computeIIS()
+        #problem.write("model.ilp")
         times[prob_name] = time() - t
 
         count_rooms = 0
@@ -147,16 +150,14 @@ def compare(data):
 
 
 def test_compare():
-    n = 600 
-    r = 35
-    p = 35
-    tseed = 55
+    n = 200
+    r = 20
+    p = 20
+    tseed = 4644
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
-    #data = build_real_data(tseed=tseed)
-    data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
-    print data['c']
-    print data['s']
+    data = build_real_data(tseed=tseed)
+    #data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
     time, objectives = compare(data)
 
     print("")
@@ -164,7 +165,7 @@ def test_compare():
     print("r: %s" % (r))
     print("p: %s" % (p))
     print("seed: %s" % (tseed))
-    print("Percentage conflicts: %s" % (sum( sum(data['conflicts'][i]) for i in range(n))/(2*n*(n-1))))
+    print("Percentage conflicts: %s" % (sum( len(data['conflicts'][i]) for i in range(n)) /(2*n*(n-1))))
     print("")
     for key in time:
         print key

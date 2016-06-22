@@ -255,6 +255,7 @@ def build_real_data_sample(**kwards):
 
 
     choose_exams = sorted(np.random.choice(range(data['n']), n, replace=False))
+    print choose_exams
     choose_rooms = sorted(np.random.choice(range(data['r']), r, replace=False))
 
     data['c'] = [data['c'][i] for i in choose_rooms]
@@ -291,7 +292,7 @@ def detect_similar_periods(data):
     
     data['similarp'] = defaultdict(list)
     for l in range(data['p']):
-        data['similarp'][l] = [l2 for l2 in range(data['p']) if (roomnumber[l2] <= roomnumber[l]+2 and roomnumber[l2] >= roomnumber[l]-2) and (roomcapacities[l2] <= roomcapacities[l]+100 and roomcapacities[l2] >= roomcapacities[l]-100) and l != l2 ]  
+        data['similarp'][l] = [l2 for l2 in range(data['p']) if (roomnumber[l2] <= roomnumber[l]+2 and roomnumber[l2] >= roomnumber[l]-2) and (roomcapacities[l2] <= roomcapacities[l]+100 and roomcapacities[l2] >= roomcapacities[l]-100) ]  
     
 
     return data
@@ -303,7 +304,7 @@ def detect_similar_exams(data):
     data['similare'] = defaultdict(list)
 
     for i in range(data['n']):
-        data['similare'][i] = [j for j in range(data['n']) if i != j and data['s'][j] <= data['s'][i]+6 and data['s'][j] >= data['s'][i]-3 ]  
+        data['similare'][i] = [j for j in range(data['n']) if data['s'][j] <= data['s'][i]+50 and data['s'][j] >= data['s'][i]-50 ]  
     
 
     return data
@@ -314,7 +315,7 @@ def detect_similar_rooms(data):
     data['similarr'] = defaultdict(list)
 
     for k in range(data['r']):
-        data['similarr'][k] = [k2 for k2 in range(data['r']) if k != k2 and data['c'][k2] <= data['c'][k] +20 and data['c'][k2] >= data['c'][k] -20  ]  
+        data['similarr'][k] = [k2 for k2 in range(data['r']) if data['c'][k2] <= data['c'][k] +20 and data['c'][k2] >= data['c'][k] -20  ] 
     
 
     return data

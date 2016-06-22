@@ -47,7 +47,6 @@ def build_model(data, n_cliques = 0, verbose = True):
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
     for k in range(r):
-        print k
         for l in range(p):
             if T[k][l] == 1:
                 for i in range(n):
@@ -64,17 +63,17 @@ def build_model(data, n_cliques = 0, verbose = True):
     #Orbit variable for orbital branching
     o = {}
     for i in range(n):
-        for l in range(p):
-            for k in range(r):
-                o[i,k,l] = model.addVar(vtype=GRB.BINARY, name="o_%s" % (i))     
+        for k in range(r):
+            for l in range(p):
+                o[i,k,l] = model.addVar(vtype=GRB.BINARY, name="o_%s_%s" % (i,l))     
 
     # integrate new variables
     model.update() 
 
     for i in range(n):
-        for l in range(p):
-            for k in range(r):
-             o[i,k,l].setAttr("BranchPriority", sys.maxint)
+        for k in range(r):
+            for l in range(p):
+                o[i,k,l].setAttr("BranchPriority", 10000*s[i])
 
 
 
@@ -92,13 +91,13 @@ def build_model(data, n_cliques = 0, verbose = True):
     for i in range(n):
         sumconflicts[i] = sum(conflicts[i])
         if s[i] <= 50:
-            maxrooms[i] = 1
-        elif s[i] <= 100:
             maxrooms[i] = 2
+        elif s[i] <= 100:
+            maxrooms[i] = 4
         elif s[i] <= 400:
-            maxrooms[i] = 7
-        elif s[i] <= 700:
             maxrooms[i] = 9
+        elif s[i] <= 700:
+            maxrooms[i] = 12
         else:
             maxrooms[i] = 12
         c2 = LinExpr()
@@ -119,7 +118,8 @@ def build_model(data, n_cliques = 0, verbose = True):
 
             for j in conflicts[i]:
                 c3.addTerms(1,y[j,l])
-            model.addConstr(c3 <= (1 - y[i,l])*sumconflicts[i], "c3")
+            if not conflicts[i]:
+                model.addConstr(c3 <= (1 - y[i,l])*sumconflicts[i], "c3")
 
             c2.addTerms(1,y[i,l])
         model.addConstr( c2 == 1 , "c2")
@@ -142,22 +142,28 @@ def build_model(data, n_cliques = 0, verbose = True):
 
 
     for l in range(p):
+        print l
         for k in range(r):
+            print k
             if T[k][l] == 1:
                 for i in range(n):
                     c6 = LinExpr()
-                    #print similare[i]
-                    for j in similare[i]:
-                        if j >= 0:
-                            c6.addTerms(1,x[i,k,l])
-                    model.addConstr(c6*sum(similare[i]) >= o[i,k,l], "symmetrie break")
+                    for i2 in range(n):
+                        if s[i2] >= s[i] and conflicts[i] <= conflicts[i2]:
+                            for k2 in similarr[k]:
+                                if k2 >= 0:
+                                    c6.addTerms(1,x[i2,k,l])
+                    model.addConstr(c6 <= o[i,k,l]*n, "symmetrie break")
 
+    for i in range(p-2):
+        for l in range(p):
+            model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similarp[l]), "s1")
 
 
     model.setObjective( obj, GRB.MINIMIZE)
 
 
-    model.write("CPLEX.mps")
+    #model.write("CPLEX.mps")
 
     print timeit.default_timer()-start
  
@@ -179,10 +185,11 @@ def build_model(data, n_cliques = 0, verbose = True):
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
     #model.params.symmetrie = 2
     model.params.method = 3
+    #model.params.presolve = 0
     #model.params.MIPFocus = 1
 
     model.params.OutputFlag = 1
-    model.params.MIPFocus = 1
+    #model.params.MIPFocus = 1
 
     model.params.heuristics = 0
     #model.params.cuts = 0
@@ -194,9 +201,9 @@ def build_model(data, n_cliques = 0, verbose = True):
 
 if __name__ == "__main__":
     
-    n = 150
-    r = 20
-    p = 20  
+    n = 200
+    r = 30
+    p = 30  
 
     # generate data
     random.seed(42)
