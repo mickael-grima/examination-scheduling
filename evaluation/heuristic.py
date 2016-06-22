@@ -21,13 +21,13 @@ import heuristics.tools as tools
 
 if __name__ == '__main__':
     
-    threshold = 0
-    gamma = 1.0
-    n_colorings = 10
-    epochs = 1
-    annealing_iterations = 1000
     
-    data = examination_data.read_data(threshold = threshold)
+    gamma = 1.0
+    n_colorings = 1
+    epochs = 1
+    annealing_iterations = 1
+    
+    data = examination_data.read_data(threshold = 0)
     
     data['similar_periods'] = tools.get_similar_periods(data)
     
@@ -45,4 +45,6 @@ if __name__ == '__main__':
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, verbose = False, log_history = True)
     print "Time:", time()-t
     print "VALUE:", v
+    for key in logger:
+        print key
     
