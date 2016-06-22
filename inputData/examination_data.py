@@ -62,6 +62,29 @@ def read_times():
     return h, exam_names, exam_times
 
 
+def read_result_rooms(filename):
+    # "","PRFG.NUMMER","startHours","endHours","startDate","endDate"
+    
+    cols = []
+    for i in range(1, 10):
+        cols.append("ORT_CODE_0%d" %i)
+    for i in range(10, 31):
+        cols.append("ORT_CODE_%d" %i)
+        
+    prfg = read_columns(filename, "PRFG-NUMMER", cols, sep=";")
+    
+    exam_rooms = defaultdict(set)
+    for col in prfg:
+        for exam in prfg[col]:
+            exam_rooms[exam].add(prfg[col][exam])
+    
+    for exam in exam_rooms:
+        exam_rooms[exam] = list(exam_rooms[exam])
+        if '' in exam_rooms[exam]:
+            exam_rooms[exam].remove('')
+    return exam_rooms
+
+
 def read_rooms(h):
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
@@ -181,14 +204,20 @@ def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=
     '''
     #print "Loading data: Data needs verification!"
     
+    
+    # load times from szenarioergebnis
     h, exam_names, exam_times = read_times()
     
     if max_periods is not None:
         h = h[0:max_periods]
         # TODO: WARNING: exam times not valuable any more
     
+    # load room results from szenarioergebnis
+    exam_rooms = read_result_rooms("SzenarioergebnisSoSe2016.csv")
+    
     if verbose: print "Moses exams:", len(exam_names)
     
+    # load locking rooms
     c, locking_times, room_names, campus_ids = read_rooms(h)
     
     # consider all exams in tumOnline
@@ -214,14 +243,18 @@ def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=
     data['Q'] = Q
     
     data['locking_times'] = locking_times
+    
     data['exam_names'] = exam_names
     data['exam_times'] = exam_times
+    data['exam_rooms'] = exam_rooms
     data['room_names'] = room_names
     data['campus_ids'] = campus_ids
     
     return data
 
 if __name__ == "__main__":
+    
+    
     data = read_data(threshold = 0, make_intersection=True, verbose=True, max_periods = 10)
     
     print data['n'], data['r'], data['p']

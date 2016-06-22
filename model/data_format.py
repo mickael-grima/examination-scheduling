@@ -35,6 +35,13 @@ def force_data_format(func):
         similarp = data.get('similarp', [[-1] for l in range(p)])
         similare = data.get('similare', [[-1] for i in range(n)])
         similarr = data.get('similarr', [[-1] for k in range(r)])
+        
+        exam_names = data.get('exam_names', '')
+        exam_times = data.get('exam_times', '')
+        exam_rooms = data.get('exam_rooms', '')
+        room_names = data.get('room_names', '')
+        campus_ids = data.get('campus_ids', '')
+    
 
         Q = data.get('Q', None)
         conflicts = data.get('conflicts', defaultdict(list))
@@ -93,7 +100,12 @@ def force_data_format(func):
             'location' : location,
             'similarp' : similarp,
             'similare' : similare,
-            'similarr' : similarr
+            'similarr' : similarr, 
+            'exam_names': exam_names, 
+            'exam_times': exam_times,
+            'exam_rooms': exam_rooms, 
+            'room_names': room_names,
+            'campus_ids': campus_ids,
         }
         return res
     return correct_format
