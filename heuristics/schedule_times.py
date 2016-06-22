@@ -183,7 +183,7 @@ def get_color_conflicts(color_exams, exam_colors, conflicts):
         
         
 
-def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_threshold = 0.2, statespace = None, color_schedule = None, color_exams = None, log = False, log_hist=False, debug = True):
+def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_threshold = 1.0, acceptance_threshold=0.0, statespace = None, color_schedule = None, color_exams = None, log = False, log_hist=False, debug = False):
     '''
         Simulated annealing
         @Param exam_colors: coloring of conflict graph
@@ -192,6 +192,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         @Param beta_0: Start of cooling schedule
         @Param max_iter: Number of annealing iterations to perform
         @Param lazy_threshold: Check if the best solution so far has changed much. If set to 1, no lazy evaluation is performed.
+        @Param acceptance_threshold: Break if acceptance rate is below this value
         @Param statespace: For each color, which slots are eligible?
         @Param color_schedule: Starting solution (if infeasible, random generation)
         @Param color_exams: A dict with a list of exams for each color
@@ -245,7 +246,6 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     # assert a feasible schedule
     while not is_feasible(color_schedule, statespace):
         color_schedule = rd.sample( h, n_colors )
-            
             
     # best values found so far
     best_color_schedule = deepcopy(color_schedule)
@@ -347,6 +347,10 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         if log_hist and lazy_threshold < 1.0 and best_value_duration/float(max_iter) > lazy_threshold:
             if log: print "Wuhu!", iteration
             break
+        if acceptance_threshold > 0.0 and accepted/float(iteration) <= acceptance_threshold:
+            if log: print "Wuhu!", iteration
+            break
+        
 
     if log_hist:
         print "End beta:", beta
@@ -374,22 +378,28 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     return best_color_schedule, best_value
     
 
-def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n_restarts = 1, statespace = None, color_exams = None):
+def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n_restarts = 1, statespace = None, color_exams = None, debug = False):
     '''
         Schedule times using simulated annealing
         TODO: Description
     '''
+    log_hist = False
+    if debug:
+        log_hist = True
     color_schedules = []
     values = []
     for chain in range(n_chains):
         color_schedule = None
         for restart in range(n_restarts):
-            color_schedule, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, statespace = statespace, color_exams=color_exams, color_schedule = color_schedule)
+            color_schedule, value = simulated_annealing(coloring, data, beta_0 = beta_0, max_iter = max_iter, statespace = statespace, color_exams=color_exams, color_schedule = color_schedule, log_hist = log_hist)
         color_schedules.append(deepcopy(color_schedule))
         values.append(value)
     
     best_index, best_value = max( enumerate(values), key = lambda x : x[1] )
-    
+    if debug:
+        print "Exiting due to debugging schedule_times"
+        exit(0)
+            
     return color_schedules[best_index], best_value
     
 

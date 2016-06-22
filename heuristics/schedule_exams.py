@@ -114,31 +114,34 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     '''
     
     
-    #print "Building Statespace"
     # check feasibility
+    if debug: print "Building Statespace"
     statespace, color_exams = build_statespace(coloring, data)
-    #print "OK"
     if statespace is None:
-        if debug: print "infeas"
+        if debug: print "infeasible statespace"
         return None, None, None, sys.maxint
     
     # create time schedule permuting the time solts for each coloring
-    #print "ANNEALING"
+    if debug: print "ANNEALING"
     color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, beta_0 = beta_0, statespace = statespace, color_exams = color_exams)
-    #print "OK"
+    
     # build binary variable 
+    if debug: print "TOBINARY"
     y_binary = tools.to_binary(coloring, color_schedule, data['h'])
     
-    if y_binary is None or not all(constraints.time_feasible(y_binary, data).values()):
-        #print constraints.time_feasible(y_binary, data)
+    if y_binary is None:
+        if debug: print constraints.time_feasible(y_binary, data)
         return None, None, None, sys.maxint
     
     # create room schedule
-    room_schedule, room_value = schedule_rooms(coloring, color_schedule, data)
+    if debug: print "SCHDULE ROOMS"
+    room_schedule, room_value = schedule_rooms(coloring, color_schedule, data, greedy = True)
+    
+    if debug: print "DONE"
     
     # if infeasible, return large obj_val since we are minimizing
-    if room_schedule is None or not all(constraints.room_feasible(room_schedule, data).values()):
-        #print constraints.room_feasible(room_schedule, data)
+    if room_schedule is None:
+        if debug: print constraints.room_feasible(room_schedule, data)
         return None, None, None, sys.maxint
 
     # evaluate combined objectives
@@ -147,7 +150,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     return room_schedule, y_binary, color_schedule, obj_val
 
 
-def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 0.2, verbose = False, log_history = False, debug=False):
+def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 1.0, verbose = False, log_history = False, debug=False):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
@@ -166,16 +169,15 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         xs, ys, obj_vals = dict(), dict(), dict()
         color_schedules = dict()
 
-        #print "Building Colorings"
         # Generate colourings
+        if debug: print "Building Colorings"
         colorings = meta_heuristic.generate_colorings()
-        #print "OK"
         
         ## evaluate all colorings
         for ind, coloring in enumerate(colorings):
             
             # evaluate heuristic
-            xs[ind], ys[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0)
+            xs[ind], ys[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0, debug=debug)
             
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
@@ -186,7 +188,6 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             if log_history:
                 tools.log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
             continue
-        #else: print "feasibile"
         
         # search for best coloring
         best_index, best_value = min( values, key = lambda x: x[1] )
@@ -211,7 +212,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
     if log_history:
         return x, y, obj_val, logger
     else:
-        return x, y, obj_val
+        return x, y, obj_val, None
 
 
       

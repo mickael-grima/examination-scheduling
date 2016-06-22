@@ -24,8 +24,8 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 1
-    epochs = 1
-    annealing_iterations = 1
+    epochs = 10
+    annealing_iterations = 500
     
     data = examination_data.read_data(threshold = 0)
     
@@ -33,8 +33,8 @@ if __name__ == '__main__':
     
     print data['n'], data['r'], data['p']
     
-    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
+    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
@@ -42,9 +42,9 @@ if __name__ == '__main__':
     #Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
-    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, verbose = False, log_history = True)
+    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False)
     print "Time:", time()-t
     print "VALUE:", v
-    for key in logger:
-        print key
-    
+    #for key in logger:
+        #print key
+        #print logger[key]

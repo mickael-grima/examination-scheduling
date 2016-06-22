@@ -84,8 +84,8 @@ def schedule_greedy(exams_to_schedule, period, data, verbose = False):
         room_perm.pop(0)
     
     if verbose:
-        for key in exams_to_rooms:
-            print key, exams_to_rooms[key]
+        for exam in exams_to_rooms:
+            print exam, exams_to_rooms[exam]
     
     return exams_to_rooms
     
@@ -100,7 +100,7 @@ def obj1(x):
     return sum( x[key] for key in x ) 
 
 
-def schedule_rooms(coloring, color_schedule, data):
+def schedule_rooms(coloring, color_schedule, data, greedy = False):
     
     # get exams for each color
     color_exams = swap_color_dictionary(coloring)
@@ -117,7 +117,13 @@ def schedule_rooms(coloring, color_schedule, data):
     
         x = defaultdict(int)
         
-        x = schedule_rooms_in_period(color_exams[color], periods[color], data)
+        if greedy:
+            exams_to_rooms = schedule_greedy(color_exams[color], periods[color], data)
+            for exam in exams_to_rooms:
+                for room in exams_to_rooms[exam]:
+                    x[exam, room] = 1
+        else:
+            x = schedule_rooms_in_period(color_exams[color], periods[color], data)
         #print "SOL"
         #for key in x:
         #    print key, x[key]
