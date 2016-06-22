@@ -23,23 +23,17 @@ if __name__ == '__main__':
     
     
     gamma = 1.0
+    
+    epochs = 1
     n_colorings = 1
-    epochs = 100
     annealing_iterations = 1
     
-    data = examination_data.read_data(threshold = 0)
-    
+    data = examination_data.read_data()
     data['similar_periods'] = tools.get_similar_periods(data)
     
     print data['n'], data['r'], data['p']
     
-    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
-    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
-    #Heuristic = AC(data, num_ants = n_colorings)
+    Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, verbose = True, log_history = True)
