@@ -13,7 +13,7 @@ sys.path.append(PROJECT_PATH)
 
 from time import time
 from inputData import examination_data
-from heuristics.MetaHeuristic import RandomHeuristic, RandomHeuristicAdvanced
+from heuristics.MetaHeuristic import RandomHeuristic, RandomHeuristicAdvanced, RandomHeuristicEqualized
 import heuristics.schedule_exams as scheduler
 from heuristics.johnson import Johnson
 from heuristics.AC import AC
@@ -21,9 +21,9 @@ import heuristics.tools as tools
 
 if __name__ == '__main__':
     
-    threshold = 20
-    gamma = 0.5
-    n_colorings = 10
+    threshold = 0
+    gamma = 0
+    n_colorings = 100
     epochs = 1
     annealing_iterations = 100
     
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     print data['n'], data['r'], data['p']
 
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
+    #Heuristic = RandomHeuristicEqualized(data, n_colorings = n_colorings)
+    Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
