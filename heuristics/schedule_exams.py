@@ -32,6 +32,8 @@ from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 
 def build_statespace_similar_periods(coloring, data):
     
+    #print "Similar periods"
+    
     h = data['h']
     
     # refactor dicts
@@ -47,15 +49,22 @@ def build_statespace_similar_periods(coloring, data):
         
         periods = range(data['p'])
         while len(periods) > 0:
+            
             period = periods[0]
-            feasible = schedule_greedy(color_exams[color], period, data) is not None
+            greedy_schedule = schedule_greedy(color_exams[color], period, data)
+            
+            feasible = greedy_schedule is not None
+            
             if feasible:
                 statespace[color].append(h[period])
                     
             for period2 in similar_periods[period]:
+                if period2 not in periods:
+                    continue
                 if period2 != period and feasible:
                     statespace[color].append(h[period2])
                 periods.remove(period2)
+            periods.pop(0)
         
         if len(statespace[color]) == 0:
             return None, None
@@ -82,8 +91,8 @@ def build_statespace(coloring, data):
     
     for color in color_exams:
         for period, time in enumerate(h):
-            feasible = schedule_greedy(color_exams[color], period, data) is not None
-            if feasible:
+            greedy_schedule = schedule_greedy(color_exams[color], period, data)
+            if greedy_schedule is not None:
                 statespace[color].append(time)
         if len(statespace[color]) == 0:
             return None, None
@@ -104,19 +113,24 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
         obj_val: combined objective
     '''
     
+    
+    #print "Building Statespace"
     # check feasibility
-    print "space"
     statespace, color_exams = build_statespace(coloring, data)
-    print statespace is None
+    #print "OK"
+    if statespace is None:
+        if debug: print "infeas"
+        return None, None, None, sys.maxint
     
     # create time schedule permuting the time solts for each coloring
+    #print "ANNEALING"
     color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, beta_0 = beta_0, statespace = statespace, color_exams = color_exams)
-    
+    #print "OK"
     # build binary variable 
     y_binary = tools.to_binary(coloring, color_schedule, data['h'])
     
     if y_binary is None or not all(constraints.time_feasible(y_binary, data).values()):
-        print constraints.time_feasible(y_binary, data)
+        #print constraints.time_feasible(y_binary, data)
         return None, None, None, sys.maxint
     
     # create room schedule
@@ -124,7 +138,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     
     # if infeasible, return large obj_val since we are minimizing
     if room_schedule is None or not all(constraints.room_feasible(room_schedule, data).values()):
-        print constraints.room_feasible(room_schedule, data)
+        #print constraints.room_feasible(room_schedule, data)
         return None, None, None, sys.maxint
 
     # evaluate combined objectives
@@ -152,8 +166,10 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         xs, ys, obj_vals = dict(), dict(), dict()
         color_schedules = dict()
 
+        #print "Building Colorings"
         # Generate colourings
         colorings = meta_heuristic.generate_colorings()
+        #print "OK"
         
         ## evaluate all colorings
         for ind, coloring in enumerate(colorings):
@@ -170,7 +186,8 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             if log_history:
                 tools.log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
             continue
-
+        #else: print "feasibile"
+        
         # search for best coloring
         best_index, best_value = min( values, key = lambda x: x[1] )
 

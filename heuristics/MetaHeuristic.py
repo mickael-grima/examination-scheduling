@@ -44,7 +44,8 @@ class RandomHeuristic(MetaHeuristic):
     
     def __init__(self, data, n_colorings=50):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = ConstrainedColorGraph()
+        #self.graph = ConstrainedColorGraph(n_colours = data['p'])
+        self.graph = EqualizedColorGraph(n_colours = data['p'])
         self.graph.build_graph(self.data['n'], self.data['conflicts'])   
         self.periods = [None] * self.n_colorings
         self.mode = 0
@@ -83,7 +84,7 @@ class RandomHeuristicAdvanced(RandomHeuristic):
     '''
     def __init__(self, data, n_colorings=50):
         RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = EqualizedColorGraph()
+        self.graph = EqualizedColorGraph(n_colours = data['p'])
         self.graph.build_graph(self.data['n'], self.data['conflicts'])   
         self.periods = { i: None for i in range(n_colorings) }
         self.mode = 1
