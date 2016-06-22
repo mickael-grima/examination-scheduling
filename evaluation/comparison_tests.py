@@ -22,10 +22,10 @@ import heuristics.tools as tools
 if __name__ == '__main__':
     
     threshold = 20
-    gamma = 1.0
+    gamma = 0.5
     n_colorings = 10
-    epochs = 10
-    annealing_iterations = 1
+    epochs = 1
+    annealing_iterations = 100
     
     data = examination_data.read_data(threshold = threshold)
     
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     print data['n'], data['r'], data['p']
 
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
+    Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
+    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
