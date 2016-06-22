@@ -17,12 +17,15 @@ import random as rd
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
 from heuristics.AC import AC
 import heuristics.groups_heuristic as group
-import heuristics.examination_scheduler as scheduler
+import heuristics.schedule_exams as scheduler
 from heuristics import tools
 from model.instance import build_smart_random, build_small_input, build_random_data
 import heuristics.schedule_times as schedule_times
 from heuristics.ColorGraph import ColorGraph
 
+from heuristics import tools
+
+    
 from utils.tools import transform_variables
 from model.constraints_handler import (
     test_conflicts,
@@ -45,7 +48,7 @@ class TestConstraints(unittest.TestCase):
         graph.build_graph(self.data['n'], self.data['conflicts'])
         graph.color_graph()
         x, y = {}, graph.build_variable()
-        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']), msg="conflict constraint failed")
+        self.assertTrue(test_conflicts(y, conflicts=self.data['conflicts']), msg="conflict constraint failed")
 
     def testGenerateStartingSolution(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
@@ -55,11 +58,11 @@ class TestConstraints(unittest.TestCase):
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
+        self.assertTrue(test_conflicts(y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
-        self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
+        self.assertTrue(test_enough_seat(x, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
-        self.assertTrue(test_one_exam_per_period(x, y), msg="one exam per period constraint failed")
+        self.assertTrue(test_one_exam_per_period(y), msg="one exam per period constraint failed")
         self.assertTrue(test_one_exam_period_room(x, y, T=self.data['T']),
                         msg="one exam per period per room constraint failed")
 
@@ -69,10 +72,28 @@ class TestConstraints(unittest.TestCase):
         x = {}
         y, _ = AC(self.data).optimize_time(epochs=10)
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
+        self.assertTrue(test_conflicts(y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
 
-    def testHeuristics(self):
+    def testHeuristic(self):
+        """ This test tests if the heuristics generate_starting_solution return a feasible solution
+        """
+        
+        coloring = tools.get_coloring(self.data['conflicts'])
+        x, y, color_schedule, obj_val = scheduler.heuristic(coloring, self.data, gamma = 1, max_iter = 100, beta_0 = 10, debug=False)
+
+        self.assertTrue(x, msg="dct x doesn't contain any variables")
+        self.assertTrue(y, msg="dct y doesn't contain any variables")
+        self.assertTrue(test_conflicts(y, conflicts=self.data['conflicts'], n=self.data['n'], p = self.data['p']),
+                        msg="conflict constraint failed")
+        self.assertTrue(test_enough_seat(x, c=self.data['c'], s=self.data['s'], n=self.data['n'], p = self.data['r']),
+                        msg="seat capacity constraint failed")
+        self.assertTrue(test_one_exam_per_period(y, n=self.data['n'], p = self.data['p']), msg="one exam per period constraint failed")
+        self.assertTrue(test_one_exam_period_room(x, y, T=self.data['T'], n=self.data['n'], r=self.data['r'], p = self.data['p']),
+                        msg="one exam per period per room constraint failed")
+
+
+    def testACHeuristics(self):
         """ This test tests if the heuristics generate_starting_solution return a feasible solution
         """
         x, y, _ = scheduler.optimize(AC(self.data), self.data)
@@ -80,11 +101,11 @@ class TestConstraints(unittest.TestCase):
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
+        self.assertTrue(test_conflicts(y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
-        self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
+        self.assertTrue(test_enough_seat(x, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
-        self.assertTrue(test_one_exam_per_period(x, y), msg="one exam per period constraint failed")
+        self.assertTrue(test_one_exam_per_period(y), msg="one exam per period constraint failed")
         self.assertTrue(test_one_exam_period_room(x, y, T=self.data['T']),
                         msg="one exam per period per room constraint failed")
 
@@ -94,11 +115,11 @@ class TestConstraints(unittest.TestCase):
         x, y = transform_variables(x, y, n=n, p=p, r=r)
         self.assertTrue(x, msg="dct x doesn't contain any variables")
         self.assertTrue(y, msg="dct y doesn't contain any variables")
-        self.assertTrue(test_conflicts(x, y, conflicts=self.data['conflicts']),
+        self.assertTrue(test_conflicts(y, conflicts=self.data['conflicts']),
                         msg="conflict constraint failed")
-        self.assertTrue(test_enough_seat(x, y, c=self.data['c'], s=self.data['s']),
+        self.assertTrue(test_enough_seat(x, c=self.data['c'], s=self.data['s']),
                         msg="seat capacity constraint failed")
-        self.assertTrue(test_one_exam_per_period(x, y), msg="one exam per period constraint failed")
+        self.assertTrue(test_one_exam_per_period(y), msg="one exam per period constraint failed")
         self.assertTrue(test_one_exam_period_room(x, y, T=self.data['T']),
                         msg="one exam per period per room constraint failed")
 

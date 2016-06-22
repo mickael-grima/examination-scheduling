@@ -82,7 +82,14 @@ def to_binary(coloring, color_schedule, h):
     return y
 
 
-
+def log_epoch(logger, epoch, **kwargs):
+    ''' 
+        Save epoch data in logger.
+        Logger[key] is a dictionary!
+    '''
+    for key in kwargs:
+        logger[key][epoch] = kwargs[key]
+        
 
 
 if __name__ == '__main__':

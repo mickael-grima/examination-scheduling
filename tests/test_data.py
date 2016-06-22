@@ -13,6 +13,7 @@ sys.path.append(path)
 
 import unittest
 from model.instance import *
+from inputData import examination_data
 
 
 class TestConstraints(unittest.TestCase):
@@ -50,6 +51,29 @@ class TestConstraints(unittest.TestCase):
             self.assertIsNotNone(data.get(dim))
             self.assertTrue(data[dim] > 0)
 
+    def test_real_data(self):
+        data = examination_data.read_data()
+        
+        n = data['n']
+        Q = data['Q']
+        conflicts = data['conflicts']
+        
+        for i in range(n):
+            for j in range(n):
+                if Q[i][j] == 1:
+                    assert j in conflicts[i]
+                    assert i in conflicts[j]
+                else:
+                    assert j not in conflicts[i]
+                    assert i not in conflicts[j]
+
+        for cst in self.constants:
+            self.assertIsNotNone(data.get(cst))
+            self.assertTrue(len(data[cst]) > 0)
+        for dim in self.dimensions:
+            self.assertIsNotNone(data.get(dim))
+            self.assertTrue(data[dim] > 0)
+    
     def test(self):
         data = build_smart_random(n=10, p=10, r=10)
         for cst in self.constants:
