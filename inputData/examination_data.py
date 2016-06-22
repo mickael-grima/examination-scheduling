@@ -175,23 +175,33 @@ def read_conflicts(filename = "exam_conflicts_15S.csv", exam_names = None, thres
     return s, Q, names
     
 @force_data_format
-def read_data(threshold = 0, make_intersection=True, verbose=False):
+def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=None):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
     #print "Loading data: Data needs verification!"
     
     h, exam_names, exam_times = read_times()
+    
+    if max_periods is not None:
+        h = h[0:max_periods]
+        # TODO: WARNING: exam times not valuable any more
+    
     if verbose: print "Moses exams:", len(exam_names)
+    
     c, locking_times, room_names, campus_ids = read_rooms(h)
-    if make_intersection:
-        s, Q, exam_names = read_conflicts(exam_names = exam_names, threshold = threshold)
-    else:
-        s, Q, exam_names = read_conflicts(exam_names = None, threshold = threshold)
+    
+    # consider all exams in tumOnline
+    if not make_intersection:
+        exam_names = None
+        
+    s, Q, exam_names = read_conflicts(exam_names = exam_names, threshold = threshold)
+    
     if verbose: print "Exams used:", len(exam_names)
     
     assert len(c) == len(room_names)
     assert len(exam_names) == len(s)
+    
     data = {}
     
     data['n'] = len(s)
@@ -212,7 +222,7 @@ def read_data(threshold = 0, make_intersection=True, verbose=False):
     return data
 
 if __name__ == "__main__":
-    data = read_data(threshold = 0, make_intersection=True, verbose=True)
+    data = read_data(threshold = 0, make_intersection=True, verbose=True, max_periods = 10)
     
     print data['n'], data['r'], data['p']
     print "KEYS:", [key for key in data]
