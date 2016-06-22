@@ -44,8 +44,8 @@ class Johnson(MetaHeuristic):
         for i in conflicts:
             conf_num[i] = len(conflicts[i])
             
-        start = 0
-        end = 0.5
+        start = -0.25
+        end = 0.75
         alpha = list(np.arange(start=start, stop=end, step = (end-start)/float(self.n_colorings)))
         for j in range(self.n_colorings):
             # reset node ordering and coloring
@@ -61,7 +61,7 @@ class Johnson(MetaHeuristic):
             # compute coloring
             fail = False
             for node in nodes:
-                self.graph.color_node(node, data=self.data, check_constraints = False)
+                self.graph.color_node(node, data=self.data, mode=0, periods=None)
                 if self.graph.colours[node] == self.graph.WHITE:
                     fail = True
                     break
