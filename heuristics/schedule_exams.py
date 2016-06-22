@@ -130,7 +130,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     y_binary = tools.to_binary(coloring, color_schedule, data['h'])
     
     if y_binary is None or not all(constraints.time_feasible(y_binary, data).values()):
-        print constraints.time_feasible(y_binary, data)
+        #print constraints.time_feasible(y_binary, data)
         return None, None, None, sys.maxint
     
     # create room schedule
@@ -138,7 +138,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     
     # if infeasible, return large obj_val since we are minimizing
     if room_schedule is None or not all(constraints.room_feasible(room_schedule, data).values()):
-        print constraints.room_feasible(room_schedule, data)
+        #print constraints.room_feasible(room_schedule, data)
         return None, None, None, sys.maxint
 
     # evaluate combined objectives
@@ -162,15 +162,14 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         
         if verbose:
             print epoch
-        print epoch
         
         xs, ys, obj_vals = dict(), dict(), dict()
         color_schedules = dict()
 
-        print "Building Colorings"
+        #print "Building Colorings"
         # Generate colourings
         colorings = meta_heuristic.generate_colorings()
-        print "OK"
+        #print "OK"
         
         ## evaluate all colorings
         for ind, coloring in enumerate(colorings):
@@ -183,11 +182,11 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         
         # check feasibility
         if len(values) == 0:
-            print "infeasible"
+            #print "infeasible"
             if log_history:
                 tools.log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
             continue
-        else: print "feasibile"
+        #else: print "feasibile"
         
         # search for best coloring
         best_index, best_value = min( values, key = lambda x: x[1] )

@@ -176,7 +176,7 @@ def read_conflicts(exam_names = None, threshold = 0):
 @force_data_format
 def read_data(threshold = 0):
     
-    print "Loading data: Data needs verification!"
+    #print "Loading data: Data needs verification!"
     
     h, exam_names, exam_times = read_times()
     c, locking_times, room_names, campus_ids = read_rooms(h)

@@ -21,7 +21,7 @@ import heuristics.tools as tools
 
 if __name__ == '__main__':
     
-    threshold = 0
+    threshold = 20
     gamma = 1.0
     n_colorings = 10
     epochs = 10
@@ -33,8 +33,8 @@ if __name__ == '__main__':
     
     print data['n'], data['r'], data['p']
     
-    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
+    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #Heuristic = AC(data, num_ants = n_colorings)
     
