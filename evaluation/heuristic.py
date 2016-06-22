@@ -13,7 +13,7 @@ sys.path.append(PROJECT_PATH)
 
 from time import time
 from inputData import examination_data
-from heuristics.MetaHeuristic import RandomHeuristic
+from heuristics.MetaHeuristic import RandomHeuristic, RandomHeuristicAdvanced
 import heuristics.schedule_exams as scheduler
 from heuristics.johnson import Johnson
 from heuristics.AC import AC
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     
     print data['n'], data['r'], data['p']
     
-    Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
+    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #Heuristic = AC(data, num_ants = n_colorings)
     

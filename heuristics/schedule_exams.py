@@ -25,9 +25,57 @@ from heuristics.AC import AC
 from heuristics.schedule_times import schedule_times
 from heuristics.schedule_rooms import schedule_rooms
 import heuristics.tools as tools
-from heuristics.check_feasibility import build_statespace
-
 import model.constraints_handler as constraints
+from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
+
+
+def build_statespace(coloring, data):
+    '''
+        Build statespace by checking feasibility for every color and every possible time slot.
+        If the similar_periods field is present in the data, this is spead up by considering duplicate times slots.
+    '''
+    h = data['h']
+    
+    # refactor dicts
+    color_exams = tools.swap_color_dictionary(coloring)
+    
+    # empty statespace -> init
+    statespace = { color: [] for color in color_exams }
+
+    if 'similar_periods' not in data:
+        for color in color_exams:
+            for period, time in enumerate(h):
+                feasible = schedule_greedy(color_exams[color], period, data) is not None
+                if feasible:
+                    statespace[color].append(time)
+            if len(statespace[color]) == 0:
+                return None, None
+    else:
+        similar_periods = data['similar_periods']
+        
+        for color in color_exams:
+            
+            periods = range(data['p'])
+            while len(periods) > 0:
+                period = periods[0]
+                feasible = schedule_greedy(color_exams[color], period, data) is not None
+                if feasible:
+                    statespace[color].append(h[period])
+                        
+                for period2 in similar_periods[period]:
+                    if period2 != period and feasible:
+                        statespace[color].append(h[period2])
+                    periods.remove(period2)
+            
+            if len(statespace[color]) == 0:
+                return None, None
+
+    return statespace, color_exams
+
+
+
+
+
 
 def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=False):
     '''
@@ -68,15 +116,6 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     return room_schedule, y_binary, color_schedule, obj_val
 
 
-def log_epoch(logger, epoch, **kwargs):
-    ''' 
-        Save epoch data in logger.
-        Logger[key] is a dictionary!
-    '''
-    for key in kwargs:
-        logger[key][epoch] = kwargs[key]
-        
-
 def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 0.2, verbose = False, log_history = False, debug=False):
     
     # init best values
@@ -112,7 +151,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         if len(values) == 0:
             #print "infeasible"
             if log_history:
-                log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
+                tools.log_epoch(logger, epoch, obj_val = obj_val, n_feasible = 0.0) 
             continue
 
         # search for best coloring
@@ -120,7 +159,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
 
         if log_history:
             worst_index, worst_value = max( values, key = lambda x: x[1] )
-            log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value, n_feasible = 1.0 * len(values) / len(colorings))#, mean_value=np.mean(map(lambda x:x[1],values)), worst_value=worst_value, ) 
+            tools.log_epoch(logger, epoch, obj_val = obj_val, best_value=best_value, n_feasible = 1.0 * len(values) / len(colorings))#, mean_value=np.mean(map(lambda x:x[1],values)), worst_value=worst_value, ) 
                       
         # Update meta heuristic
         meta_heuristic.update(obj_vals.values(), best_index = best_index, time_slots = color_schedules)

@@ -370,9 +370,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         plt.ylabel('best history')
         plt.savefig("%sheuristics/plots/annealing_rate_accept.png"%PROJECT_PATH)
         #print "annealing history plot in plots/annealing.png"
-       
+        
     return best_color_schedule, best_value
-
+    
 
 def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n_restarts = 1, statespace = None, color_exams = None):
     '''

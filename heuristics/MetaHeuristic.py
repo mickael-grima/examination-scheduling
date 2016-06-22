@@ -18,7 +18,7 @@ import random as rd
 import logging
 from collections import defaultdict
 
-from ConstrainedColorGraph import ConstrainedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary
@@ -56,13 +56,16 @@ class RandomHeuristic(MetaHeuristic):
         '''
         colorings = []
         nodes = self.graph.nodes()
+        
         for i in range(self.n_colorings):
-            print i
-            rd.shuffle(nodes)
             self.graph.reset_colours()
+            
+            rd.shuffle(nodes)
             for node in nodes:
                 self.graph.color_node(node, data=self.data, mode = self.mode, periods = self.periods[i])
+            
             colorings.append({n: c for n, c in self.graph.colours.iteritems()})      
+        
         return colorings
     
     
@@ -73,10 +76,15 @@ class RandomHeuristic(MetaHeuristic):
         pass
 
     
-class RandomHeuristicAdvanced(RandomHeuristic):
     
+class RandomHeuristicAdvanced(RandomHeuristic):
+    '''
+        A variant of the random heuristic, which uses color equalization and constraint checking
+    '''
     def __init__(self, data, n_colorings=50):
         RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
+        self.graph = EqualizedColorGraph()
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])   
         self.periods = { i: None for i in range(n_colorings) }
         self.mode = 1
         

@@ -137,7 +137,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
 
             # we check whether any other neighbor has col as color
             if self.check_neighbours(node, col):
-                if mode == 0 or self.check_room_constraints(node, color, data, mode = mode, periods = periods):
-                    self.colours[node] = color
+                if mode == 0 or self.check_room_constraints(node, col, data, mode = mode, periods = periods):
+                    self.colours[node] = col
                     self.color_count[col] += 1
                     break
