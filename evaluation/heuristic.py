@@ -17,16 +17,19 @@ from heuristics.MetaHeuristic import RandomHeuristic, RandomHeuristicAdvanced
 import heuristics.schedule_exams as scheduler
 from heuristics.johnson import Johnson
 from heuristics.AC import AC
+import heuristics.tools as tools
 
 if __name__ == '__main__':
     
-    threshold = 10
+    threshold = 0
     gamma = 1.0
     n_colorings = 10
-    epochs = 1
-    annealing_iterations = 100
+    epochs = 10
+    annealing_iterations = 1
     
     data = examination_data.read_data(threshold = threshold)
+    
+    data['similar_periods'] = tools.get_similar_periods(data)
     
     print data['n'], data['r'], data['p']
     
