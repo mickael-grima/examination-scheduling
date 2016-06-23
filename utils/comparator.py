@@ -118,9 +118,6 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
 
     # Test if the constraints are fullfilled
     if with_test:
-        print x
-        print y
-        print data
         constraints_test = is_feasible(x, y, data)
         test_result = 'FAILED' if [value for value in constraints_test.itervalues() if not value] else 'SUCCEED'
     else:
