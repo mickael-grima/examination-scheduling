@@ -22,9 +22,9 @@ import heuristics.tools as tools
 if __name__ == '__main__':
     
     threshold = 0
-    gamma = 0
-    n_colorings = 100
-    epochs = 1
+    gamma = 0.5
+    n_colorings = 500
+    epochs = 5
     annealing_iterations = 100
     
     data = examination_data.read_data(threshold = threshold)
@@ -35,8 +35,8 @@ if __name__ == '__main__':
 
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristicEqualized(data, n_colorings = n_colorings)
-    Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
-    #Heuristic = AC(data, num_ants = n_colorings)
+    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
+    Heuristic = AC(data, num_ants = n_colorings, n_colors = data['p'])
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, verbose = False, log_history = True)
