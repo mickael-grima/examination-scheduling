@@ -18,6 +18,7 @@ import utils.tools as tools
 from model.linear_problem import LinearProblem
 from model.linear_one_variable_problem import LinearOneVariableProblem
 from model.cuting_plane_problem import ReducedProblem, CutingPlaneProblem
+from model.colouring_model import ColouringGraphProblem
 import GurobiModel.GurobiLinear_v_1 as gl1
 import GurobiModel.GurobiLinear_v_2_Q as gl2
 import GurobiModel.GurobiLinear_v_3 as gl3
