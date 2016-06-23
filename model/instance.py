@@ -166,7 +166,6 @@ def build_real_data(**kwards):
     return data
 
 
-
 @force_data_format
 def build_real_data_sample(**kwards):
 
@@ -193,10 +192,6 @@ def build_real_data_sample(**kwards):
 
     data['Q'] = [ [data['Q'][i][j] for j in choose_exams] for i in choose_exams]
 
-
-
-
-
     #close some rooms by probability 10/100
     data['locking_times'] = defaultdict(list)
     for k in range(data['r']):
@@ -205,6 +200,7 @@ def build_real_data_sample(**kwards):
     data = detect_similarities(data)
    
     return data
+
 
 def detect_similarities(data):
     data = detect_similar_periods(detect_similar_exams(detect_similar_rooms(data)))
@@ -236,6 +232,7 @@ def detect_similar_exams(data):
     
 
     return data
+
 
 def detect_similar_rooms(data):
     # We use an extended notion of similar two exams A and B count as similiar if A has similar or less students participation in a it than B

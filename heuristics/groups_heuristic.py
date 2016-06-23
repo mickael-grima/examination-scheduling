@@ -13,7 +13,7 @@ sys.path.append(PROJECT_PATH)
 
 from ColorGraph import ColorGraph
 from model.groups_repartition_problem import GroupsRepartitionProblem
-from model.colouring_problem import ColouringGraphProblem
+from model.colouring_problem import SmartColouringProblem
 import sys
 
 
@@ -24,6 +24,7 @@ def build_groups_data(groups, data):
     groups_data['h'] = data['h']  # Starting time of each time slot
     groups_data['v'] = {}  # value corresponding at the number of student for each group
     groups_data['conflicts'] = {}  # sum of the conflicts between two groups for each couple of groups
+    groups_data['available'] = {}
     for index in range(len(groups)):
         group = groups[index]
         groups_data['v'].setdefault(index, {})
@@ -31,6 +32,7 @@ def build_groups_data(groups, data):
         for ind in range(len(groups)):
             gr = groups[ind]
             groups_data['conflicts'][index, ind] = sum(data['Q'][i][j] for i in group for j in gr)
+        # TODO: for each group compute if we can attribuate the room to the given time slot
     return groups_data
 
 
@@ -67,8 +69,7 @@ def optimize(data, gamma=1.0):
     n, p = data.get('n', 0), data.get('p', 0)
 
     # We first solve the coloring problem
-    prob = ColouringGraphProblem()
-    prob.build_problem(data)
+    prob = SmartColouringProblem(data)
     prob.optimize()
     x, y = sorted([var for var in prob.get_variables()], key=lambda x: len([val for val in x.itervalues()]),
                   reverse=True)
@@ -77,8 +78,7 @@ def optimize(data, gamma=1.0):
 
     # optimize the repartition of groups over the time slots
     groups_data = build_groups_data(groups, data)
-    prob = GroupsRepartitionProblem(gamma=gamma)
-    prob.build_problem(groups_data)
+    prob = GroupsRepartitionProblem(groups_data, gamma=gamma)
     prob.optimize()
     G = {key: var.X for key, var in prob.vars['x'].iteritems()}
 

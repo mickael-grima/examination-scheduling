@@ -17,9 +17,10 @@ from model.base_problem import BaseProblem
 
 
 class ColouringGraphProblem(BaseProblem):
-    def __init__(self, name='ColouringProblem'):
+    def __init__(self, data, name='ColouringProblem'):
         super(ColouringGraphProblem, self).__init__(name=name)
         self.colorGraph = ColorGraph()
+        self.build_problem(data)
 
     def set_graph(self, graph):
         self.graph = graph
@@ -33,9 +34,8 @@ class ColouringGraphProblem(BaseProblem):
         for i in range(data.get('n', 0)):
             self.colorGraph.add_node(i)
         for i in range(data.get('n', 0)):
-            for j in range(data.get('n', 0)):
-                if data['Q'][i][j] >= 1:
-                    self.colorGraph.add_edge(i, j)
+            for j in data['conflicts'][i]:
+                self.colorGraph.add_edge(i, j)
 
     def build_dimensions(self, data):
         self.dimensions['n'] = data.get('n', 0)  # number of nodes
@@ -48,12 +48,7 @@ class ColouringGraphProblem(BaseProblem):
     def build_constants(self, data):
         # e[i,j] = 1 represents the fact that there exists an edge between i and j
         self.build_graph(data)
-        self.constants['e'] = {node1: {node2: 0 for node2 in self.colorGraph.graph.nodes()}
-                               for node1 in self.colorGraph.graph.nodes()}
-        for edge in self.colorGraph.graph.edges():
-            if edge[0] != edge[1]:
-                self.constants['e'][edge[0]][edge[1]] = 1
-                self.constants['e'][edge[1]][edge[0]] = 1
+        self.constants['conflicts'] = data['conflicts']
 
     def build_variables(self):
         # x[i,j] = 1 represents that node i is colored with color j
@@ -73,10 +68,9 @@ class ColouringGraphProblem(BaseProblem):
             self.problem.addConstr(gb.quicksum([self.vars['x'][node, c] for c in range(self.dimensions['c'])]) == 1)
         # two neighbors has different colors
         for node1 in range(self.dimensions['n']):
-            for node2 in range(self.dimensions['n']):
+            for node2 in self.constants['conflicts'][node1]:
                 for c in range(self.dimensions['c']):
-                    self.problem.addConstr(self.vars['x'][node1, c] + self.vars['x'][node2, c] <=
-                                           2 - self.constants['e'][node1][node2])
+                    self.problem.addConstr(self.vars['x'][node1, c] + self.vars['x'][node2, c] <= 1)
         # Color is said to be used if at least onenode is colored with this color
         for node in range(self.dimensions['n']):
             for c in range(self.dimensions['c']):
@@ -93,3 +87,29 @@ class ColouringGraphProblem(BaseProblem):
         for key, var in self.vars['x'].iteritems():
             if var.Obj == 1.:
                 self.colorGraph.update_color(key[0], key[1])
+
+
+class SmartColouringProblem(ColouringGraphProblem):
+    """ This class take the Colouring problem and add some constraints about rooms
+    """
+    def __init__(self, data, name='SmartColouringProblem'):
+        super(SmartColouringProblem, self).__init__(data, name=name)
+
+    def build_dimensions(self, data):
+        if super(SmartColouringProblem, self).build_dimensions(data):
+            self.dimensions['r'] = data['r']
+            return True
+        return False
+
+    def build_constants(self, data):
+        super(SmartColouringProblem, self).build_constants(data)
+        self.constants['s'] = data['s']
+        self.constants['c'] = data['c']
+        self.constants['T'] = data['T']
+
+    def build_constraints(self):
+        super(SmartColouringProblem, self).build_constraints()
+        s, c, T = self.constants['s'], self.constants['c'], self.constants['T']
+        for j in range(self.dimensions['c']):
+            self.problem.addConstr(sum(s[node] * self.vars['x'][node, j] for node in range(self.dimensions['n'])) <=
+                                   sum(c[k] * T[k][j] for k in range(self.dimensions['r'])))
