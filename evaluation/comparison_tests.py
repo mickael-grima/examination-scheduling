@@ -22,9 +22,9 @@ import heuristics.tools as tools
 if __name__ == '__main__':
     
     threshold = 0
-    gamma = 0.5
-    n_colorings = 500
-    epochs = 5
+    gamma = 10
+    n_colorings = 50
+    epochs = 50
     annealing_iterations = 100
     
     data = examination_data.read_data(threshold = threshold)
