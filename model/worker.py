@@ -57,6 +57,7 @@ from GurobiModel.GurobiLinear_v_20_orbital import build_model as build_linear_mo
 from model.instance import build_smart_random
 from model.instance import build_real_data
 from model.instance import build_real_data_sample
+from model.instance import detect_similarities
 
 
 
@@ -97,8 +98,8 @@ def compare(data):
         t = time()
         #problem.params.cuts = 0
         problem.optimize()
-        # problem.computeIIS()
-        #problem.write("model.ilp")
+        problem.computeIIS()
+        problem.write("model.lp")
         times[prob_name] = time() - t
 
         count_rooms = 0
@@ -151,17 +152,19 @@ def compare(data):
 
 def test_compare():
     n = 200
-    r = 20
-    p = 20
-    tseed = 4644
+    r = 40
+    p = 40
+    tseed = 34534
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
     data = build_real_data(tseed=tseed)
-    #data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
+    #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
+    time, objectives = compare(data)
+
     time, objectives = compare(data)
 
     print("")
-    print("n: %s" % (n))
+    print("n: %s" % (data['n']))
     print("r: %s" % (r))
     print("p: %s" % (p))
     print("seed: %s" % (tseed))

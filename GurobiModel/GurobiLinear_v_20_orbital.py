@@ -43,7 +43,21 @@ def build_model(data, n_cliques = 0, verbose = True):
     
     if verbose:
         print("Building variables...")
-    
+
+
+    # Calculate Orbits
+    rs = 5
+    es = 10
+
+    orbit = {}
+    for l in range(p):
+        for k in range(r):
+            if k % rs == 0:
+                for i in range(n):
+                    if i % es == 0:
+                        orbit[i,k,l] = [ (i2,k2,l) for i2 in range(i,min(i+es,n)) for k2 in range(k,min(k+rs,r)) if T[k2][l] == 1 if conflicts[i] <= conflicts[i2] ]
+
+
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
     for k in range(r):
@@ -62,18 +76,17 @@ def build_model(data, n_cliques = 0, verbose = True):
 
     #Orbit variable for orbital branching
     o = {}
-    for i in range(n):
-        for k in range(r):
-            for l in range(p):
-                o[i,k,l] = model.addVar(vtype=GRB.BINARY, name="o_%s_%s" % (i,l))     
+    for key in orbit:
+        if orbit[key]:
+            o[key] = model.addVar(vtype=GRB.BINARY, name="o_%s_%s_%s" % (key[0],key[1],key[2]))     
 
     # integrate new variables
     model.update() 
 
-    for i in range(n):
-        for k in range(r):
-            for l in range(p):
-                o[i,k,l].setAttr("BranchPriority", 10000*s[i])
+    for key in orbit:
+        if orbit[key]:
+            o[key].setAttr("BranchPriority", 1000000)
+
 
 
 
@@ -141,23 +154,26 @@ def build_model(data, n_cliques = 0, verbose = True):
         model.addConstr(cover_inequalities <= sumrooms[l], "cover_inequalities")
 
 
-    for l in range(p):
-        print l
-        for k in range(r):
-            print k
-            if T[k][l] == 1:
-                for i in range(n):
-                    c6 = LinExpr()
-                    for i2 in range(n):
-                        if s[i2] >= s[i] and conflicts[i] <= conflicts[i2]:
-                            for k2 in similarr[k]:
-                                if k2 >= 0:
-                                    c6.addTerms(1,x[i2,k,l])
-                    model.addConstr(c6 <= o[i,k,l]*n, "symmetrie break")
+    for key in orbit:
+        if orbit[key]:
+            model.addConstr(quicksum( x[i,k,l] for i,k,l in orbit[key]  ) <= o[key]*len(orbit[key]), "symmetrie break")
 
-    for i in range(p-2):
-        for l in range(p):
-            model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similarp[l]), "s1")
+    # for l in range(p):
+    #     print l
+    #     for k in range(r):
+    #         print k
+    #         if T[k][l] == 1:
+    #             for i in range(n):
+    #                 c6 = LinExpr()
+    #                 for i2 in similare[i]:
+    #                     for k2 in similarr[k]:
+    #                         if k2 >= 0:
+    #                             c6.addTerms(1,x[i2,k,l])
+    #                 model.addConstr(c6 <= o[i,k,l]*n, "symmetrie break")
+
+    # for i in range(p-2):
+    #     for l in range(p):
+    #         model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similarp[l]), "s1")
 
 
     model.setObjective( obj, GRB.MINIMIZE)
