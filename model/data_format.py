@@ -15,11 +15,9 @@ sys.path.append(PROJECT_PATH)
 #   - we get it from files
 #   - we produce it randomly
 #   - or we find simple specific instance
-
-import random as rd
-import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
+
 
 def force_data_format(func):
     """ decorator that force the format of data
@@ -36,14 +34,20 @@ def force_data_format(func):
         similare = data.get('similare', [[-1] for i in range(n)])
         similarr = data.get('similarr', [[-1] for k in range(r)])
 
+        exam_names = data.get('exam_names', '')
+        exam_times = data.get('exam_times', '')
+        exam_rooms = data.get('exam_rooms', '')
+        room_names = data.get('room_names', '')
+        campus_ids = data.get('campus_ids', '')
+
         Q = data.get('Q', None)
         conflicts = data.get('conflicts', defaultdict(list))
-        
+
         assert Q is not None or len(conflicts) > 0
-        
+
         if len(conflicts) == 0:  # build conflicts from Q
             for i in range(n):
-                for j in range(i+1,n):
+                for j in range(i + 1, n):
                     if Q[i][j] == 1 or Q[j][i] == 1:
                         if j not in conflicts[i]:
                             conflicts[i].append(j)
@@ -90,10 +94,15 @@ def force_data_format(func):
             'c': list(data.get('c', [])),
             'h': list(data.get('h', [])),
             'w': w,
-            'location' : location,
-            'similarp' : similarp,
-            'similare' : similare,
-            'similarr' : similarr
+            'location': location,
+            'similarp': similarp,
+            'similare': similare,
+            'similarr': similarr,
+            'exam_names': exam_names,
+            'exam_times': exam_times,
+            'exam_rooms': exam_rooms,
+            'room_names': room_names,
+            'campus_ids': campus_ids,
         }
         return res
     return correct_format

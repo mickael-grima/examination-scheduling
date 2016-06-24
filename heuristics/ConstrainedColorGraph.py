@@ -15,6 +15,7 @@ from heuristics.ColorGraph import ColorGraph
 from heuristics.schedule_rooms import schedule_rooms_in_period, schedule_greedy
 from collections import defaultdict
 from operator import itemgetter
+from copy import deepcopy
 import random as rd
         
 
@@ -65,9 +66,9 @@ class ConstrainedColorGraph(ColorGraph):
         nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
         if mode == 1: # greedy scheduling heuristic
             return schedule_greedy(nodes, period, data) is not None
-        elif mode == 1: # ILP
+        elif mode == 2: # ILP
             return schedule_rooms_in_period(nodes, period, data) is not None
-        elif mode == 2:
+        elif mode == 3:
             return check_rooms_constraint(nodes, data)
 
 
@@ -96,6 +97,10 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         super(EqualizedColorGraph, self).__init__(n_colours=n_colours)
         self.color_exams = defaultdict(list)
         self.color_count = [0]*self.n_colours
+        
+        self.color_count_new = defaultdict(int)
+        self.min_colors = deepcopy(self.ALL_COLOURS)
+        
     '''
         differences to color_node of ConstrainedColorGraph
         - checks for max. number of available periods directly
@@ -109,6 +114,9 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         """
         for col in self.colours:
             self.colours[col] = self.WHITE
+        
+        self.color_count_new = defaultdict(int)
+        self.min_colors = deepcopy(self.ALL_COLOURS)
         self.color_count = [0 for c in self.color_count]
 
 
@@ -117,17 +125,22 @@ class EqualizedColorGraph(ConstrainedColorGraph):
             Check the colors of the neighbors, and color the node with a different color.
             If capacities is not empty, we color the node respecting the capacities room constraint
         """
-        ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
-        ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
+        
+        ordered_colors = sorted( self.color_count_new, key=lambda x: self.color_count_new[x] )
+        ordered_colors = self.min_colors + ordered_colors
+        
+        #ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
+        #ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
         #print ordered_colors
-
-        if len(ordered_colors) < data['p']:
-            for col in self.ALL_COLOURS:
-                if self.color_count[col] > 0:
-                    continue
-                self.colours[node] = col
-                self.color_count[col] += 1
-                return
+        assert len(ordered_colors) <= data['p']
+        
+        #if len(ordered_colors) < data['p']:
+            #for col in self.ALL_COLOURS:
+                #if self.color_count[col] > 0:
+                    #continue
+                #self.colours[node] = col
+                #self.color_count[col] += 1
+                #return
 
         for col in ordered_colors:
 
@@ -140,4 +153,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
                 if mode == 0 or self.check_room_constraints(node, col, data, mode = mode, periods = periods):
                     self.colours[node] = col
                     self.color_count[col] += 1
+                    self.color_count_new[col] += 1
+                    if col in self.min_colors:
+                        self.min_colors.remove(col)
                     break

@@ -62,6 +62,29 @@ def read_times():
     return h, exam_names, exam_times
 
 
+def read_result_rooms(filename):
+    # "","PRFG.NUMMER","startHours","endHours","startDate","endDate"
+    
+    cols = []
+    for i in range(1, 10):
+        cols.append("ORT_CODE_0%d" %i)
+    for i in range(10, 31):
+        cols.append("ORT_CODE_%d" %i)
+        
+    prfg = read_columns(filename, "PRFG-NUMMER", cols, sep=";")
+    
+    exam_rooms = defaultdict(set)
+    for col in prfg:
+        for exam in prfg[col]:
+            exam_rooms[exam].add(prfg[col][exam])
+    
+    for exam in exam_rooms:
+        exam_rooms[exam] = list(exam_rooms[exam])
+        if '' in exam_rooms[exam]:
+            exam_rooms[exam].remove('')
+    return exam_rooms
+
+
 def read_rooms(h):
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
@@ -109,14 +132,13 @@ def read_rooms(h):
     return capacity, locking_times, room_name, campus_id
     
 
-def read_conflicts(exam_names = None, threshold = 0):
+def read_conflicts(filename = "exam_conflicts_15S.csv", exam_names = None, threshold = 0):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
-    datname = "exam_conflicts.csv"
     students = defaultdict(int)
     Q_abs = defaultdict(int)
     colnames = []
     
-    with open("%sinputData/Data/%s"%(PROJECT_PATH, datname)) as csvfile:
+    with open("%sinputData/Data/%s"%(PROJECT_PATH, filename)) as csvfile:
         for line in csvfile:
             line = re.sub('\"', '', line)
             line = re.sub('\n', '', line)
@@ -136,19 +158,21 @@ def read_conflicts(exam_names = None, threshold = 0):
                 
                 assert line[colnames.index("ANZ_STUD_MOD1")] == line[colnames.index("ANZ_STUD_MOD2")]
                 
-                n_conflicts = int(line[colnames.index("ANZ_STUD_MOD1")])
-                
-                if n_conflicts <= threshold:
-                    continue
-                
-                # build Q matrix
-                Q_abs[ident1, ident2] = n_conflicts
-                
+                # save student numbers
                 if ident1 not in students:
                     students[ident1] = int(line[colnames.index("STUDIS_PRUEF1_GES")]) - int(line[colnames.index("STUDIS_PRUEF1_ABGEMELDET")])
                 if ident2 not in students:
                     students[ident2] = int(line[colnames.index("STUDIS_PRUEF2_GES")]) - int(line[colnames.index("STUDIS_PRUEF2_ABGEMELDET")])
-
+                    
+                #calculate conflicts
+                n_conflicts = int(line[colnames.index("ANZ_STUD_MOD1")])
+                
+                # build Q matrix
+                if n_conflicts > threshold:
+                    Q_abs[ident1, ident2] = n_conflicts
+                
+                
+                
     s = []
     names = []
     
@@ -174,16 +198,39 @@ def read_conflicts(exam_names = None, threshold = 0):
     return s, Q, names
     
 @force_data_format
-def read_data(threshold = 0):
-    
+def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=None):
+    '''
+        @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
+    '''
     #print "Loading data: Data needs verification!"
     
+    
+    # load times from szenarioergebnis
     h, exam_names, exam_times = read_times()
+    
+    if max_periods is not None:
+        h = h[0:max_periods]
+        # TODO: WARNING: exam times not valuable any more
+    
+    # load room results from szenarioergebnis
+    exam_rooms = read_result_rooms("SzenarioergebnisSoSe2016.csv")
+    
+    if verbose: print "Moses exams:", len(exam_names)
+    
+    # load locking rooms
     c, locking_times, room_names, campus_ids = read_rooms(h)
-    s, Q, exam_names = read_conflicts(exam_names = None, threshold = threshold)
+    
+    # consider all exams in tumOnline
+    if not make_intersection:
+        exam_names = None
+        
+    s, Q, exam_names = read_conflicts(exam_names = exam_names, threshold = threshold)
+    
+    if verbose: print "Exams used:", len(exam_names)
     
     assert len(c) == len(room_names)
     assert len(exam_names) == len(s)
+    
     data = {}
     
     data['n'] = len(s)
@@ -196,15 +243,33 @@ def read_data(threshold = 0):
     data['Q'] = Q
     
     data['locking_times'] = locking_times
+    
     data['exam_names'] = exam_names
     data['exam_times'] = exam_times
+    data['exam_rooms'] = exam_rooms
     data['room_names'] = room_names
     data['campus_ids'] = campus_ids
     
     return data
 
 if __name__ == "__main__":
-    data = read_data()
     
+    
+    data = read_data(threshold = 0, make_intersection=True, verbose=True, max_periods = 10)
+    
+    print data['n'], data['r'], data['p']
     print "KEYS:", [key for key in data]
+    
+    n = data['n']
+    Q = data['Q']
+    
+    counter = 0
+    conflicts = 0
+    
+    for i in range(n):
+        for j in range(n):
+            counter += 1
+            if Q[i][j] == 1:
+                conflicts += 1
+    print "Conflict ratio:", conflicts * 1. / counter
     

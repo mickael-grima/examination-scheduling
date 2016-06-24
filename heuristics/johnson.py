@@ -26,14 +26,14 @@ class Johnson(MetaHeuristic):
     
     def __init__(self, data, n_colorings=10, n_colors=2000):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = ConstrainedColorGraph(n_colours = n_colors)
+        self.graph = EqualizedColorGraph(n_colours = n_colors)
         self.graph.build_graph(self.data['n'], self.data['conflicts'])
 
     def generate_colorings(self):
         # Generate colourings using Johnson's rule: 
         # Order the exams by alpha*s_i + conf_num
 
-        start_time = time.time()
+        #start_time = time.time()
         colorings = []
         conflicts = self.data['conflicts']
 
@@ -69,8 +69,8 @@ class Johnson(MetaHeuristic):
                 break
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
 
-        end_time = time.time()
-        print(end_time - start_time)
+        #end_time = time.time()
+        #print(end_time - start_time)
         print len(colorings)
         return colorings
         
