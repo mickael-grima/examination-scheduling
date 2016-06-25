@@ -48,7 +48,7 @@ from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linea
 from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_model_16
 from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
 from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_linear_model_18
-from GurobiModel.GurobiLinear_v_20_orbital import build_model as build_linear_model_20
+
 
 
 
