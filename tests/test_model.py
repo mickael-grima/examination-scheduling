@@ -26,7 +26,7 @@ class TestSolvers(unittest.TestCase):
     def setUp(self):
         self.small_input = build_small_input()
         self.lprob = lpb.LinearProblem(self.small_input)
-        self.cprob = cpb.ColouringGraphProblem()
+        self.cprob = cpb.ColouringGraphProblem(self.small_input)
         self.loprob = lopb.LinearOneVariableProblem(self.small_input)
         self.nlprob = nlpb.NonLinearProblem(self.small_input)
 
@@ -72,7 +72,8 @@ class TestSolvers(unittest.TestCase):
         for i in range(self.small_input['r']):
             self.assertEqual(len(self.loprob.constants['T'][i]), self.small_input['p'])
         # Variables
-        self.assertEqual(len(self.loprob.vars['x']), self.small_input['n'] * self.small_input['r'] * self.small_input['p'])
+        self.assertEqual(len(self.loprob.vars['x']),
+                         self.small_input['n'] * self.small_input['r'] * self.small_input['p'])
 
     def testNonLinearProblem(self):
         """ We test the builder, if we have enough variables, constants for non linear problem

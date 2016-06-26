@@ -33,12 +33,12 @@ from heuristics import groups_heuristic
 from heuristics.AC import AC
 
 import time
-from tools import update_variable, transform_variables
+from utils.tools import update_variable, transform_variables
 from model.objectif_handler import main_obj
 from model.constraints_handler import is_feasible
 from model.instance import build_smart_random, build_small_input
 
-RESULTS_FILE = '%sutils/data/performance' % PROJECT_PATH
+RESULTS_FILE = '%svisualization/data/performance' % PROJECT_PATH
 MODELS = {  # model from folder GurobiModel
     'GurobiLinear_v_1': gl1.build_model,
     'GurobiLinear_v_2_Q': gl2.build_model,

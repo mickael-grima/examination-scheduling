@@ -60,7 +60,7 @@ def get_dimensions_from(x, y):
     """
     n1, r = get_dimensions_from_x(x)
     n2, p = get_dimensions_from_y(y)
-    assert n1==n2
+    assert n1 - n2 == 0
     return n1, r, p
 
 
@@ -117,8 +117,8 @@ def update_variable(problem, **dimensions):
                     x = {(i, k): 1.0 if sum([problem.getVarByName("x_%s_%s_%s" % (i, k, l)).X > 0 for l in range(p)]) else 0.0
                          for i in range(n) for k in range(r)}
                 except:
-                    x = {(i, k): problem.getVarByName("x_%s_%s" % (i, k)) for i in range(n) for k in range(r)}
-                y = {(i, l): problem.getVarByName("y_%s_%s" % (i, l)).X for i in range(n) for l in range(p)}
+                    x = {(i, k): problem.getVarByName("x_%s_%s" % (i, k)).X or 0.0 for i in range(n) for k in range(r)}
+                y = {(i, l): problem.getVarByName("y_%s_%s" % (i, l)).X or 0.0 for i in range(n) for l in range(p)}
             except:
                 logging.warning("update_variable: problem %s has not been solved" % problem.ModelName)
                 x = {(i, k): 0.0 for i in range(n) for k in range(r)}
@@ -146,9 +146,9 @@ def transform_variables(x, y, **dimensions):
         return {}, {}
     if len(x.keys()[0]) == 3:
         x_ = {(i, k): 1.0 if sum([x[i, k, l] > 0 for l in range(p)]) else 0.0 for i in range(n) for k in range(r)}
-        y_ = {(i, l): y.get((i, l), 0.0) for i in range(n) for l in range(p)}
+        y_ = {(i, l): y.get((i, l)) or 0.0 for i in range(n) for l in range(p)}
         return x_, y_
     else:
-        x_ = {(i, k): x.get((i, k), 0.0) for i in range(n) for k in range(r)}
-        y_ = {(i, l): y.get((i, l), 0.0) for i in range(n) for l in range(p)}
+        x_ = {(i, k): x.get((i, k)) or 0.0 for i in range(n) for k in range(r)}
+        y_ = {(i, l): y.get((i, l)) or 0.0 for i in range(n) for l in range(p)}
         return x_, y_

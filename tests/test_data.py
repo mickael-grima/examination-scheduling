@@ -21,43 +21,43 @@ class TestConstraints(unittest.TestCase):
         First the variable has to be transformed into the two variables x[i, k] and y[i, l]
     """
     def setUp(self):
-        self.constants = ['c', 's', 'T', 'Q', 'h', 'conflicts']
+        self.constants = ['c', 's', 'T', 'Q', 'h', 'conflicts', 'locking_times', 'w', 'location', 'similarp',
+                          'similare', 'similarr', 'exam_names', 'exam_times', 'exam_rooms', 'room_names', 'campus_ids']
         self.dimensions = ['n', 'p', 'r']
 
     def testBuildRandomData(self):
         data = build_random_data(n=10, p=10, r=10)
         for cst in self.constants:
-            self.assertIsNotNone(data.get(cst))
-            self.assertTrue(len(data[cst]) > 0)
+            self.assertIsNotNone(data.get(cst), msg='%s is not in data' % cst)
+            self.assertTrue(len(data[cst]) > 0, msg='%s is empty' % cst)
         for dim in self.dimensions:
-            self.assertIsNotNone(data.get(dim))
-            self.assertTrue(data[dim] > 0)
+            self.assertIsNotNone(data.get(dim), msg='%s is not in data' % dim)
+            self.assertTrue(data[dim] > 0, msg='%s is yero' % dim)
 
     def testBuildSimpleData(self):
         data = build_simple_data()
         for cst in self.constants:
-            self.assertIsNotNone(data.get(cst))
-            self.assertTrue(len(data[cst]) > 0)
+            self.assertIsNotNone(data.get(cst), msg='%s is not in data' % cst)
+            self.assertTrue(len(data[cst]) > 0, msg='%s is empty' % cst)
         for dim in self.dimensions:
-            self.assertIsNotNone(data.get(dim))
+            self.assertIsNotNone(data.get(dim), msg='%s is not in data' % dim)
             self.assertTrue(data[dim] > 0)
 
     def testBuildSmallInput(self):
         data = build_small_input()
         for cst in self.constants:
-            self.assertIsNotNone(data.get(cst))
-            self.assertTrue(len(data[cst]) > 0)
+            self.assertIsNotNone(data.get(cst), msg='%s is not in data' % cst)
+            self.assertTrue(len(data[cst]) > 0, msg='%s is empty' % cst)
         for dim in self.dimensions:
-            self.assertIsNotNone(data.get(dim))
-            self.assertTrue(data[dim] > 0)
+            self.assertIsNotNone(data.get(dim), msg='%s is not in data' % dim)
+            self.assertTrue(data[dim] > 0, msg='%s is yero' % dim)
 
-    def test_real_data(self):
+    def testRealData(self):
         data = examination_data.read_data()
-        
         n = data['n']
         Q = data['Q']
         conflicts = data['conflicts']
-        
+
         for i in range(n):
             for j in range(n):
                 if Q[i][j] == 1:
@@ -68,20 +68,20 @@ class TestConstraints(unittest.TestCase):
                     assert i not in conflicts[j]
 
         for cst in self.constants:
-            self.assertIsNotNone(data.get(cst))
-            self.assertTrue(len(data[cst]) > 0)
+            self.assertIsNotNone(data.get(cst), msg='%s is not in data' % cst)
+            self.assertTrue(len(data[cst]) > 0, msg='%s is empty' % cst)
         for dim in self.dimensions:
-            self.assertIsNotNone(data.get(dim))
-            self.assertTrue(data[dim] > 0)
-    
-    def test(self):
+            self.assertIsNotNone(data.get(dim), msg='%s is not in data' % dim)
+            self.assertTrue(data[dim] > 0, msg='%s is yero' % dim)
+
+    def testBuildSmartRandom(self):
         data = build_smart_random(n=10, p=10, r=10)
         for cst in self.constants:
-            self.assertIsNotNone(data.get(cst))
-            self.assertTrue(len(data[cst]) > 0)
+            self.assertIsNotNone(data.get(cst), msg='%s is not in data' % cst)
+            self.assertTrue(len(data[cst]) > 0, msg='%s is empty' % cst)
         for dim in self.dimensions:
-            self.assertIsNotNone(data.get(dim))
-            self.assertTrue(data[dim] > 0)
+            self.assertIsNotNone(data.get(dim), msg='%s is not in data' % dim)
+            self.assertTrue(data[dim] > 0, msg='%s is yero' % dim)
 
 
 if __name__ == '__main__':
