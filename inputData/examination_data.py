@@ -85,6 +85,7 @@ def read_result_rooms(filename):
     return exam_rooms
 
 
+
 def read_rooms(h):
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
@@ -115,17 +116,14 @@ def read_rooms(h):
                     j += 1
     
     
-    
-    room_capacities = room_overview["Klausurplaetze_eng"]
-    
     locking_times = defaultdict(list)
     capacity = defaultdict(int)
     campus_id = defaultdict(str)
     room_name = defaultdict(str)
     
-    for k, room in enumerate(room_capacities):
+    for k, room in enumerate(room_overview["Klausurplaetze_eng"]):
         locking_times[k] = locking_times_unordered[room]
-        capacity[k] = room_capacities[room]
+        capacity[k] = room_overview["Klausurplaetze_eng"][room]
         campus_id[k] = room_overview["ID_Campus"]
         room_name[k] = room
         
@@ -172,7 +170,7 @@ def read_conflicts(filename = "exam_conflicts_15S.csv", exam_names = None, thres
                     Q_abs[ident1, ident2] = n_conflicts
                 
                 
-                
+    # only use exams for which we have data!
     s = []
     names = []
     
@@ -230,7 +228,7 @@ def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=
     
     assert len(c) == len(room_names)
     assert len(exam_names) == len(s)
-    
+   
     data = {}
     
     data['n'] = len(s)

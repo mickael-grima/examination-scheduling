@@ -66,6 +66,7 @@ if __name__ == '__main__':
     
     illicit_rooms = set()
     penalty = 0
+    
     print "Rooms of which we have data:"
     print sorted(room_names.values())
     for i, exam in enumerate(exam_rooms):
@@ -81,7 +82,11 @@ if __name__ == '__main__':
     print sorted(rooms_in_moses)
     
     print "Rooms of which we don't have data:"
-    print len(illicit_rooms)
+    print sorted(illicit_rooms)
+    
+    r1 = set([ room for rooms in exam_rooms.values() for room in rooms ])
+    r2 = set(room_names.values())
+    print sorted([r for r in r1 if r not in r2])
     
     v = obj1(x) + penalty - gamma * obj_time(exam_times.values(), data, h_max = max(h))
     
