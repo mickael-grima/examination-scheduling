@@ -149,10 +149,10 @@ def build_smart_random(**kwards):
 def build_real_data(**kwards):
 
     print "Reading data..."
-    #data = read_real_data()
+    data = read_real_data()
     
     #data['p'] = kwards.get('p', 40)
-    data['p'] = kwards.get('p', 0)
+    data['p'] = kwards.get('p', 60)
 
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
@@ -161,7 +161,10 @@ def build_real_data(**kwards):
     print data['r']
     print data['p']
 
-    #data = detect_similarities(data)
+    #close some rooms by probability 10/100
+    data['locking_times'] = defaultdict(list)
+    for k in range(data['r']):
+        data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
    
     return data
 
@@ -196,8 +199,6 @@ def build_real_data_sample(**kwards):
     data['locking_times'] = defaultdict(list)
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
-
-    data = detect_similarities(data)
    
     return data
 
@@ -228,7 +229,7 @@ def detect_similar_exams(data):
     data['similare'] = defaultdict(list)
 
     for i in range(data['n']):
-        data['similare'][i] = [j for j in range(data['n']) if data['s'][j] <= data['s'][i]+50 and data['s'][j] >= data['s'][i]-50 ]  
+        data['similare'][i] = [j for j in range(data['n']) if data['s'][j] >= data['s'][i] -20 and data['s'][j] <= data['s'][i]+20 and data['conflicts'][i] <= data['conflicts'][j] ]  
     
 
     return data
