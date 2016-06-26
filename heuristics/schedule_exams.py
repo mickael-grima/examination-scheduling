@@ -72,11 +72,49 @@ def build_statespace_similar_periods(coloring, data):
     return statespace, color_exams
 
 
+def build_statespace_exam_slots(coloring, data):
+    
+    h = data['h']
+    exam_slots = data['exam_slots']
+    
+    # refactor dicts
+    color_exams = tools.swap_color_dictionary(coloring)
+    
+    # empty statespace -> init
+    statespace = { color: [] for color in color_exams }
+    
+    for color in color_exams:
+        for period, time in enumerate(h):
+            
+            feasible_slot = True
+            for exam in color_exams[color]:
+                if not feasible_slot: break
+                feasible_slot = time in exam_slots[exam]
+                if not feasible_slot:
+                    break
+                
+            if not feasible_slot:
+                continue
+            
+            greedy_schedule = schedule_greedy(color_exams[color], period, data)
+            if greedy_schedule is not None:
+                statespace[color].append(time)
+        if len(statespace[color]) == 0:
+            #print color, "infeas"
+            return None, None
+
+    return statespace, color_exams
+
+
+
 def build_statespace(coloring, data):
     '''
         Build statespace by checking feasibility for every color and every possible time slot.
         If the similar_periods field is present in the data, this is spead up by considering duplicate times slots.
     '''
+    
+    if 'exam_slots' in data and len(data['exam_slots']) > 0:
+        return build_statespace_exam_slots(coloring, data)
     
     if 'similar_periods' in data:
         return build_statespace_similar_periods(coloring, data)
@@ -117,6 +155,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     # check feasibility
     if debug: print "Building Statespace"
     statespace, color_exams = build_statespace(coloring, data)
+        
     if statespace is None:
         if debug: print "infeasible statespace"
         return None, None, None, sys.maxint
@@ -204,6 +243,12 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         # save best value so far.. MINIMIZATION
         if best_value < obj_val:
             x, y, obj_val = xs[best_index], ys[best_index], best_value    
+            
+            # change y to time representation
+            coloring = colorings[best_index]
+            color_schedule = color_schedules[best_index]
+            y = [ color_schedule[coloring[exam]] for exam in coloring ]
+            
             best_value_duration = 0
         
         if best_value != sys.maxint and best_value_duration > lazy_threshold * epochs:

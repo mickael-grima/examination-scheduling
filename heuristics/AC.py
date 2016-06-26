@@ -17,7 +17,7 @@ import networkx as nx
 import random as rd
 import logging
 
-from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph, EqualizedColorGraphAdvanced
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary

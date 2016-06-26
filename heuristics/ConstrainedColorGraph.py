@@ -47,7 +47,8 @@ def check_rooms_constraint(nodes, data):
 class ConstrainedColorGraph(ColorGraph):
     def __init__(self, n_colours=2000):
         super(ConstrainedColorGraph, self).__init__(n_colours = n_colours)
-        
+      
+      
     def check_room_constraints(self, node, color, data, mode = 1, periods = None):
         """
             Check if rooms capacities constraint is fullfilled for the nodes that already have color as color
@@ -118,7 +119,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         self.color_count_new = defaultdict(int)
         self.min_colors = deepcopy(self.ALL_COLOURS)
         self.color_count = [0 for c in self.color_count]
-
+        self.color_slots = defaultdict(set)
 
     def color_node(self, node, data={}, mode=0, periods=None):
         """
@@ -130,7 +131,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         ordered_colors = self.min_colors + ordered_colors
         
         if len(set(ordered_colors)) != len(ordered_colors) or len(ordered_colors) > data['p']:
-            print "Warningn: Error constructing ordered colors in color_node!"
+            print "Warning: Error constructing ordered colors in color_node!"
             
         #ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
         #ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
@@ -159,3 +160,95 @@ class EqualizedColorGraph(ConstrainedColorGraph):
                     if col in self.min_colors:
                         self.min_colors.remove(col)
                     break
+               
+
+
+class EqualizedColorGraphAdvanced(ConstrainedColorGraph):
+    '''
+        The EqualizedColorGraphAdvanced combines the ideas of the EqualizedColorGraph 
+        with the intruduction of time feasibility of exams and examination periods.
+        A node is only colored, if there remains some time for the exams of the color.
+    '''
+    def __init__(self, n_colours=2000):
+        super(EqualizedColorGraphAdvanced, self).__init__(n_colours=n_colours)
+        
+        self.color_count = defaultdict(int)
+        self.min_colors = deepcopy(self.ALL_COLOURS)
+        
+        self.color_slots = defaultdict(set)
+        
+        
+    def check_neighbours(self, node, colour, data):
+        """ @param node: node to consider
+            @param colour: colour to check
+            We check for every neighbor of node if it has colour as colour
+            If not we return true, else we return false
+        """
+        neighbor_colors = [self.colours[x[1]] for x in self.graph.edges(node)]
+        
+        if colour in neighbor_colors:
+            return(False)
+        
+        if 'exam_slots' in data and len(data['exam_slots']) > 0:
+            exam_slots = data['exam_slots']
+            if len(self.color_slots[colour]) == 0:
+                return(True)
+            if not any([slot in self.color_slots[colour] for slot in exam_slots[node]]):
+                return(False)
+        return(True)
+
+
+    def reset_colours(self):
+        """
+            Reset all the colours to white and reset the color_count
+        """
+        for col in self.colours:
+            self.colours[col] = self.WHITE
+        
+        self.color_count = defaultdict(int)
+        self.min_colors = deepcopy(self.ALL_COLOURS)
+        
+        self.color_slots = defaultdict(list)
+        
+
+    def color_node(self, node, data={}, mode=0, periods=None):
+        """
+            Check the colors of the neighbors, and color the node with a different color.
+            If capacities is not empty, we color the node respecting the capacities room constraint
+        """
+        
+        ordered_colors = sorted( self.color_count, key=lambda x: self.color_count[x] )
+        ordered_colors = self.min_colors + ordered_colors
+        
+        if len(set(ordered_colors)) != len(ordered_colors) or len(ordered_colors) > data['p']:
+            print "Warning: Error constructing ordered colors in color_node!"
+            
+        for color in ordered_colors:
+            #print color
+            
+            if color in self.color_count and self.color_count[color] >= data['r']:
+                continue
+                
+            # we check whether any other neighbor has color
+            if self.check_neighbours(node, color, data):
+                if mode == 0 or self.check_room_constraints(node, color, data, mode = mode, periods = periods):
+                    self.colours[node] = color
+                    self.color_count[color] += 1
+                    if color in self.min_colors:
+                        self.min_colors.remove(color)
+                    if 'exam_slots' in data and len(data['exam_slots']) > 0:
+                        if len(self.color_slots[color]) == 0:
+                            self.color_slots[color] = data['exam_slots'][node]
+                        else:
+                            self.color_slots[color] = [slot for slot in self.color_slots[color] if slot in data['exam_slots'][node]]
+                            # break if feasibility vanished in the above line of code
+                            if len(self.color_slots[color]) == 0:
+                                return False
+                    
+                    #break afer node was chosen
+                    break
+        
+        if self.colours[node] == self.WHITE:
+            return False
+        else:
+            return True
