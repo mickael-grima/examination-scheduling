@@ -31,7 +31,7 @@ if __name__ == '__main__':
     epochs = 1
     annealing_iterations = 2000
     
-    data = examination_data.read_data(threshold = 0)
+    data = examination_data.read_data(semester = "15W", threshold = 0)
     
     data['similar_periods'] = tools.get_similar_periods(data)
     

@@ -43,6 +43,11 @@ if __name__=="__main__":
     size = comm.Get_size()
     status = MPI.Status()
     
+    print comm
+    print rank
+    print size
+    print status
+        
     n_jobs = 30
     n_colorings = 1
     epochs = 1

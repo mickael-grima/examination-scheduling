@@ -12,9 +12,6 @@ for p in PATHS:
 sys.path.append(PROJECT_PATH)
 
 
-
-
-
 def obj_room(x):
     if x is None: 
         return sys.maxint

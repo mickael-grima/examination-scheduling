@@ -45,8 +45,6 @@ def read_columns(datname, key, cols, sep=","):
                     
     return columns
 
-
-
 def read_result_times(semester):
     # read times from result file
     
@@ -350,6 +348,7 @@ def get_exam_rooms(exams, result_rooms, room_campus_id):
         for room in all_rooms:
             if room in room_campus_id and room_campus_id[room] in camps:
                 exam_rooms[exam].append(room)
+    
     return exam_rooms
     
 
@@ -430,7 +429,9 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     if verbose: print "Number of rooms", len(rooms)    
     
     # For each exam get all rooms at the eligible campus
+    # TODO: HIER STIMMT NOCH WAS NICHT!!!
     exam_rooms = get_exam_rooms(exams, result_rooms, room_campus_id)
+    
     
     # convert to index notation
     for exam in exam_rooms:
@@ -479,15 +480,15 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     data['exam_names'] = exams
     data['exam_slots'] = exam_slots
     data['exam_rooms'] = exam_rooms
-    data['room_names'] = rooms
     
     data['result_times'] = result_times
     data['result_rooms'] = result_rooms
+    data['room_names'] = rooms
     
     return data
 
+
 if __name__ == "__main__":
-    
     
     data = read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=True, max_periods = 10)
     
