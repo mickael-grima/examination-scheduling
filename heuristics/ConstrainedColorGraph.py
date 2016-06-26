@@ -129,10 +129,12 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         ordered_colors = sorted( self.color_count_new, key=lambda x: self.color_count_new[x] )
         ordered_colors = self.min_colors + ordered_colors
         
+        if len(set(ordered_colors)) != len(ordered_colors) or len(ordered_colors) > data['p']:
+            print "Warningn: Error constructing ordered colors in color_node!"
+            
         #ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
         #ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
         #print ordered_colors
-        assert len(ordered_colors) <= data['p']
         
         #if len(ordered_colors) < data['p']:
             #for col in self.ALL_COLOURS:

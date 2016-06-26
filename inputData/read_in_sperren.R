@@ -1,8 +1,8 @@
 
-read_raum_sperren = function(begin) {
+read_raum_sperren = function(filename, begin) {
     
     # Read Raumsperren
-    raumsp = read.csv("./Data/RaumsperrenSoSe2016.csv", header=TRUE, sep=';')
+    raumsp = read.csv(filename, header=TRUE, sep=';')
 
     #ID_RAUM;ZUSATZBEZEICHNUNG;WOCHENTAG;TAG;ZEIT_VON;ZEIT_BIS;BIS_TAG;BIS_ZEIT
 

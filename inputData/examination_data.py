@@ -20,13 +20,13 @@ from model.data_format import force_data_format
 
 def read_columns(datname, key, cols, sep=","):
     '''
-    Read csv file and extract column names in cols.
+    Read csv file and extract data with column names in cols. Takes first value found!
     '''
     
     columns = defaultdict(dict)
     colnames = []
             
-    with open("%sinputData/Data/%s"%(PROJECT_PATH, datname)) as csvfile:
+    with open("%sinputData/%s"%(PROJECT_PATH, datname)) as csvfile:
         for line in csvfile:
             line = re.sub('\"', '', line)
             line = re.sub('\n', '', line)
@@ -40,29 +40,31 @@ def read_columns(datname, key, cols, sep=","):
                 ident = line[colnames.index(key)]
                 for i in range(0, len(colnames)):
                     name = colnames[i]
-                    if name in cols:
+                    if name in cols and ident not in columns[name]:
                         columns[name][ident] = line[i]
                     
     return columns
 
 
-def read_times():
+
+def read_result_times(semester):
+    # read times from result file
+    
     # "","PRFG.NUMMER","startHours","endHours","startDate","endDate"
-    prfg = read_columns("prfg_times.csv", "PRFG.NUMMER", ["startHours", "endHours", "startDate", "endDate"], sep=",")
+    prfg = read_columns("%s/prfg_times.csv" %semester, "PRFG.NUMMER", ["startHours", "endHours", "startDate", "endDate"], sep=",")
 
     startHours = prfg["startHours"]
     
-    h = sorted(set(map(float, startHours.values())))
-
-    exam_names = [e for e in startHours]
-    exam_times = {}
+    exam_times = dict()
     for exam in startHours:
         exam_times[exam] = float(startHours[exam])
     
-    return h, exam_names, exam_times
+    return exam_times
 
 
-def read_result_rooms(filename):
+def read_result_rooms(semester):
+    # read rooms from result file
+    
     # "","PRFG.NUMMER","startHours","endHours","startDate","endDate"
     
     cols = []
@@ -71,7 +73,7 @@ def read_result_rooms(filename):
     for i in range(10, 31):
         cols.append("ORT_CODE_%d" %i)
         
-    prfg = read_columns(filename, "PRFG-NUMMER", cols, sep=";")
+    prfg = read_columns("%s/Ergebnis_%s.csv" %(semester, semester), "PRFG-NUMMER", cols, sep=";")
     
     exam_rooms = defaultdict(set)
     for col in prfg:
@@ -85,60 +87,75 @@ def read_result_rooms(filename):
     return exam_rooms
 
 
-def read_rooms(h):
+def read_rooms():
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
-    room_overview = read_columns("Raumuebersicht.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
-
-    # "","ID_RAUM","startTime","endTime","startDate","endDate"
-    rooms = read_columns("raum_sperren.csv", "ID_RAUM", ["startTime", "endTime", "startDate","endDate"], sep=",")
-
-    start_hours = rooms["startTime"]
-    end_hours = rooms["endTime"]
-    
-    # save locking times in dictionary
-    locking_times_unordered = defaultdict(list)
-    
-    # find time indices for which rooms are locked
-    for room in start_hours:
-        for i in range(len(h)-1):
-            # determine position of locking start
-            if start_hours[room] >= h[i] and start_hours[room] <= h[i+1]:
-                #print "found a locked room!"
-                j = i
-                # search for position of locking end
-                while( j < len(h) - 1 ):
-                    if end_hours[room] < h[j]:
-                        break;
-                    # on the way insert locking times to dict
-                    locking_times_unordered[room].append(j)
-                    j += 1
-    
-    
-    
-    room_capacities = room_overview["Klausurplaetze_eng"]
-    
-    locking_times = defaultdict(list)
-    capacity = defaultdict(int)
-    campus_id = defaultdict(str)
-    room_name = defaultdict(str)
-    
-    for k, room in enumerate(room_capacities):
-        locking_times[k] = locking_times_unordered[room]
-        capacity[k] = room_capacities[room]
-        campus_id[k] = room_overview["ID_Campus"]
-        room_name[k] = room
+    room_overview = read_columns("Data/Raumuebersicht.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
         
-    return capacity, locking_times, room_name, campus_id
+    return room_overview["Klausurplaetze_eng"], room_overview["ID_Campus"]
+    
+    
+    
+#def read_locked_rooms():
+    ## "","ID_RAUM","startTime","endTime","startDate","endDate"
+    #rooms = read_columns("raum_sperren.csv", "ID_RAUM", ["startTime", "endTime", "startDate","endDate"], sep=",")
+
+    #start_hours = rooms["startTime"]
+    #end_hours = rooms["endTime"]
+    
+    ## save locking times in dictionary
+    #locking_times_unordered = defaultdict(list)
+    
+    ## find time indices for which rooms are locked
+    #for room in start_hours:
+        #for i in range(len(h)-1):
+            ## determine position of locking start
+            #if start_hours[room] >= h[i] and start_hours[room] <= h[i+1]:
+                ##print "found a locked room!"
+                #j = i
+                ## search for position of locking end
+                #while( j < len(h) - 1 ):
+                    #if end_hours[room] < h[j]:
+                        #break;
+                    ## on the way insert locking times to dict
+                    #locking_times_unordered[room].append(j)
+                    #j += 1
+    
+    
+    #locking_times = defaultdict(list)
+    #capacity = defaultdict(int)
+    #campus_id = defaultdict(str)
+    #room_name = defaultdict(str)
+    
+    #for k, room in enumerate(room_overview["Klausurplaetze_eng"]):
+        #locking_times[k] = locking_times_unordered[room]
+        #capacity[k] = room_overview["Klausurplaetze_eng"][room]
+        #campus_id[k] = room_overview["ID_Campus"]
+        #room_name[k] = room
+        
+    #return capacity, locking_times, room_name, campus_id
+
+def read_students(filename):
+    #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
+    
+    # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
+    students_abs = read_columns(filename, "MODUL", ["STUDIS_PRUEF1_GES", "STUDIS_PRUEF1_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF1"], sep=";")
+    
+    exam_students = dict()
+    for exam in students_abs["STUDIS_PRUEF1_GES"]:
+        exam_students[exam] = int(students_abs["STUDIS_PRUEF1_GES"][exam]) - int(students_abs["STUDIS_PRUEF1_ABGEMELDET"][exam])
+    
+    return exam_students
+    
     
 
-def read_conflicts(filename = "exam_conflicts_15S.csv", exam_names = None, threshold = 0):
+def read_conflicts(filename, exams = None, threshold = 0):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
-    students = defaultdict(int)
+    
     Q_abs = defaultdict(int)
     colnames = []
     
-    with open("%sinputData/Data/%s"%(PROJECT_PATH, filename)) as csvfile:
+    with open("%sinputData/%s"%(PROJECT_PATH, filename)) as csvfile:
         for line in csvfile:
             line = re.sub('\"', '', line)
             line = re.sub('\n', '', line)
@@ -151,85 +168,112 @@ def read_conflicts(filename = "exam_conflicts_15S.csv", exam_names = None, thres
                 ident2 = line[colnames.index("MODUL2")]
                 
                 # make sure the exam is used for our solution
-                if exam_names is not None and ident1 not in exam_names:
+                if exams is not None and ident1 not in exams:
                     continue
-                if exam_names is not None and ident2 not in exam_names:
+                if exams is not None and ident2 not in exams:
                     continue
                 
                 assert line[colnames.index("ANZ_STUD_MOD1")] == line[colnames.index("ANZ_STUD_MOD2")]
                 
-                # save student numbers
-                if ident1 not in students:
-                    students[ident1] = int(line[colnames.index("STUDIS_PRUEF1_GES")]) - int(line[colnames.index("STUDIS_PRUEF1_ABGEMELDET")])
-                if ident2 not in students:
-                    students[ident2] = int(line[colnames.index("STUDIS_PRUEF2_GES")]) - int(line[colnames.index("STUDIS_PRUEF2_ABGEMELDET")])
-                    
-                #calculate conflicts
+                # get conflicts
                 n_conflicts = int(line[colnames.index("ANZ_STUD_MOD1")])
                 
                 # build Q matrix
                 if n_conflicts > threshold:
                     Q_abs[ident1, ident2] = n_conflicts
                 
-                
-                
-    s = []
-    names = []
-    
-    # make sure only names with information are used
-    for i, name in enumerate(students):
-        s.append(students[name])
-        names.append(name)
-        
-    #print [n for n in exam_names if n in names]
-    
-    n = len(s)
+    print "read"
+    n = len(exams)
     Q = [[0 for i in range(n)] for i in range(n)]
+    K = defaultdict(int)
     conflicts = defaultdict(list)
     
-    # build std conflicts matrix
-    for ident1, ident2 in Q_abs:
-        if ident1 in students and ident2 in students:
-            i = names.index(ident1)
-            j = names.index(ident2)
-            Q[i][j] = 1 * (Q_abs > 0)
-            Q[j][i] = 1 * (Q_abs > 0)
+    for i, e1 in enumerate(exams):
+        for j, e2 in enumerate(exams):
+            if Q_abs[e1, e2] > 0:
+                Q[i][j] = 1
+                if j not in conflicts[i]:
+                    conflicts[i].append(j)
+                if i not in conflicts[j]:
+                    conflicts[j].append(i)
+                K[i,j] = Q_abs[e1, e2]
             
-    return s, Q, names
+    return Q, conflicts, K
+    
     
 @force_data_format
-def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=None):
+def read_data(semester = "15W", threshold = 0, make_intersection=True, verbose=False, max_periods=None):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
-    #print "Loading data: Data needs verification!"
+    assert semester in ["15W", "16S"], "Wir haben nur Ergebnisse für Winder 15 und Sommer 16!"
     
+    anmelde_data = semester
+    if semester == "16S":
+        anmelde_data = "15S"
+    
+    #print "Loading data: Data needs verification!"
+    if max_periods is not None:
+        print "WARNING: max_periods is not implemented any more!"
     
     # load times from szenarioergebnis
-    h, exam_names, exam_times = read_times()
-    
-    if max_periods is not None:
-        h = h[0:max_periods]
-        # TODO: WARNING: exam times not valuable any more
+    exam_times = read_result_times(semester)
     
     # load room results from szenarioergebnis
-    exam_rooms = read_result_rooms("SzenarioergebnisSoSe2016.csv")
+    exam_rooms = read_result_rooms(semester)
     
-    if verbose: print "Moses exams:", len(exam_names)
+    # load room capacities
+    room_capacity, room_campus_id = read_rooms()
     
-    # load locking rooms
-    c, locking_times, room_names, campus_ids = read_rooms(h)
-    
-    # consider all exams in tumOnline
-    if not make_intersection:
-        exam_names = None
+    # load number of students registered for each exam
+    exam_students = read_students("Conflicts/%s.csv" %anmelde_data)
         
-    s, Q, exam_names = read_conflicts(exam_names = exam_names, threshold = threshold)
+    # differences in data size
+    if verbose: print len( [exam for exam in exam_times if exam not in exam_students])
+    if verbose: print len( [exam for exam in exam_students if exam not in exam_times])
     
-    if verbose: print "Exams used:", len(exam_names)
+    # filter all exams for which we have student data
+    exams = [exam for exam in exam_times if exam in exam_students]
     
-    assert len(c) == len(room_names)
-    assert len(exam_names) == len(s)
+    if verbose: print "Number of exams", len(exams)
+    
+    # filter all exams for which we have room data
+    exams = [exam for exam in exams if all(room in room_capacity for room in exam_rooms[exam])]
+    
+    if verbose: print "Number of exams", len(exams)
+    if verbose: print "Number of timeslots", len(sorted(set(exam_times.values())))
+    
+    # build exam data structures
+    times = [exam_times[exam] for exam in exams]
+    h = sorted(set(times))
+    s = [exam_students[exam] for exam in exams]
+    
+    if verbose: print "Number of timeslots", len(h)
+    
+    # construct room data
+    rooms = sorted(set([ room for exam in exams for room in exam_rooms[exam]]))
+    c = [int(room_capacity[room]) for room in rooms]
+    
+    if verbose: print "Number of rooms", len(rooms)    
+    
+    ## TODO: load locking rooms
+    #c, locking_times, room_names, campus_ids = read_rooms(h)
+    
+    # construct time data -> 1 if room and time is planned by moses
+    locking_times = defaultdict(list)
+    for k, room in enumerate(rooms):
+        for exam in exams:
+            if room in exam_rooms[exam]:
+                l = h.index(exam_times[exam])
+                if l not in locking_times[k]:
+                    locking_times[k].append(l)
+                    
+    if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
+    
+    Q, conflicts, K = read_conflicts(filename = "Conflicts/%s.csv" %anmelde_data, exams = exams, threshold = threshold)
+    
+    if verbose: print "Mean number of conflicts", np.mean([ len(conflicts[i]) for i, e in enumerate(exams)])
+    if verbose: print "Percentage of conflicts", 100.*len(K)/(len(exams)**2)
     
     data = {}
     
@@ -238,24 +282,25 @@ def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=
     data['p'] = len(h)
     
     data['h'] = h
-    data['c'] = c
     data['s'] = s
+    data['c'] = c
     data['Q'] = Q
     
+    data['conflicts'] = conflicts
     data['locking_times'] = locking_times
     
-    data['exam_names'] = exam_names
+    data['exam_names'] = exams
     data['exam_times'] = exam_times
     data['exam_rooms'] = exam_rooms
-    data['room_names'] = room_names
-    data['campus_ids'] = campus_ids
+    data['room_names'] = rooms
+    #data['campus_ids'] = campus_ids
     
     return data
 
 if __name__ == "__main__":
     
     
-    data = read_data(threshold = 0, make_intersection=True, verbose=True, max_periods = 10)
+    data = read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=True, max_periods = 10)
     
     print data['n'], data['r'], data['p']
     print "KEYS:", [key for key in data]

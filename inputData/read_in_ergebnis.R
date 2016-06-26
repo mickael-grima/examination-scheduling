@@ -1,9 +1,9 @@
 
 
 #read in moses result
-read_in_moses = function() {
+read_in_moses = function(filename) {
     
-    ergebnis = read.csv("./Data/SzenarioergebnisSoSe2016.csv", header=TRUE, sep=';')
+    ergebnis = read.csv(filename, header=TRUE, sep=';')
 
     #filter na exams
     ergebnis = ergebnis[!is.na(ergebnis$BEGINN_ZEIT), ]

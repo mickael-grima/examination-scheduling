@@ -25,7 +25,7 @@ def obj_time(times, data, h_max = None):
     h = data['h']
     
     distance_sum = 0.0
-    for i in range(n):
+    for i in range(data['n']):
         if len(conflicts[i]) > 0:
             distance_sum += min( [abs(times[i] - times[j]) for j in conflicts[i]] ) 
     
@@ -34,56 +34,62 @@ def obj_time(times, data, h_max = None):
     else:
         return distance_sum
     
+    
+def get_moses_representation(data, gamma=1.0, verbose = False):
+    
+    n, r, p = data['n'], data['r'], data['p']
+    if verbose: print n, r, p
+    
+    h = data['h']
+    
+    # load exam names
+    exams = data['exam_names']
+    # for each exam the time
+    exam_times = data['exam_times']
+    # for each exam the room
+    exam_rooms = data['exam_rooms']
+    # for each room index the name
+    room_names = data['room_names']
+    
+    y = defaultdict(int)
+    for i, exam in enumerate(exams):
+        l = h.index(exam_times[exam])
+        y[i,l] = 1.0
+    
+    x = defaultdict(int)
+    for i, exam in enumerate(exams):
+        for room in exam_rooms[exam]:
+            k = room_names.index(room)
+            x[i,k] = 1.0
+          
+    times = [exam_times[exam] for exam in exams]
+    
+    v = obj1(x) - gamma * obj_time(times, data, h_max = max(h))
+    
+    return x, y, v
 
-
-
+    
 if __name__ == '__main__':
     
     gamma = 1.0
     
     data = examination_data.read_data(threshold = 0)
-    
     data['similar_periods'] = tools.get_similar_periods(data)
     
-    n, r, p = data['n'], data['r'], data['p']
-    print n, r, p
-    
-    exam_times = data['exam_times']
-    exam_rooms = data['exam_rooms']
-    room_names = data['room_names']
-    h = data['h']
-    x = defaultdict(int)
-    y = defaultdict(int)
-    for i, exam in enumerate(exam_times):
-        l = h.index(exam_times[exam])
-        y[i,l] = 1.0
-    
-    #for room in exam_rooms.values():
-        #assert room in room_names.values()
-    
-    
-    rooms_in_moses = set()
-    
-    illicit_rooms = set()
-    penalty = 0
-    print "Rooms of which we have data:"
-    print sorted(room_names.values())
-    for i, exam in enumerate(exam_rooms):
-        for room in exam_rooms[exam]:
-            rooms_in_moses.add(room)
-            if room in room_names.values():
-                k = room_names.values().index(room)
-                x[i,l] = 1.0
-            else:
-                illicit_rooms.add(room)
-                penalty += 1
-    print "Rooms in moses:"
-    print sorted(rooms_in_moses)
-    
-    print "Rooms of which we don't have data:"
-    print len(illicit_rooms)
-    
-    v = obj1(x) + penalty - gamma * obj_time(exam_times.values(), data, h_max = max(h))
-    
+    x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
     print "VALUE:", v
+        
+    # get rooms for which we dont have data
+    #if False:
+        
+        #print "Rooms of which we have data:"
+        #print sorted(room_names)
+        #print "Rooms in moses:"
+        #r1 = set([ room for rooms in exam_rooms.values() for room in rooms ])
+        #print sorted(r1)
+        #print "Rooms of which we don't have data:"
+        #r2 = set(room_names)
+        #print sorted([r for r in r1 if r not in r2])
+        
+    
     

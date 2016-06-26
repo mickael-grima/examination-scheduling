@@ -232,6 +232,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     if color_exams is None:
         color_exams = swap_color_dictionary(exam_colors)
     
+    assert len(color_exams) <= len(h)
+    
     # get conflicts of colors
     color_conflicts = get_color_conflicts(color_exams, exam_colors, conflicts)
     
