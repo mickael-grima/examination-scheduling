@@ -3,7 +3,7 @@ source("read_in_sperren.R")
 
 print("This script mut be called from within the folder inputData!!")
 
-semester = "W15"
+semester = "16S"
 infile = paste(c("./", semester, "/Ergebnis_", semester, ".csv"), collapse = "")
 outfile = paste(c("./", semester, "/prfg_times.csv"), collapse = "")
 print(semester)
