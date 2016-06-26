@@ -46,7 +46,7 @@ def provide_results(input_file, data_type='smart', **kwards):
             compute_performance(prob, input_data, **kwards)
 
     # collect the data in tab and write it on a file
-    convert_performance_file_to_table(last_nb=len(probs))
+    convert_performance_file_to_table(last_nb=len(probs) * len(datas))
 
 
 def main():
