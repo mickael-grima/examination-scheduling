@@ -18,7 +18,7 @@ import random as rd
 import logging
 from collections import defaultdict
 
-from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph, EqualizedColorGraphAdvanced
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary
@@ -57,15 +57,26 @@ class RandomHeuristic(MetaHeuristic):
         colorings = []
         nodes = self.graph.nodes()
         
-        for i in range(self.n_colorings):
+        i = 0
+        counter = 0
+        while len(colorings) < self.n_colorings:
+            counter += 1
+            #if counter % 1 == 0:
+                #print len(colorings)
+                
             self.graph.reset_colours()
-            
             rd.shuffle(nodes)
-            for node in nodes:
-                self.graph.color_node(node, data=self.data, mode = self.mode, periods = self.periods[i])
             
-            colorings.append({n: c for n, c in self.graph.colours.iteritems()})      
-        
+            feasible = True
+            for node in nodes:
+                feasible = self.graph.color_node(node, data=self.data, mode = self.mode, periods = self.periods[i])
+                if not feasible: 
+                    break
+            
+            if feasible: 
+                colorings.append({n: c for n, c in self.graph.colours.iteritems()})      
+                i += 1
+                
         return colorings
     
     
@@ -76,15 +87,6 @@ class RandomHeuristic(MetaHeuristic):
         pass
 
 
-class RandomHeuristicEqualized(RandomHeuristic):
-    
-    def __init__(self, data, n_colorings=50):
-        RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = EqualizedColorGraph(n_colours = data['p'])
-        self.graph.build_graph(self.data['n'], self.data['conflicts'])   
-        self.periods = [None] * self.n_colorings
-        self.mode = 0
-        
     
 class RandomHeuristicAdvanced(RandomHeuristic):
     '''
@@ -92,7 +94,7 @@ class RandomHeuristicAdvanced(RandomHeuristic):
     '''
     def __init__(self, data, n_colorings=50):
         RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = EqualizedColorGraph(n_colours = data['p'])
+        self.graph = EqualizedColorGraphAdvanced(n_colours = data['p'])
         self.graph.build_graph(self.data['n'], self.data['conflicts'])   
         self.periods = { i: None for i in range(n_colorings) }
         self.mode = 1

@@ -25,7 +25,7 @@ if __name__ == '__main__':
     
     
     gamma = 1.0
-    n_colorings = 2
+    n_colorings = 1
     epochs = 10
     annealing_iterations = 500
     

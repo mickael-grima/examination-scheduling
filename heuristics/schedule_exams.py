@@ -71,12 +71,49 @@ def build_statespace_similar_periods(coloring, data):
 
     return statespace, color_exams
 
+def build_statespace_exam_slots(coloring, data):
+    
+    h = data['h']
+    exam_slots = data['exam_slots']
+    
+    # refactor dicts
+    color_exams = tools.swap_color_dictionary(coloring)
+    
+    # empty statespace -> init
+    statespace = { color: [] for color in color_exams }
+    
+    for color in color_exams:
+        for period, time in enumerate(h):
+            
+            feasible_slot = True
+            for exam in color_exams[color]:
+                if not feasible_slot: break
+                feasible_slot = feasible_slot and time in exam_slots[exam]
+                if not feasible_slot:
+                    break
+                
+            if not feasible_slot:
+                continue
+            
+            greedy_schedule = schedule_greedy(color_exams[color], period, data)
+            if greedy_schedule is not None:
+                statespace[color].append(time)
+        if len(statespace[color]) == 0:
+            print color, "infeas"
+            return None, None
+
+    return statespace, color_exams
+
+
 
 def build_statespace(coloring, data):
     '''
         Build statespace by checking feasibility for every color and every possible time slot.
         If the similar_periods field is present in the data, this is spead up by considering duplicate times slots.
     '''
+    
+    if 'exam_slots' in data and len(data['exam_slots']) > 0:
+        return build_statespace_exam_slots(coloring, data)
     
     if 'similar_periods' in data:
         return build_statespace_similar_periods(coloring, data)
