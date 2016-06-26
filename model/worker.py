@@ -151,9 +151,9 @@ def compare(data):
 
 
 def test_compare():
-    n = 200
-    r = 40
-    p = 40
+    n = 100
+    r = 20
+    p = 20
     tseed = 34534
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
