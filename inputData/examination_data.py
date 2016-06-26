@@ -26,7 +26,7 @@ def read_columns(datname, key, cols, sep=","):
     columns = defaultdict(dict)
     colnames = []
             
-    with open("%sinputData/Data/%s"%(PROJECT_PATH, datname)) as csvfile:
+    with open("%sinputData/%s"%(PROJECT_PATH, datname)) as csvfile:
         for line in csvfile:
             line = re.sub('\"', '', line)
             line = re.sub('\n', '', line)
@@ -46,9 +46,9 @@ def read_columns(datname, key, cols, sep=","):
     return columns
 
 
-def read_times():
+def read_times(semester):
     # "","PRFG.NUMMER","startHours","endHours","startDate","endDate"
-    prfg = read_columns("prfg_times.csv", "PRFG.NUMMER", ["startHours", "endHours", "startDate", "endDate"], sep=",")
+    prfg = read_columns("%s/prfg_times.csv" %semester, "PRFG.NUMMER", ["startHours", "endHours", "startDate", "endDate"], sep=",")
 
     startHours = prfg["startHours"]
     
@@ -196,7 +196,7 @@ def read_conflicts(filename = "exam_conflicts_15S.csv", exam_names = None, thres
     return s, Q, names
     
 @force_data_format
-def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=None):
+def read_data(semester = "W15", threshold = 0, make_intersection=True, verbose=False, max_periods=None):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
@@ -204,16 +204,18 @@ def read_data(threshold = 0, make_intersection=True, verbose=False, max_periods=
     
     
     # load times from szenarioergebnis
-    h, exam_names, exam_times = read_times()
+    h, exam_names, exam_times = read_times(semester)
     
     if max_periods is not None:
         h = h[0:max_periods]
         # TODO: WARNING: exam times not valuable any more
     
     # load room results from szenarioergebnis
-    exam_rooms = read_result_rooms("SzenarioergebnisSoSe2016.csv")
+    exam_rooms = read_result_rooms("%s/Ergebnis_%s.csv" %(semester, semester))
     
     if verbose: print "Moses exams:", len(exam_names)
+    
+    
     
     # load locking rooms
     c, locking_times, room_names, campus_ids = read_rooms(h)
