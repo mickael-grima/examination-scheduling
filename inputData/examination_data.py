@@ -252,7 +252,7 @@ def read_data(semester = "15W", threshold = 0, make_intersection=True, verbose=F
     
     # construct room data
     rooms = sorted(set([ room for exam in exams for room in exam_rooms[exam]]))
-    c = [room_capacity[room] for room in rooms]
+    c = [int(room_capacity[room]) for room in rooms]
     
     if verbose: print "Number of rooms", len(rooms)    
     
@@ -290,7 +290,7 @@ def read_data(semester = "15W", threshold = 0, make_intersection=True, verbose=F
     data['locking_times'] = locking_times
     
     data['exam_names'] = exams
-    data['exam_times'] = times
+    data['exam_times'] = exam_times
     data['exam_rooms'] = exam_rooms
     data['room_names'] = rooms
     #data['campus_ids'] = campus_ids
