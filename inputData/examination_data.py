@@ -99,44 +99,35 @@ def read_rooms():
     
     
     
-#def read_locked_rooms():
-    ## "","ID_RAUM","startTime","endTime","startDate","endDate"
-    #rooms = read_columns("raum_sperren.csv", "ID_RAUM", ["startTime", "endTime", "startDate","endDate"], sep=",")
+def read_locked_rooms(h):
+    
+    # "","ID_RAUM","startTime","endTime","startDate","endDate"
+    rooms = read_columns("raum_sperren.csv", "ID_RAUM", ["startTime", "endTime", "startDate","endDate"], sep=",")
 
-    #start_hours = rooms["startTime"]
-    #end_hours = rooms["endTime"]
+    start_hours = rooms["startTime"]
+    end_hours = rooms["endTime"]
     
-    ## save locking times in dictionary
-    #locking_times_unordered = defaultdict(list)
+    # save locking times in dictionary
+    room_locking_times = defaultdict(list)
     
-    ## find time indices for which rooms are locked
-    #for room in start_hours:
-        #for i in range(len(h)-1):
-            ## determine position of locking start
-            #if start_hours[room] >= h[i] and start_hours[room] <= h[i+1]:
-                ##print "found a locked room!"
-                #j = i
-                ## search for position of locking end
-                #while( j < len(h) - 1 ):
-                    #if end_hours[room] < h[j]:
-                        #break;
-                    ## on the way insert locking times to dict
-                    #locking_times_unordered[room].append(j)
-                    #j += 1
-    
-    
-    #locking_times = defaultdict(list)
-    #capacity = defaultdict(int)
-    #campus_id = defaultdict(str)
-    #room_name = defaultdict(str)
-    
-    #for k, room in enumerate(room_overview["Klausurplaetze_eng"]):
-        #locking_times[k] = locking_times_unordered[room]
-        #capacity[k] = room_overview["Klausurplaetze_eng"][room]
-        #campus_id[k] = room_overview["ID_Campus"]
-        #room_name[k] = room
+    # find time indices for which rooms are locked
+    for room in start_hours:
+        for i in range(len(h)-1):
+            # determine position of locking start
+            if start_hours[room] >= h[i] and start_hours[room] <= h[i+1]:
+                #print "found a locked room!"
+                j = i
+                # search for position of locking end
+                while( j < len(h) - 1 ):
+                    if end_hours[room] < h[j]:
+                        break;
+                    # on the way insert locking times to dict
+                    if j not in locking_times[room]:
+                        room_locking_times[room].append(j)
+                    j += 1
         
-    #return capacity, locking_times, room_name, campus_id
+    return room_locking_times
+
 
 def read_students(filename):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
@@ -408,7 +399,7 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     
     if verbose: print "Number of exams", len(exams)
     
-    # detect duplicates, i.e. exams at the same time slot in the same room
+    # detect duplicates, i.e. exams at the same time slot in the same room. Drop smaller ones
     drop_exams = get_duplicate_exams(exams, result_rooms, result_times)
     if verbose: print "Drop duplicates", len(drop_exams)
     
@@ -446,13 +437,16 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
         exam_rooms[exam] = [ rooms.index(room) for room in exam_rooms[exam] ]
     exam_rooms = exam_rooms.values()
         
-    ## TODO: load locking rooms
-    #c, locking_times, room_names, campus_ids = read_rooms(h)
+    # Load locking rooms from table
+    try:
+        room_locking_times = read_locked_rooms(h)
+    except:
+        room_locking_times = defaultdict(list)
     
     # construct time data. If we dont plan the exam then we lock the room.
     locking_times = defaultdict(list)
     for k, room in enumerate(rooms):
-        locking_times[k] = []
+        locking_times[k] = room_locking_times[room]
         for exam in result_times:
             if exam not in exams and exam in result_rooms and room in result_rooms[exam]:
                 l = h.index(result_times[exam])
@@ -476,7 +470,7 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     data['h'] = h
     data['s'] = s
     data['c'] = c
-    data['Q'] = Q
+#TODO: IS NOT SYMMETRIC!!!    data['Q'] = Q
     data['K'] = K
     
     data['conflicts'] = conflicts
@@ -489,8 +483,6 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     
     data['result_times'] = result_times
     data['result_rooms'] = result_rooms
-    
-    #data['campus_ids'] = campus_ids
     
     return data
 

@@ -21,12 +21,14 @@ from heuristics.johnson import Johnson
 from heuristics.AC import AC
 import heuristics.tools as tools
 
+from evaluation.objectives import obj_time, obj_room
+
 if __name__ == '__main__':
     
     
     gamma = 1.0
     n_colorings = 1
-    epochs = 10
+    epochs = 1
     annealing_iterations = 2000
     
     data = examination_data.read_data(threshold = 0)
@@ -47,7 +49,12 @@ if __name__ == '__main__':
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False)
     print "Time:", time()-t
+    
+    print "ROOM_OBJ:", obj_room(x)
+    print "TIME_OBJ:", obj_time(y, data, h_max = max(data['h']))
     print "VALUE:", v
+    
+    
     #for key in logger:
         #print key
         #print logger[key]

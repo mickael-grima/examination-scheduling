@@ -71,6 +71,7 @@ def build_statespace_similar_periods(coloring, data):
 
     return statespace, color_exams
 
+
 def build_statespace_exam_slots(coloring, data):
     
     h = data['h']
@@ -99,7 +100,7 @@ def build_statespace_exam_slots(coloring, data):
             if greedy_schedule is not None:
                 statespace[color].append(time)
         if len(statespace[color]) == 0:
-            print color, "infeas"
+            #print color, "infeas"
             return None, None
 
     return statespace, color_exams
@@ -242,6 +243,12 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         # save best value so far.. MINIMIZATION
         if best_value < obj_val:
             x, y, obj_val = xs[best_index], ys[best_index], best_value    
+            
+            # change y to time representation
+            coloring = colorings[best_index]
+            color_schedule = color_schedules[best_index]
+            y = [ color_schedule[coloring[exam]] for exam in coloring ]
+            
             best_value_duration = 0
         
         if best_value != sys.maxint and best_value_duration > lazy_threshold * epochs:

@@ -90,8 +90,7 @@ def force_data_format(func):
         result_times = data.get('result_times', dict())
         result_rooms = data.get('result_rooms', dict())
         room_names = data.get('room_names', dict())
-        campus_ids = data.get('campus_ids', dict())
-
+        
         Q, K, conflicts = correct_conflicts_format(data, n)
         
         # locking times sparse and dense format
@@ -124,7 +123,6 @@ def force_data_format(func):
             'result_times': result_times,
             'result_rooms': result_rooms,
             'room_names': room_names,
-            'campus_ids': campus_ids,
         }
         return res
     return correct_format

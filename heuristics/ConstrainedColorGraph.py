@@ -236,9 +236,9 @@ class EqualizedColorGraphAdvanced(ConstrainedColorGraph):
                     self.color_count_new[color] += 1
                     if color in self.min_colors:
                         self.min_colors.remove(color)
-                    if 'exam_slots' in data and len(self.color_slots[color]) == 0:
+                    if 'exam_slots' in data and len(self.color_slots[color]) == 0 and len(data['exam_slots']) > 0:
                         self.color_slots[color] = data['exam_slots'][node]
-                    elif 'exam_slots' in data:
+                    elif 'exam_slots' in data and len(data['exam_slots']) > 0:
                         #self.color_slots[color].update(data['exam_slots'][node])
                         self.color_slots[color] = [slot for slot in self.color_slots[color] if slot in data['exam_slots'][node]]
                         if len(self.color_slots[color]) == 0:
