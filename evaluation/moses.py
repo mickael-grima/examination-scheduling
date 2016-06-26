@@ -58,7 +58,7 @@ if __name__ == '__main__':
     
     gamma = 1.0
     
-    data = examination_data.read_data(threshold = 0)
+    data = examination_data.read_data(semester = "15W", threshold = 0)
     data['similar_periods'] = tools.get_similar_periods(data)
     
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)

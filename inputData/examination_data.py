@@ -423,15 +423,13 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     exam_slots = exam_slots.values()
     
     # construct room data
-    rooms = sorted(set([ room for exam in exams for room in result_rooms[exam]]))
+    rooms = sorted(set([ room for exam in result_rooms for room in result_rooms[exam] if room in room_capacity]))
     c = [int(room_capacity[room]) for room in rooms]
     
     if verbose: print "Number of rooms", len(rooms)    
     
     # For each exam get all rooms at the eligible campus
-    # TODO: HIER STIMMT NOCH WAS NICHT!!!
     exam_rooms = get_exam_rooms(exams, result_rooms, room_campus_id)
-    
     
     # convert to index notation
     for exam in exam_rooms:
