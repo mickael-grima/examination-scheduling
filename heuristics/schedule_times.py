@@ -244,10 +244,12 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     # initialize the time slots randomly
     if color_schedule is None:
         color_schedule = rd.sample( h, n_colors )
-        
+    
     # assert a feasible schedule
     while not is_feasible(color_schedule, statespace):
-        color_schedule = rd.sample( h, n_colors )
+        for color in range(n_colors):
+            color_schedule[color] = rd.choice(statespace[color])
+        #color_schedule = rd.sample( h, n_colors )
             
     # best values found so far
     best_color_schedule = deepcopy(color_schedule)

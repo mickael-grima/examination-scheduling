@@ -27,7 +27,7 @@ if __name__ == '__main__':
     gamma = 1.0
     n_colorings = 1
     epochs = 10
-    annealing_iterations = 500
+    annealing_iterations = 2000
     
     data = examination_data.read_data(threshold = 0)
     

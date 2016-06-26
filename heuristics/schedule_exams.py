@@ -88,7 +88,7 @@ def build_statespace_exam_slots(coloring, data):
             feasible_slot = True
             for exam in color_exams[color]:
                 if not feasible_slot: break
-                feasible_slot = feasible_slot and time in exam_slots[exam]
+                feasible_slot = time in exam_slots[exam]
                 if not feasible_slot:
                     break
                 
@@ -154,6 +154,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     # check feasibility
     if debug: print "Building Statespace"
     statespace, color_exams = build_statespace(coloring, data)
+        
     if statespace is None:
         if debug: print "infeasible statespace"
         return None, None, None, sys.maxint

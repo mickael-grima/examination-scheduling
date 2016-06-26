@@ -45,24 +45,24 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
     # load exam names
     exams = data['exam_names']
     # for each exam the time
-    exam_times = data['exam_times']
+    result_times = data['result_times']
     # for each exam the room
-    exam_rooms = data['exam_rooms']
+    result_rooms = data['result_rooms']
     # for each room index the name
     room_names = data['room_names']
     
     y = defaultdict(int)
     for i, exam in enumerate(exams):
-        l = h.index(exam_times[exam])
+        l = h.index(result_times[exam])
         y[i,l] = 1.0
     
     x = defaultdict(int)
     for i, exam in enumerate(exams):
-        for room in exam_rooms[exam]:
+        for room in result_rooms[exam]:
             k = room_names.index(room)
             x[i,k] = 1.0
           
-    times = [exam_times[exam] for exam in exams]
+    times = [result_times[exam] for exam in exams]
     
     v = obj1(x) - gamma * obj_time(times, data, h_max = max(h))
     
@@ -85,7 +85,7 @@ if __name__ == '__main__':
         #print "Rooms of which we have data:"
         #print sorted(room_names)
         #print "Rooms in moses:"
-        #r1 = set([ room for rooms in exam_rooms.values() for room in rooms ])
+        #r1 = set([ room for rooms in result_rooms.values() for room in rooms ])
         #print sorted(r1)
         #print "Rooms of which we don't have data:"
         #r2 = set(room_names)

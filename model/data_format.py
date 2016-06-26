@@ -86,8 +86,9 @@ def force_data_format(func):
 
         exam_names = data.get('exam_names', list())
         exam_slots = data.get('exam_slots', dict())
-        exam_times = data.get('exam_times', dict())
         exam_rooms = data.get('exam_rooms', dict())
+        result_times = data.get('result_times', dict())
+        result_rooms = data.get('result_rooms', dict())
         room_names = data.get('room_names', dict())
         campus_ids = data.get('campus_ids', dict())
 
@@ -119,8 +120,9 @@ def force_data_format(func):
             'similarr': similarr,
             'exam_names': exam_names,
             'exam_slots': exam_slots,
-            'exam_times': exam_times,
             'exam_rooms': exam_rooms,
+            'result_times': result_times,
+            'result_rooms': result_rooms,
             'room_names': room_names,
             'campus_ids': campus_ids,
         }

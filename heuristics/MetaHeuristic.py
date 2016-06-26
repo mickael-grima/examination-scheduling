@@ -61,8 +61,8 @@ class RandomHeuristic(MetaHeuristic):
         counter = 0
         while len(colorings) < self.n_colorings:
             counter += 1
-            #if counter % 1 == 0:
-                #print len(colorings)
+            #if counter % 10 == 0:
+            #print len(colorings)
                 
             self.graph.reset_colours()
             rd.shuffle(nodes)
@@ -70,6 +70,7 @@ class RandomHeuristic(MetaHeuristic):
             feasible = True
             for node in nodes:
                 feasible = self.graph.color_node(node, data=self.data, mode = self.mode, periods = self.periods[i])
+                #print node, feasible
                 if not feasible: 
                     break
             
