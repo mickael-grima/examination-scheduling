@@ -61,13 +61,14 @@ LIST_MODELS = [m for m in MODELS.iterkeys()] + [m for m in HEURISTICS.iterkeys()
 
 def call_heuristic(problem_name, data, **kwards):
     if problem_name == 'main_heuristic':
-        x, y, _ = main_heuristic.optimize(AC(data, gamma=kwards.get('gamma', 1.0), num_ants=kwards.get('num_ants', 10)),
-                                          data, epochs=kwards.get('epochs', 10),
-                                          gamma=kwards.get('gamma', 1.0),
-                                          annealing_iterations=kwards.get('annealing_iterations', 1000),
-                                          lazy_threshold=kwards.get('lazy_threshold', 0.2),
-                                          verbose=kwards.get('verbose', False),
-                                          log_history=kwards.get('log_history', False))
+        x, y, _, _ = main_heuristic.optimize(AC(data, gamma=kwards.get('gamma', 1.0),
+                                             num_ants=kwards.get('num_ants', 10)),
+                                             data, epochs=kwards.get('epochs', 10),
+                                             gamma=kwards.get('gamma', 1.0),
+                                             annealing_iterations=kwards.get('annealing_iterations', 1000),
+                                             lazy_threshold=kwards.get('lazy_threshold', 0.2),
+                                             verbose=kwards.get('verbose', False),
+                                             log_history=kwards.get('log_history', False))
     elif problem_name == 'greedy_heuristic':
         x, y = greedy_heuristic.generate_starting_solution_by_maximal_time_slot_filling(data)
     elif problem_name == 'groups_heuristic':

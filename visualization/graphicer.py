@@ -156,7 +156,7 @@ def convert_performance_file_to_table(date=''):
     """
     LINES_PER_PROB = 18
     results_tab, datas = {}, set()
-    with open('%s/utils/data/performance' % PROJECT_PATH, 'rb') as src:
+    with open('%s/visualization/data/performance' % PROJECT_PATH, 'rb') as src:
         # We read over the hole file
         lines = src.readlines()
         prob = 0
