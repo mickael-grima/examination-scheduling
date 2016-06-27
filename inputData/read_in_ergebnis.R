@@ -9,7 +9,7 @@ read_in_moses = function(filename) {
     ergebnis = ergebnis[!is.na(ergebnis$BEGINN_ZEIT), ]
     ergebnis = ergebnis[!is.na(ergebnis$ENDE_ZEIT), ]
     ergebnis = ergebnis[!is.na(strptime(paste(ergebnis$TERMIN, ergebnis$BEGINN_ZEIT), format = "%m/%d/%Y %H:%M")), ]
-
+    
     #ergebnis$startDate = strptime(paste(ergebnis$TERMIN, ergebnis$BEGINN_ZEIT), format = "%m/%d/%Y %H:%M") - 60*30
     #ergebnis$endDate = strptime(paste(ergebnis$TERMIN, ergebnis$ENDE_ZEIT), format = "%m/%d/%Y %H:%M") + 60*30
     # filter_exam_times = !unlist(Map(is.na, ergebnis$startDate))

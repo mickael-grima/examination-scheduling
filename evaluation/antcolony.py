@@ -24,15 +24,15 @@ if __name__ == '__main__':
     
     
     gamma = 1.0
+    n_colorings = 20
+    epochs = 40
+    annealing_iterations = 1000
     
-    epochs = 1
-    n_colorings = 1
-    annealing_iterations = 1
-    
-    data = examination_data.read_data()
+    data = examination_data.read_data(semester = "15W", threshold = 0)
     data['similar_periods'] = tools.get_similar_periods(data)
     
-    print data['n'], data['r'], data['p']
+    n, r, p = data['n'], data['r'], data['p']
+    print n, r, p
     
     Heuristic = AC(data, num_ants = n_colorings)
     

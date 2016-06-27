@@ -44,6 +44,8 @@ def check_rooms_constraint(nodes, data):
     return i < len(nodes)
 
 
+
+
 class ConstrainedColorGraph(ColorGraph):
     def __init__(self, n_colours=2000):
         super(ConstrainedColorGraph, self).__init__(n_colours = n_colours)
@@ -92,97 +94,31 @@ class ConstrainedColorGraph(ColorGraph):
                     break
 
 
-
 class EqualizedColorGraph(ConstrainedColorGraph):
-    def __init__(self, n_colours=2000):
-        super(EqualizedColorGraph, self).__init__(n_colours=n_colours)
-        self.color_exams = defaultdict(list)
-        self.color_count = [0]*self.n_colours
-        
-        self.color_count_new = defaultdict(int)
-        self.min_colors = deepcopy(self.ALL_COLOURS)
-        
     '''
-        differences to color_node of ConstrainedColorGraph
+        The EqualizedColorGraph combines the ideas of the EqualizedColorGraph 
+        with the intruduction of time feasibility of exams and examination periods.
+        A node is only colored, if there remains some time for the exams of the color.
+        
+        Differences to color_node of ConstrainedColorGraph
         - checks for max. number of available periods directly
         - checks for max. number of available rooms directly
         - tries to fill colors evenly with exams 
-    ''' 
-
-    def reset_colours(self):
-        """
-            Reset all the colours to white and reset the color_count
-        """
-        for col in self.colours:
-            self.colours[col] = self.WHITE
-        
-        self.color_count_new = defaultdict(int)
-        self.min_colors = deepcopy(self.ALL_COLOURS)
-        self.color_count = [0 for c in self.color_count]
-        self.color_slots = defaultdict(set)
-
-    def color_node(self, node, data={}, mode=0, periods=None):
-        """
-            Check the colors of the neighbors, and color the node with a different color.
-            If capacities is not empty, we color the node respecting the capacities room constraint
-        """
-        
-        ordered_colors = sorted( self.color_count_new, key=lambda x: self.color_count_new[x] )
-        ordered_colors = self.min_colors + ordered_colors
-        
-        if len(set(ordered_colors)) != len(ordered_colors) or len(ordered_colors) > data['p']:
-            print "Warning: Error constructing ordered colors in color_node!"
-            
-        #ordered_colors = [elmts[0] for elmts in sorted(zip(self.ALL_COLOURS, self.color_count), key=itemgetter(1))]
-        #ordered_colors = [col for col in ordered_colors if self.color_count[col] > 0]
-        #print ordered_colors
-        
-        #if len(ordered_colors) < data['p']:
-            #for col in self.ALL_COLOURS:
-                #if self.color_count[col] > 0:
-                    #continue
-                #self.colours[node] = col
-                #self.color_count[col] += 1
-                #return
-
-        for col in ordered_colors:
-
-            # continue if the current color already has too many exams
-            if self.color_count[col] >= data['r']:
-                continue
-
-            # we check whether any other neighbor has col as color
-            if self.check_neighbours(node, col):
-                if mode == 0 or self.check_room_constraints(node, col, data, mode = mode, periods = periods):
-                    self.colours[node] = col
-                    self.color_count[col] += 1
-                    self.color_count_new[col] += 1
-                    if col in self.min_colors:
-                        self.min_colors.remove(col)
-                    break
-               
-
-
-class EqualizedColorGraphAdvanced(ConstrainedColorGraph):
-    '''
-        The EqualizedColorGraphAdvanced combines the ideas of the EqualizedColorGraph 
-        with the intruduction of time feasibility of exams and examination periods.
-        A node is only colored, if there remains some time for the exams of the color.
     '''
     def __init__(self, n_colours=2000):
-        super(EqualizedColorGraphAdvanced, self).__init__(n_colours=n_colours)
+        super(EqualizedColorGraph, self).__init__(n_colours=n_colours)
+        
+        self.color_slots = dict()
         
         self.color_count = defaultdict(int)
         self.min_colors = deepcopy(self.ALL_COLOURS)
-        
-        self.color_slots = defaultdict(set)
-        
         
     def check_neighbours(self, node, colour, data):
         """ @param node: node to consider
             @param colour: colour to check
             We check for every neighbor of node if it has colour as colour
-            If not we return true, else we return false
+            If not we return true, else we return false.
+            If exam slots are provided we only use colors which guarantee feasibility.
         """
         neighbor_colors = [self.colours[x[1]] for x in self.graph.edges(node)]
         
@@ -191,7 +127,7 @@ class EqualizedColorGraphAdvanced(ConstrainedColorGraph):
         
         if 'exam_slots' in data and len(data['exam_slots']) > 0:
             exam_slots = data['exam_slots']
-            if len(self.color_slots[colour]) == 0:
+            if colour not in self.color_slots:
                 return(True)
             if not any([slot in self.color_slots[colour] for slot in exam_slots[node]]):
                 return(False)
@@ -205,10 +141,11 @@ class EqualizedColorGraphAdvanced(ConstrainedColorGraph):
         for col in self.colours:
             self.colours[col] = self.WHITE
         
-        self.color_count = defaultdict(int)
+        self.color_slots = dict()
+        
+        self.color_count = dict()
         self.min_colors = deepcopy(self.ALL_COLOURS)
         
-        self.color_slots = defaultdict(list)
         
 
     def color_node(self, node, data={}, mode=0, periods=None):
@@ -220,8 +157,11 @@ class EqualizedColorGraphAdvanced(ConstrainedColorGraph):
         ordered_colors = sorted( self.color_count, key=lambda x: self.color_count[x] )
         ordered_colors = self.min_colors + ordered_colors
         
-        if len(set(ordered_colors)) != len(ordered_colors) or len(ordered_colors) > data['p']:
-            print "Warning: Error constructing ordered colors in color_node!"
+        if len(set(ordered_colors)) != len(ordered_colors):
+            print "Warning: Duplicate colors in color_node", len(ordered_colors), len(set(ordered_colors))            
+        if len(ordered_colors) > data['p']:
+            print "Warning: Error constructing ordered colors in color_node!", len(ordered_colors), data['p']
+            
             
         for color in ordered_colors:
             #print color
@@ -233,11 +173,14 @@ class EqualizedColorGraphAdvanced(ConstrainedColorGraph):
             if self.check_neighbours(node, color, data):
                 if mode == 0 or self.check_room_constraints(node, color, data, mode = mode, periods = periods):
                     self.colours[node] = color
+                    
+                    if color not in self.color_count: self.color_count[color] = 0
                     self.color_count[color] += 1
+                    
                     if color in self.min_colors:
                         self.min_colors.remove(color)
                     if 'exam_slots' in data and len(data['exam_slots']) > 0:
-                        if len(self.color_slots[color]) == 0:
+                        if color not in self.color_slots:
                             self.color_slots[color] = data['exam_slots'][node]
                         else:
                             self.color_slots[color] = [slot for slot in self.color_slots[color] if slot in data['exam_slots'][node]]
