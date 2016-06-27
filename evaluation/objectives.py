@@ -35,7 +35,7 @@ def obj_time(times, data, h_max = None):
             d_i = [abs(times[i] - times[j]) for j in conflicts[i]]
             j = np.argmin(d_i)
             if K is not None:
-                distance_sum += d_i[i] * K[i, j]
+                distance_sum += d_i[j] * K[i, j]
             else:
                 distance_sum += d_i[j]
     

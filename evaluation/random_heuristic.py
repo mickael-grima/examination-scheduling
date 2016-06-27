@@ -29,7 +29,7 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 4
-    epochs = 40
+    epochs = 1
     annealing_iterations = 1000
     
     data = examination_data.read_data(semester = "15W", threshold = 0)
