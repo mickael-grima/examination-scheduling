@@ -207,6 +207,9 @@ def read_conflicts(filename, exams = None, threshold = 0):
                 K[i,j] = Q_abs[e1, e2]
                 if (e2, e1) in Q_abs:
                     K[i,j] = max(K[i,j], Q_abs[e2, e1])
+                #print "_%s_%s_" %(e1, e2)
+                #else: 
+                    #print e1, e2
                 K[i,j] = K[j,i]
                     
     #for i, e1 in enumerate(exams):
@@ -423,6 +426,8 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     # filter all exams for which we have student data
     exams = [exam for exam in result_times if exam in exam_students]
     if verbose: print "Number of exams", len(exams)
+    
+    if verbose: print "exams without students", len([exam for exam in result_times if exam not in exam_students])
     
     # filter all exams for which we know the room
     exams = [exam for exam in exams if exam in result_rooms and len(result_rooms[exam]) > 0]

@@ -189,6 +189,14 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     return room_schedule, y_binary, color_schedule, obj_val
 
 
+import multiprocessing
+
+def execute_heuristic(x): 
+    index = x["index"]
+    x, y, s, v = heuristic(x["coloring"], x["data"], gamma = x["gamma"], max_iter = x["max_iter"], beta_0 = x["beta_0"], debug=False)   
+    return {"index": index, "x":x, "y":y, "s":s, "v":v}
+
+        
 def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 1.0, verbose = False, log_history = False, debug=False):
     
     # init best values
@@ -212,11 +220,21 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         if debug: print "Building Colorings"
         colorings = meta_heuristic.generate_colorings()
         
-        ## evaluate all colorings
-        for ind, coloring in enumerate(colorings):
+        # pack colorings in pickable format
+        xs = []
+        for index, coloring in enumerate(colorings):
+            xs.append({"coloring": coloring, "index": index, "data": data, "gamma":gamma, "max_iter": annealing_iterations, "beta_0": annealing_beta_0})
             
+        # create pool
+        pool = multiprocessing.Pool(multiprocessing.cpu_count())
+        
+        # calculate results
+        results = pool.map(execute_heuristic, xs)
+        
+        ## evaluate all results
+        for ind, result in enumerate(results):
             # evaluate heuristic
-            xs[ind], ys[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0, debug=debug)
+            xs[ind], ys[ind], color_schedules[ind], obj_vals[ind] = result["x"], result["y"], result["s"], result["v"]
             
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))

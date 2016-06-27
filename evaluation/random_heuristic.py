@@ -28,9 +28,9 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 1
+    n_colorings = 4
     epochs = 10
-    annealing_iterations = 200
+    annealing_iterations = 2000
     
     data = examination_data.read_data(semester = "15W", threshold = 0)
     data['similar_periods'] = tools.get_similar_periods(data)
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     print n, r, p
     
     Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    Heuristic = AC(data, num_ants = n_colorings)
+   # Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False)
