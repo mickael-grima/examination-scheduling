@@ -415,22 +415,21 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     
     # load number of students registered for each exam
     exam_students = read_students("Conflicts/%s.csv" %anmelde_data)
-        
-    # differences in data size
-    if verbose: print len( [exam for exam in result_times if exam not in exam_students])
-    if verbose: print len( [exam for exam in exam_students if exam not in result_times])
+    
+    # get exams in the MOSES result
+    exams = [exam for exam in result_times]
+    if verbose: print "Number of exams", len(exams)
     
     # filter all exams for which we have student data
     exams = [exam for exam in result_times if exam in exam_students]
-    
     if verbose: print "Number of exams", len(exams)
     
     # filter all exams for which we know the room
     exams = [exam for exam in exams if exam in result_rooms and len(result_rooms[exam]) > 0]
+    if verbose: print "Number of exams", len(exams)
     
     # filter all exams for which we have room data
     exams = [exam for exam in exams if all(room in room_capacity for room in result_rooms[exam])]
-    
     if verbose: print "Number of exams", len(exams)
     
     # detect duplicates, i.e. exams at the same time slot in the same room. Drop smaller ones
