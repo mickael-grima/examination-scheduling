@@ -11,6 +11,7 @@ for p in PATHS:
         break
 sys.path.append(PROJECT_PATH)
 
+import numpy as np
 
 def obj_room(x):
     if x is None: 
@@ -25,16 +26,21 @@ def obj_time(times, data, h_max = None):
         return 0.
     
     conflicts = data['conflicts']
+    K = data['K']
     h = data['h']
     
     distance_sum = 0.0
     for i in range(data['n']):
         if len(conflicts[i]) > 0:
-            distance_sum += min( [abs(times[i] - times[j]) for j in conflicts[i]] ) 
+            d_i = [abs(times[i] - times[j]) for j in conflicts[i]]
+            j = np.argmin(d_i)
+            if K is not None:
+                distance_sum += d_i[i] * K[i, j]
+            else:
+                distance_sum += d_i[j]
     
     if h_max is not None:
         return 1.0*distance_sum/h_max
     else:
         return distance_sum
     
-

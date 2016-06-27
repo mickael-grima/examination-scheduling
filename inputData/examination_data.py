@@ -55,8 +55,12 @@ def read_columns(datname, key, cols, sep=","):
 def read_result_times(semester):
     # read times from result file
     
+    if semester == "15W":
+        key = ["PRFG.NUMMER", "TERMIN"]
+    else:
+        key = "PRFG.NUMMER"
     # "","PRFG.NUMMER","startHours","endHours","startDate","endDate"
-    prfg = read_columns("%s/prfg_times.csv" %semester, ["PRFG.NUMMER", "TERMIN"], ["startHours", "endHours", "startDate", "endDate"], sep=",")
+    prfg = read_columns("%s/prfg_times.csv" %semester, key, ["startHours", "endHours", "startDate", "endDate"], sep=",")
 
     startHours = prfg["startHours"]
     
@@ -78,7 +82,12 @@ def read_result_rooms(semester):
     for i in range(10, 31):
         cols.append("ORT_CODE_%d" %i)
         
-    prfg = read_columns("%s/Ergebnis_%s.csv" %(semester, semester), ["PRFG-NUMMER", "TERMIN"], cols, sep=";")
+    if semester == "15W":
+        key = ["PRFG-NUMMER", "TERMIN"]
+    else:
+        key = "PRFG-NUMMER"
+        
+    prfg = read_columns("%s/Ergebnis_%s.csv" %(semester, semester), key, cols, sep=";")
     
     exam_rooms = defaultdict(set)
     for col in prfg:
@@ -134,27 +143,50 @@ def read_locked_rooms(h):
     return room_locking_times
 
 
-def read_students(filename):
+def read_students(semester):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
-    students_abs_1 = read_columns(filename, ["MODUL", "DATUM_T1"], ["STUDIS_PRUEF1_GES", "STUDIS_PRUEF1_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF1"], sep=";")
     
-    students_abs_2 = read_columns(filename, ["MODUL2", "DATUM_T2"], ["STUDIS_PRUEF2_GES", "STUDIS_PRUEF2_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF2"], sep=";")
+    anmelde_data = semester
+    if semester == "16S":
+        anmelde_data = "15S"
+    filename = "Conflicts/%s.csv" %anmelde_data
+    
+    if semester == "15W":
+        key1 = ["MODUL", "DATUM_T1"]
+        key2 = ["MODUL2", "DATUM_T2"]
+    else:
+        key1 = "MODUL"
+        key2 = "MODUL2"
+        
+    students_abs_1 = read_columns(filename, key1, ["STUDIS_PRUEF1_GES", "STUDIS_PRUEF1_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF1"], sep=";")
+    
+    students_abs_2 = read_columns(filename, key2, ["STUDIS_PRUEF2_GES", "STUDIS_PRUEF2_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF2"], sep=";")
     
     exam_students = dict()
     for exam in students_abs_1["STUDIS_PRUEF1_GES"]:
-        exam_students[exam] = int(students_abs_1["STUDIS_PRUEF1_GES"][exam]) - int(students_abs_1["STUDIS_PRUEF1_ABGEMELDET"][exam])
+        exam_students[exam] = int(students_abs_1["STUDIS_PRUEF1_GES"][exam])# - int(students_abs_1["STUDIS_PRUEF1_ABGEMELDET"][exam])
+        if exam_students[exam] < 0:
+            exam_students[exam] = int(students_abs_2["STUDIS_PRUEF2_GES"][exam])
+        
     
     for exam in students_abs_2["STUDIS_PRUEF2_GES"]:
-        exam_students[exam] = int(students_abs_2["STUDIS_PRUEF2_GES"][exam]) - int(students_abs_2["STUDIS_PRUEF2_ABGEMELDET"][exam])
-    
+        exam_students[exam] = int(students_abs_2["STUDIS_PRUEF2_GES"][exam])# - int(students_abs_2["STUDIS_PRUEF2_ABGEMELDET"][exam])
+        if exam_students[exam] < 0:
+            exam_students[exam] = int(students_abs_2["STUDIS_PRUEF2_GES"][exam])
+            
     return exam_students
     
     
 
-def read_conflicts(filename, exams = None, threshold = 0):
+def read_conflicts(semester, exams = None, threshold = 0):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
+    
+    anmelde_data = semester
+    if semester == "16S":
+        anmelde_data = "15S"
+    filename = "Conflicts/%s.csv" %anmelde_data
     
     Q_abs = defaultdict(int)
     colnames = []
@@ -168,9 +200,13 @@ def read_conflicts(filename, exams = None, threshold = 0):
             if len(colnames) == 0:
                 colnames = line
             else:
-                ident1 = line[colnames.index("MODUL")] + " " + line[colnames.index("DATUM_T1")]
-                ident2 = line[colnames.index("MODUL2")] + " " + line[colnames.index("DATUM_T2")]
                 
+                ident1 = line[colnames.index("MODUL")]
+                ident2 = line[colnames.index("MODUL2")]
+                if semester == "15W":
+                    ident1 = ident1 + " " + line[colnames.index("DATUM_T1")]
+                    ident2 = ident2 + " " + line[colnames.index("DATUM_T2")]
+                    
                 #print exams
                 # make sure the exam is used for our solution
                 if exams is not None and ident1 not in exams:
@@ -207,11 +243,8 @@ def read_conflicts(filename, exams = None, threshold = 0):
                 K[i,j] = Q_abs[e1, e2]
                 if (e2, e1) in Q_abs:
                     K[i,j] = max(K[i,j], Q_abs[e2, e1])
-                #print "_%s_%s_" %(e1, e2)
-                #else: 
-                    #print e1, e2
-                K[i,j] = K[j,i]
-                    
+                K[j,i] = K[i,j]
+                
     #for i, e1 in enumerate(exams):
         #for j, e2 in enumerate(exams):
             #if (i,j) in K and (j,i) in K:
@@ -399,10 +432,6 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     
     print "Semester:", semester
     
-    anmelde_data = semester
-    if semester == "16S":
-        anmelde_data = "15S"
-    
     #print "Loading data: Data needs verification!"
     if max_periods is not None:
         print "WARNING: max_periods is not implemented any more!"
@@ -417,17 +446,22 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     room_capacity, room_campus_id = read_rooms()
     
     # load number of students registered for each exam
-    exam_students = read_students("Conflicts/%s.csv" %anmelde_data)
+    exam_students = read_students(semester)
     
     # get exams in the MOSES result
     exams = [exam for exam in result_times]
     if verbose: print "Number of exams", len(exams)
     
+    if verbose: print "Drop exams without students", len([exam for exam in exams if exam not in exam_students])
+    if verbose: print "Drop exams without rooms", len([exam for exam in exams if exam not in result_rooms or len(result_rooms[exam]) == 0])
+    
     # filter all exams for which we have student data
     exams = [exam for exam in result_times if exam in exam_students]
     if verbose: print "Number of exams", len(exams)
     
-    if verbose: print "exams without students", len([exam for exam in result_times if exam not in exam_students])
+    #for exam in sorted(exams):
+        #if "MA" in exam:
+            #print exam, exam_students[exam]
     
     # filter all exams for which we know the room
     exams = [exam for exam in exams if exam in result_rooms and len(result_rooms[exam]) > 0]
@@ -467,6 +501,8 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     
     if verbose: print "Number of rooms", len(rooms)    
     
+    if verbose: print sorted(set([ room for exam in result_rooms for room in result_rooms[exam] if room not in room_capacity]))
+    
     # For each exam get all rooms at the eligible campus
     exam_rooms = get_exam_rooms(exams, result_rooms, room_campus_id)
     
@@ -494,7 +530,7 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
     
     # read conflict data from tumonline
-    Q, conflicts, K = read_conflicts(filename = "Conflicts/%s.csv" %anmelde_data, exams = exams, threshold = threshold)
+    Q, conflicts, K = read_conflicts(semester, exams = exams, threshold = threshold)
     
     if verbose: print "Mean number of conflicts", np.mean([ len(conflicts[i]) for i, e in enumerate(exams)])
     if verbose: print "Percentage of conflicts", 100.*len(K)/(len(exams)**2)

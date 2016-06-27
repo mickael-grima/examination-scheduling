@@ -191,13 +191,12 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
 
 import multiprocessing
 
-def execute_heuristic(x): 
-    index = x["index"]
-    x, y, s, v = heuristic(x["coloring"], x["data"], gamma = x["gamma"], max_iter = x["max_iter"], beta_0 = x["beta_0"], debug=False)   
-    return {"index": index, "x":x, "y":y, "s":s, "v":v}
+def execute_heuristic(chunk): 
+    x, y, s, v = heuristic(chunk["coloring"], chunk["data"], gamma = chunk["gamma"], max_iter = chunk["max_iter"], beta_0 = chunk["beta_0"], debug=False)   
+    return {"index": chunk["index"], "x":x, "y":y, "s":s, "v":v}
 
         
-def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 1.0, verbose = False, log_history = False, debug=False):
+def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 1.0, verbose = False, log_history = False, debug=False, parallel=False):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
@@ -221,16 +220,19 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         colorings = meta_heuristic.generate_colorings()
         
         # pack colorings in pickable format
-        xs = []
+        data_chunks = []
         for index, coloring in enumerate(colorings):
-            xs.append({"coloring": coloring, "index": index, "data": data, "gamma":gamma, "max_iter": annealing_iterations, "beta_0": annealing_beta_0})
+            data_chunks.append({"coloring": coloring, "index": index, "data": data, "gamma":gamma, "max_iter": annealing_iterations, "beta_0": annealing_beta_0})
             
-        # create pool
-        pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        
         # calculate results
-        results = pool.map(execute_heuristic, xs)
-        
+        cores = 1
+        if parallel == True:
+            cores = multiprocessing.cpu_count()
+            pool = multiprocessing.Pool(cores)
+            results = pool.map(execute_heuristic, data_chunks)
+        else:
+            results = map(execute_heuristic, data_chunks)
+            
         ## evaluate all results
         for ind, result in enumerate(results):
             # evaluate heuristic
