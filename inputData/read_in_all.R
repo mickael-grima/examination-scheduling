@@ -13,7 +13,7 @@ for(s in semester) {
     moses = read_in_moses(infile)
 
     ergebnis = moses[[1]]
-    write.csv(ergebnis[,c("PRFG.NUMMER", "startHours", "endHours", "startDate", "endDate")], file=outfile)
+    write.csv(ergebnis[,c("PRFG.NUMMER", "TERMIN", "startHours", "endHours", "startDate", "endDate")], file=outfile)
 }
 # begin = moses[[2]]
 # sperren_file = "./Data/RaumsperrenSoSe2016.csv"

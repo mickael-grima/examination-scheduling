@@ -37,7 +37,13 @@ def read_columns(datname, key, cols, sep=","):
             if len(colnames) == 0:
                 colnames = line
             else:
-                ident = line[colnames.index(key)]
+                
+                # get identifier
+                if type(key) == list:
+                    ident = " ".join([ line[colnames.index(k)] for k in key ])
+                else:
+                    ident = line[colnames.index(key)]
+                
                 for i in range(0, len(colnames)):
                     name = colnames[i]
                     if name in cols and ident not in columns[name]:
@@ -45,11 +51,12 @@ def read_columns(datname, key, cols, sep=","):
                     
     return columns
 
+
 def read_result_times(semester):
     # read times from result file
     
     # "","PRFG.NUMMER","startHours","endHours","startDate","endDate"
-    prfg = read_columns("%s/prfg_times.csv" %semester, "PRFG.NUMMER", ["startHours", "endHours", "startDate", "endDate"], sep=",")
+    prfg = read_columns("%s/prfg_times.csv" %semester, ["PRFG.NUMMER", "TERMIN"], ["startHours", "endHours", "startDate", "endDate"], sep=",")
 
     startHours = prfg["startHours"]
     
@@ -71,7 +78,7 @@ def read_result_rooms(semester):
     for i in range(10, 31):
         cols.append("ORT_CODE_%d" %i)
         
-    prfg = read_columns("%s/Ergebnis_%s.csv" %(semester, semester), "PRFG-NUMMER", cols, sep=";")
+    prfg = read_columns("%s/Ergebnis_%s.csv" %(semester, semester), ["PRFG-NUMMER", "TERMIN"], cols, sep=";")
     
     exam_rooms = defaultdict(set)
     for col in prfg:
@@ -131,11 +138,16 @@ def read_students(filename):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
-    students_abs = read_columns(filename, "MODUL", ["STUDIS_PRUEF1_GES", "STUDIS_PRUEF1_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF1"], sep=";")
+    students_abs_1 = read_columns(filename, ["MODUL", "DATUM_T1"], ["STUDIS_PRUEF1_GES", "STUDIS_PRUEF1_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF1"], sep=";")
+    
+    students_abs_2 = read_columns(filename, ["MODUL2", "DATUM_T2"], ["STUDIS_PRUEF2_GES", "STUDIS_PRUEF2_ABGEMELDET", "STUD_NICHT_ERSCHIENEN_PRUEF2"], sep=";")
     
     exam_students = dict()
-    for exam in students_abs["STUDIS_PRUEF1_GES"]:
-        exam_students[exam] = int(students_abs["STUDIS_PRUEF1_GES"][exam]) - int(students_abs["STUDIS_PRUEF1_ABGEMELDET"][exam])
+    for exam in students_abs_1["STUDIS_PRUEF1_GES"]:
+        exam_students[exam] = int(students_abs_1["STUDIS_PRUEF1_GES"][exam]) - int(students_abs_1["STUDIS_PRUEF1_ABGEMELDET"][exam])
+    
+    for exam in students_abs_2["STUDIS_PRUEF2_GES"]:
+        exam_students[exam] = int(students_abs_2["STUDIS_PRUEF2_GES"][exam]) - int(students_abs_2["STUDIS_PRUEF2_ABGEMELDET"][exam])
     
     return exam_students
     
@@ -156,9 +168,10 @@ def read_conflicts(filename, exams = None, threshold = 0):
             if len(colnames) == 0:
                 colnames = line
             else:
-                ident1 = line[colnames.index("MODUL")]
-                ident2 = line[colnames.index("MODUL2")]
+                ident1 = line[colnames.index("MODUL")] + " " + line[colnames.index("DATUM_T1")]
+                ident2 = line[colnames.index("MODUL2")] + " " + line[colnames.index("DATUM_T2")]
                 
+                #print exams
                 # make sure the exam is used for our solution
                 if exams is not None and ident1 not in exams:
                     continue
@@ -173,6 +186,7 @@ def read_conflicts(filename, exams = None, threshold = 0):
                 # build Q matrix
                 if n_conflicts > threshold:
                     Q_abs[ident1, ident2] = n_conflicts
+                    
                 
     print "read"
     n = len(exams)
@@ -184,11 +198,22 @@ def read_conflicts(filename, exams = None, threshold = 0):
         for j, e2 in enumerate(exams):
             if Q_abs[e1, e2] > 0:
                 Q[i][j] = 1
+                Q[j][i] = 1
                 if j not in conflicts[i]:
                     conflicts[i].append(j)
                 if i not in conflicts[j]:
                     conflicts[j].append(i)
+                
                 K[i,j] = Q_abs[e1, e2]
+                if (e2, e1) in Q_abs:
+                    K[i,j] = max(K[i,j], Q_abs[e2, e1])
+                K[i,j] = K[j,i]
+                    
+    #for i, e1 in enumerate(exams):
+        #for j, e2 in enumerate(exams):
+            #if (i,j) in K and (j,i) in K:
+                #if K[i,j] != K[j,i]:
+                    #print e1, e2, K[i,j],  K[j,i]
             
     return Q, conflicts, K
     
@@ -300,6 +325,7 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
     # get faculty of each exam
     exam_faculty = { exam: re.search("\D+\d", exam).group()[0:-1] for exam in exams }
     
+    
     exam_slots = defaultdict(list)
     
     for exam in exams:
@@ -333,6 +359,13 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
                 break
             w3 += 1
     
+    
+    #for exam in exam_faculty:
+        #if "MA" in exam:
+            #print exam, exam_times[exam]
+            #print sorted(faculty_weeks[exam_faculty[exam]])
+            #print sorted(exam_slots[exam])
+            
     return exam_slots
  
  
@@ -357,6 +390,8 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
+    
+    semester = "15W"
     assert semester in ["15W", "16S"], "Wir haben nur Ergebnisse für Winder 15 und Sommer 16!"
     
     print "Semester:", semester
