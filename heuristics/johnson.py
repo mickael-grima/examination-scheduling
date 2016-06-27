@@ -71,7 +71,7 @@ class Johnson(MetaHeuristic):
 
         #end_time = time.time()
         #print(end_time - start_time)
-        print len(colorings)
+        #print len(colorings)
         return colorings
         
     def update(self, values, best_index = None, time_slots = None):
@@ -92,4 +92,5 @@ if __name__ == '__main__':
     js = Johnson(data, n_colorings = 2, n_colors = p)
     colorings = js.generate_colorings()
     print colorings
+    
     

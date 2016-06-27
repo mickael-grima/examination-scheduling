@@ -357,7 +357,7 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
-    assert semester in ["15W", "16S"], "Wir haben nur Ergebnisse für Winder 15 und Sommer 16!"
+    assert semester in ["15W", "16S"], "Wir haben nur Ergebnisse für Winter 15 und Sommer 16!"
     
     print "Semester:", semester
     
