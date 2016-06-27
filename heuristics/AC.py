@@ -17,7 +17,7 @@ import networkx as nx
 import random as rd
 import logging
 
-from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph, EqualizedColorGraphAdvanced
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary
@@ -125,6 +125,8 @@ class AC:
         self.gamma = gamma
         self.ants = [Ant(name='Ant%s' % i) for i in range(num_ants)]
         self.num_ants = num_ants
+        print "AC: setting n_colors to data['p']!"
+        n_colors = data['p']
         self.graph = EqualizedColorGraph(n_colours=n_colors)
         self.edges_weight = {}  # weight on the edges
 

@@ -120,6 +120,31 @@ def obj4(color_schedule, exam_colors, color_exams, color_conflicts, h_max = None
         return d_n, sum(d_n)
 
 
+def obj5_optimized(color_schedule, exam_colors, color_conflicts, h_max = None, K = None):
+    
+    if K is None:
+        return obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max)
+    
+    #print K
+    # sum min distance to neighboring color nodes
+    distance_sum = 0.0
+    for exam in exam_colors:
+        if len(color_conflicts[exam]) > 0:
+            hi = color_schedule[exam_colors[exam]]
+            d_i = [abs(hi - color_schedule[d]) for d in color_conflicts[exam]]
+            exam2 = np.argmin(d_i)
+            distance_sum += d_i[exam2] * K[exam, exam2]
+    
+    if h_max is not None:
+        return 1.0*distance_sum/h_max/len(exam_colors)
+    else:
+        return distance_sum
+
+def obj_time(color_schedule, exam_colors, color_conflicts, h_max = None, K = None):
+    
+    return obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max)
+
+
 def is_feasible(color_schedule, statespace):
     '''
         For a given color_schedule check if it is feasible in the given statespace
@@ -254,7 +279,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     # best values found so far
     best_color_schedule = deepcopy(color_schedule)
     d_n, best_value = obj3(color_schedule, exam_colors, color_conflicts, h_max=h_max)
-    best_value = obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max=h_max)
+    best_value = obj_time(color_schedule, exam_colors, color_conflicts, h_max=h_max, K=data['K'])
     
     # initialization and parameters simulated annealing
     beta = beta_0
@@ -306,7 +331,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         
         #d_n_tmp1, value1 = obj4(color_schedule, exam_colors, color_exams, color_conflicts, h_max = h_max, d_n = d_n, change_colors=changed)
         #d_n_tmp, value = obj3(color_schedule, exam_colors, color_conflicts, h_max = h_max)
-        value = obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max=h_max)
+        value = obj_time(color_schedule, exam_colors, color_conflicts, h_max=h_max, K=data['K'])
+        #obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max=h_max)
         #print value1, value
         #assert value == value1
         '''
@@ -387,6 +413,7 @@ def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n
         Schedule times using simulated annealing
         TODO: Description
     '''
+    #debug = True
     log_hist = False
     if debug:
         log_hist = True
