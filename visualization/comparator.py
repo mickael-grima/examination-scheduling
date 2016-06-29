@@ -27,16 +27,19 @@ from GurobiModel import (
     GurobiLinear_v_7_new_obj as gl7
 )
 
-from heuristics import examination_scheduler as main_heuristic
+from heuristics import schedule_exams as main_heuristic
 from heuristics import generate_starting_solution as greedy_heuristic
 from heuristics import groups_heuristic
 from heuristics.AC import AC
 
 import time
 from utils.tools import update_variable, transform_variables
-from model.objectif_handler import main_obj
+from evaluation.objectives import obj as main_obj
 from model.constraints_handler import is_feasible
-from model.instance import build_smart_random, build_small_input
+from model.instance import build_smart_random
+
+from heuristics.johnson import Johnson
+
 
 RESULTS_FILE = '%svisualization/data/performance' % PROJECT_PATH
 MODELS = {  # model from folder GurobiModel
@@ -52,7 +55,8 @@ MODELS = {  # model from folder GurobiModel
     'CutingPlaneProblem': CutingPlaneProblem
 }
 HEURISTICS = {  # heuristics
-    'main_heuristic': main_heuristic,
+    'main_heuristic_AC': main_heuristic,
+    'main_heuristic_johnson': main_heuristic,
     'greedy_heuristic': greedy_heuristic,
     'groups_heuristic': groups_heuristic
 }
@@ -60,11 +64,18 @@ LIST_MODELS = [m for m in MODELS.iterkeys()] + [m for m in HEURISTICS.iterkeys()
 
 
 def call_heuristic(problem_name, data, **kwards):
-    if problem_name == 'main_heuristic':
+    if problem_name == 'main_heuristic_AC':
         x, y, _, _ = main_heuristic.optimize(AC(data, gamma=kwards.get('gamma', 1.0),
                                              num_ants=kwards.get('num_ants', 10)),
                                              data, epochs=kwards.get('epochs', 10),
                                              gamma=kwards.get('gamma', 1.0),
+                                             annealing_iterations=kwards.get('annealing_iterations', 1000),
+                                             lazy_threshold=kwards.get('lazy_threshold', 0.2),
+                                             verbose=kwards.get('verbose', False),
+                                             log_history=kwards.get('log_history', False))
+    elif problem_name == 'main_heuristic_johnson':
+        x, y, _, _ = main_heuristic.optimize(Johnson(data, n_colorings=kwards.get('num_ants', 10), n_colors=data['p']),
+                                             data, epochs=1, gamma=kwards.get('gamma', 1.0),
                                              annealing_iterations=kwards.get('annealing_iterations', 1000),
                                              lazy_threshold=kwards.get('lazy_threshold', 0.2),
                                              verbose=kwards.get('verbose', False),
@@ -148,6 +159,8 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
         src.write('Running time: %s\n' % delta_t)
         src.write('Objective value: %s\n' % obj)
         src.write('-------------------------------------\n\n')
+
+    return x, y
 
 
 def main():

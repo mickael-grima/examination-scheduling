@@ -6,7 +6,7 @@
 # i=exam, k=room, l=period
 # If we have an other variable, we transform it to both variables above
 
-from tools import convert_to_table, get_dimensions_from
+from utils.tools import convert_to_table, get_dimensions_from
 import csv
 import time
 
@@ -84,7 +84,12 @@ def generate_file(x, y, data, name=None, with_room_label=True, with_exam_label=T
     nb_time_per_week = nb_days * nb_timeslots
 
     # we give to each room a name
-    rooms_name = get_rooms_name_from_file('%sutils/data/Raumuebersicht.csv' % PROJECT_PATH)
+    if with_room_label:
+        rooms_name = get_rooms_name_from_file('%sutils/data/Raumuebersicht.csv' % PROJECT_PATH)
+        if len(rooms_name) > r:
+            rooms_name = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
+    else:
+        rooms_name = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
     rooms_sorted = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
     rooms_by_name, ind = {}, 0
     for i, _ in rooms_sorted:
@@ -142,8 +147,8 @@ def generate_file(x, y, data, name=None, with_room_label=True, with_exam_label=T
                 row.append('')
         rows.append(row)
 
-    name = 'visual-%s' % time.strftime('%d%m%Y-%H%M%S"') if name is None else name
-    with open('model/Data/visualization/%s.csv' % name, 'wb') as f:
+    name = 'visual-%s-%s' % (name or '', time.strftime('%d%m%Y-%H%M%S"'))
+    with open('%svisualization/plots/%s.csv' % (PROJECT_PATH, name), 'wb') as f:
         writer = csv.writer(f, delimiter="\t")
         for row in rows:
             writer.writerow(row)

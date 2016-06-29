@@ -77,7 +77,7 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight, data={}, mode = 0):
+    def generate_coloring(self, graph, edges_weight, data={}, mode=0):
         """ @param graph: graph to color
             @param edges_weight: weight on the edges for each node
             @cparam capacities: capacities of the rooms. If empty, we don't consider them
@@ -104,7 +104,7 @@ class Ant(object):
         res = {}
         for n, c in graph.colours.iteritems():
             if c < 0:
-                raise Exception('Color negative found: colour=%s, node=%s' % (c, n))
+                return {}
             res[n] = c
         return res
 
@@ -159,7 +159,7 @@ class AC:
             colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data,
                              mode=mode))
             self.graph.reset_colours()
-        return colorings
+        return filter(bool, colorings)
 
     def update(self, values, best_index=None, time_slots=None, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value
