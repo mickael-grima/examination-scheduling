@@ -298,3 +298,9 @@ class ColorGraph(object):
         self.colours = colours
         self.history = history
         return colours
+
+    def is_coloring_right(self):
+        for node, colour in self.colours.iteritems():
+            if colour in [self.colours[n] for n in self.graph.neighbors(node)]:
+                return False
+        return True

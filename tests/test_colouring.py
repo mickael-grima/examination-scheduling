@@ -13,6 +13,7 @@ sys.path.append(path)
 
 import unittest
 from heuristics.ColorGraph import ColorGraph
+from heuristics.ConstrainedColorGraph import EqualizedColorGraph
 
 
 class TestColouring(unittest.TestCase):
@@ -24,7 +25,7 @@ class TestColouring(unittest.TestCase):
         then we compare it with some other to check if it is random
         """
         n = 16
-        cgraph = ColorGraph()
+        cgraph = EqualizedColorGraph()
         cgraph.build_rand_graph(nb_nodes=n)
         # Verify if we have the right number of nodes
         self.assertEqual(len(cgraph.graph.nodes()), n)

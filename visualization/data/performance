@@ -3056,3 +3056,185 @@ Running time: 16.9979219437
 Objective value: 700.0
 -------------------------------------
 
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 29/06/2016 - 15:42:17
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.2038461538
+opening hours average per room: 142.543478261
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 66.5523130894
+Objective value: 721.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 29/06/2016 - 15:42:38
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.2038461538
+opening hours average per room: 142.543478261
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 16.4230060577
+Objective value: 699.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 29/06/2016 - 16:14:38
+
+@@@ DATA @@@
+dimensions: n=12, p=12, r=12
+conflicts average per exam: 1.33333333333
+opening hours average per room: 10.6666666667
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 0.682912826538
+Objective value: 12.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 29/06/2016 - 16:14:39
+
+@@@ DATA @@@
+dimensions: n=6, p=12, r=12
+conflicts average per exam: 1.0
+opening hours average per room: 10.5833333333
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 0.567116975784
+Objective value: 6.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 29/06/2016 - 16:14:39
+
+@@@ DATA @@@
+dimensions: n=12, p=12, r=12
+conflicts average per exam: 1.33333333333
+opening hours average per room: 10.6666666667
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 0.168830156326
+Objective value: 12.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 29/06/2016 - 16:14:39
+
+@@@ DATA @@@
+dimensions: n=6, p=12, r=12
+conflicts average per exam: 1.0
+opening hours average per room: 10.5833333333
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 0.142078876495
+Objective value: 6.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 29/06/2016 - 16:17:24
+
+@@@ DATA @@@
+dimensions: n=200, p=100, r=100
+conflicts average per exam: 20.35
+opening hours average per room: 89.98
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 70.6983242035
+Objective value: 200.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 29/06/2016 - 16:17:48
+
+@@@ DATA @@@
+dimensions: n=100, p=100, r=100
+conflicts average per exam: 10.16
+opening hours average per room: 89.75
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 24.0590150356
+Objective value: 100.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 29/06/2016 - 16:17:57
+
+@@@ DATA @@@
+dimensions: n=200, p=100, r=100
+conflicts average per exam: 20.35
+opening hours average per room: 89.98
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 7.84445095062
+Objective value: 200.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 29/06/2016 - 16:18:03
+
+@@@ DATA @@@
+dimensions: n=100, p=100, r=100
+conflicts average per exam: 10.16
+opening hours average per room: 89.75
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 4.82675409317
+Objective value: 100.0
+-------------------------------------
+

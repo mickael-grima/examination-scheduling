@@ -1,4 +1,4 @@
-problem	type	n=12, r=12, p=12	n=6, r=12, p=12	
+problem	type	n=200, r=100, p=100	n=100, r=100, p=100	
 main_heuristic_AC	running time		
 	objectif value		
 main_heuristic_johnson	running time		
