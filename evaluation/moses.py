@@ -48,7 +48,7 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
             x[i,k] = 1.0
           
     times = [result_times[exam] for exam in exams]
-    
+    print obj_time(times, data)
     v = obj_room(x) - gamma * obj_time(times, data)
     
     return x, y, v
@@ -62,8 +62,9 @@ if __name__ == '__main__':
     data['similar_periods'] = tools.get_similar_periods(data)
     
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
+    times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(y, data)
+    print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", v
     
     # get rooms for which we dont have data

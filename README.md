@@ -32,6 +32,13 @@ The main data are:
 Upper cases are matrix `[[]]` and lower cases are lists `[]`  
 Other data can be introduced, however they must be linked to the main data.  
 
+**Usig the real data**
+
+from inputData import examination_data
+data = examination_data.read_data(semester = "15W")
+
+Available Semesters: "15W" and "16S"
+
 ** Test **  
 In the script `test_constraints.py`, in the method `SetUp(self)`, create the problem, solve it and add it to the lists depending which constraints you want to solve.  
 If you want a best descriptif of eventual failures, do the same in `test_constraint_advanced.py`  
