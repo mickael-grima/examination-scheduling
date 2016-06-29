@@ -53,6 +53,7 @@ def SA_test_objectives(n = 30, r = 20, p = 20, prob_conflicts = 0.2, seed = 42):
     d_n, ov2 = schedule_times.obj2(color_schedule, exam_colors, conflicts)
     d_n, ov3 = schedule_times.obj3(color_schedule, exam_colors, color_conflicts)
     d_n, ov4 = schedule_times.obj4(color_schedule, exam_colors, color_conflicts)
+    d_n, ov4 = schedule_times.obj4(color_schedule, exam_colors, color_conflicts)
     
     
     
@@ -62,27 +63,6 @@ def SA_test_objectives(n = 30, r = 20, p = 20, prob_conflicts = 0.2, seed = 42):
     old_slot = color_schedule[color]
     new_slot = 7
     
-    ## get indices of changes (Important: do this before the actual changes!)
-    #change_colors = [c for c in range(len(color_schedule))]#
-    #change_colors = improve_annealing.get_changed_colors(color, None, color_exams, color_conflicts, log = False)
-        
-    #print color_schedule
-    #print change_colors
-    ## actually perform changes
-    #color_schedule[color] = new_slot
-    #print color_schedule
-    
-    #for col in change_colors:
-        #print "exams", color_exams[col]
-        
-    #print color_conflicts[exam_colors[11]]
-    #print range(len(exam_colors))
-    #print d_n
-    #d_n, value = schedule_times.obj4(color_schedule, exam_colors, color_conflicts, d_n = d_n, change_colors = change_colors)
-    #print d_n
-    #d_n, val = schedule_times.obj3(color_schedule, exam_colors, color_conflicts)
-    #print d_n
-    #print value, val
     assert ov2 == ov3, "ERROR: OBJECTIVES 2 and 3 DIFFER! %0.2f VS %0.2f" %(ov2, ov3)
     assert ov3 == ov4, "ERROR: OBJECTIVES 3 and 4 DIFFER! %0.2f VS %0.2f" %(ov3, ov4)
     assert ov2 == ov4, "ERROR: OBJECTIVES 2 and 4 DIFFER! %0.2f VS %0.2f" %(ov2, ov4)
@@ -167,7 +147,7 @@ def test_changed_colors(seed=42):
 
 
 if __name__ == '__main__':
-    #SA_test_objectives()
+    SA_test_objectives()
     #SA_benchmark_annealing()
     
     
