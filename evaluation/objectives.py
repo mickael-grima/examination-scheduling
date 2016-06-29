@@ -27,6 +27,7 @@ def obj_time(times, data, h_max = None):
     
     conflicts = data['conflicts']
     K = data['K']
+    K = None
     h = data['h']
     
     distance_sum = 0.0

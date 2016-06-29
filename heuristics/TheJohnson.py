@@ -16,6 +16,8 @@ from operator import itemgetter
 
 from model.instance import build_small_input
 from inputData import examination_data
+        
+from evaluation.objectives import obj_time
 
 # This class implements the actual Johnson algorithm as described in the paper "Timetabling University Examinations"
 class TheJohnson(object):
@@ -75,6 +77,7 @@ class TheJohnson(object):
 		return [optimum, opt_val]
 
 
+        
 	def evaluate_plan(self, gamma=0.5):
 
 		# compute room value
@@ -83,11 +86,11 @@ class TheJohnson(object):
 		# compute time value
 		# find periods for all exams
 		period_of_exam = [(np.argwhere(self.x[exam,:,:]>0))[0,1] for exam in range(self.n)]
-		# find mininmal distance between exam and conflicting exams (at some point I probably understood what's going on here, yet if I were to simplify this, it would probably be about 10 times the amount of code (and time))
-		time_val_for_exams = np.array([np.amin([0]+[np.absolute(self.data['h'][period_of_exam[conflict_exam]]-self.data['h'][period_of_exam[exam]]) for conflict_exam in [i for i,j in enumerate(self.data['Q'][exam]) if j == 1]]) for exam in range(self.n)])
-		# sum over the minima computed above
-		time_val = np.sum(time_val_for_exams)
-
+                # determine their times
+		times = [ self.data['h'][period_of_exam[exam]] for exam in range(self.n) ]
+		# evaluate objective
+		time_val = obj_time(times, self.data, h_max = np.max(self.data['h']))
+		
 		return room_val - gamma * time_val
 			
 
