@@ -22,6 +22,7 @@ plots/
 *.gif
 booth/files/relevant_graphs
 model/Data/visualization/*
+visualization/data/tab*
 
 # latex aux files
 MidtermPresentation/*.toc 
