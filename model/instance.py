@@ -72,7 +72,7 @@ def build_small_input():
               [1, 1, 1, 0, 1],
               [1, 0, 1, 1, 0]],  # Conflicts matrix
         'T': [[1, 0, 1],
-              [1, 1, 0],
+              [1, 1, 1],
               [1, 1, 1]],  # Opening times for rooms
         'h': [0, 2, 4]  # number of hours before period
     }

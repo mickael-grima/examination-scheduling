@@ -32,7 +32,18 @@ def schedule_greedy(exams_to_schedule, period, data, verbose = False):
     s = data['s']
     c = data['c']
     students = [ s[i] for i in exams_to_schedule ]
-    rooms = [ k for k in range(data['r']) if data['T'][k][period] == 1 ]
+    if 'exam_rooms' in data and len(data['exam_rooms']) > 0:
+        
+        exam_rooms = data['exam_rooms']
+        rooms = set()
+        for exam in exams_to_schedule:
+            for room in exam_rooms[exam]:
+                if data['T'][room][period] == 1:
+                    rooms.add(room)
+        rooms = list(rooms)
+    else:
+        rooms = [ k for k in range(data['r']) if data['T'][k][period] == 1 ]
+    
     capacities = [ c[k] for k in rooms ]
     
     if len(rooms) < len(exams_to_schedule):

@@ -72,11 +72,49 @@ def build_statespace_similar_periods(coloring, data):
     return statespace, color_exams
 
 
+def build_statespace_exam_slots(coloring, data):
+    
+    h = data['h']
+    exam_slots = data['exam_slots']
+    
+    # refactor dicts
+    color_exams = tools.swap_color_dictionary(coloring)
+    
+    # empty statespace -> init
+    statespace = { color: [] for color in color_exams }
+    
+    for color in color_exams:
+        for period, time in enumerate(h):
+            
+            feasible_slot = True
+            for exam in color_exams[color]:
+                if not feasible_slot: break
+                feasible_slot = time in exam_slots[exam]
+                if not feasible_slot:
+                    break
+                
+            if not feasible_slot:
+                continue
+            
+            greedy_schedule = schedule_greedy(color_exams[color], period, data)
+            if greedy_schedule is not None:
+                statespace[color].append(time)
+        if len(statespace[color]) == 0:
+            #print color, "infeas"
+            return None, None
+
+    return statespace, color_exams
+
+
+
 def build_statespace(coloring, data):
     '''
         Build statespace by checking feasibility for every color and every possible time slot.
         If the similar_periods field is present in the data, this is spead up by considering duplicate times slots.
     '''
+    
+    if 'exam_slots' in data and len(data['exam_slots']) > 0:
+        return build_statespace_exam_slots(coloring, data)
     
     if 'similar_periods' in data:
         return build_statespace_similar_periods(coloring, data)
@@ -117,6 +155,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     # check feasibility
     if debug: print "Building Statespace"
     statespace, color_exams = build_statespace(coloring, data)
+        
     if statespace is None:
         if debug: print "infeasible statespace"
         return None, None, None, sys.maxint
@@ -150,7 +189,14 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     return room_schedule, y_binary, color_schedule, obj_val
 
 
-def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 1.0, verbose = False, log_history = False, debug=False):
+import multiprocessing
+
+def execute_heuristic(chunk): 
+    x, y, s, v = heuristic(chunk["coloring"], chunk["data"], gamma = chunk["gamma"], max_iter = chunk["max_iter"], beta_0 = chunk["beta_0"], debug=False)   
+    return {"index": chunk["index"], "x":x, "y":y, "s":s, "v":v}
+
+        
+def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 1000, annealing_beta_0 = 10, lazy_threshold = 1.0, verbose = False, log_history = False, debug=False, parallel=False):
     
     # init best values
     x, y, obj_val = None, None, sys.maxint
@@ -173,11 +219,28 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         if debug: print "Building Colorings"
         colorings = meta_heuristic.generate_colorings()
         
-        ## evaluate all colorings
-        for ind, coloring in enumerate(colorings):
+        if len(colorings) == 0:
+            print "Infeasible colorings"
+            break
             
+        # pack colorings in pickable format
+        data_chunks = []
+        for index, coloring in enumerate(colorings):
+            data_chunks.append({"coloring": coloring, "index": index, "data": data, "gamma":gamma, "max_iter": annealing_iterations, "beta_0": annealing_beta_0})
+            
+        # calculate results
+        cores = 1
+        if parallel == True:
+            cores = multiprocessing.cpu_count()
+            pool = multiprocessing.Pool(cores)
+            results = pool.map(execute_heuristic, data_chunks)
+        else:
+            results = map(execute_heuristic, data_chunks)
+            
+        ## evaluate all results
+        for ind, result in enumerate(results):
             # evaluate heuristic
-            xs[ind], ys[ind], color_schedules[ind], obj_vals[ind] = heuristic(coloring, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0, debug=debug)
+            xs[ind], ys[ind], color_schedules[ind], obj_vals[ind] = result["x"], result["y"], result["s"], result["v"]
             
         # filter infeasibles
         values = filter(lambda x: x[1] < sys.maxint, enumerate(obj_vals.values()))
@@ -204,8 +267,9 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         # save best value so far.. MINIMIZATION
         if best_value < obj_val:
             x, y, obj_val = xs[best_index], ys[best_index], best_value    
+            
             best_value_duration = 0
-        
+            
         if best_value != sys.maxint and best_value_duration > lazy_threshold * epochs:
             break
         

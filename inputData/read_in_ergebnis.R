@@ -1,15 +1,15 @@
 
 
 #read in moses result
-read_in_moses = function() {
+read_in_moses = function(filename) {
     
-    ergebnis = read.csv("./Data/SzenarioergebnisSoSe2016.csv", header=TRUE, sep=';')
+    ergebnis = read.csv(filename, header=TRUE, sep=';')
 
     #filter na exams
     ergebnis = ergebnis[!is.na(ergebnis$BEGINN_ZEIT), ]
     ergebnis = ergebnis[!is.na(ergebnis$ENDE_ZEIT), ]
     ergebnis = ergebnis[!is.na(strptime(paste(ergebnis$TERMIN, ergebnis$BEGINN_ZEIT), format = "%m/%d/%Y %H:%M")), ]
-
+    
     #ergebnis$startDate = strptime(paste(ergebnis$TERMIN, ergebnis$BEGINN_ZEIT), format = "%m/%d/%Y %H:%M") - 60*30
     #ergebnis$endDate = strptime(paste(ergebnis$TERMIN, ergebnis$ENDE_ZEIT), format = "%m/%d/%Y %H:%M") + 60*30
     # filter_exam_times = !unlist(Map(is.na, ergebnis$startDate))
@@ -20,12 +20,8 @@ read_in_moses = function() {
 
     termine = unique(ergebnis$TERMIN)
 
-    slot_begin_1 = "08:00"
-    slot_ende_1 = "11:30"
-    slot_begin_2 = "11:30"
-    slot_ende_2 = "15:00"
-    slot_begin_3 = "15:00"
-    slot_ende_3 = "18:30"
+    slots_begin = c("07:30", "10:15", "13:00", "15:45")
+    slots_ende = c("10:15", "13:00", "15:45", "18:30")
 
     get_time = function (termin, zeit) {
         return(strptime(paste(termin, zeit), format = "%m/%d/%Y %H:%M"))
@@ -37,23 +33,13 @@ read_in_moses = function() {
         ende = get_time(termin, ergebnis$ENDE_ZEIT[i])
         mid = begin + 0.5*(ende - begin)
         
-        if(difftime(mid, get_time(termin, slot_begin_1)) >= 0 && difftime(mid, get_time(termin, slot_ende_1)) <= 0) {
-            ergebnis[i, "startDate"] = paste(get_time(termin, slot_begin_1))
-            ergebnis[i, "endDate"] = paste(get_time(termin, slot_ende_1))
-            ergebnis[i, "midDate"] = paste(mid)
-        } else if(difftime(mid, get_time(termin, slot_begin_2)) >= 0 && difftime(mid, get_time(termin, slot_ende_2)) <= 0) {
-            ergebnis[i, "startDate"] = paste(get_time(termin, slot_begin_2))
-            ergebnis[i, "endDate"] = paste(get_time(termin, slot_ende_2))
-            ergebnis[i, "midDate"] = paste(mid)
-        } else if(difftime(mid, get_time(termin, slot_begin_3)) >= 0 && difftime(mid, get_time(termin, slot_ende_3)) <= 0) {
-            ergebnis[i, "startDate"] = paste(get_time(termin, slot_begin_3))
-            ergebnis[i, "endDate"] = paste(get_time(termin, slot_ende_3))
-            ergebnis[i, "midDate"] = paste(mid)
-        } else {
-            print("Schmarrn!")
-            print(begin)
-            print(ende)
-            print(mid)
+        for(j in seq(length(slots_begin))) {
+            if(difftime(mid, get_time(termin, slots_begin[j])) >= 0 && difftime(mid, get_time(termin, slots_ende[j])) <= 0) {
+                ergebnis[i, "startDate"] = paste(get_time(termin, slots_begin[j]))
+                ergebnis[i, "endDate"] = paste(get_time(termin, slots_ende[j]))
+                ergebnis[i, "midDate"] = paste(mid)
+                break
+            }
         }
     }
 
