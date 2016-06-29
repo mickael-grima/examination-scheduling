@@ -31,23 +31,8 @@ def get_changing_colors(color_schedule, color1, color2):
         changed.add(color2)
     return changed
 
-def obj2(color_schedule, exam_colors, conflicts, h_max = None):
     
-    # sum min distance to neighboring conflict nodes
-    
-    c_n = [exam_colors[exam] for exam in exam_colors]
-    d_n = [ 0 ] * len(exam_colors) 
-    for exam in exam_colors:
-        if len(conflicts[exam]) > 0:
-            c_n[exam] = np.argmin( [abs(color_schedule[exam_colors[exam]] - color_schedule[exam_colors[j]]) for j in conflicts[exam]] )
-            d_n[exam] = color_schedule[c_n[exam]]
-    if h_max is not None:
-        return c_n, d_n, 1.0*sum(d_n)/h_max
-    else:
-        return c_n, d_n, sum(d_n)
-    
-    
-def obj3(color_schedule, exam_colors, color_conflicts, h_max = None):
+def obj3(color_schedule, exam_colors, color_conflicts):
     
     # sum min distance to neighboring color nodes
     #for exam in exam_colors:
@@ -60,12 +45,10 @@ def obj3(color_schedule, exam_colors, color_conflicts, h_max = None):
             distance_sum += min( [abs(color_schedule[exam_colors[exam]] - color_schedule[d]) for d in color_conflicts[exam]] ) 
             d_n[exam] = min( [abs(color_schedule[exam_colors[exam]] - color_schedule[d]) for d in color_conflicts[exam]] ) 
     
-    if h_max is not None:
-        return d_n, 1.0*distance_sum/h_max
-    else:
-        return d_n, distance_sum
+    return 1.0*distance_sum/len(exam_colors)
 
-def obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max = None):
+
+def obj3_optimized(color_schedule, exam_colors, color_conflicts):
     
     # sum min distance to neighboring color nodes
     distance_sum = 0.0
@@ -74,18 +57,15 @@ def obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max = None):
             hi = color_schedule[exam_colors[exam]]
             distance_sum += min( [abs(hi - color_schedule[d]) for d in color_conflicts[exam]] ) 
     
-    if h_max is not None:
-        return 1.0*distance_sum/h_max
-    else:
-        return distance_sum
+    return 1.0*distance_sum/len(exam_colors)
 
 
-def obj4(color_schedule, exam_colors, color_exams, color_conflicts, h_max = None, c_n = None, d_n = None, change_colors = None):
-    
-    # sum min distance only consider changed colors!
-    
+def obj4(color_schedule, exam_colors, color_exams, color_conflicts, c_n = None, d_n = None, change_colors = None):
+    '''
+        sum min distance only consider changed colors!
+    '''
     if d_n is None or change_colors is None:
-        return obj3(color_schedule, exam_colors, color_conflicts, h_max = h_max)
+        return obj3(color_schedule, exam_colors, color_conflicts)
     
     exams = set()    
         
@@ -114,16 +94,13 @@ def obj4(color_schedule, exam_colors, color_exams, color_conflicts, h_max = None
             d_n[exam] = min( [abs(color_schedule[exam_colors[exam]] - color_schedule[d]) for d in color_conflicts[exam]] )
        
         
-    if h_max is not None:
-        return d_n, 1.0*sum(d_n)/h_max
-    else:
-        return d_n, sum(d_n)
+    return np.mean(d_n)
 
 
-def obj5_optimized(color_schedule, exam_colors, color_conflicts, h_max = None, K = None):
+def obj5_optimized(color_schedule, exam_colors, color_conflicts, K = None):
     
     if K is None:
-        return obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max)
+        return obj3_optimized(color_schedule, exam_colors, color_conflicts)
     
     #print K
     # sum min distance to neighboring color nodes
@@ -135,14 +112,12 @@ def obj5_optimized(color_schedule, exam_colors, color_conflicts, h_max = None, K
             exam2 = np.argmin(d_i)
             distance_sum += d_i[exam2] * K[exam, exam2]
     
-    if h_max is not None:
-        return 1.0*distance_sum/h_max/len(exam_colors)
-    else:
-        return distance_sum
+    return 1.0 * distance_sum / len(exam_colors)
 
-def obj_time(color_schedule, exam_colors, color_conflicts, h_max = None, K = None):
+
+def obj_time(color_schedule, exam_colors, color_conflicts, K = None):
     
-    return obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max)
+    return obj3_optimized(color_schedule, exam_colors, color_conflicts)
 
 
 def is_feasible(color_schedule, statespace):
@@ -233,7 +208,6 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     '''
     
     h = data['h']
-    h_max = max(h)
     conflicts = data['conflicts']
     n_exams = len(exam_colors)
     n_colors = len(set(exam_colors.values()))
@@ -278,8 +252,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
             
     # best values found so far
     best_color_schedule = deepcopy(color_schedule)
-    d_n, best_value = obj3(color_schedule, exam_colors, color_conflicts, h_max=h_max)
-    best_value = obj_time(color_schedule, exam_colors, color_conflicts, h_max=h_max, K=data['K'])
+    best_value = obj_time(color_schedule, exam_colors, color_conflicts, K=data['K'])
     
     # initialization and parameters simulated annealing
     beta = beta_0
@@ -314,7 +287,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         # get colors to change and their slot values
         color, new_slot, color2, old_slot = make_proposal(color_schedule, statespace, n_colors, log=False)
         if log: print color, new_slot, color2, old_slot
-        changed = get_changing_colors(color_schedule, color, color2)
+        #changed = get_changing_colors(color_schedule, color, color2)
         
         # perform changes to color_schedule
         color_schedule[color] = new_slot
@@ -329,12 +302,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
             get objective value
         '''
         
-        #d_n_tmp1, value1 = obj4(color_schedule, exam_colors, color_exams, color_conflicts, h_max = h_max, d_n = d_n, change_colors=changed)
-        #d_n_tmp, value = obj3(color_schedule, exam_colors, color_conflicts, h_max = h_max)
-        value = obj_time(color_schedule, exam_colors, color_conflicts, h_max=h_max, K=data['K'])
-        #obj3_optimized(color_schedule, exam_colors, color_conflicts, h_max=h_max)
-        #print value1, value
-        #assert value == value1
+        value = obj_time(color_schedule, exam_colors, color_conflicts, K=data['K'])
+        
         '''
             acceptance step.
             exp(+ beta) because of maximization!

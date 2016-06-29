@@ -89,7 +89,7 @@ class TheJohnson(object):
                 # determine their times
 		times = [ self.data['h'][period_of_exam[exam]] for exam in range(self.n) ]
 		# evaluate objective
-		time_val = obj_time(times, self.data, h_max = np.max(self.data['h']))
+		time_val = obj_time(times, self.data)
 		
 		return room_val - gamma * time_val
 			

@@ -20,15 +20,15 @@ def obj_room(x):
     return sum( x[key] for key in x ) 
 
 
-def obj_time(times, data, h_max = None):
+def obj_time(times, data):
     
     if times is None:
         return 0.
     
     conflicts = data['conflicts']
     K = data['K']
-    K = None
     h = data['h']
+    K = None
     
     distance_sum = 0.0
     for i in range(data['n']):
@@ -40,8 +40,5 @@ def obj_time(times, data, h_max = None):
             else:
                 distance_sum += d_i[j]
     
-    if h_max is not None:
-        return 1.0*distance_sum/h_max
-    else:
-        return distance_sum
+    return distance_sum / float(data['n'])
     

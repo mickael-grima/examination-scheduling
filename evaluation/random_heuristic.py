@@ -47,13 +47,13 @@ if __name__ == '__main__':
     print "Time:", time()-t
     
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(y, data, h_max = max(data['h']))
+    print "TIME_OBJ:", obj_time(y, data)
     print "VALUE:", v
     
     print "Moses result:"
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(y, data, h_max = max(data['h']))
+    print "TIME_OBJ:", obj_time(y, data)
     print "VALUE:", v
     
     
