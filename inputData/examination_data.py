@@ -63,12 +63,13 @@ def read_result_times(semester):
     prfg = read_columns("%s/prfg_times.csv" %semester, key, ["startHours", "endHours", "startDate", "endDate"], sep=",")
 
     startHours = prfg["startHours"]
+    startDate = prfg["startDate"]
     
     exam_times = dict()
     for exam in startHours:
         exam_times[exam] = float(startHours[exam])
     
-    return exam_times
+    return exam_times, startDate
 
 
 def read_result_rooms(semester):
@@ -113,33 +114,47 @@ def read_rooms():
     
     
     
-def read_locked_rooms(h):
-    
+def read_locked_rooms(semester, rooms, h):
+    print semester
     # "","ID_RAUM","startTime","endTime","startDate","endDate"
-    rooms = read_columns("raum_sperren.csv", "ID_RAUM", ["startTime", "endTime", "startDate","endDate"], sep=",")
-
-    start_hours = rooms["startTime"]
-    end_hours = rooms["endTime"]
+    if semester == "15W":
+        key = "RAUM_CODE"
+        full_key = ["RAUM_CODE", "startDate", "endDate"]
+    else:
+        key = "ID_RAUM"
+        full_key = "ID_RAUM"
+    
+    room_data = read_columns("%s/raum_sperren.csv" %semester, full_key, [key, "startTime", "endTime", "startDate","endDate"], sep=",")
+    
+    room_ids = room_data[key]
+    start_hours = room_data["startTime"]
+    end_hours = room_data["endTime"]
     
     # save locking times in dictionary
     room_locking_times = defaultdict(list)
     
     # find time indices for which rooms are locked
-    for room in start_hours:
+    for key in start_hours:
+        room = room_ids[key]
+        if room not in rooms:
+        #    print "ROOM NOT USED!"
+            continue
+        else:
+            k = rooms.index(room)
         for i in range(len(h)-1):
             # determine position of locking start
-            if start_hours[room] >= h[i] and start_hours[room] <= h[i+1]:
-                #print "found a locked room!"
-                j = i
+            if float(start_hours[key]) > h[i] and float(start_hours[key]) <= h[i+1]:
+                j = i+1
+                
                 # search for position of locking end
-                while( j < len(h) - 1 ):
-                    if end_hours[room] < h[j]:
+                while( j < len(h) ):
+                    
+                    if float(end_hours[key]) < h[j]:
                         break;
                     # on the way insert locking times to dict
-                    if j not in locking_times[room]:
-                        room_locking_times[room].append(j)
+                    if j not in room_locking_times[k]:
+                        room_locking_times[k].append(j)
                     j += 1
-        
     return room_locking_times
 
 
@@ -224,7 +239,7 @@ def read_conflicts(semester, exams = None, threshold = 0):
                     Q_abs[ident1, ident2] = n_conflicts
                     
                 
-    print "read"
+    print "read conflicts"
     n = len(exams)
     Q = [[0 for i in range(n)] for i in range(n)]
     K = defaultdict(int)
@@ -395,7 +410,8 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
             #print exam, exam_times[exam]
             #print sorted(faculty_weeks[exam_faculty[exam]])
             #print sorted(exam_slots[exam])
-            
+    
+    
     return exam_slots
  
  
@@ -416,12 +432,12 @@ def get_exam_rooms(exams, result_rooms, room_campus_id):
     
 
 @force_data_format
-def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=False, max_periods=None):
+def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
     
-    semester = "15W"
+    #semester = "15W"
     assert semester in ["15W", "16S"], "Wir haben nur Ergebnisse für Winder 15 und Sommer 16!"
     
     print "Semester:", semester
@@ -431,7 +447,7 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
         print "WARNING: max_periods is not implemented any more!"
     
     # load times from szenarioergebnis
-    result_times = read_result_times(semester)
+    result_times, result_dates = read_result_times(semester)
     
     # load room results from szenarioergebnis
     result_rooms = read_result_rooms(semester)
@@ -442,8 +458,28 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     # load number of students registered for each exam
     exam_students = read_students(semester)
     
+    # load number of students registered for each exam
+    if pre_year_data:
+        unknown_exams = 0
+        presem = "14W" if semester == "15W" else "14S"
+        
+        pre_students = read_students(presem)
+        
+        for exam in exam_students:
+            exam_renamed = re.sub("\s+\d+\/\d+\/\d+", "", exam)
+            if exam_renamed in pre_students:
+                exam_students[exam] = pre_students[exam_renamed]
+            else:
+                unknown_exams += 1
+                exam_students[exam] = 0
+        if verbose: print "unknown predata", unknown_exams, len(exam_students)
+        
+            
     # get exams in the MOSES result
     exams = [exam for exam in result_times]
+    if verbose: print "Number of exams", len(exams)
+    
+    exams = [exam for exam in exams if exam in exam_students and exam_students[exam] > 0]
     if verbose: print "Number of exams", len(exams)
     
     if verbose: print "Drop exams without students", len([exam for exam in exams if exam not in exam_students])
@@ -453,6 +489,8 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     exams = [exam for exam in result_times if exam in exam_students]
     if verbose: print "Number of exams", len(exams)
     
+    for exam in exams: assert exam in exam_students
+    
     #for exam in sorted(exams):
         #if "MA" in exam:
             #print exam, exam_students[exam]
@@ -460,6 +498,8 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     # filter all exams for which we know the room
     exams = [exam for exam in exams if exam in result_rooms and len(result_rooms[exam]) > 0]
     if verbose: print "Number of exams", len(exams)
+    
+    for exam in exams: assert exam in result_rooms
     
     # filter all exams for which we have room data
     exams = [exam for exam in exams if all(room in room_capacity for room in result_rooms[exam])]
@@ -486,8 +526,15 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     exam_slots = get_possible_exam_slots(exams, result_times, verbose=verbose)
     if verbose: print "Exam slots", len(exam_slots)
     
+    # get index format for exam slots (for ILP)
+    exam_slots_index = defaultdict(list)
+    for exam in exam_slots:
+        for slot in exam_slots[exam]:
+            exam_slots_index[exam].append(h.index(slot))
+    
     # convert to list of lists WARNING: DO NOT EDIT EXAMS AFTER THIS STEP!
     exam_slots = exam_slots.values()
+    exam_slots_index = exam_slots_index.values()
     
     # construct room data
     rooms = sorted(set([ room for exam in result_rooms for room in result_rooms[exam] if room in room_capacity]))
@@ -506,20 +553,24 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     exam_rooms = exam_rooms.values()
         
     # Load locking rooms from table
-    try:
-        room_locking_times = read_locked_rooms(h)
-    except:
-        room_locking_times = defaultdict(list)
+    room_locking_times = read_locked_rooms(semester, rooms, h)
     
     # construct time data. If we dont plan the exam then we lock the room.
     locking_times = defaultdict(list)
     for k, room in enumerate(rooms):
-        locking_times[k] = room_locking_times[room]
-        for exam in result_times:
-            if exam not in exams and exam in result_rooms and room in result_rooms[exam]:
+        locking_times[k] = room_locking_times[k]
+        for exam in [e for e in result_times if e not in exams]:
+            if exam in result_rooms and room in result_rooms[exam]:
                 l = h.index(result_times[exam])
                 if l not in locking_times[k]:
                     locking_times[k].append(l)
+                    
+                    
+        #for exam in result_times:
+            #if exam not in exams and exam in result_rooms and room in result_rooms[exam]:
+                #l = h.index(result_times[exam])
+                #if l not in locking_times[k]:
+                    #locking_times[k].append(l)
                     
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
     
@@ -544,11 +595,14 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     data['conflicts'] = conflicts
     data['locking_times'] = locking_times
     
+    data['data_version'] = semester
     data['exam_names'] = exams
     data['exam_slots'] = exam_slots
+    data['exam_slots_index'] = exam_slots_index
     data['exam_rooms'] = exam_rooms
     
     data['result_times'] = result_times
+    data['result_dates'] = result_dates
     data['result_rooms'] = result_rooms
     data['room_names'] = rooms
     
@@ -557,7 +611,7 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
 
 if __name__ == "__main__":
     
-    data = read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=True, max_periods = 10)
+    data = read_data(semester = "15W", threshold = 0, make_intersection=True, pre_year_data = False, verbose=True, max_periods = 10)
     
     print "n, r, p"
     print data['n'], data['r'], data['p']
@@ -565,7 +619,7 @@ if __name__ == "__main__":
     
     n = data['n']
     Q = data['Q']
-    print data['exam_slots']
+    #print data['exam_slots']
     counter = 0
     conflicts = 0
     
