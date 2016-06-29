@@ -244,13 +244,7 @@ def read_conflicts(semester, exams = None, threshold = 0):
                 if (e2, e1) in Q_abs:
                     K[i,j] = max(K[i,j], Q_abs[e2, e1])
                 K[j,i] = K[i,j]
-                
-    #for i, e1 in enumerate(exams):
-        #for j, e2 in enumerate(exams):
-            #if (i,j) in K and (j,i) in K:
-                #if K[i,j] != K[j,i]:
-                    #print e1, e2, K[i,j],  K[j,i]
-            
+              
     return Q, conflicts, K
     
     
@@ -545,7 +539,7 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     data['s'] = s
     data['c'] = c
 #TODO: IS NOT SYMMETRIC!!!    data['Q'] = Q
-    data['K'] = K
+ #   data['K'] = K
     
     data['conflicts'] = conflicts
     data['locking_times'] = locking_times

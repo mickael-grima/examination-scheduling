@@ -49,9 +49,9 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
           
     times = [result_times[exam] for exam in exams]
     
-    v = obj_room(x) - gamma * obj_time(times, data, h_max = max(h))
+    v = obj_room(x) - gamma * obj_time(times, data)
     
-    return x, times, v
+    return x, y, v
 
     
 if __name__ == '__main__':

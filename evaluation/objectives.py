@@ -27,18 +27,21 @@ def obj_time(times, data):
     
     conflicts = data['conflicts']
     K = data['K']
-    h = data['h']
-    K = None
     
     distance_sum = 0.0
+    n_students = 0.0
     for i in range(data['n']):
         if len(conflicts[i]) > 0:
             d_i = [abs(times[i] - times[j]) for j in conflicts[i]]
             j = np.argmin(d_i)
             if K is not None:
                 distance_sum += d_i[j] * K[i, j]
+                n_students += K[i,j]
             else:
                 distance_sum += d_i[j]
+    
+    if K is not None:
+        return distance_sum/n_students
     
     return distance_sum / float(data['n'])
     

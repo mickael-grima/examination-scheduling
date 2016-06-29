@@ -12,6 +12,7 @@ for p in PATHS:
 sys.path.append(PROJECT_PATH)
 
 from time import time
+import random as rd
 from collections import defaultdict
 
 from inputData import examination_data
@@ -28,9 +29,11 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 4
+    n_colorings = 1
     epochs = 1
     annealing_iterations = 1000
+    
+    rd.seed(42)
     
     data = examination_data.read_data(semester = "15W", threshold = 0)
     data['similar_periods'] = tools.get_similar_periods(data)
@@ -45,15 +48,17 @@ if __name__ == '__main__':
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False, parallel=parallel)
     print "Time:", time()-t
-    
+    times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
+   
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(y, data)
+    print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", v
     
     print "Moses result:"
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
+    times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(y, data)
+    print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", v
     
     
