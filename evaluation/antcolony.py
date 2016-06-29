@@ -37,11 +37,19 @@ if __name__ == '__main__':
     Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
-    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, verbose = True, log_history = True)
+    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False, parallel=parallel)
     print "Time:", time()-t
-    
+    times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
+   
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(y, data)
+    print "TIME_OBJ:", obj_time(times, data)
+    print "VALUE:", v
+    
+    print "Moses result:"
+    x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
+    times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
+    print "ROOM_OBJ:", obj_room(x)
+    print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", v
     
     for key in logger:

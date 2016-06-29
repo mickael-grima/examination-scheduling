@@ -99,24 +99,25 @@ def obj4(color_schedule, exam_colors, color_exams, color_conflicts, c_n = None, 
 
 def obj5_optimized(color_schedule, exam_colors, color_conflicts, K = None):
     
-    if K is None:
-        return obj3_optimized(color_schedule, exam_colors, color_conflicts)
-    
-    #print K
     # sum min distance to neighboring color nodes
     distance_sum = 0.0
+    n_students = 0.0
     for exam in exam_colors:
         if len(color_conflicts[exam]) > 0:
             hi = color_schedule[exam_colors[exam]]
             d_i = [abs(hi - color_schedule[d]) for d in color_conflicts[exam]]
             exam2 = np.argmin(d_i)
             distance_sum += d_i[exam2] * K[exam, exam2]
+            n_students += K[exam, exam2]
     
-    return 1.0 * distance_sum / len(exam_colors)
+    return 1.0 * distance_sum / n_students
 
 
 def obj_time(color_schedule, exam_colors, color_conflicts, K = None):
-    
+
+    if K is not None:
+        obj5_optimized(color_schedule, exam_colors, color_conflicts, K)
+        
     return obj3_optimized(color_schedule, exam_colors, color_conflicts)
 
 
