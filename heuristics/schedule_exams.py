@@ -219,6 +219,10 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         if debug: print "Building Colorings"
         colorings = meta_heuristic.generate_colorings()
         
+        if len(colorings) == 0:
+            print "Infeasible colorings"
+            break
+            
         # pack colorings in pickable format
         data_chunks = []
         for index, coloring in enumerate(colorings):

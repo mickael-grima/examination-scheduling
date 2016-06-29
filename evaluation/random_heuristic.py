@@ -31,7 +31,7 @@ if __name__ == '__main__':
     gamma = 1.0
     n_colorings = 1
     epochs = 1
-    annealing_iterations = 1000
+    annealing_iterations = 2000
     
     rd.seed(42)
     
@@ -52,7 +52,7 @@ if __name__ == '__main__':
    
     print "ROOM_OBJ:", obj_room(x)
     print "TIME_OBJ:", obj_time(times, data)
-    print "VALUE:", v
+    print "VALUE:", obj_room(x) + obj_time(times, data)
     
     print "Moses result:"
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)

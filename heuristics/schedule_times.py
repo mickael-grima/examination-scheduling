@@ -97,26 +97,27 @@ def obj4(color_schedule, exam_colors, color_exams, color_conflicts, c_n = None, 
     return np.mean(d_n)
 
 
-def obj5_optimized(color_schedule, exam_colors, color_conflicts, K = None):
+def obj5(color_schedule, exam_colors, conflicts, K = None):
     
-    # sum min distance to neighboring color nodes
+    times = [ color_schedule[exam_colors[exam]] for exam in exam_colors ]
+    
     distance_sum = 0.0
     n_students = 0.0
-    for exam in exam_colors:
-        if len(color_conflicts[exam]) > 0:
-            hi = color_schedule[exam_colors[exam]]
-            d_i = [abs(hi - color_schedule[d]) for d in color_conflicts[exam]]
-            exam2 = np.argmin(d_i)
-            distance_sum += d_i[exam2] * K[exam, exam2]
-            n_students += K[exam, exam2]
-    
-    return 1.0 * distance_sum / n_students
+    for i in exam_colors:
+        if len(conflicts[i]) > 0:
+            d_i = [abs(times[i] - times[j]) for j in conflicts[i]]
+            js = [ j for j, d in enumerate(d_i) if d == min(d_i) ]
+            for j in js:
+                distance_sum += d_i[j] * K[i, j]
+                n_students += K[i,j]
+            
+    return distance_sum/n_students
 
 
-def obj_time(color_schedule, exam_colors, color_conflicts, K = None):
+def obj_time(color_schedule, exam_colors, color_conflicts, K = None, conflicts = None):
 
-    if K is not None:
-        obj5_optimized(color_schedule, exam_colors, color_conflicts, K)
+    if K is not None and conflicts is not None:
+        return obj5(color_schedule, exam_colors, conflicts, K)
         
     return obj3_optimized(color_schedule, exam_colors, color_conflicts)
 
@@ -253,7 +254,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
             
     # best values found so far
     best_color_schedule = deepcopy(color_schedule)
-    best_value = obj_time(color_schedule, exam_colors, color_conflicts, K=data['K'])
+    best_value = obj_time(color_schedule, exam_colors, color_conflicts, K=data['K'], conflicts = conflicts)
     
     # initialization and parameters simulated annealing
     beta = beta_0
@@ -303,8 +304,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
             get objective value
         '''
         
-        value = obj_time(color_schedule, exam_colors, color_conflicts, K=data['K'])
-        
+        value = obj_time(color_schedule, exam_colors, color_conflicts, K=data['K'], conflicts = conflicts)
+    
         '''
             acceptance step.
             exp(+ beta) because of maximization!
@@ -374,7 +375,6 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         plt.ylabel('best history')
         plt.savefig("%sheuristics/plots/annealing_rate_accept.png"%PROJECT_PATH)
         #print "annealing history plot in plots/annealing.png"
-        
     return best_color_schedule, best_value
     
 

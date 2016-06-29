@@ -538,8 +538,8 @@ def read_data(semester = "16S", threshold = 0, make_intersection=True, verbose=F
     data['h'] = h
     data['s'] = s
     data['c'] = c
-#TODO: IS NOT SYMMETRIC!!!    data['Q'] = Q
- #   data['K'] = K
+#TODO: Dont really know how to use it:
+#    data['K'] = K
     
     data['conflicts'] = conflicts
     data['locking_times'] = locking_times
@@ -565,7 +565,7 @@ if __name__ == "__main__":
     
     n = data['n']
     Q = data['Q']
-    
+    print data['exam_slots']
     counter = 0
     conflicts = 0
     
