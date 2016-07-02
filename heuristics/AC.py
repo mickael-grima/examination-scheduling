@@ -149,7 +149,7 @@ class AC:
             self.edges_weight.setdefault(node, {})
             for neighbor in self.graph.graph.neighbors(node):
                 if node != neighbor:
-                    self.edges_weight[node][neighbor] = 1.0
+                    self.edges_weight[node][neighbor] = 100.0
 
     def generate_colorings(self, mode=0):
         """ Generate a feasible coloring for each ant

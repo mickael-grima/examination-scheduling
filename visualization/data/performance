@@ -1,3058 +1,352 @@
 -------------------------------------
 @@@ GENERAL @@@
-Problem: CutingPlaneProblem
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.350994110107
-Objective value: -23.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: greedy_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat, one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.00477600097656
-Objective value: -159.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: groups_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat
-
-@@@ PERFORMANCE @@@
-Running time: 0.00990200042725
-Objective value: -129.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_6_removed_c6
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.0494048595428
-Objective value: -243.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 90.6226391792
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 1.17251586914
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_6_removed_c6
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=5, p=3, r=3
-conflicts average per exam: 2.4
-opening hours average per room: 2.0
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.0139899253845
-Objective value: -7.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 1.26842212677
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: greedy_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat, one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.00360012054443
-Objective value: -159.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: greedy_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat, one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.00364303588867
-Objective value: -159.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: greedy_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=150, p=20, r=150
-conflicts average per exam: 30.5333333333
-opening hours average per room: 18.0333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat, one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.222904205322
-Objective value: -260.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: greedy_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=150, p=20, r=150
-conflicts average per exam: 30.5333333333
-opening hours average per room: 18.0333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat, one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.224147081375
-Objective value: -260.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: greedy_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=150
-conflicts average per exam: 2.4
-opening hours average per room: 17.9666666667
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat, one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.0111849308014
-Objective value: -159.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: groups_heuristic
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 327.049657106
-Objective value: -129.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_6_removed_c6
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.0691449642181
-Objective value: -53.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 15/06/2016
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 425.048958063
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: greedy_heuristic
-Date: 15/06/2016 - 11:55:01
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat, one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.00362205505371
-Objective value: -159.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 12:12:25
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 1.31081604958
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 12:13:52
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 1.28211402893
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 12:14:32
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 1.28839898109
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 14:26:30
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 1.25384092331
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 14:27:11
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 1.24795103073
-Objective value: -363.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 14:27:52
-
-@@@ DATA @@@
-dimensions: n=10, p=10, r=10
-conflicts average per exam: 2.0
-opening hours average per room: 8.9
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.850430965424
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 14:28:56
-
-@@@ DATA @@@
-dimensions: n=5, p=7, r=6
-conflicts average per exam: 1.2
-opening hours average per room: 6.16666666667
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period
-
-@@@ PERFORMANCE @@@
-Running time: 0.666562080383
-Objective value: -29.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 15/06/2016 - 14:34:08
-
-@@@ DATA @@@
-dimensions: n=5, p=7, r=6
-conflicts average per exam: 1.2
-opening hours average per room: 6.16666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.674149036407
-Objective value: -29.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: groups_heuristic
-Date: 15/06/2016 - 17:35:25
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat
-
-@@@ PERFORMANCE @@@
-Running time: 0.0840649604797
-Objective value: -45.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: groups_heuristic
-Date: 15/06/2016 - 18:57:41
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat
-
-@@@ PERFORMANCE @@@
-Running time: 0.122964859009
-Objective value: -45.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: groups_heuristic
-Date: 15/06/2016 - 19:04:56
-
-@@@ DATA @@@
-dimensions: n=15, p=20, r=15
-conflicts average per exam: 2.4
-opening hours average per room: 17.7333333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: enough seat
-
-@@@ PERFORMANCE @@@
-Running time: 0.0848169326782
-Objective value: -45.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 25/06/2016 - 23:55:49
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.39634895325
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 25/06/2016 - 23:57:46
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20464205742
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 25/06/2016 - 23:57:47
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.306105852127
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:04:11
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.44076609612
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:04:11
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.302585124969
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:09:37
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.24637317657
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:09:38
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.304118156433
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:09:38
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.806174039841
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:09:39
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.668231964111
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:10:24
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21142101288
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:10:24
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.306668996811
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:10:25
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.804944038391
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:10:26
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.672548055649
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:11:17
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20610404015
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:11:18
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.321411132812
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:11:18
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.794775009155
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:11:19
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.663793802261
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:13:51
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21542000771
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:13:51
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.306371212006
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:13:52
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.819275140762
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:13:53
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.655122041702
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:34:23
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20727109909
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:34:24
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.302812814713
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:34:24
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.794360876083
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:34:25
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.658094882965
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:35:37
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21246600151
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:35:37
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.30388212204
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:35:38
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.790812015533
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:35:39
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.655828952789
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:38:17
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.2112929821
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:38:18
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.306640148163
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:38:19
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.810210943222
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:38:19
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.666814088821
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:42:43
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20572209358
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:42:43
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.302499055862
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:42:44
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.789693832397
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:42:45
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.667403936386
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:43:04
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20809984207
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:43:04
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.304939031601
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:43:05
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.799056053162
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:43:05
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.665590047836
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:47:28
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20214986801
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:47:28
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.303343772888
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:47:29
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.801946878433
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:47:30
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.662787914276
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:49:55
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21124792099
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:49:55
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.308723926544
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:49:56
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.839190006256
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:49:57
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.694311141968
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:51:37
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21304988861
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:51:38
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.319818019867
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:51:38
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.791330099106
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:51:39
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.659441947937
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:52:41
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21448493004
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:52:41
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.306735038757
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:52:42
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.794682025909
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:52:43
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.661578893661
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:55:17
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21916699409
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 20:55:18
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.322855949402
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:55:19
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.807981967926
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 20:55:19
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.679031848907
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:03:13
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20952105522
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:03:13
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.305006027222
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:03:14
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.797032117844
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:03:15
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.663529157639
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:05:04
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20816016197
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:05:05
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.304973125458
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:05:05
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.806882143021
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:05:06
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.668466091156
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:06:22
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20787215233
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:06:22
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.304336071014
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:06:23
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.800307035446
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:06:24
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.664391040802
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:08:27
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.2097890377
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:08:28
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.303246021271
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:08:29
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.787792921066
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:08:29
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.657467842102
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:09:31
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20989704132
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:09:31
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.30273604393
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:09:32
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.820168018341
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:09:32
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.683810949326
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:12:26
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20627689362
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:12:27
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.303384065628
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:12:28
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.79438996315
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:12:28
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.654193878174
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:26:59
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20833015442
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:27:00
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.303687095642
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:27:00
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.805708885193
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:27:01
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.68785905838
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:31:38
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20960187912
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:31:38
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.303591966629
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:31:39
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.793299913406
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:31:40
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.654559135437
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:33:13
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.2171330452
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:33:14
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.304467201233
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:33:15
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.814456939697
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:33:15
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.679342031479
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:34:35
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20470905304
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:34:35
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.306582927704
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:34:36
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.821022987366
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:34:37
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.679672002792
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:35:27
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.20879507065
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:35:28
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.30685210228
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:35:29
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.802114963531
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:35:29
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.660127878189
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:36:12
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.35841083527
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:36:12
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.303785800934
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:36:13
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.806437969208
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:36:14
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.67346405983
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:37:59
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21312093735
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:38:00
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.305118083954
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:38:00
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.806280851364
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:38:01
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.66192984581
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:39:22
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.21408081055
-Objective value: -98.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 26/06/2016 - 21:39:22
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: FAILED
-Cause of failure: one exam per period, one exam per period per room
-
-@@@ PERFORMANCE @@@
-Running time: 0.334963798523
-Objective value: -59.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:39:23
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.818214178085
-Objective value: -64.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 26/06/2016 - 21:39:24
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.674045085907
-Objective value: -56.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: GurobiLinear_v_2_Q
-Date: 29/06/2016 - 14:46:31
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 1.64606690407
-Objective value: -10.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:50:40
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.680064201355
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:50:41
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.562238931656
-Objective value: 6.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:51:04
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.673017978668
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:51:05
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.560659885406
-Objective value: 6.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:51:33
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.670129060745
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:51:34
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.556395053864
-Objective value: 6.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:53:14
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.672571897507
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:53:52
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.666758060455
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:53:53
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.555466175079
-Objective value: 6.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:54:26
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.696552038193
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:54:26
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.579087972641
-Objective value: 6.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:55:51
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.690747976303
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:55:52
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.571228981018
-Objective value: 6.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:56:17
-
-@@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.703843832016
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic
-Date: 29/06/2016 - 14:56:17
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.582487821579
-Objective value: 6.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
 Problem: main_heuristic_AC
-Date: 29/06/2016 - 15:16:29
+Date: 02/07/2016 - 12:37:18
 
 @@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.1
+annealing iterations = 3000
 
 @@@ TEST @@@
 Test result: SUCCEED
 
 @@@ PERFORMANCE @@@
-Running time: 0.715686798096
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic_AC
-Date: 29/06/2016 - 15:16:29
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.549241065979
-Objective value: 6.0
+Running time: 962.235611916
+Objective value: 801.0
 -------------------------------------
 
 -------------------------------------
 @@@ GENERAL @@@
 Problem: main_heuristic_johnson
-Date: 29/06/2016 - 15:16:30
+Date: 02/07/2016 - 12:39:16
 
 @@@ DATA @@@
-dimensions: n=12, p=12, r=12
-conflicts average per exam: 1.33333333333
-opening hours average per room: 10.6666666667
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.1
+annealing iterations = 3000
 
 @@@ TEST @@@
 Test result: SUCCEED
 
 @@@ PERFORMANCE @@@
-Running time: 0.168937921524
-Objective value: 12.0
--------------------------------------
-
--------------------------------------
-@@@ GENERAL @@@
-Problem: main_heuristic_johnson
-Date: 29/06/2016 - 15:16:30
-
-@@@ DATA @@@
-dimensions: n=6, p=12, r=12
-conflicts average per exam: 1.0
-opening hours average per room: 10.5833333333
-
-@@@ TEST @@@
-Test result: SUCCEED
-
-@@@ PERFORMANCE @@@
-Running time: 0.141904115677
-Objective value: 6.0
+Running time: 109.183176994
+Objective value: 801.0
 -------------------------------------
 
 -------------------------------------
 @@@ GENERAL @@@
 Problem: main_heuristic_AC
-Date: 29/06/2016 - 15:21:44
+Date: 02/07/2016 - 12:52:17
 
 @@@ DATA @@@
-dimensions: n=520, p=145, r=46
-conflicts average per exam: 23.2038461538
-opening hours average per room: 142.543478261
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.5
+annealing iterations = 3000
 
 @@@ TEST @@@
-Test result: FAILED
-Cause of failure: conflicts, one exam per period per room
+Test result: SUCCEED
 
 @@@ PERFORMANCE @@@
-Running time: 43.9921140671
-Objective value: 721.0
+Running time: 771.891628981
+Objective value: 801.0
 -------------------------------------
 
 -------------------------------------
 @@@ GENERAL @@@
 Problem: main_heuristic_johnson
-Date: 29/06/2016 - 15:22:05
+Date: 02/07/2016 - 12:54:16
 
 @@@ DATA @@@
-dimensions: n=520, p=145, r=46
-conflicts average per exam: 23.2038461538
-opening hours average per room: 142.543478261
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.5
+annealing iterations = 3000
 
 @@@ TEST @@@
-Test result: FAILED
-Cause of failure: conflicts, one exam per period per room
+Test result: SUCCEED
 
 @@@ PERFORMANCE @@@
-Running time: 16.9979219437
-Objective value: 700.0
+Running time: 110.214458942
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 02/07/2016 - 13:24:58
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 3000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 1832.64814115
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 02/07/2016 - 13:27:03
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 3000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 115.472695112
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 02/07/2016 - 13:41:03
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 10.0
+annealing iterations = 3000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 830.193395138
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 02/07/2016 - 13:43:14
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 10.0
+annealing iterations = 3000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 120.38406992
+Objective value: 802.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 02/07/2016 - 14:05:20
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.1
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 201.966784954
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 02/07/2016 - 14:06:04
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.1
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 36.3740329742
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 02/07/2016 - 14:15:44
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.5
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 570.76845789
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 02/07/2016 - 14:16:32
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 0.5
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 39.4333178997
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 02/07/2016 - 14:27:14
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 631.927941084
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 02/07/2016 - 14:28:06
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 42.2868359089
+Objective value: 801.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 02/07/2016 - 14:41:37
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 10.0
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 801.013479948
+Objective value: 802.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 02/07/2016 - 14:42:32
+
+@@@ DATA @@@
+dimensions: n=785, p=173, r=62
+conflicts average per exam: 78.221656051
+opening hours average per room: 155.564516129
+
+@@@ PARAMETER @@@
+gamma = 10.0
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 43.8834049702
+Objective value: 801.0
 -------------------------------------
 

@@ -102,7 +102,7 @@ def convert_performance_file_to_table(date=None, last_nb=-1):
         lines.append(line_objval)
 
     header = ['problem', 'type'] + [d for d in datas]
-    date = date or time.strftime('%d/%m/%Y')
+    date = '%s-%s' % (date or time.strftime('%d/%m/%Y'), time.strftime('%H_%M_%S'))
     with open('%svisualization/data/tab_performance_%s.csv' % (PROJECT_PATH, date.replace('/', '_')), 'wb') as f:
         writer = csv.writer(f, delimiter="\t")
         writer.writerow(header)
