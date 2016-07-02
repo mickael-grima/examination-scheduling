@@ -37,6 +37,7 @@ from utils.tools import update_variable, transform_variables
 from evaluation.objectives import obj as main_obj
 from model.constraints_handler import is_feasible
 from model.instance import build_smart_random
+from inputData import examination_data
 
 from heuristics.johnson import Johnson
 
@@ -70,16 +71,18 @@ def call_heuristic(problem_name, data, **kwards):
                                              data, epochs=kwards.get('epochs', 10),
                                              gamma=kwards.get('gamma', 1.0),
                                              annealing_iterations=kwards.get('annealing_iterations', 1000),
-                                             lazy_threshold=kwards.get('lazy_threshold', 0.2),
+                                             lazy_threshold=kwards.get('lazy_threshold', 1.0),
                                              verbose=kwards.get('verbose', False),
-                                             log_history=kwards.get('log_history', False))
+                                             log_history=kwards.get('log_history', False),
+                                             parallel=kwards.get('parallel') or True)
     elif problem_name == 'main_heuristic_johnson':
         x, y, _, _ = main_heuristic.optimize(Johnson(data, n_colorings=kwards.get('num_ants', 10), n_colors=data['p']),
                                              data, epochs=1, gamma=kwards.get('gamma', 1.0),
                                              annealing_iterations=kwards.get('annealing_iterations', 1000),
-                                             lazy_threshold=kwards.get('lazy_threshold', 0.2),
+                                             lazy_threshold=kwards.get('lazy_threshold', 1.0),
                                              verbose=kwards.get('verbose', False),
-                                             log_history=kwards.get('log_history', False))
+                                             log_history=kwards.get('log_history', False),
+                                             parallel=kwards.get('parallel') or True)
     elif problem_name == 'greedy_heuristic':
         x, y = greedy_heuristic.generate_starting_solution_by_maximal_time_slot_filling(data)
     elif problem_name == 'groups_heuristic':
@@ -121,7 +124,8 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
                               lazy_threshold=kwards.get('lazy_threshold', 0.2),
                               verbose=kwards.get('verbose', False),
                               log_history=kwards.get('log_history', False),
-                              num_ants=kwards.get('num_ants', 10))
+                              num_ants=kwards.get('num_ants', 10),
+                              parallel=kwards.get('parallel') or True)
         delta_t = time.time() - t_start
         x, y = transform_variables(x, y, n=data['n'], r=data['r'], p=data['p'])
 
@@ -149,6 +153,10 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
         src.write('dimensions: n=%s, p=%s, r=%s\n' % (data['n'], data['p'], data['r']))
         src.write('conflicts average per exam: %s\n' % conflicts_average)
         src.write('opening hours average per room: %s\n' % opening_average)
+        src.write('\n')
+        src.write('@@@ PARAMETER @@@\n')
+        src.write('gamma = %s\n' % kwards.get('gamma', 1.0))
+        src.write('annealing iterations = %s\n' % (kwards.get('annealing_iterations') or 1000))
         src.write('\n')
         src.write('@@@ TEST @@@\n')
         src.write('Test result: %s\n' % test_result)
@@ -182,5 +190,23 @@ def main():
         compute_performance(args.mode, data, with_test=True)
 
 
+def compare_gamma(data_type='real', **dimensions):
+    if data_type == 'real':
+        data = examination_data.read_data(semester="15W")
+    elif data_type == 'random':
+        data = build_smart_random(n=dimensions.get('n') or 0.0,
+                                  r=dimensions.get('r') or 0.0,
+                                  p=dimensions.get('p') or 0.0)
+    print "Start compare_gamma:"
+    for gamma in [0.1, 0.5, 1.0, 10.0]:
+        print "AC, gamma=%s" % gamma
+        compute_performance('main_heuristic_AC', data, gamma=gamma,
+                            annealing_iterations=1000, num_ants=20,
+                            epochs=20)
+        print "Johnson, gamma=%s" % gamma
+        compute_performance('main_heuristic_johnson', data, gamma=gamma,
+                            annealing_iterations=1000, num_ants=20)
+
+
 if __name__ == '__main__':
-    main()
+    compare_gamma(data_type='random', n=785, p=173, r=62)
