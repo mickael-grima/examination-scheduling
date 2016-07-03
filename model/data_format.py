@@ -38,6 +38,8 @@ def correct_conflicts_format(data, n):
     else:    
         # make sure the conflicts are symmetric!
         for k in conflicts:
+            if k in conflicts[k]:
+                conflicts[k].remove(k)
             if len(conflicts[k]) > 0:
                 assert max(conflicts[k]) < n
             for l in conflicts[k]:
@@ -83,11 +85,14 @@ def force_data_format(func):
         similarp = data.get('similarp', [[-1] for l in range(p)])
         similare = data.get('similare', [[-1] for i in range(n)])
         similarr = data.get('similarr', [[-1] for k in range(r)])
-
+    
+        data_version = data.get('data_version', 'undefined')
         exam_names = data.get('exam_names', list())
         exam_slots = data.get('exam_slots', dict())
+        exam_slots_index = data.get('exam_slots_index', dict())
         exam_rooms = data.get('exam_rooms', dict())
         result_times = data.get('result_times', dict())
+        result_dates = data.get('result_dates', dict())
         result_rooms = data.get('result_rooms', dict())
         room_names = data.get('room_names', dict())
         
@@ -96,7 +101,11 @@ def force_data_format(func):
         # locking times sparse and dense format
         locking_times = data.get('locking_times', {})
         if locking_times:
-            T = [[1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
+            T = [[1 for l in range(p)] for k in range(r)]
+            for l in range(p):
+                for k in range(r):
+                    if l in locking_times[k]:
+                        T[k][l] = 0
         else:
             T = data.get('T', [])
 
@@ -117,10 +126,13 @@ def force_data_format(func):
             'similarp': similarp,
             'similare': similare,
             'similarr': similarr,
+            'data_version': data_version,
             'exam_names': exam_names,
             'exam_slots': exam_slots,
+            'exam_slots_index': exam_slots_index,
             'exam_rooms': exam_rooms,
             'result_times': result_times,
+            'result_dates': result_dates,
             'result_rooms': result_rooms,
             'room_names': room_names,
         }

@@ -113,6 +113,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         self.color_count = defaultdict(int)
         self.min_colors = deepcopy(self.ALL_COLOURS)
         
+        
     def check_neighbours(self, node, colour, data):
         """ @param node: node to consider
             @param colour: colour to check

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     n_colorings = 20
     epochs = 40
     annealing_iterations = 1000
-    parallel = True
+    parallel = not True
     
     data = examination_data.read_data(semester = "15W", threshold = 0)
     data['similar_periods'] = tools.get_similar_periods(data)

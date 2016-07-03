@@ -192,7 +192,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
 import multiprocessing
 
 def execute_heuristic(chunk): 
-    x, y, s, v = heuristic(chunk["coloring"], chunk["data"], gamma = chunk["gamma"], max_iter = chunk["max_iter"], beta_0 = chunk["beta_0"], debug=False)   
+    x, y, s, v = heuristic(chunk["coloring"], chunk["data"], gamma = chunk["gamma"], max_iter = chunk["max_iter"], beta_0 = chunk["beta_0"], debug=chunk["debug"])   
     return {"index": chunk["index"], "x":x, "y":y, "s":s, "v":v}
 
         
@@ -226,7 +226,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         # pack colorings in pickable format
         data_chunks = []
         for index, coloring in enumerate(colorings):
-            data_chunks.append({"coloring": coloring, "index": index, "data": data, "gamma":gamma, "max_iter": annealing_iterations, "beta_0": annealing_beta_0})
+            data_chunks.append({"coloring": coloring, "index": index, "data": data, "gamma":gamma, "max_iter": annealing_iterations, "beta_0": annealing_beta_0, "debug": debug})
             
         # calculate results
         cores = 1

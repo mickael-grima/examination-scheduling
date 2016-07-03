@@ -31,11 +31,11 @@ if __name__ == '__main__':
     gamma = 1.0
     n_colorings = 1
     epochs = 1
-    annealing_iterations = 2000
+    annealing_iterations = 10000
     
     rd.seed(42)
     
-    data = examination_data.read_data(semester = "15W", threshold = 0)
+    data = examination_data.read_data(semester = "15W", pre_year_data = False,  threshold = 0)
     data['similar_periods'] = tools.get_similar_periods(data)
     
     n, r, p = data['n'], data['r'], data['p']
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False, parallel=parallel)
     print "Time:", time()-t
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
-   
+    
     print "ROOM_OBJ:", obj_room(x)
     print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", obj_room(x) + obj_time(times, data)
