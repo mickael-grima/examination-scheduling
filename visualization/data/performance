@@ -350,3 +350,1635 @@ Running time: 43.8834049702
 Objective value: 801.0
 -------------------------------------
 
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 09:42:57
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 45.159099102
+Objective value: 721.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 09:51:00
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 130.369230769
+opening hours average per room: 130.934782609
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 78.9205760956
+Objective value: 540.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 09:53:40
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 25.6461538462
+opening hours average per room: 130.934782609
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 60.3084819317
+Objective value: 540.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:29:23
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 23.9946639538
+Objective value: 721.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:33:54
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 23.2681491375
+Objective value: 723.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:36:03
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 50
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 128.766947985
+Objective value: 722.0
+-------------------------------------
+
+##############################################################################
+##############################################################################
+##############################################################################
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:43:57
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 1.93116998672
+Objective value: 750.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:44:01
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 4.12915420532
+Objective value: 728.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:44:09
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 7.2792429924
+Objective value: 727.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:44:28
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 18.9498729706
+Objective value: 731.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 04/07/2016 - 13:44:31
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 2.43406009674
+Objective value: 743.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:44:35
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 5
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 3.2101650238
+Objective value: 731.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:44:52
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 5
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 17.2892518044
+Objective value: 732.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:45:08
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 5
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 15.3794438839
+Objective value: 727.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:45:32
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 5
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 23.1216599941
+Objective value: 725.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 04/07/2016 - 13:45:37
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 5
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 5.01748299599
+Objective value: 706.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:45:44
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 6.39481592178
+Objective value: 738.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:46:20
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 35.7261328697
+Objective value: 720.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:46:50
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 29.0659868717
+Objective value: 721.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:48:05
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 73.7638468742
+Objective value: 720.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 04/07/2016 - 13:48:14
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 9.08842778206
+Objective value: 701.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:48:33
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 17.8243360519
+Objective value: 730.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:49:46
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 72.5280520916
+Objective value: 718.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:51:16
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 89.2173759937
+Objective value: 727.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 13:53:28
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 131.417098999
+Objective value: 722.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 04/07/2016 - 13:53:46
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 17.5390889645
+Objective value: 695.0
+-------------------------------------
+
+##############################################################################
+##############################################################################
+##############################################################################
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:01:08
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 1.84300899506
+Objective value: 755.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:38
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 0.393705844879
+Objective value: 0.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:40
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 0.311635971069
+Objective value: 0.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:43
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 0.431301116943
+Objective value: 0.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:45
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 0.476636171341
+Objective value: 0.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:47
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 1.82732701302
+Objective value: 725.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:50
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 0.637942075729
+Objective value: 0.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:53
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 0.615974903107
+Objective value: 0.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:55
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 1.85316991806
+Objective value: 743.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:57
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 1.93039512634
+Objective value: 724.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:02:59
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 1
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 1.81703519821
+Objective value: 752.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:05
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 2.66012692451
+Objective value: 0.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:12
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 6.80503106117
+Objective value: 717.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:23
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 10.2703280449
+Objective value: 724.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:28
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 5.41953587532
+Objective value: 748.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:33
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 4.21490597725
+Objective value: 728.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:41
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 6.50195598602
+Objective value: 725.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:50
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 8.86337900162
+Objective value: 728.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:03:55
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 4.30095791817
+Objective value: 738.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:04:03
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 8.0257730484
+Objective value: 739.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:04:12
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 5
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 8.11189413071
+Objective value: 719.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:04:28
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 15.7860138416
+Objective value: 716.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:04:43
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 13.6048891544
+Objective value: 738.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:04:57
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 13.3526501656
+Objective value: 737.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:05:11
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 14.0407140255
+Objective value: 726.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:05:27
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 15.521214962
+Objective value: 744.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:05:44
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 15.8515868187
+Objective value: 739.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:05:57
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 12.1155941486
+Objective value: 741.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:06:10
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 13.3753430843
+Objective value: 733.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:06:29
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 18.4379720688
+Objective value: 737.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:06:45
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 14.6738848686
+Objective value: 730.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:13:16
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 390.746078014
+Objective value: 720.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:13:43
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 26.4434769154
+Objective value: 742.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:14:28
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 45.2647209167
+Objective value: 727.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:15:06
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 36.9681191444
+Objective value: 724.0
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 14:15:38
+
+@@@ DATA @@@
+dimensions: n=520, p=145, r=46
+conflicts average per exam: 23.1961538462
+opening hours average per room: 136.913043478
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 1
+epochs = 20
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: conflicts, one exam per period per room
+
+@@@ PERFORMANCE @@@
+Running time: 31.1591439247
+Objective value: 721.0
+-------------------------------------
+
+##############################################################################
+##############################################################################
+##############################################################################
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 21:58:19
+
+@@@ DATA @@@
+dimensions: n=524, p=145, r=46
+conflicts average per exam: 0.0
+opening hours average per room: 137.0
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 34.7307829857
+Objective value: nan
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 22:03:57
+
+@@@ DATA @@@
+dimensions: n=524, p=145, r=46
+conflicts average per exam: 0.0
+opening hours average per room: 137.0
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: FAILED
+Cause of failure: enough seat, one exam per period
+
+@@@ PERFORMANCE @@@
+Running time: 35.4471042156
+Objective value: nan
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 04/07/2016 - 22:05:10
+
+@@@ DATA @@@
+dimensions: n=0, p=204, r=44
+conflicts average per exam: 0.0
+opening hours average per room: 173.5
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 0.00276589393616
+Objective value: nan
+-------------------------------------
+
+##############################################################################
+##############################################################################
+##############################################################################
+

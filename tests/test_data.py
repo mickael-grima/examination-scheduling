@@ -21,8 +21,10 @@ class TestConstraints(unittest.TestCase):
         First the variable has to be transformed into the two variables x[i, k] and y[i, l]
     """
     def setUp(self):
+        self.constants_p = ['c', 's', 'T', 'Q', 'h', 'conflicts', 'w']
         self.constants = ['c', 's', 'T', 'Q', 'h', 'conflicts', 'locking_times', 'w', 'location', 'similarp',
-                          'similare', 'similarr', 'exam_names', 'result_times', 'result_rooms', 'exam_rooms', 'room_names', 'campus_ids']
+                          'similare', 'similarr', 'exam_names', 'result_times', 'result_rooms', 'exam_rooms',
+                          'room_names', 'campus_ids']
         self.dimensions = ['n', 'p', 'r']
 
     def testBuildRandomData(self):
@@ -46,6 +48,15 @@ class TestConstraints(unittest.TestCase):
     def testBuildSmallInput(self):
         data = build_small_input()
         for cst in self.constants:
+            self.assertIsNotNone(data.get(cst), msg='%s is not in data' % cst)
+            self.assertTrue(len(data[cst]) > 0, msg='%s is empty' % cst)
+        for dim in self.dimensions:
+            self.assertIsNotNone(data.get(dim), msg='%s is not in data' % dim)
+            self.assertTrue(data[dim] > 0, msg='%s is yero' % dim)
+
+    def testRealData16S(self):
+        data = examination_data.read_data(semester="16S")
+        for cst in self.constants_p:
             self.assertIsNotNone(data.get(cst), msg='%s is not in data' % cst)
             self.assertTrue(len(data[cst]) > 0, msg='%s is empty' % cst)
         for dim in self.dimensions:

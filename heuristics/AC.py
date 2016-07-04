@@ -85,7 +85,8 @@ class Ant(object):
         """
         # for each connex component
         if not self.starting_nodes:
-            logging.warning("%s.generate_coloring: try to colour graph, but no starting nodes found")
+            logging.warning("%s.generate_coloring: try to colour graph, but no starting nodes found"
+                            % self.__class__.__name__)
         count_node = {}
         for node, neighbors in self.starting_nodes.iteritems():
             # start to visit the graph for one ant
