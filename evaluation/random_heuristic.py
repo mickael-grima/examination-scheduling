@@ -29,8 +29,8 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 100
-    epochs = 1
+    n_colorings = 1
+    epochs = 100
     annealing_iterations = 100
     
     rd.seed(42)
@@ -43,10 +43,11 @@ if __name__ == '__main__':
     
     parallel=False
     Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
    # Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
-    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False, parallel=parallel)
+    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=True, parallel=parallel)
     print "Time:", time()-t
     if y is None:
         print "INFEASIBLE!!"
