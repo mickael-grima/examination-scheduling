@@ -212,9 +212,8 @@ def find_feasible_start(n_colors, h, statespace, verbose=False):
     
     model = Model("TimeFeasibility")
     p = len(h)
-
     y = {}
-    # z[i,k] = if color i gets slot l
+    # y[i,k] = if color i gets slot l
     for i in range(n_colors):
         for l in range(p):
             y[i,l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
@@ -226,17 +225,19 @@ def find_feasible_start(n_colors, h, statespace, verbose=False):
     # c1: all get one
     for i in range(n_colors):
         model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1, "c1")
-    
-    # c2: statespace constraints
-    for i in range(n_colors):
-        model.addConstr( quicksum([ y[i, l] for l in range(p) if h[l] not in statespace[i] ]) == 0, "c2")    
-    
-    # c3: each slot needs to be used tops once
+
+    # c2: each slot needs to be used tops once
     for l in range(p):
-        model.addConstr( quicksum([ y[i, l] for i in range(n_colors) ]) <= 1, "c3")    
+        model.addConstr( quicksum([ y[i, l] for i in range(n_colors) ]) <= 1, "c2")    
+
+    ## c3: statespace constraints
+    for i in range(n_colors):
+        model.addConstr( quicksum([ y[i, l] for l in range(p) if h[l] not in statespace[i] ]) == 0, "c3")    
     
-    # objective: find any feasible
-    model.setObjective( 0, GRB.MINIMIZE)
+    # objective: minimize conflicts
+    obj = quicksum([ y[i,l] for l in range(p) for i in range(n_colors) ]) 
+    obj = 0
+    model.setObjective(obj, GRB.MAXIMIZE)
     
     if not verbose:
         model.params.OutputFlag = 0
@@ -247,14 +248,14 @@ def find_feasible_start(n_colors, h, statespace, verbose=False):
     color_schedule = []
     if model.status == GRB.INFEASIBLE:
         return color_schedule
-    
+                    
     for i in range(n_colors):
         for l in range(p):
-            if model.getVarByName("y_%s_%s" % (i,l)) == 1:
+            v = model.getVarByName("y_%s_%s" % (i,l)) 
+            if v.x == 1:
                 color_schedule.append(h[l])
                 break
             
-    
     return color_schedule
 
     #except GurobiError:
@@ -324,12 +325,12 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         color_schedule = find_feasible_start(n_colors, h, statespace, verbose=False)
         
         if len(color_schedule) < n_colors:
-            print "infeasible"
+            print "could not find a feasible starting point"
             return None, 0
         else:
             print "Found one!"
     
-    assert len(color_schedule) == len(set(color_schedule)), set(color_schedule)
+    assert len(color_schedule) == len(set(color_schedule)), len(color_schedule) - len(set(color_schedule))
     y_binary = to_binary(exam_colors, color_schedule, h)
     print constraints.time_feasible(y_binary, data).values()
     
@@ -369,7 +370,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         '''
 
         # get colors to change and their slot values
+        print "MAKE PROPOSAL"
         color, new_slot, color2, old_slot = make_proposal(color_schedule, statespace, n_colors, log=False)
+        print "OK"
         #if log: 
         print color, new_slot, color2, old_slot
         #changed = get_changing_colors(color_schedule, color, color2)
