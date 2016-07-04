@@ -164,7 +164,7 @@ def test_compare():
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
     #data = build_real_data(tseed=tseed)
     #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
-    data = read_data()
+    data = read_data(semester = "15W")
     print data['n']
     time, objectives = compare(data)
 
