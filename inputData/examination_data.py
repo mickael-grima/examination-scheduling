@@ -30,6 +30,7 @@ def read_columns(datname, key, cols, sep=","):
         for line in csvfile:
             line = re.sub('\"', '', line)
             line = re.sub('\n', '', line)
+            line = re.sub('\r', '', line)
             line = re.split(sep, line)
             
             assert len(line) > len(cols)
@@ -411,15 +412,21 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
     # get examination periods for each faculty in weeks:
     faculty_weeks = get_faculty_weeks(exams, exam_times, week_slots, verbose = verbose)
     #if verbose:
-        #for f in faculty_weeks:
-            #print f, sorted(faculty_weeks[f])
+    #for f in faculty_weeks:
+        #print f, sorted(faculty_weeks[f])
     
     # get faculty of each exam
     exam_faculty = { exam: re.search("\D+\d", exam).group()[0:-1] for exam in exams }
     
-    
     exam_slots = defaultdict(list)
+    exam_weeks = defaultdict(list)
     
+    # TODO: REMOVE
+    #for exam in exams:
+        #exam_slots[exam] = sorted(set(exam_times.values()))
+    #return exam_slots
+
+
     for exam in exams:
         faculty = exam_faculty[exam]
 
@@ -431,12 +438,14 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
             else: 
                 w += 1
         
+        exam_weeks[exam].append(w)
         exam_slots[exam] += week_slots[w]
         
         # for all connecting weeks to the left, add slots
         w2 = w-1
         while w2 > 0:
             if w2 in faculty_weeks[faculty]:
+                exam_weeks[exam].append(w2)
                 exam_slots[exam] += week_slots[w2]
             else:
                 break
@@ -446,6 +455,7 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
         w3 = w+1
         while w3 < len(week_slots):
             if w3 in faculty_weeks[faculty]:
+                exam_weeks[exam].append(w3)
                 exam_slots[exam] += week_slots[w3]
             else:
                 break
@@ -459,7 +469,7 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
             #print sorted(exam_slots[exam])
     
     
-    return exam_slots
+    return exam_slots, exam_weeks
  
  
 def get_exam_rooms(exams, result_rooms, room_campus_id):
@@ -505,7 +515,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     # load number of students registered for each exam
     if semester in ["15W", "16S"]:
         exam_students = read_teilnehmer(semester)
-        print sorted([exam for exam in result_times if exam not in exam_students])
+        print len(sorted([exam for exam in result_times if exam not in exam_students]))
         
         if pre_year_data:
             print "Pre year data is currently turned off!"
@@ -528,7 +538,14 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
                     exam_students[exam] = 0
             if verbose: print "unknown predata", unknown_exams, len(exam_students)
         
-            
+    
+    # TODO: REMOVE
+    #for exam in exam_students:
+        #exam_students[exam] = 1
+        ##print exam, exam_students[exam]
+        
+        
+        
     # get exams in the MOSES result
     exams = [exam for exam in result_times]
     if verbose: print "Number of exams", len(exams)
@@ -577,7 +594,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     if verbose: print "Number of timeslots", len(h)
     
     # for each exam determine the possible time slots according to examination periods
-    exam_slots = get_possible_exam_slots(exams, result_times, verbose=verbose)
+    exam_slots, exam_weeks = get_possible_exam_slots(exams, result_times, verbose=verbose)
     if verbose: print "Exam slots", len(exam_slots)
     
     # get index format for exam slots (for ILP)
@@ -618,14 +635,15 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
                 l = h.index(result_times[exam])
                 if l not in locking_times[k]:
                     locking_times[k].append(l)
-                    
-                    
-        #for exam in result_times:
-            #if exam not in exams and exam in result_rooms and room in result_rooms[exam]:
-                #l = h.index(result_times[exam])
-                #if l not in locking_times[k]:
-                    #locking_times[k].append(l)
-                    
+    
+    # remove locking times for exams which are planned in moses
+    y = defaultdict(int)
+    for i, exam in enumerate(exams):
+        l = h.index(result_times[exam])
+        for k in exam_rooms[i]:
+            if l in locking_times[k]:
+                locking_times[k].remove(l)
+                
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
     
     # read conflict data from tumonline
@@ -647,13 +665,14 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
 #    data['K'] = K
     
     data['conflicts'] = conflicts
-    data['conflicts'] = defaultdict(list)
-    data['conflicts'][0] = []
+#    data['conflicts'] = defaultdict(list)
+#    data['conflicts'][0] = []
     data['locking_times'] = locking_times
     
     data['data_version'] = semester
     data['exam_names'] = exams
     data['exam_slots'] = exam_slots
+    data['exam_weeks'] = exam_weeks
     data['exam_slots_index'] = exam_slots_index
     data['exam_rooms'] = exam_rooms
     
