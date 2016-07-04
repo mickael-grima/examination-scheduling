@@ -150,6 +150,7 @@ def compare(data):
     return times, objectives
 
 
+from inputData import examination_data
 def test_compare():
     n = 100
     r = 20
@@ -157,8 +158,11 @@ def test_compare():
     tseed = 34534
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
-    data = build_real_data(tseed=tseed)
+    #data = build_real_data(tseed=tseed)
     #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
+    data = examination_data.read_data(semester = "15W", threshold = 0)
+    #data['similar_periods'] = tools.get_similar_periods(data)
+    
     time, objectives = compare(data)
 
     time, objectives = compare(data)

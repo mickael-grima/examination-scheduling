@@ -150,15 +150,25 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
         color_schedule: dict of ints
         obj_val: combined objective
     '''
-    
+    #print coloring
+    #colors = coloring.values()
+    #print len(set(colors)), len(data['h']), data['p']
+    #color_schedule = dict()
+    #for slot, color in enumerate(set(colors)):
+        #color_schedule[color] = data['h'][slot]
+    #y_binary = tools.to_binary(coloring, color_schedule, data['h'])
+    #print constraints.time_feasible(y_binary, data)
     
     # check feasibility
     if debug: print "Building Statespace"
     statespace, color_exams = build_statespace(coloring, data)
-        
+    
     if statespace is None:
         if debug: print "infeasible statespace"
         return None, None, None, sys.maxint
+    
+    for i in statespace:
+        assert len(statespace[i]) == len(set(statespace[i]))
     
     # create time schedule permuting the time solts for each coloring
     if debug: print "ANNEALING"
@@ -171,6 +181,9 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     if y_binary is None:
         if debug: print constraints.time_feasible(y_binary, data)
         return None, None, None, sys.maxint
+    
+    print color_schedule
+    print constraints.time_feasible(y_binary, data)
     
     # create room schedule
     if debug: print "SCHDULE ROOMS"

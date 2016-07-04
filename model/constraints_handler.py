@@ -42,9 +42,10 @@ def test_conflicts(y, n=0, p=0, conflicts={}, **indices):
     """
         Test here the constraint: no student has to write two exams or more at the same time
     """
-    if y is not None:
+    if y is None:
+        return False
+    else:
         (n, p) = tools.get_dimensions_from_y(y) if not n * p else (n, p)
-
         res = True
         if indices.get('l') is not None:
             l = indices.get('l')

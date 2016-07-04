@@ -21,6 +21,7 @@ from heuristics import tools
 
 from evaluation.objectives import obj_time, obj_room
 
+import model.constraints_handler as constraints
     
 def get_moses_representation(data, gamma=1.0, verbose = False):
     
@@ -58,6 +59,8 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
             k = room_names.index(room)
             x[i,k] = 1.0
             
+    print constraints.is_feasible(x, y, data)
+    
     #count_illegal_planned = 0
     #for i, exam in enumerate(exams):
         #for k in range(r):
