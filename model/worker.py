@@ -49,6 +49,8 @@ from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_m
 from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
 from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_linear_model_18
 
+from GurobiModel.GurobiLinear_v_23_data import build_model as build_linear_model_23
+
 
 
 
@@ -59,6 +61,8 @@ from model.instance import build_real_data
 from model.instance import build_real_data_sample
 from model.instance import detect_similarities
 
+from inputData.examination_data import read_data
+
 
 
 
@@ -67,11 +71,12 @@ def compare(data):
     """
     # Select models to compare
     problems = {
+        'Data Evaluate' : build_linear_model_23,
     #    'Linear orbital': build_linear_model_20,
     #    'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
-       'Linear more covers': build_linear_model_15,
+    #   'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
@@ -162,8 +167,6 @@ def test_compare():
     #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
     data = examination_data.read_data(semester = "15W", threshold = 0)
     #data['similar_periods'] = tools.get_similar_periods(data)
-    
-    time, objectives = compare(data)
 
     time, objectives = compare(data)
 

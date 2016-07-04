@@ -12,6 +12,7 @@ for p in PATHS:
 sys.path.append(PROJECT_PATH)
 
 from argparse import ArgumentParser
+import logging
 
 from model.linear_problem import LinearProblem
 from model.linear_one_variable_problem import LinearOneVariableProblem
@@ -104,7 +105,11 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
     """
     # compute some numbers about data
     # conflicts average: average over the line of 1's number
-    conflicts_average = sum(sum(tab) for tab in data['Q']) / float(len(data['Q']))
+    if len(data['conflicts']) == 0 or sum(len(tab) for tab in data['conflicts'].itervalues()) == 0:
+        logging.warning('compute_performance: no conflicts found')
+        conflicts_average = 'NaN'
+    else:
+        conflicts_average = sum(len(tab) for tab in data['conflicts'].itervalues()) / float(len(data['conflicts']))
     # average over the room's available timeslots
     opening_average = sum(sum(tab) for tab in data['T']) / float(len(data['T']))
 
@@ -156,7 +161,9 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
         src.write('\n')
         src.write('@@@ PARAMETER @@@\n')
         src.write('gamma = %s\n' % kwards.get('gamma', 1.0))
-        src.write('annealing iterations = %s\n' % (kwards.get('annealing_iterations') or 1000))
+        src.write('annealing iterations = %s\n' % kwards.get('annealing_iterations', 1000))
+        src.write('number of ants = %s\n' % kwards.get('num_ants', 10))
+        src.write('epochs = %s\n' % kwards.get('epochs', 10))
         src.write('\n')
         src.write('@@@ TEST @@@\n')
         src.write('Test result: %s\n' % test_result)
@@ -177,13 +184,20 @@ def main():
                    help='<Required> give the name of the problem/heuristics to perform.'
                    'The name are %s. The rank could also be given'
                    % str({i: LIST_MODELS[i] for i in range(len(LIST_MODELS))}))
-    p.add_argument('-n', '--n', required=True, help='<Required> number of exams')
-    p.add_argument('-r', '--r', required=True, help='<Required> number of rooms')
-    p.add_argument('-p', '--p', required=True, help='<Required> number of timeslots')
+    p.add_argument('-n', '--n', default=0, help='<Default: 0> number of exams')
+    p.add_argument('-r', '--r', default=0, help='<Default: 0> number of rooms')
+    p.add_argument('-p', '--p', default=0, help='<Default: 0> number of timeslots')
+    p.add_argument('-t', '--type', default='real', help='<Default: real> wich kind of data do we use: real or smart')
     args = p.parse_args()
 
     # data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p))
-    data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p), tseed=1)
+    if args.type == 'smart':
+        data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p), tseed=1)
+    elif args.type == 'real':
+        data = examination_data.read_data(semester="16S")
+    else:
+        logging.warning("%s doesn't exist")
+        return
     if args.mode.isdigit():
         compute_performance(LIST_MODELS[int(args.mode)], data, with_test=True)
     else:
@@ -208,5 +222,29 @@ def compare_gamma(data_type='real', **dimensions):
                             annealing_iterations=1000, num_ants=20)
 
 
+def compare_AC_johnson_performance(data_type='real', **dimensions):
+    if data_type == 'real':
+        data = examination_data.read_data(semester="15W")
+    elif data_type == 'random':
+        data = build_smart_random(n=dimensions.get('n') or 0.0,
+                                  r=dimensions.get('r') or 0.0,
+                                  p=dimensions.get('p') or 0.0)
+    print "Start compare_AC_johnson_performance:"
+    for num_ants in [1, 5, 10, 20]:
+        print '@@@ num_ants=%s' % num_ants
+        for epochs in [1, 5, 10, 20]:
+            for _ in range(10):
+                print "AC, epoch=%s" % epochs
+                compute_performance('main_heuristic_AC', data, gamma=1.0,
+                                    annealing_iterations=1000, num_ants=num_ants,
+                                    epochs=epochs)
+        for _ in range(10):
+            print "Johnson"
+            compute_performance('main_heuristic_johnson', data, gamma=1.0,
+                                annealing_iterations=1000, num_ants=num_ants)
+
+
 if __name__ == '__main__':
-    compare_gamma(data_type='random', n=785, p=173, r=62)
+    # compare_gamma(data_type='random', n=785, p=173, r=62)
+    compare_AC_johnson_performance(data_type='real')
+    # main()

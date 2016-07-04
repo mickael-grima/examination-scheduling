@@ -22,19 +22,20 @@ def read_columns(datname, key, cols, sep=","):
     '''
     Read csv file and extract data with column names in cols. Takes first value found!
     '''
-    
     columns = defaultdict(dict)
     colnames = []
-            
     with open("%sinputData/%s"%(PROJECT_PATH, datname)) as csvfile:
         for line in csvfile:
             line = re.sub('\"', '', line)
             line = re.sub('\n', '', line)
             line = re.sub('\r', '', line)
             line = re.split(sep, line)
-            
+
+
             assert len(line) > len(cols)
             
+            #print colnames
+
             if len(colnames) == 0:
                 colnames = line
             else:

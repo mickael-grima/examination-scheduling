@@ -133,7 +133,7 @@ def build_smart_random(**kwards):
     # create a conflict by probybility 1/5
     data['conflicts'] = defaultdict(list)
     for i in range(n):
-        data['conflicts'][i] = [ j for j in range(i+1,n) if rd.random() <= 0.1 ]
+        data['conflicts'][i] = [ j for j in range(i+1,n) if rd.random() <= 0.05 ]
     
     #close some rooms by probability 1/10
     data['locking_times'] = defaultdict(list)

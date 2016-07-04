@@ -141,9 +141,16 @@ def transform_variables(x, y, **dimensions):
     n = dimensions.get('n', 0)
     r = dimensions.get('r', 0)
     p = dimensions.get('p', 0)
+    if x is None or y is None:
+        logging.warning('dict x or y is None')
+        x = {(i, k): 0.0 for i in range(n) for k in range(r)}
+        y = {(i, l): 0.0 for i in range(n) for l in range(p)}
+        return x, y
     if len(x.keys()) == 0:
         logging.warning('dict x contains no variables')
-        return {}, {}
+        x = {(i, k): 0.0 for i in range(n) for k in range(r)}
+        y = {(i, l): 0.0 for i in range(n) for l in range(p)}
+        return x, y
     if len(x.keys()[0]) == 3:
         x_ = {(i, k): 1.0 if sum([x[i, k, l] > 0 for l in range(p)]) else 0.0 for i in range(n) for k in range(r)}
         y_ = {(i, l): y.get((i, l)) or 0.0 for i in range(n) for l in range(p)}
