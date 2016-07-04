@@ -507,7 +507,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     # load number of students registered for each exam
     if semester in ["15W", "16S"]:
         exam_students = read_teilnehmer(semester)
-        print sorted([exam for exam in result_times if exam not in exam_students])
+        # print sorted([exam for exam in result_times if exam not in exam_students])
         
         if pre_year_data:
             print "Pre year data is currently turned off!"
