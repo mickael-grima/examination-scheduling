@@ -89,6 +89,7 @@ def force_data_format(func):
         data_version = data.get('data_version', 'undefined')
         exam_names = data.get('exam_names', list())
         exam_slots = data.get('exam_slots', dict())
+        exam_slots = data.get('exam_weeks', dict())
         exam_slots_index = data.get('exam_slots_index', dict())
         exam_rooms = data.get('exam_rooms', dict())
         result_times = data.get('result_times', dict())
@@ -129,6 +130,7 @@ def force_data_format(func):
             'data_version': data_version,
             'exam_names': exam_names,
             'exam_slots': exam_slots,
+            'exam_weeks': exam_weeks,
             'exam_slots_index': exam_slots_index,
             'exam_rooms': exam_rooms,
             'result_times': result_times,
