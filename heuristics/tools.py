@@ -75,7 +75,7 @@ def to_binary(coloring, color_schedule, h):
     if color_schedule is None:
         return None
     
-    hdict = {}
+    hdict = dict()
     for i, hi in enumerate(h):
         hdict[hi] = i
         

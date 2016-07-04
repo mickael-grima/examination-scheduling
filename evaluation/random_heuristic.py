@@ -29,13 +29,13 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 1
+    n_colorings = 100
     epochs = 1
-    annealing_iterations = 10000
+    annealing_iterations = 100
     
     rd.seed(42)
     
-    data = examination_data.read_data(semester = "15W", pre_year_data = False,  threshold = 0)
+    data = examination_data.read_data(semester = "15W", pre_year_data = False,  threshold = 100)
     data['similar_periods'] = tools.get_similar_periods(data)
     
     n, r, p = data['n'], data['r'], data['p']
@@ -48,6 +48,9 @@ if __name__ == '__main__':
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False, parallel=parallel)
     print "Time:", time()-t
+    if y is None:
+        print "INFEASIBLE!!"
+        exit(0)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     
     print "ROOM_OBJ:", obj_room(x)

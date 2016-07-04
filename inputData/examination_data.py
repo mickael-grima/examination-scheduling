@@ -158,6 +158,52 @@ def read_locked_rooms(semester, rooms, h):
     return room_locking_times
 
 
+def read_teilnehmer(semester):
+    #LV_NUMMER;LV_TITEL;LV_SEMESTER;DATUM;ANZ_TEILNEHMER
+    
+    filename = "Teilnehmer/Teilnehmer_15.csv"
+    
+    if semester == "15W":
+        key = ["LV_NUMMER", "DATUM"]
+    else:
+        key = "LV_NUMMER"
+        
+    students = read_columns(filename, key, ["LV_SEMESTER", "ANZ_TEILNEHMER"], sep=";")
+    
+    
+    exam_students = dict()
+    for exam in students["ANZ_TEILNEHMER"]:
+        
+        if students["LV_SEMESTER"][exam] != semester:
+            continue
+
+        # IN0039;Praktikum: Game Engine Design;15S;24/07/2015;195
+        # split key, we need to rearrange date
+        match = re.search("\d{2}.\d{2}.\d{4}", exam)
+        if match is None:
+            #print "ERROR!", exam
+            continue
+        
+        datum = match.group()
+        lv_nr = re.sub("\s*%s" %datum, "", exam)
+        
+        datum = re.split("\/", datum)
+        if len(datum) < 2:
+            #print "ERROR!", exam
+            continue
+        
+        datum = "%d/%d/%s" %(int(datum[1]), int(datum[0]), datum[2])
+        
+        key = "%s %s" %(lv_nr, datum)
+        
+        if key not in exam_students:
+            exam_students[key] = int(students["ANZ_TEILNEHMER"][exam])
+        else:
+            exam_students[key] += int(students["ANZ_TEILNEHMER"][exam])
+            
+    return exam_students
+    
+    
 def read_students(semester):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
     
@@ -166,6 +212,7 @@ def read_students(semester):
     anmelde_data = semester
     if semester == "16S":
         anmelde_data = "15S"
+    
     filename = "Conflicts/%s.csv" %anmelde_data
     
     if semester == "15W":
@@ -456,23 +503,30 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     room_capacity, room_campus_id = read_rooms()
     
     # load number of students registered for each exam
-    exam_students = read_students(semester)
-    
-    # load number of students registered for each exam
-    if pre_year_data:
-        unknown_exams = 0
-        presem = "14W" if semester == "15W" else "14S"
+    if semester in ["15W", "16S"]:
+        exam_students = read_teilnehmer(semester)
+        print sorted([exam for exam in result_times if exam not in exam_students])
         
-        pre_students = read_students(presem)
+        if pre_year_data:
+            print "Pre year data is currently turned off!"
+    else:
+        exam_students = read_students(semester)
         
-        for exam in exam_students:
-            exam_renamed = re.sub("\s+\d+\/\d+\/\d+", "", exam)
-            if exam_renamed in pre_students:
-                exam_students[exam] = pre_students[exam_renamed]
-            else:
-                unknown_exams += 1
-                exam_students[exam] = 0
-        if verbose: print "unknown predata", unknown_exams, len(exam_students)
+        # load number of students registered for each exam
+        if pre_year_data:
+            unknown_exams = 0
+            presem = "14W" if semester == "15W" else "14S"
+            
+            pre_students = read_students(presem)
+            
+            for exam in exam_students:
+                exam_renamed = re.sub("\s+\d+\/\d+\/\d+", "", exam)
+                if exam_renamed in pre_students:
+                    exam_students[exam] = pre_students[exam_renamed]
+                else:
+                    unknown_exams += 1
+                    exam_students[exam] = 0
+            if verbose: print "unknown predata", unknown_exams, len(exam_students)
         
             
     # get exams in the MOSES result
@@ -593,6 +647,8 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
 #    data['K'] = K
     
     data['conflicts'] = conflicts
+    data['conflicts'] = defaultdict(list)
+    data['conflicts'][0] = []
     data['locking_times'] = locking_times
     
     data['data_version'] = semester
