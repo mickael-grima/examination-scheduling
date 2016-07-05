@@ -15,6 +15,7 @@ from collections import defaultdict
 import re
 import numpy as np
 import pickle
+import random as rd
 
 from model.data_format import force_data_format
 
@@ -30,7 +31,6 @@ def read_columns(datname, key, cols, sep=","):
             line = re.sub('\n', '', line)
             line = re.sub('\r', '', line)
             line = re.split(sep, line)
-
 
             assert len(line) > len(cols)
             
@@ -112,6 +112,13 @@ def read_rooms():
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
     room_overview = read_columns("Data/Raumuebersicht.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
         
+    return room_overview["Klausurplaetze_eng"], room_overview["ID_Campus"]
+    
+def read_rooms_zusatz():
+    
+    # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
+    room_overview = read_columns("Data/Raumuebersicht_Zusatz.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
+    
     return room_overview["Klausurplaetze_eng"], room_overview["ID_Campus"]
     
     
@@ -419,22 +426,56 @@ def get_possible_exam_weeks(exam_times, verbose=False):
     #for f in faculty_weeks:
         #print f, sorted(faculty_weeks[f])
 
-    faculty_weeks['ME'] = [1,2,3,4] # [3]
-    faculty_weeks['CH'] = [0, 1, 2, 3, 4,   6, 7, 8]  #[0, 1, 2, 4, 6, 7, 8]
-    faculty_weeks['MA'] = [0, 1, 2, 3, 4,  6, 7, 8]
-    faculty_weeks['ED'] = [0,1,2,3] # [0]
-    faculty_weeks['SP'] = [0, 1, 2, 3,     6, 7, 8] #[0, 1, 3, 8]
-    faculty_weeks['BV'] = [1, 2, 3, 4] # [2, 3, 4]
-    faculty_weeks['WI'] = [0, 1, 2, 3, 4,   6, 7, 8] #[0, 1, 2, 4, 6]
-    faculty_weeks['MW'] = [0, 1, 2, 3, 4,   6, 7, 8]
+    faculty_weeks['ME'] = [3]
+    faculty_weeks['CH'] = [0, 1, 2, 4, 6, 7, 8]
+    faculty_weeks['MA'] = [0, 1, 2, 3, 4, 7, 8]
+    faculty_weeks['ED'] = [0]
+    faculty_weeks['SP'] = [0, 1, 3, 8]
+    faculty_weeks['BV'] = [2, 3, 4]
+    faculty_weeks['WI'] = [0, 1, 2, 4, 6]
+    faculty_weeks['MW'] = [0, 1, 2, 3, 4, 6, 7, 8]
     faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5]
-    faculty_weeks['IN'] = [0, 1, 2, 3, 4,  6, 7, 8] # [0, 1, 2, 4, 7, 8]
-    faculty_weeks['EI'] = [0, 1, 2, 3, 4,  6, 7, 8]
-    faculty_weeks['PH'] = [0, 1, 2, 3,      6, 7, 8]
-    faculty_weeks['SG'] = [0, 1, 2, 3,        6, 7, 8] # [0, 1, 2, 8]
-    faculty_weeks['WZ'] = [0, 1, 2, 3, 4,   6, 7, 8]
+    faculty_weeks['IN'] = [0, 1, 2, 4, 7, 8]
+    faculty_weeks['EI'] = [0, 1, 2, 3, 4, 7, 8]
+    faculty_weeks['PH'] = [0, 1, 2, 3, 6, 7, 8]
+    faculty_weeks['SG'] = [0, 1, 2, 8]
+    faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 6, 7, 8]
 
+    faculty_weeks['ME'] = [0, 1, 2, 3, 4]
+    faculty_weeks['CH'] = [0, 1, 2, 3, 4, 6, 7, 8]
+    faculty_weeks['MA'] = [0, 1, 2, 3, 4, 6, 7, 8]
+    faculty_weeks['ED'] = [0, 1, 2, 3, 4]
+    faculty_weeks['SP'] = [0, 1, 3, 3, 4, 6, 7, 8]
+    faculty_weeks['BV'] = [0, 1, 2, 3, 4]
+    faculty_weeks['WI'] = [0, 1, 2, 3, 4, 6, 7, 8]
+    faculty_weeks['MW'] = [0, 1, 2, 3, 4, 6, 7, 8]
+    faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5]
+    faculty_weeks['IN'] = [0, 1, 2, 3, 4, 6, 7, 8]
+    faculty_weeks['EI'] = [0, 1, 2, 3, 4, 7, 8]
+    faculty_weeks['PH'] = [0, 1, 2, 3, 4, 6, 7, 8]
+    faculty_weeks['SG'] = [0, 1, 2, 6,7, 8]
+    faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 6, 7, 8]
+
+    #faculty_weeks['ME'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #faculty_weeks['CH'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #faculty_weeks['MA'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #faculty_weeks['ED'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    faculty_weeks['SP'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #faculty_weeks['BV'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    faculty_weeks['WI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #faculty_weeks['MW'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #faculty_weeks['IN'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    faculty_weeks['EI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #faculty_weeks['PH'] = [0, 1, 2, 3, 4, 5, 6, 7, 8] 
+    faculty_weeks['SG'] = [0, 1, 2, 3, 4, 5, 6, 7, 8] 
+    faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    
+    faculty_black_list = []#'ME', 'ED', 'SP', 'BV', 'SG']
+    
     for f in faculty_weeks:
+        if f in faculty_black_list:
+            continue
         print f, sorted(faculty_weeks[f])
     
     # get faculty of each exam
@@ -451,6 +492,8 @@ def get_possible_exam_weeks(exam_times, verbose=False):
             
         faculty = exam_faculty[exam]
 
+        if faculty in faculty_black_list:
+            continue
         # determine week of exam:
         w = 0
         while w < len(week_slots):
@@ -543,7 +586,7 @@ def get_exam_rooms(result_rooms, room_campus_id):
     
 
 @force_data_format
-def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None):
+def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
@@ -563,6 +606,11 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     
     # load room capacities
     room_capacity, room_campus_id = read_rooms()
+    
+    # read zusatzinformation
+    rc2, rci2 = read_rooms_zusatz()
+    room_capacity.update(rc2)
+    room_campus_id.update(rci2)
     
     # load number of students registered for each exam
     exam_students = read_teilnehmer(semester)
@@ -597,7 +645,14 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     exam_slots = get_exam_slots(result_times, verbose=verbose)
     
     # filter exams which are considered with examination period
-    exams = [ exam for exam in exams if exam in exam_slots if len(exam_slots[exam]) >= 20]
+    exams = sorted([ exam for exam in exams if exam in exam_slots ])
+    
+    # make subproblem
+    if type(max_exams) == int:
+        rd.shuffle(exams)
+        exams = sorted(exams[0:max_exams])
+        
+    # get names of all used rooms
     rooms = sorted(set([ room for exam in exams for room in exam_rooms[exam] ]))
     
     # get all usable slots
@@ -609,8 +664,8 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     if verbose: print "Number of rooms:", len(rooms)
     if verbose: print "Number of periods", len(h)
     
-    print "RELAXING EXAM SLOTS!!"
-    exam_slots = {exam: h for exam in exams}
+    #print "RELAXING EXAM SLOTS!!"
+    #exam_slots = {exam: h for exam in exams}
     
     # finished loading basic data. Now everything is about format!
     # WARNING: DO NOT EDIT EXAMS AFTER THIS STEP!
@@ -639,11 +694,13 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
                 if l not in locking_times[k]:
                     locking_times[k].append(l)
     
+    if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
+    
     # remove locking times for exams which are planned in moses
     for i, exam in enumerate(exams):
         if result_times[exam] in h:
             l = h.index(result_times[exam])
-            for k in exam_rooms[i]:
+            for k in exam_rooms_index[exam]:
                 if l in locking_times[k]:
                     locking_times[k].remove(l)
         
@@ -687,7 +744,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
 
 if __name__ == "__main__":
     
-    data = read_data(semester = "15W", threshold = 0, verbose=True)
+    data = read_data(semester = "15W", threshold = 0, verbose=True, max_exams = 100)
     
     print "n, r, p"
     print data['n'], data['r'], data['p']

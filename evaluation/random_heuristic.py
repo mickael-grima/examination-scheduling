@@ -22,7 +22,7 @@ from heuristics.johnson import Johnson
 from heuristics.AC import AC
 import heuristics.tools as tools
 
-from evaluation.objectives import obj_time, obj_room
+from evaluation.objectives import obj_time, obj_room, obj
 
 from evaluation.moses import get_moses_representation
 
@@ -30,24 +30,26 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 4
-    epochs = 10
+    epochs = 5
     annealing_iterations = 1000
     
     rd.seed(42)
     
-    data = examination_data.read_data(semester = "15W", threshold = 0)
+    data = examination_data.read_data(semester = "15W", threshold = 0)#, max_exams = 200)
     data['similar_periods'] = tools.get_similar_periods(data)
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
     
+    from heuristics.johnson import Johnson
+    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
    # Heuristic = AC(data, num_ants = n_colorings)
     
     debug = True
     verbose = False
-    parallel = True
+    parallel =  True
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 10, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
@@ -59,14 +61,14 @@ if __name__ == '__main__':
     
     print "ROOM_OBJ:", obj_room(x)
     print "TIME_OBJ:", obj_time(times, data)
-    print "VALUE:", obj_room(x) + obj_time(times, data)
+    print "VALUE:", obj(x, y, data, gamma=gamma)
     
     print "Moses result:"
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=False)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
     print "TIME_OBJ:", obj_time(times, data)
-    print "VALUE:", v
+    print "VALUE:", obj(x, y, data, gamma=gamma)
     
     
     
