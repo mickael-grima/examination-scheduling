@@ -190,8 +190,9 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
         if debug: print constraints.time_feasible(y_binary, data)
         return None, None, None, sys.maxint
     
-    print color_schedule
-    print constraints.time_feasible(y_binary, data)
+    if debug:
+        print color_schedule
+        print constraints.time_feasible(y_binary, data)
     
     # create room schedule
     if debug: print "SCHDULE ROOMS"
@@ -232,7 +233,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         
         if verbose:
             print epoch
-        
+        print epoch
         xs, ys, obj_vals = dict(), dict(), dict()
         color_schedules = dict()
 

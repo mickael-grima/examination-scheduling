@@ -324,7 +324,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     
     # initialize the time slots randomly
     if color_schedule is None:
-        print "SEARCHING START"
+        if log: print "SEARCHING START"
         color_schedule = find_feasible_start(n_colors, h, statespace, conflicts, verbose=False)
         
         if len(color_schedule) < n_colors:
@@ -333,8 +333,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
             #print "Found one!"
     
     assert len(color_schedule) == len(set(color_schedule)), len(color_schedule) - len(set(color_schedule))
-    y_binary = to_binary(exam_colors, color_schedule, h)
-    print constraints.time_feasible(y_binary, data).values()
+    if log: 
+        y_binary = to_binary(exam_colors, color_schedule, h)
+        print constraints.time_feasible(y_binary, data).values()
     
     
     # best values found so far
@@ -372,11 +373,11 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         '''
 
         # get colors to change and their slot values
-        print "MAKE PROPOSAL"
+        if log: print "MAKE PROPOSAL"
         color, new_slot, color2, old_slot = make_proposal(color_schedule, statespace, n_colors, log=False)
-        print "OK"
+        if log: print "OK"
         #if log: 
-        print color, new_slot, color2, old_slot
+        if log: print color, new_slot, color2, old_slot
         #changed = get_changing_colors(color_schedule, color, color2)
         
         assert len(color_schedule) == len(set(color_schedule))
@@ -388,7 +389,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         
         #print color_schedule
         y_binary = to_binary(exam_colors, color_schedule, h)
-        print "new slot", constraints.time_feasible(y_binary, data).values()
+        if log: print "new slot", constraints.time_feasible(y_binary, data).values()
     
         if log: print color, color2, color_schedule
             
@@ -419,8 +420,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         
             # build binary variable 
             if debug: print "TOBINARY"
-            y_binary = to_binary(exam_colors, color_schedule, h)
-            print constraints.time_feasible(y_binary, data)
+            if log:
+                y_binary = to_binary(exam_colors, color_schedule, h)
+                print constraints.time_feasible(y_binary, data)
     
         
             if value > best_value:

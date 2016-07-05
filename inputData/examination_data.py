@@ -483,10 +483,12 @@ def get_exam_slots(result_times, verbose=False):
         
         if len(slots) >= 5:
             exam_slots[exam] = slots
+            if result_times[exam] not in slots:
+                print "BUG: Time not in slots!", result_times[exam]
+                exam_slots[exam] = sorted(exam_slots[exam] + [result_times[exam]])
         #else:
             #print exam, len(exam_slots[exam])
-        
-            
+    
     return exam_slots
     
     
@@ -572,6 +574,9 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     if verbose: print "Number of exams", len(exams)
     if verbose: print "Number of rooms:", len(rooms)
     if verbose: print "Number of periods", len(h)
+    
+    print "RELAXING EXAM SLOTS!!"
+    exam_slots = {exam: h for exam in exams}
     
     # finished loading basic data. Now everything is about format!
     # WARNING: DO NOT EDIT EXAMS AFTER THIS STEP!

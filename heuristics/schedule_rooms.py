@@ -130,6 +130,8 @@ def schedule_rooms(coloring, color_schedule, data, greedy = False):
         
         if greedy:
             exams_to_rooms = schedule_greedy(color_exams[color], periods[color], data)
+            if exams_to_rooms is None:
+                return None, sys.maxint
             for exam in exams_to_rooms:
                 for room in exams_to_rooms[exam]:
                     x[exam, room] = 1
