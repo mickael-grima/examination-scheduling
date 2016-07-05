@@ -19,6 +19,55 @@ import random as rd
 
 from model.data_format import force_data_format
 
+def split_key(exam):
+    ''' 
+        Split the combined key into module and datum!
+    '''
+    match = re.search("\d{1,2}.\d{1,2}.\d{4}", exam)
+    
+    if match is None:
+        return None, None
+    
+    datum = match.group()
+    modul = re.sub("\s*%s" %datum, "", exam)
+    
+    if len(re.split("\/", datum)) != 3:
+        return None, None
+        
+    return modul, datum
+
+
+def keys_are_equal(exam1, exam2):
+    '''
+        Compare two keys for equality.
+        If exams are close by less than 10 days, they are considered as equal.
+    '''
+    modul2, datum2 = split_key(exam2)
+    if modul2 is None: return False
+    
+    dat2 = map(int, re.split("\/", datum2))
+    
+    return keys_are_equal_fast(exam1, modul2, dat2[0], dat2[1])
+    
+
+def keys_are_equal_fast(exam1, modul2, month2, day2):
+    '''
+        Compare two keys for equality. Use info of known key
+        If exams are close by less than 10 days, they are considered as equal.
+    '''
+    modul1, datum1 = split_key(exam1)
+    if modul1 is None: return False
+    
+    if modul1 != modul2: return False
+
+    dat1 = map(int, re.split("\/", datum1))
+    
+    # If exams are close by less than 10 days, consider as equal
+    if abs(dat1[0] - month2) <= 1 and abs(dat1[1] - day2) <= 30:
+        return True
+    else:
+        return False
+
 def read_columns(datname, key, cols, sep=","):
     '''
     Read csv file and extract data with column names in cols. Takes first value found!
@@ -188,22 +237,16 @@ def read_teilnehmer(semester):
 
         # IN0039;Praktikum: Game Engine Design;15S;24/07/2015;195
         # split key, we need to rearrange date
-        match = re.search("\d{2}.\d{2}.\d{4}", exam)
-        if match is None:
+        modul, datum = split_key(exam)
+        
+        if modul is None:
             #print "ERROR!", exam
             continue
-        
-        datum = match.group()
-        lv_nr = re.sub("\s*%s" %datum, "", exam)
         
         datum = re.split("\/", datum)
-        if len(datum) < 2:
-            #print "ERROR!", exam
-            continue
-        
         datum = "%d/%d/%s" %(int(datum[1]), int(datum[0]), datum[2])
         
-        key = "%s %s" %(lv_nr, datum)
+        key = "%s %s" %(modul, datum)
         
         if key not in exam_students:
             exam_students[key] = int(students["ANZ_TEILNEHMER"][exam])
@@ -249,7 +292,39 @@ def read_students(semester):
             
     return exam_students
     
+   
+
+def search_for_key_in_exams(key, exams):
+    '''
+        Get the key in list. If it is there, take it, otherwise compare the keys!
+    '''
+    if key in exams:
+        return key
     
+    modul, datum = split_key(key)
+    if modul is None: return None
+    dat = map(int, re.split("\/", datum))
+    
+    for exam in exams:
+        if modul not in exam:
+            continue
+        if keys_are_equal_fast(exam, modul, dat[0], dat[1]):
+            return exam
+    return None
+
+
+def match_keys(exam_students, result_times):
+    '''
+        Some exams in MOSES are moved by hand again. Those are usually quite close to the planned one.
+        Using this method, we can find student numbers for those exams!
+    '''
+    for exam in result_times:
+        key = search_for_key_in_exams(exam, exam_students)
+        if key is None:
+            continue
+        exam_students[exam] = exam_students[key]
+    return exam_students
+
 
 def read_conflicts(semester, exams = None, threshold = 0):
     #MODUL;T_NR;DATUM_T1;ANZ_STUD_MOD1;STUDIS_PRUEF1_GES;STUDIS_PRUEF1_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF1;MODUL2;T_NR2;DATUM_T2;SEMESTER;ANZ_STUD_MOD2;STUDIS_PRUEF2_GES;STUDIS_PRUEF2_ABGEMELDET;STUD_NICHT_ERSCHIENEN_PRUEF2
@@ -261,6 +336,8 @@ def read_conflicts(semester, exams = None, threshold = 0):
     
     Q_abs = defaultdict(int)
     colnames = []
+    unresolved_idents = []
+    ident_matches = dict()
     
     with open("%sinputData/%s"%(PROJECT_PATH, filename)) as csvfile:
         for line in csvfile:
@@ -278,24 +355,89 @@ def read_conflicts(semester, exams = None, threshold = 0):
                     ident1 = ident1 + " " + line[colnames.index("DATUM_T1")]
                     ident2 = ident2 + " " + line[colnames.index("DATUM_T2")]
                     
-                #print exams
-                # make sure the exam is used for our solution
-                if exams is not None and ident1 not in exams:
-                    continue
-                if exams is not None and ident2 not in exams:
-                    continue
-                
                 assert line[colnames.index("ANZ_STUD_MOD1")] == line[colnames.index("ANZ_STUD_MOD2")]
                 
                 # get conflicts
                 n_conflicts = int(line[colnames.index("ANZ_STUD_MOD1")])
                 
-                # build Q matrix
-                if n_conflicts > threshold:
-                    Q_abs[ident1, ident2] = n_conflicts
-                    
+                if n_conflicts <= threshold:
+                    continue
                 
-    print "read conflicts"
+                # make sure the exam is used for our solution
+                if exams is not None and ident1 not in exams:
+                    
+                    if ident1 not in ident_matches:
+                        match1 = search_for_key_in_exams(ident1, exams)
+                        if match1 is None:
+                            continue
+                        ident_matches[ident1] = match1
+                    
+                    ident1 = ident_matches[ident1]
+                    
+                # make sure the exam is used for our solution
+                if exams is not None and ident2 not in exams:
+                    
+                    if ident2 not in ident_matches:
+                        match2 = search_for_key_in_exams(ident2, exams)
+                        if match2 is None:
+                            continue
+                        ident_matches[ident2] = match2
+                    
+                    ident2 = ident_matches[ident2]
+                    
+                # build Q matrix
+                Q_abs[ident1, ident2] = n_conflicts
+                    
+                    
+    ## resolve unresolved_idents
+    #if exams is not None:
+        #moduls = [ split_key(exam)[0] for exam in exams ]
+        #datums = [ split_key(exam)[1] for exam in exams ]
+        
+        #while len(unresolved_idents) > 0:
+            #print len(unresolved_idents)
+            #ident1, ident2, n_conflicts = unresolved_idents[0]
+            
+            #if n_conflicts <= threshold:
+                #unresolved_idents.pop(0)
+                #continue
+            
+            #modul1, datum1 = split_key(ident1)
+            #if modul1 is None: 
+                #unresolved_idents.pop(0)
+                #continue
+            
+            #modul2, datum2 = split_key(ident2)
+            #if modul2 is None: 
+                #unresolved_idents.pop(0)
+                #continue
+            
+            #if modul1 not in moduls or modul2 not in moduls:
+                #unresolved_idents.pop(0)
+                #continue
+            
+            #dat1 = map(int, re.split("\/", datum1))
+            #dat2 = map(int, re.split("\/", datum2))
+            
+            ##find ident1
+            #for i, exam in enumerate(exams):
+                #if keys_are_equal_fast(exam, modul1, dat1[0], dat1[1]):
+                    #ident1 = exam
+                #elif i == len(exams)-1:
+                    #unresolved_idents.pop(0)
+                    #continue
+            
+            ##find ident2
+            #for i, exam in enumerate(exams):
+                #if keys_are_equal_fast(exam, modul2, dat2[0], dat2[1]):
+                    #ident2 = exam
+                #elif i == len(exams)-1:
+                    #unresolved_idents.pop(0)
+                    #continue
+            
+            #Q_abs[ident1, ident2] = n_conflicts
+            #unresolved_idents.pop(0)
+                
     n = len(exams)
     Q = [[0 for i in range(n)] for i in range(n)]
     K = defaultdict(int)
@@ -463,7 +605,7 @@ def get_possible_exam_weeks(exam_times, verbose=False):
     faculty_weeks['SP'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     #faculty_weeks['BV'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     faculty_weeks['WI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    #faculty_weeks['MW'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    faculty_weeks['MW'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     #faculty_weeks['IN'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     faculty_weeks['EI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -584,7 +726,7 @@ def get_exam_rooms(result_rooms, room_campus_id):
     
     return exam_rooms
     
-
+    
 @force_data_format
 def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None):
     '''
@@ -614,8 +756,12 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     
     # load number of students registered for each exam
     exam_students = read_teilnehmer(semester)
-    # print len(sorted([exam for exam in result_times if exam not in exam_students]))
-        
+    
+    # enrich student data by hand changed exams
+    exam_students = match_keys(exam_students, result_times)
+    
+    if verbose: print "Exams which we cannot find data for:", len(sorted([exam for exam in result_times if exam not in exam_students]))
+    
     # get exams in the MOSES result
     exams = [exam for exam in result_times]
     if verbose: print "Number of exams", len(exams)
@@ -679,6 +825,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     
     
     # read conflict data from tumonline
+    if verbose: print "Read conflicts..."
     Q, conflicts, K = read_conflicts(semester, exams = exams, threshold = threshold)
     if verbose: print "Mean number of conflicts", np.mean([ len(conflicts[i]) for i, e in enumerate(exams)])
     
@@ -696,7 +843,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
     
-    # remove locking times for exams which are planned in moses
+    # remove locking times for all exams we found and which are planned in moses illegally
     for i, exam in enumerate(exams):
         if result_times[exam] in h:
             l = h.index(result_times[exam])
@@ -744,7 +891,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
 
 if __name__ == "__main__":
     
-    data = read_data(semester = "15W", threshold = 0, verbose=True, max_exams = 100)
+    data = read_data(semester = "15W", threshold = 0, verbose=True)#, max_exams = 100)
     
     print "n, r, p"
     print data['n'], data['r'], data['p']

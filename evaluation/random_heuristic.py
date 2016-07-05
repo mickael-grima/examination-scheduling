@@ -35,7 +35,7 @@ if __name__ == '__main__':
     
     rd.seed(42)
     
-    data = examination_data.read_data(semester = "15W", threshold = 0)#, max_exams = 200)
+    data = examination_data.read_data(semester = "15W", threshold = 5)#, max_exams = 200)
     data['similar_periods'] = tools.get_similar_periods(data)
     
     n, r, p = data['n'], data['r'], data['p']

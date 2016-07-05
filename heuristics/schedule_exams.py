@@ -233,7 +233,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         
         if verbose:
             print epoch
-        print epoch
+        #print epoch
         xs, ys, obj_vals = dict(), dict(), dict()
         color_schedules = dict()
 

@@ -18,14 +18,15 @@ import heuristics.schedule_exams as scheduler
 from heuristics.johnson import Johnson
 from heuristics.AC import AC
 import heuristics.tools as tools
-from evaluation.objectives import obj_time, obj_room
+from evaluation.objectives import obj_time, obj_room, obj
+from evaluation.moses import get_moses_representation
 
 if __name__ == '__main__':
     
     
     gamma = 1.0
     n_colorings = 20
-    epochs = 40
+    epochs = 10
     annealing_iterations = 1000
     parallel =  True
     
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     Heuristic = AC(data, num_ants = n_colorings)
     
     t = time()
-    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=False, parallel=parallel)
+    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 100, verbose = True, log_history = True, debug=True, parallel=parallel)
     print "Time:", time()-t
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
    
