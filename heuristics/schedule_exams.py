@@ -167,6 +167,10 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
         if debug: print "infeasible statespace"
         return None, None, None, sys.maxint
     
+    #for i in statespace:
+        #print i, len(statespace[i]
+    #exit(0)
+    
     for i in statespace:
         assert len(statespace[i]) == len(set(statespace[i]))
     

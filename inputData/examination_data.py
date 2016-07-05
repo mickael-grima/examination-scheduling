@@ -117,7 +117,7 @@ def read_rooms():
     
     
 def read_locked_rooms(semester, rooms, h):
-    print semester
+    
     # "","ID_RAUM","startTime","endTime","startDate","endDate"
     if semester == "15W":
         key = "RAUM_CODE"
@@ -367,13 +367,13 @@ def get_weeks(h):
     return weeks
 
 
-def get_faculty_weeks(exams, exam_times, week_slots, verbose = False):
+def get_faculty_weeks(exam_times, week_slots, verbose = False):
     '''
         For each faculty get lists of weeks where exams are held
     '''
     
     # get faculties
-    exam_faculty = {exam: re.search("\D+\d", exam).group()[0:-1] for exam in exams }
+    exam_faculty = {exam: re.search("\D+\d", exam).group()[0:-1] for exam in exam_times }
     faculties = sorted(set(exam_faculty.values()))
     if verbose: print faculties
     
@@ -388,7 +388,7 @@ def get_faculty_weeks(exams, exam_times, week_slots, verbose = False):
     
     # get examination periods for each faculty in weeks:
     faculty_periods = defaultdict(list)
-    for exam in exams:
+    for exam in exam_times:
         faculty = exam_faculty[exam]
         for week in week_slots:
             if week not in faculty_periods[faculty] and exam_times[exam] in week_slots[week]:
@@ -398,7 +398,7 @@ def get_faculty_weeks(exams, exam_times, week_slots, verbose = False):
     return faculty_periods
 
 
-def get_possible_exam_slots(exams, exam_times, verbose=False):
+def get_possible_exam_weeks(exam_times, verbose=False):
     '''
         For each exam get the time slots which can be used to schedule this exam!
     '''
@@ -409,26 +409,18 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
         #for w in week_slots:
             #print w, week_slots[w]
         
-    
     # get examination periods for each faculty in weeks:
-    faculty_weeks = get_faculty_weeks(exams, exam_times, week_slots, verbose = verbose)
+    faculty_weeks = get_faculty_weeks(exam_times, week_slots, verbose = verbose)
     #if verbose:
     #for f in faculty_weeks:
         #print f, sorted(faculty_weeks[f])
     
     # get faculty of each exam
-    exam_faculty = { exam: re.search("\D+\d", exam).group()[0:-1] for exam in exams }
+    exam_faculty = { exam: re.search("\D+\d", exam).group()[0:-1] for exam in exam_times }
     
-    exam_slots = defaultdict(list)
+    # extract the weeks of each exam
     exam_weeks = defaultdict(list)
-    
-    # TODO: REMOVE
-    #for exam in exams:
-        #exam_slots[exam] = sorted(set(exam_times.values()))
-    #return exam_slots
-
-
-    for exam in exams:
+    for exam in exam_times:
         faculty = exam_faculty[exam]
 
         # determine week of exam:
@@ -438,16 +430,13 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
                 break
             else: 
                 w += 1
-        
         exam_weeks[exam].append(w)
-        exam_slots[exam] += week_slots[w]
         
         # for all connecting weeks to the left, add slots
         w2 = w-1
         while w2 > 0:
             if w2 in faculty_weeks[faculty]:
                 exam_weeks[exam].append(w2)
-                exam_slots[exam] += week_slots[w2]
             else:
                 break
             w2 -= 1
@@ -457,31 +446,44 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
         while w3 < len(week_slots):
             if w3 in faculty_weeks[faculty]:
                 exam_weeks[exam].append(w3)
-                exam_slots[exam] += week_slots[w3]
             else:
                 break
             w3 += 1
     
+    return exam_weeks, week_slots
     
-    #for exam in exam_faculty:
-        #if "MA" in exam:
-            #print exam, exam_times[exam]
-            #print sorted(faculty_weeks[exam_faculty[exam]])
-            #print sorted(exam_slots[exam])
+def get_exam_slots(result_times, verbose=False):
+    '''
+        Given the calendar weeks for each exam, give the corresponing slots.
+        All exams with more or equal to week_threshold weeks are considered
+    '''
+
+    exam_weeks, week_slots = get_possible_exam_weeks(result_times, verbose=verbose)
+
+    #for exam in exam_weeks:
+        #exam_weeks[exam].append(max(exam_weeks[exam])+1)
+    
+    exam_slots = defaultdict(list)
+    for exam in exam_weeks:
+        
+        for week in exam_weeks[exam]:
+            exam_slots[exam] += week_slots[week]
+        
+        exam_slots[exam] = sorted(set(exam_slots[exam]))
+        #print exam, len(exam_slots[exam])
+    
+    return exam_slots
     
     
-    return exam_slots, exam_weeks
-    
-    
-def get_exam_rooms(exams, result_rooms, room_campus_id):
+def get_exam_rooms(result_rooms, room_campus_id):
     '''
         For each exam get the rooms which are located at the campus the exam is to be held.
     '''
     all_rooms = set([room for exam in result_rooms for room in result_rooms[exam]])
             
     exam_rooms = defaultdict(list)
-    for exam in exams:
-        camps = set([ room_campus_id[room] for room in result_rooms[exam] ])
+    for exam in result_rooms:
+        camps = set([ room_campus_id[room] for room in result_rooms[exam] if room in room_campus_id ])
         for room in all_rooms:
             if room in room_campus_id and room_campus_id[room] in camps:
                 exam_rooms[exam].append(room)
@@ -537,74 +539,70 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     if verbose: print "Drop duplicates", len(drop_exams)
     if verbose: print "Number of exams", len(exams)
     
+    # For each exam get all rooms at the eligible campus
+    exam_rooms = get_exam_rooms(result_rooms, room_campus_id)
     
-    ## build exam data structures
-    if verbose: print "Number of timeslots (pre)", len(sorted(set(result_times.values())))
+    # for each exam determine the possible slots according to examination periods
+    exam_slots = get_exam_slots(result_times, verbose=verbose)
     
-    h = sorted(set(result_times.values()))
-    #h = sorted(set([result_times[exam] for exam in exams]))
+    # filter exams which are considered with examination period
+    exams = [ exam for exam in exams if exam in exam_slots if len(exam_slots[exam]) >= 20]
+    rooms = sorted(set([ room for exam in exams for room in exam_rooms[exam] ]))
+    
+    # get all usable slots
+    h = sorted(set([ slot for exam in exams for slot in exam_slots[exam] ]))
     s = [exam_students[exam] for exam in exams]
-    
-    if verbose: print "Number of timeslots (post)", len(h)
-    
-    # for each exam determine the possible time slots according to examination periods
-    exam_slots, exam_weeks = get_possible_exam_slots(exams, result_times, verbose=verbose)
-    if verbose: print "Exam slots", len(exam_slots)
-    
-    # get index format for exam slots (for ILP)
-    exam_slots_index = defaultdict(list)
-    for exam in exam_slots:
-        for slot in exam_slots[exam]:
-            exam_slots_index[exam].append(h.index(slot))
-    
-    # convert to list of lists WARNING: DO NOT EDIT EXAMS AFTER THIS STEP!
-    exam_slots = exam_slots.values()
-    exam_slots_index = exam_slots_index.values()
-    
-    # construct room data
-    rooms = sorted(set([ room for exam in result_rooms for room in result_rooms[exam] if room in room_capacity]))
     c = [int(room_capacity[room]) for room in rooms]
     
-    if verbose: print "Number of rooms", len(rooms)    
+    if verbose: print "Number of exams", len(exams)
+    if verbose: print "Number of rooms:", len(rooms)
+    if verbose: print "Number of periods", len(h)
     
-    if verbose: print sorted(set([ room for exam in result_rooms for room in result_rooms[exam] if room not in room_capacity]))
-    
-    # For each exam get all rooms at the eligible campus
-    exam_rooms = get_exam_rooms(exams, result_rooms, room_campus_id)
+    # finished loading basic data. Now everything is about format!
+    # WARNING: DO NOT EDIT EXAMS AFTER THIS STEP!
     
     # convert to index notation
-    for exam in exam_rooms:
-        exam_rooms[exam] = [ rooms.index(room) for room in exam_rooms[exam] ]
-    exam_rooms = exam_rooms.values()
-        
-    # Load locking rooms from table
-    room_locking_times = read_locked_rooms(semester, rooms, h)
+    exam_rooms_index = defaultdict(list)
+    exam_slots_index = defaultdict(list)
+    for exam in exams:
+        exam_slots_index[exam] = [ h.index(slot) for slot in exam_slots[exam] ]
+        exam_rooms_index[exam] = [ rooms.index(room) for room in exam_rooms[exam] ]
     
-    # construct time data. If we dont plan the exam then we lock the room.
-    locking_times = defaultdict(list)
+    
+    # read conflict data from tumonline
+    Q, conflicts, K = read_conflicts(semester, exams = exams, threshold = threshold)
+    if verbose: print "Mean number of conflicts", np.mean([ len(conflicts[i]) for i, e in enumerate(exams)])
+    
+    
+    # Load locking rooms from table
+    locking_times = read_locked_rooms(semester, rooms, h)
+    
+    # If we dont plan the exam then we lock the room.
     for k, room in enumerate(rooms):
-        locking_times[k] = room_locking_times[k]
         for exam in [e for e in result_times if e not in exams]:
-            if exam in result_rooms and room in result_rooms[exam]:
+            if exam in result_rooms and room in result_rooms[exam] and result_times[exam] in h:
                 l = h.index(result_times[exam])
                 if l not in locking_times[k]:
                     locking_times[k].append(l)
     
     # remove locking times for exams which are planned in moses
-    y = defaultdict(int)
     for i, exam in enumerate(exams):
-        l = h.index(result_times[exam])
-        for k in exam_rooms[i]:
-            if l in locking_times[k]:
-                locking_times[k].remove(l)
-                
+        if result_times[exam] in h:
+            l = h.index(result_times[exam])
+            for k in exam_rooms[i]:
+                if l in locking_times[k]:
+                    locking_times[k].remove(l)
+        
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
+     
+     
     
-    # read conflict data from tumonline
-    Q, conflicts, K = read_conflicts(semester, exams = exams, threshold = threshold)
-    
-    if verbose: print "Mean number of conflicts", np.mean([ len(conflicts[i]) for i, e in enumerate(exams)])
-    if verbose: print "Percentage of conflicts", 100.*len(K)/(len(exams)**2)
+    # convert to list of lists 
+    exam_slots = exam_slots.values()
+    exam_slots_index = exam_slots_index.values()
+    exam_rooms = exam_rooms.values()
+    exam_rooms_index = exam_rooms_index.values()
+    exam_rooms = exam_rooms_index # Due to backward compatibility
     
     data = {}
     
@@ -615,18 +613,13 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     data['h'] = h
     data['s'] = s
     data['c'] = c
-#TODO: Dont really know how to use it:
-#    data['K'] = K
     
     data['conflicts'] = conflicts
-#    data['conflicts'] = defaultdict(list)
-#    data['conflicts'][0] = []
     data['locking_times'] = locking_times
     
     data['data_version'] = semester
     data['exam_names'] = exams
     data['exam_slots'] = exam_slots
-    data['exam_weeks'] = exam_weeks
     data['exam_slots_index'] = exam_slots_index
     data['exam_rooms'] = exam_rooms
     
