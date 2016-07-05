@@ -609,8 +609,8 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     if verbose: print "Number of rooms:", len(rooms)
     if verbose: print "Number of periods", len(h)
     
-    #print "RELAXING EXAM SLOTS!!"
-    #exam_slots = {exam: h for exam in exams}
+    print "RELAXING EXAM SLOTS!!"
+    exam_slots = {exam: h for exam in exams}
     
     # finished loading basic data. Now everything is about format!
     # WARNING: DO NOT EDIT EXAMS AFTER THIS STEP!
