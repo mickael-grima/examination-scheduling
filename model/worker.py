@@ -148,9 +148,9 @@ def compare(data):
                             file.write('%s %g' % (v.varName, v.x))
                             file.write('\n')
 
-            with open("x_ikl.pickle", "wb") as pckl:
+            with open("%sresults\pickle_x_ikl.pickle" % (PROJECT_PATH), "wb") as pckl:
                 pickle.dump(x_ikl, pckl)
-            with open("y_il.pickle", "wb") as pckl:
+            with open("%sresults\pickle_y_il.pickle" % (PROJECT_PATH), "wb") as pckl:
                 pickle.dump(y_il, pckl)
             
             file.write('\n')
@@ -179,7 +179,7 @@ def test_compare():
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
     #data = build_real_data(tseed=tseed)
     #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
-    data = examination_data.read_data(semester = "15W", threshold = 0)
+    data = examination_data.read_data(semester = "15W", threshold = 0, max_exams = 50)
     #data['similar_periods'] = tools.get_similar_periods(data)
 
     time, objectives = compare(data)
