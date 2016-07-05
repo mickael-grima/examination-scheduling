@@ -72,6 +72,17 @@ if __name__ == '__main__':
     
     
     
+    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 10, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
+    print "Time:", time()-t
+    if y is None:
+        print "INFEASIBLE!!"
+        exit(0)
+    times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
+    
+    print "ROOM_OBJ:", obj_room(x)
+    print "TIME_OBJ:", obj_time(times, data)
+    print "VALUE:", obj(x, y, data, gamma=gamma)
+    
     #for key in logger:
         #print key
         #print logger[key]

@@ -19,7 +19,7 @@ import numpy as np
 from inputData import examination_data
 from heuristics import tools
 
-from evaluation.objectives import obj_time, obj_room
+from evaluation.objectives import obj_time, obj_room, obj_time_y
 
 import model.constraints_handler as constraints
     
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(times, data)
+    print "TIME_OBJ:", obj_time_y(y, data)
     print "VALUE:", v
     
     # get rooms for which we dont have data
