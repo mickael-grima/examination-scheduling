@@ -130,7 +130,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
             exam_slots = data['exam_slots']
             if colour not in self.color_slots:
                 return(True)
-            if not any([slot in self.color_slots[colour] for slot in exam_slots[node]]):
+            if len([slot for slot in exam_slots[node] if slot in self.color_slots[colour]]) <= 1:
                 return(False)
         return(True)
 

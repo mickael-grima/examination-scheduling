@@ -156,6 +156,7 @@ def propose_color(color, color_schedule, statespace):
     # draw new time slot
     new_slot = rd.choice(statespace[color])
     while new_slot == old_slot:
+        #print "="#, #statespace[color]
         new_slot = rd.choice(statespace[color])
         
     # determine if we need to swap colors
@@ -318,6 +319,8 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     # get conflicts of colors
     color_conflicts = get_color_conflicts(color_exams, exam_colors, conflicts)
     
+    #assert min([len(statespace[i]) for i in statespace]) > 1, min([len(statespace[i]) for i in statespace])
+    
     # the state space for each coloring, calculated from the 
     if statespace is None:
         statespace = { color: h for color in color_exams }
@@ -408,8 +411,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         if log:
             print "Obj: %0.2f" % value
             print np.exp(-beta * (value - old_value))
+        #print value, old_value, np.exp( beta * (value - old_value))
         
-        if rd.uniform(0,1) <= np.exp( beta * (value - old_value) ):
+        if value > old_value or rd.uniform(0,1) <= np.exp( beta * (value - old_value) ):
             
             if log: print "Accepted"
             
@@ -487,6 +491,7 @@ def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n
     '''
     #debug = True
     log_hist = False
+    #log_hist = True
     if debug:
         log_hist = True
     color_schedules = []

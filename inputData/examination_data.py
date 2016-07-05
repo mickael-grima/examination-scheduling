@@ -363,7 +363,11 @@ def get_weeks(h):
         weeks[counter] += [h[i-1]]
         if h[i] - h[i-1] >= D:
             counter += 1
-    
+        
+        # APPEND REST
+        if i == len(h) - 1:
+            weeks[counter] += [h[i]]
+        
     return weeks
 
 
@@ -412,20 +416,39 @@ def get_possible_exam_weeks(exam_times, verbose=False):
     # get examination periods for each faculty in weeks:
     faculty_weeks = get_faculty_weeks(exam_times, week_slots, verbose = verbose)
     #if verbose:
-    for f in faculty_weeks:
-        if len(faculty_weeks[f]) == 1:
-            if faculty_weeks[f][0] > 0:
-                faculty_weeks[f] = [faculty_weeks[f][0]-1, faculty_weeks[f][0], faculty_weeks[f][0]+1]
-            else:
-                faculty_weeks[f] = [faculty_weeks[f][0], faculty_weeks[f][0]+1, faculty_weeks[f][0]+2]
+    #for f in faculty_weeks:
         #print f, sorted(faculty_weeks[f])
+
+    faculty_weeks['ME'] = [1,2,3,4] # [3]
+    faculty_weeks['CH'] = [0, 1, 2, 3, 4,   6, 7, 8]  #[0, 1, 2, 4, 6, 7, 8]
+    faculty_weeks['MA'] = [0, 1, 2, 3, 4,  6, 7, 8]
+    faculty_weeks['ED'] = [0,1,2,3] # [0]
+    faculty_weeks['SP'] = [0, 1, 2, 3,     6, 7, 8] #[0, 1, 3, 8]
+    faculty_weeks['BV'] = [1, 2, 3, 4] # [2, 3, 4]
+    faculty_weeks['WI'] = [0, 1, 2, 3, 4,   6, 7, 8] #[0, 1, 2, 4, 6]
+    faculty_weeks['MW'] = [0, 1, 2, 3, 4,   6, 7, 8]
+    faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5]
+    faculty_weeks['IN'] = [0, 1, 2, 3, 4,  6, 7, 8] # [0, 1, 2, 4, 7, 8]
+    faculty_weeks['EI'] = [0, 1, 2, 3, 4,  6, 7, 8]
+    faculty_weeks['PH'] = [0, 1, 2, 3,      6, 7, 8]
+    faculty_weeks['SG'] = [0, 1, 2, 3,        6, 7, 8] # [0, 1, 2, 8]
+    faculty_weeks['WZ'] = [0, 1, 2, 3, 4,   6, 7, 8]
+
+    for f in faculty_weeks:
+        print f, sorted(faculty_weeks[f])
     
     # get faculty of each exam
     exam_faculty = { exam: re.search("\D+\d", exam).group()[0:-1] for exam in exam_times }
     
     # extract the weeks of each exam
+    debug_name = 'CH0127'
+    debug_name = 'XYZNODEBUG'
+    
     exam_weeks = defaultdict(list)
     for exam in exam_times:
+        if debug_name in exam:
+            print exam, exam_times[exam]
+            
         faculty = exam_faculty[exam]
 
         # determine week of exam:
@@ -435,26 +458,37 @@ def get_possible_exam_weeks(exam_times, verbose=False):
                 break
             else: 
                 w += 1
+           
         exam_weeks[exam].append(w)
-        
+        if debug_name in exam:
+            print exam, exam_weeks[exam]
+            
         # for all connecting weeks to the left, add slots
         w2 = w-1
-        while w2 > 0:
+        while w2 >= 0:
             if w2 in faculty_weeks[faculty]:
                 exam_weeks[exam].append(w2)
             else:
                 break
             w2 -= 1
         
+        if debug_name in exam:
+            print exam, exam_weeks[exam]
         # for all connecting weeks to the right, add slots
         w3 = w+1
-        while w3 < len(week_slots):
+        while w3 <= len(week_slots):
             if w3 in faculty_weeks[faculty]:
                 exam_weeks[exam].append(w3)
             else:
                 break
             w3 += 1
-    
+        
+        # sort list
+        exam_weeks[exam] = sorted(exam_weeks[exam])
+        
+        if debug_name in exam:
+            print exam, exam_weeks[exam]
+            
     return exam_weeks, week_slots
     
 def get_exam_slots(result_times, verbose=False):
@@ -575,8 +609,8 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     if verbose: print "Number of rooms:", len(rooms)
     if verbose: print "Number of periods", len(h)
     
-    print "RELAXING EXAM SLOTS!!"
-    exam_slots = {exam: h for exam in exams}
+    #print "RELAXING EXAM SLOTS!!"
+    #exam_slots = {exam: h for exam in exams}
     
     # finished loading basic data. Now everything is about format!
     # WARNING: DO NOT EDIT EXAMS AFTER THIS STEP!

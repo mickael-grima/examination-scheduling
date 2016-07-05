@@ -162,8 +162,8 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     # check feasibility
     if debug: print "Building Statespace"
     statespace, color_exams = build_statespace(coloring, data)
-    
-    if statespace is None:
+    #print "Statespace", [len(statespace[i]) for i in statespace], min([len(statespace[i]) for i in statespace])
+    if statespace is None or min([len(statespace[i]) for i in statespace]) <= 1:
         if debug: print "infeasible statespace"
         return None, None, None, sys.maxint
     
