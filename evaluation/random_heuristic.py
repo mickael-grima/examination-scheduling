@@ -29,7 +29,7 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 4
+    n_colorings = 16
     epochs = 5
     annealing_iterations = 1000
     

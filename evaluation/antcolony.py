@@ -54,6 +54,6 @@ if __name__ == '__main__':
     print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", v
     
-    for key in logger:
-        print key
-        print logger[key]
+    #for key in logger:
+        #print key
+        #print logger[key]

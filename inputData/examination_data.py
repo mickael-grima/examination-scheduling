@@ -388,56 +388,6 @@ def read_conflicts(semester, exams = None, threshold = 0):
                 # build Q matrix
                 Q_abs[ident1, ident2] = n_conflicts
                     
-                    
-    ## resolve unresolved_idents
-    #if exams is not None:
-        #moduls = [ split_key(exam)[0] for exam in exams ]
-        #datums = [ split_key(exam)[1] for exam in exams ]
-        
-        #while len(unresolved_idents) > 0:
-            #print len(unresolved_idents)
-            #ident1, ident2, n_conflicts = unresolved_idents[0]
-            
-            #if n_conflicts <= threshold:
-                #unresolved_idents.pop(0)
-                #continue
-            
-            #modul1, datum1 = split_key(ident1)
-            #if modul1 is None: 
-                #unresolved_idents.pop(0)
-                #continue
-            
-            #modul2, datum2 = split_key(ident2)
-            #if modul2 is None: 
-                #unresolved_idents.pop(0)
-                #continue
-            
-            #if modul1 not in moduls or modul2 not in moduls:
-                #unresolved_idents.pop(0)
-                #continue
-            
-            #dat1 = map(int, re.split("\/", datum1))
-            #dat2 = map(int, re.split("\/", datum2))
-            
-            ##find ident1
-            #for i, exam in enumerate(exams):
-                #if keys_are_equal_fast(exam, modul1, dat1[0], dat1[1]):
-                    #ident1 = exam
-                #elif i == len(exams)-1:
-                    #unresolved_idents.pop(0)
-                    #continue
-            
-            ##find ident2
-            #for i, exam in enumerate(exams):
-                #if keys_are_equal_fast(exam, modul2, dat2[0], dat2[1]):
-                    #ident2 = exam
-                #elif i == len(exams)-1:
-                    #unresolved_idents.pop(0)
-                    #continue
-            
-            #Q_abs[ident1, ident2] = n_conflicts
-            #unresolved_idents.pop(0)
-                
     n = len(exams)
     Q = [[0 for i in range(n)] for i in range(n)]
     K = defaultdict(int)
@@ -551,7 +501,7 @@ def get_faculty_weeks(exam_times, week_slots, verbose = False):
     return faculty_periods
 
 
-def get_possible_exam_weeks(exam_times, verbose=False):
+def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True):
     '''
         For each exam get the time slots which can be used to schedule this exam!
     '''
@@ -593,25 +543,26 @@ def get_possible_exam_weeks(exam_times, verbose=False):
     faculty_weeks['MW'] = [0, 1, 2, 3, 4, 6, 7, 8]
     faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5]
     faculty_weeks['IN'] = [0, 1, 2, 3, 4, 6, 7, 8]
-    faculty_weeks['EI'] = [0, 1, 2, 3, 4, 7, 8]
+    faculty_weeks['EI'] = [0, 1, 2, 3, 4, 6, 7, 8]
     faculty_weeks['PH'] = [0, 1, 2, 3, 4, 6, 7, 8]
-    faculty_weeks['SG'] = [0, 1, 2, 6,7, 8]
+    faculty_weeks['SG'] = [0, 1, 2, 3, 4, 6, 7, 8]
     faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 6, 7, 8]
 
-    #faculty_weeks['ME'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    #faculty_weeks['CH'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    #faculty_weeks['MA'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    #faculty_weeks['ED'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    faculty_weeks['SP'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    #faculty_weeks['BV'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    faculty_weeks['WI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    faculty_weeks['MW'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    #faculty_weeks['IN'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    faculty_weeks['EI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    #faculty_weeks['PH'] = [0, 1, 2, 3, 4, 5, 6, 7, 8] 
-    faculty_weeks['SG'] = [0, 1, 2, 3, 4, 5, 6, 7, 8] 
-    faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    if relax_total:
+        faculty_weeks['ME'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['CH'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['MA'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['ED'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['SP'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['BV'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['WI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['MW'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['IN'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['EI'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        faculty_weeks['PH'] = [0, 1, 2, 3, 4, 5, 6, 7, 8] 
+        faculty_weeks['SG'] = [0, 1, 2, 3, 4, 5, 6, 7, 8] 
+        faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     
     faculty_black_list = []#'ME', 'ED', 'SP', 'BV', 'SG']
     
@@ -676,13 +627,13 @@ def get_possible_exam_weeks(exam_times, verbose=False):
             
     return exam_weeks, week_slots
     
-def get_exam_slots(result_times, verbose=False):
+def get_exam_slots(result_times, verbose=False, relax_total=True):
     '''
         Given the calendar weeks for each exam, give the corresponing slots.
         All exams with more or equal to week_threshold weeks are considered
     '''
 
-    exam_weeks, week_slots = get_possible_exam_weeks(result_times, verbose=verbose)
+    exam_weeks, week_slots = get_possible_exam_weeks(result_times, verbose=verbose, relax_total = relax_total)
 
     #for exam in exam_weeks:
         #exam_weeks[exam].append(max(exam_weeks[exam])+1)
@@ -728,7 +679,7 @@ def get_exam_rooms(result_rooms, room_campus_id):
     
     
 @force_data_format
-def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None):
+def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None, relax_total = True):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
@@ -788,7 +739,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     exam_rooms = get_exam_rooms(result_rooms, room_campus_id)
     
     # for each exam determine the possible slots according to examination periods
-    exam_slots = get_exam_slots(result_times, verbose=verbose)
+    exam_slots = get_exam_slots(result_times, relax_total = relax_total, verbose=verbose)
     
     # filter exams which are considered with examination period
     exams = sorted([ exam for exam in exams if exam in exam_slots ])
@@ -891,7 +842,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
 
 if __name__ == "__main__":
     
-    data = read_data(semester = "15W", threshold = 0, verbose=True)#, max_exams = 100)
+    data = read_data(semester = "15W", threshold = 0, relax_total=False, verbose=True)#, max_exams = 100)
     
     print "n, r, p"
     print data['n'], data['r'], data['p']
