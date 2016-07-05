@@ -34,6 +34,7 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
     h = data['h']
     c = data['c']
     s = data['s']
+    conflicts = data['conflicts']
     
     # load exam names
     exams = data['exam_names']
@@ -61,6 +62,12 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
             
     print constraints.is_feasible(x, y, data)
     
+    S = 0.0
+    for i in range(n):
+        for l in range(p):
+            if y[i, l] == 1.0:
+                S += sum([y[j, l] for j in conflicts[i]])
+    print "Number of conflicts:", S
     #count_illegal_planned = 0
     #for i, exam in enumerate(exams):
         #for k in range(r):
@@ -108,7 +115,7 @@ if __name__ == '__main__':
     
     gamma = 1.0
     
-    data = examination_data.read_data(semester = "15W", threshold = 0, pre_year_data=True)
+    data = examination_data.read_data(semester = "15W", threshold = 0)
     data['similar_periods'] = tools.get_similar_periods(data)
     
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)

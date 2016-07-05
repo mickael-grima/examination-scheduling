@@ -162,10 +162,14 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     # check feasibility
     if debug: print "Building Statespace"
     statespace, color_exams = build_statespace(coloring, data)
-    
-    if statespace is None:
+    #print "Statespace", [len(statespace[i]) for i in statespace], min([len(statespace[i]) for i in statespace])
+    if statespace is None or min([len(statespace[i]) for i in statespace]) <= 1:
         if debug: print "infeasible statespace"
         return None, None, None, sys.maxint
+    
+    #for i in statespace:
+        #print i, len(statespace[i]
+    #exit(0)
     
     for i in statespace:
         assert len(statespace[i]) == len(set(statespace[i]))
@@ -173,6 +177,10 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     # create time schedule permuting the time solts for each coloring
     if debug: print "ANNEALING"
     color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, beta_0 = beta_0, statespace = statespace, color_exams = color_exams)
+    
+    if color_schedule is None:
+        if debug: print "no feasible starting point"
+        return None, None, None, sys.maxint
     
     # build binary variable 
     if debug: print "TOBINARY"
@@ -182,8 +190,9 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
         if debug: print constraints.time_feasible(y_binary, data)
         return None, None, None, sys.maxint
     
-    print color_schedule
-    print constraints.time_feasible(y_binary, data)
+    if debug:
+        print color_schedule
+        print constraints.time_feasible(y_binary, data)
     
     # create room schedule
     if debug: print "SCHDULE ROOMS"
@@ -224,7 +233,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         
         if verbose:
             print epoch
-        
+        print epoch
         xs, ys, obj_vals = dict(), dict(), dict()
         color_schedules = dict()
 

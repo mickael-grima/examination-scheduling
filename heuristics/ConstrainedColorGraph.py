@@ -130,7 +130,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
             exam_slots = data['exam_slots']
             if colour not in self.color_slots:
                 return(True)
-            if not any([slot in self.color_slots[colour] for slot in exam_slots[node]]):
+            if len([slot for slot in exam_slots[node] if slot in self.color_slots[colour]]) <= 1:
                 return(False)
         return(True)
 
@@ -163,7 +163,11 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         if len(ordered_colors) > data['p']:
             print "Warning: Error constructing ordered colors in color_node!", len(ordered_colors), data['p']
             
-            
+        
+        #allowed_colors = [color for color in ordered_colors if not (color in self.color_count and self.color_count[color] >= data['r']) and self.check_neighbours(node, color, data)]
+        #allowed_colors = [color for color in allowed_colors if mode == 0 or self.check_room_constraints(node, color, data, mode = mode, periods = periods)]
+        # TODO: Choose color such that it maximizes statespace (long lists of color_slots!!!)
+        
         for color in ordered_colors:
             #print color
             

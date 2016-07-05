@@ -156,6 +156,7 @@ def propose_color(color, color_schedule, statespace):
     # draw new time slot
     new_slot = rd.choice(statespace[color])
     while new_slot == old_slot:
+        #print "="#, #statespace[color]
         new_slot = rd.choice(statespace[color])
         
     # determine if we need to swap colors
@@ -183,6 +184,8 @@ def make_proposal(color_schedule, statespace, n_colors, log=False):
         color = rd.randint(0, n_colors-1)
         color, new_slot, color2, old_slot = propose_color(color, color_schedule, statespace)
         
+        feasible = True
+        
         count_feas += 1
         
     if log and count_feas > 1: print "while", count_feas
@@ -208,13 +211,12 @@ def get_color_conflicts(color_exams, exam_colors, conflicts):
     return color_conflicts        
         
 
-def find_feasible_start(n_colors, h, statespace, verbose=False):
+def find_feasible_start(n_colors, h, statespace, conflicts, verbose=False):
     
     model = Model("TimeFeasibility")
     p = len(h)
-
     y = {}
-    # z[i,k] = if color i gets slot l
+    # y[i,k] = if color i gets slot l
     for i in range(n_colors):
         for l in range(p):
             y[i,l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
@@ -226,17 +228,19 @@ def find_feasible_start(n_colors, h, statespace, verbose=False):
     # c1: all get one
     for i in range(n_colors):
         model.addConstr( quicksum([ y[i, l] for l in range(p) ]) == 1, "c1")
-    
-    # c2: statespace constraints
-    for i in range(n_colors):
-        model.addConstr( quicksum([ y[i, l] for l in range(p) if h[l] not in statespace[i] ]) == 0, "c2")    
-    
-    # c3: each slot needs to be used tops once
+
+    # c2: each slot needs to be used tops once
     for l in range(p):
-        model.addConstr( quicksum([ y[i, l] for i in range(n_colors) ]) <= 1, "c3")    
+        model.addConstr( quicksum([ y[i, l] for i in range(n_colors) ]) <= 1, "c2")    
+
+    ### c3: statespace constraints
+    for i in range(n_colors):
+        model.addConstr( quicksum([ y[i, l] for l in range(p) if h[l] not in statespace[i] ]) == 0, "c3")    
     
-    # objective: find any feasible
-    model.setObjective( 0, GRB.MINIMIZE)
+    # objective: minimize conflicts
+    #obj = quicksum([ y[i,l] * y[j,l] for l in range(p) for i in range(n_colors) for j in range(i+1, n_colors) ]) 
+    obj = 0
+    model.setObjective(obj, GRB.MINIMIZE)
     
     if not verbose:
         model.params.OutputFlag = 0
@@ -247,14 +251,14 @@ def find_feasible_start(n_colors, h, statespace, verbose=False):
     color_schedule = []
     if model.status == GRB.INFEASIBLE:
         return color_schedule
-    
+                    
     for i in range(n_colors):
         for l in range(p):
-            if model.getVarByName("y_%s_%s" % (i,l)) == 1:
+            v = model.getVarByName("y_%s_%s" % (i,l)) 
+            if v.x == 1:
                 color_schedule.append(h[l])
                 break
             
-    
     return color_schedule
 
     #except GurobiError:
@@ -315,23 +319,26 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
     # get conflicts of colors
     color_conflicts = get_color_conflicts(color_exams, exam_colors, conflicts)
     
+    #assert min([len(statespace[i]) for i in statespace]) > 1, min([len(statespace[i]) for i in statespace])
+    
     # the state space for each coloring, calculated from the 
     if statespace is None:
         statespace = { color: h for color in color_exams }
     
     # initialize the time slots randomly
     if color_schedule is None:
-        color_schedule = find_feasible_start(n_colors, h, statespace, verbose=False)
+        if log: print "SEARCHING START"
+        color_schedule = find_feasible_start(n_colors, h, statespace, conflicts, verbose=False)
         
         if len(color_schedule) < n_colors:
-            print "infeasible"
             return None, 0
-        else:
-            print "Found one!"
+        #else:
+            #print "Found one!"
     
-    assert len(color_schedule) == len(set(color_schedule)), set(color_schedule)
-    y_binary = to_binary(exam_colors, color_schedule, h)
-    print constraints.time_feasible(y_binary, data).values()
+    assert len(color_schedule) == len(set(color_schedule)), len(color_schedule) - len(set(color_schedule))
+    if log: 
+        y_binary = to_binary(exam_colors, color_schedule, h)
+        print constraints.time_feasible(y_binary, data).values()
     
     
     # best values found so far
@@ -369,9 +376,11 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         '''
 
         # get colors to change and their slot values
+        if log: print "MAKE PROPOSAL"
         color, new_slot, color2, old_slot = make_proposal(color_schedule, statespace, n_colors, log=False)
+        if log: print "OK"
         #if log: 
-        print color, new_slot, color2, old_slot
+        if log: print color, new_slot, color2, old_slot
         #changed = get_changing_colors(color_schedule, color, color2)
         
         assert len(color_schedule) == len(set(color_schedule))
@@ -383,7 +392,7 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         
         #print color_schedule
         y_binary = to_binary(exam_colors, color_schedule, h)
-        print "new slot", constraints.time_feasible(y_binary, data).values()
+        if log: print "new slot", constraints.time_feasible(y_binary, data).values()
     
         if log: print color, color2, color_schedule
             
@@ -402,8 +411,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         if log:
             print "Obj: %0.2f" % value
             print np.exp(-beta * (value - old_value))
+        #print value, old_value, np.exp( beta * (value - old_value))
         
-        if rd.uniform(0,1) <= np.exp( beta * (value - old_value) ):
+        if value > old_value or rd.uniform(0,1) <= np.exp( beta * (value - old_value) ):
             
             if log: print "Accepted"
             
@@ -414,8 +424,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         
             # build binary variable 
             if debug: print "TOBINARY"
-            y_binary = to_binary(exam_colors, color_schedule, h)
-            print constraints.time_feasible(y_binary, data)
+            if log:
+                y_binary = to_binary(exam_colors, color_schedule, h)
+                print constraints.time_feasible(y_binary, data)
     
         
             if value > best_value:
@@ -480,6 +491,7 @@ def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n
     '''
     #debug = True
     log_hist = False
+    #log_hist = True
     if debug:
         log_hist = True
     color_schedules = []
