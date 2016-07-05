@@ -412,7 +412,12 @@ def get_possible_exam_weeks(exam_times, verbose=False):
     # get examination periods for each faculty in weeks:
     faculty_weeks = get_faculty_weeks(exam_times, week_slots, verbose = verbose)
     #if verbose:
-    #for f in faculty_weeks:
+    for f in faculty_weeks:
+        if len(faculty_weeks[f]) == 1:
+            if faculty_weeks[f][0] > 0:
+                faculty_weeks[f] = [faculty_weeks[f][0]-1, faculty_weeks[f][0], faculty_weeks[f][0]+1]
+            else:
+                faculty_weeks[f] = [faculty_weeks[f][0], faculty_weeks[f][0]+1, faculty_weeks[f][0]+2]
         #print f, sorted(faculty_weeks[f])
     
     # get faculty of each exam
@@ -466,12 +471,22 @@ def get_exam_slots(result_times, verbose=False):
     exam_slots = defaultdict(list)
     for exam in exam_weeks:
         
-        for week in exam_weeks[exam]:
-            exam_slots[exam] += week_slots[week]
+        slots = list()
         
-        exam_slots[exam] = sorted(set(exam_slots[exam]))
-        #print exam, len(exam_slots[exam])
-    
+        for week in exam_weeks[exam]:
+            
+            #if week in [8,9]:
+                #continue
+            
+            slots += week_slots[week]
+        slots = sorted(set(slots))
+        
+        if len(slots) >= 5:
+            exam_slots[exam] = slots
+        #else:
+            #print exam, len(exam_slots[exam])
+        
+            
     return exam_slots
     
     

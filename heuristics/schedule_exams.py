@@ -178,6 +178,10 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     if debug: print "ANNEALING"
     color_schedule, time_value = schedule_times(coloring, data, max_iter = max_iter, beta_0 = beta_0, statespace = statespace, color_exams = color_exams)
     
+    if color_schedule is None:
+        if debug: print "no feasible starting point"
+        return None, None, None, sys.maxint
+    
     # build binary variable 
     if debug: print "TOBINARY"
     y_binary = tools.to_binary(coloring, color_schedule, data['h'])

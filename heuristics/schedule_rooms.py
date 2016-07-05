@@ -211,7 +211,7 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
             if T[k][period] == 1:
                 for i in exams_to_schedule:
                     v = model.getVarByName("z_%s_%s" % (i,k)) 
-                    z[i,k]  = v.x    
+                    z[i,k]  = v.x
         return z
     except GurobiError:
         return None
