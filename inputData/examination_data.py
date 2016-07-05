@@ -471,8 +471,8 @@ def get_possible_exam_slots(exams, exam_times, verbose=False):
     
     
     return exam_slots, exam_weeks
- 
- 
+    
+    
 def get_exam_rooms(exams, result_rooms, room_campus_id):
     '''
         For each exam get the rooms which are located at the campus the exam is to be held.
@@ -496,13 +496,11 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     '''
     
     #semester = "15W"
-    assert semester in ["15W", "16S"], "Wir haben nur Ergebnisse für Winder 15 und Sommer 16!"
+    assert semester in ["15W"], "Wir verwenden nur Ergebnisse für Winder 15!"
+    assert max_periods is None, "WARNING: max_periods is not implemented any more!"
+    assert not pre_year_data, "Pre year data is currently turned off!"
     
     print "Semester:", semester
-    
-    #print "Loading data: Data needs verification!"
-    if max_periods is not None:
-        print "WARNING: max_periods is not implemented any more!"
     
     # load times from szenarioergebnis
     result_times, result_dates = read_result_times(semester)
@@ -514,64 +512,20 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     room_capacity, room_campus_id = read_rooms()
     
     # load number of students registered for each exam
-    if semester in ["15W", "16S"]:
-        exam_students = read_teilnehmer(semester)
-        print len(sorted([exam for exam in result_times if exam not in exam_students]))
-        
-        if pre_year_data:
-            print "Pre year data is currently turned off!"
-    else:
-        exam_students = read_students(semester)
-        
-        # load number of students registered for each exam
-        if pre_year_data:
-            unknown_exams = 0
-            presem = "14W" if semester == "15W" else "14S"
-            
-            pre_students = read_students(presem)
-            
-            for exam in exam_students:
-                exam_renamed = re.sub("\s+\d+\/\d+\/\d+", "", exam)
-                if exam_renamed in pre_students:
-                    exam_students[exam] = pre_students[exam_renamed]
-                else:
-                    unknown_exams += 1
-                    exam_students[exam] = 0
-            if verbose: print "unknown predata", unknown_exams, len(exam_students)
-        
-    
-    # TODO: REMOVE
-    #for exam in exam_students:
-        #exam_students[exam] = 1
-        ##print exam, exam_students[exam]
-        
-        
+    exam_students = read_teilnehmer(semester)
+    # print len(sorted([exam for exam in result_times if exam not in exam_students]))
         
     # get exams in the MOSES result
     exams = [exam for exam in result_times]
     if verbose: print "Number of exams", len(exams)
     
+    # get exams for which we have student data
     exams = [exam for exam in exams if exam in exam_students and exam_students[exam] > 0]
     if verbose: print "Number of exams", len(exams)
-    
-    if verbose: print "Drop exams without students", len([exam for exam in exams if exam not in exam_students])
-    if verbose: print "Drop exams without rooms", len([exam for exam in exams if exam not in result_rooms or len(result_rooms[exam]) == 0])
-    
-    # filter all exams for which we have student data
-    exams = [exam for exam in result_times if exam in exam_students]
-    if verbose: print "Number of exams", len(exams)
-    
-    for exam in exams: assert exam in exam_students
-    
-    #for exam in sorted(exams):
-        #if "MA" in exam:
-            #print exam, exam_students[exam]
     
     # filter all exams for which we know the room
     exams = [exam for exam in exams if exam in result_rooms and len(result_rooms[exam]) > 0]
     if verbose: print "Number of exams", len(exams)
-    
-    for exam in exams: assert exam in result_rooms
     
     # filter all exams for which we have room data
     exams = [exam for exam in exams if all(room in room_capacity for room in result_rooms[exam])]
@@ -579,20 +533,19 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     
     # detect duplicates, i.e. exams at the same time slot in the same room. Drop smaller ones
     drop_exams = get_duplicate_exams(exams, result_rooms, result_times)
-    if verbose: print "Drop duplicates", len(drop_exams)
-    
     exams = [ exam for exam in exams if exam not in drop_exams ]
-    
+    if verbose: print "Drop duplicates", len(drop_exams)
     if verbose: print "Number of exams", len(exams)
     
-    # build exam data structures
-    if verbose: print "Number of timeslots", len(sorted(set(result_times.values())))
     
-    #h = sorted(set([result_times[exam] for exam in exams]))
+    ## build exam data structures
+    if verbose: print "Number of timeslots (pre)", len(sorted(set(result_times.values())))
+    
     h = sorted(set(result_times.values()))
+    #h = sorted(set([result_times[exam] for exam in exams]))
     s = [exam_students[exam] for exam in exams]
     
-    if verbose: print "Number of timeslots", len(h)
+    if verbose: print "Number of timeslots (post)", len(h)
     
     # for each exam determine the possible time slots according to examination periods
     exam_slots, exam_weeks = get_possible_exam_slots(exams, result_times, verbose=verbose)
@@ -687,7 +640,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
 
 if __name__ == "__main__":
     
-    data = read_data(semester = "15W", threshold = 0, make_intersection=True, pre_year_data = False, verbose=True, max_periods = 10)
+    data = read_data(semester = "15W", threshold = 0, verbose=True)
     
     print "n, r, p"
     print data['n'], data['r'], data['p']

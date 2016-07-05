@@ -95,7 +95,7 @@ class RandomHeuristicAdvanced(RandomHeuristic):
     '''
     def __init__(self, data, n_colorings=50):
         RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = EqualizedColorGraph(n_colours = int(data['p']*1.0))
+        self.graph = EqualizedColorGraph(n_colours = int(data['p']*1.0) - 0)
         self.graph.build_graph(self.data['n'], self.data['conflicts'])   
         self.periods = { i: None for i in range(n_colorings) }
         self.mode = 1
