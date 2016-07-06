@@ -79,8 +79,8 @@ def build_statespace_exam_slots(coloring, data):
     # refactor dicts
     color_exams = tools.swap_color_dictionary(coloring)
     
-    print color_exams
-    print sorted(coloring.values())
+    #print color_exams
+    #print sorted(coloring.values())
     
     # empty statespace -> init
     statespace = { color: [] for color in color_exams }
