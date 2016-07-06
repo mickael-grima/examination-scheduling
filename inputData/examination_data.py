@@ -11,13 +11,16 @@ for p in PATHS:
         break
 sys.path.append(PROJECT_PATH)
 
+
 from collections import defaultdict
 import re
 import numpy as np
 import pickle
 import random as rd
 
+from inputData import tools as datatools
 from model.data_format import force_data_format
+import heuristics.tools as htools
 
 def split_key(exam):
     ''' 
@@ -68,39 +71,12 @@ def keys_are_equal_fast(exam1, modul2, month2, day2):
     else:
         return False
 
+
 def read_columns(datname, key, cols, sep=","):
     '''
     Read csv file and extract data with column names in cols. Takes first value found!
     '''
-    columns = defaultdict(dict)
-    colnames = []
-    with open("%sinputData/%s"%(PROJECT_PATH, datname)) as csvfile:
-        for line in csvfile:
-            line = re.sub('\"', '', line)
-            line = re.sub('\n', '', line)
-            line = re.sub('\r', '', line)
-            line = re.split(sep, line)
-
-            assert len(line) > len(cols)
-            
-            #print colnames
-
-            if len(colnames) == 0:
-                colnames = line
-            else:
-                
-                # get identifier
-                if type(key) == list:
-                    ident = " ".join([ line[colnames.index(k)] for k in key ])
-                else:
-                    ident = line[colnames.index(key)]
-                
-                for i in range(0, len(colnames)):
-                    name = colnames[i]
-                    if name in cols and ident not in columns[name]:
-                        columns[name][ident] = line[i]
-                    
-    return columns
+    return datatools.read_csv("%sinputData/%s"%(PROJECT_PATH, datname), key, cols, sep=sep)
 
 
 def read_result_times(semester):
@@ -501,7 +477,7 @@ def get_faculty_weeks(exam_times, week_slots, verbose = False):
     return faculty_periods
 
 
-def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True):
+def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True, math_only = False):
     '''
         For each exam get the time slots which can be used to schedule this exam!
     '''
@@ -564,7 +540,13 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True):
         faculty_weeks['SG'] = [0, 1, 2, 3, 4, 5, 6, 7, 8] 
         faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     
+    
     faculty_black_list = []#'ME', 'ED', 'SP', 'BV', 'SG']
+    
+    if math_only:
+        faculty_weeks['MA'] = [0, 1, 2]
+        faculty_black_list = [ faculty for faculty in faculty_weeks if faculty != "MA" ]
+        
     
     for f in faculty_weeks:
         if f in faculty_black_list:
@@ -580,13 +562,16 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True):
     
     exam_weeks = defaultdict(list)
     for exam in exam_times:
+
         if debug_name in exam:
             print exam, exam_times[exam]
             
         faculty = exam_faculty[exam]
 
+        # dont do exams in blacklist
         if faculty in faculty_black_list:
             continue
+        
         # determine week of exam:
         w = 0
         while w < len(week_slots):
@@ -595,7 +580,12 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True):
             else: 
                 w += 1
            
-        exam_weeks[exam].append(w)
+        # only consider exam which has right week (feasibility)
+        if w in faculty_weeks[faculty]:
+            exam_weeks[exam].append(w)
+        else:
+            continue
+        
         if debug_name in exam:
             print exam, exam_weeks[exam]
             
@@ -627,13 +617,13 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True):
             
     return exam_weeks, week_slots
     
-def get_exam_slots(result_times, verbose=False, relax_total=True):
+def get_exam_slots(result_times, verbose=False, math_only=False,relax_total=True):
     '''
         Given the calendar weeks for each exam, give the corresponing slots.
         All exams with more or equal to week_threshold weeks are considered
     '''
 
-    exam_weeks, week_slots = get_possible_exam_weeks(result_times, verbose=verbose, relax_total = relax_total)
+    exam_weeks, week_slots = get_possible_exam_weeks(result_times, verbose=verbose, math_only = math_only,relax_total = relax_total)
 
     #for exam in exam_weeks:
         #exam_weeks[exam].append(max(exam_weeks[exam])+1)
@@ -679,7 +669,7 @@ def get_exam_rooms(result_rooms, room_campus_id):
     
     
 @force_data_format
-def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None, relax_total = True):
+def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None, relax_total = True, math_only = False):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
@@ -739,7 +729,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     exam_rooms = get_exam_rooms(result_rooms, room_campus_id)
     
     # for each exam determine the possible slots according to examination periods
-    exam_slots = get_exam_slots(result_times, relax_total = relax_total, verbose=verbose)
+    exam_slots = get_exam_slots(result_times, relax_total = relax_total, math_only = math_only, verbose=verbose)
     
     # filter exams which are considered with examination period
     exams = sorted([ exam for exam in exams if exam in exam_slots ])
@@ -791,7 +781,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
                 l = h.index(result_times[exam])
                 if l not in locking_times[k]:
                     locking_times[k].append(l)
-    
+
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
     
     # remove locking times for all exams we found and which are planned in moses illegally
@@ -840,16 +830,37 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     return data
 
 
+def load_data(dataset = "1", threshold = 0, verbose = False):
+
+    assert dataset in ["1", "2", "3"], "We only have three different verisons of the data set"
+    
+    print "Loading data set", dataset
+    
+    if dataset == "1":
+        data = read_data(semester = "15W", threshold = threshold, relax_total=True, math_only = False, verbose = verbose)
+    elif dataset == "2":
+        data = read_data(semester = "15W", threshold = threshold, relax_total=False, math_only = False, verbose = verbose)
+    elif dataset == "3":
+        data = read_data(semester = "15W", threshold = threshold, relax_total=False, math_only = True, verbose = verbose)
+    
+    #data['similar_periods'] = htools.get_similar_periods(data) # not necessary since we have exam_slots
+    return data
+    
+
 if __name__ == "__main__":
     
-    data = read_data(semester = "15W", threshold = 0, relax_total=False, verbose=True)#, max_exams = 100)
+    data = load_data(dataset = "2", threshold = 0, verbose = True)
     
+        
     print "n, r, p"
     print data['n'], data['r'], data['p']
     print "KEYS:", [key for key in data]
     
     n = data['n']
     Q = data['Q']
+    conflicts = data['conflicts']
+    exam_names = data['exam_names']
+    
     #print data['exam_slots']
     counter = 0
     conflicts = 0

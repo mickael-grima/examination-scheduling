@@ -29,27 +29,27 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 16
-    epochs = 5
-    annealing_iterations = 1000
+    n_colorings = 1
+    epochs = 15
+    annealing_iterations = 2
     
     rd.seed(42)
     
-    data = examination_data.read_data(semester = "15W", threshold = 5)#, max_exams = 200)
-    data['similar_periods'] = tools.get_similar_periods(data)
+    data = examination_data.load_data(dataset = "3", threshold = 5, verbose = True)
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
     
     from heuristics.johnson import Johnson
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
+    #epochs = 1
     Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-   # Heuristic = AC(data, num_ants = n_colorings)
+    #Heuristic = AC(data, num_ants = n_colorings)
     
     debug = True
     verbose = False
-    parallel =  True
+    parallel = not True
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 10, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
@@ -70,19 +70,3 @@ if __name__ == '__main__':
     print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", obj(x, y, data, gamma=gamma)
     
-    
-    
-    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 10, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
-    print "Time:", time()-t
-    if y is None:
-        print "INFEASIBLE!!"
-        exit(0)
-    times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
-    
-    print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(times, data)
-    print "VALUE:", obj(x, y, data, gamma=gamma)
-    
-    #for key in logger:
-        #print key
-        #print logger[key]

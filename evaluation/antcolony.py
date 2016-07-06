@@ -26,7 +26,7 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 20
-    epochs = 10
+    epochs = 20
     annealing_iterations = 1000
     parallel =  True
     

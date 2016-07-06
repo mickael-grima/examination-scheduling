@@ -235,6 +235,7 @@ def find_feasible_start(n_colors, h, statespace, conflicts, verbose=False):
 
     ### c3: statespace constraints
     for i in range(n_colors):
+        print l, h[l], i, [s for s in statespace]
         model.addConstr( quicksum([ y[i, l] for l in range(p) if h[l] not in statespace[i] ]) == 0, "c3")    
     
     # objective: minimize conflicts
