@@ -30,6 +30,15 @@ from inputData import tools as csvtools
 def get_colors():
     
     # These are the "Tableau 20" colors as RGB.
+    colors = [(0,95,184), (190,223,255), (255,161,9), (112,173,71)]
+    
+    # Scale the RGB values to the [0, 1] range, which is the format matplotlib accepts.
+    for i in range(len(colors)):
+        r, g, b = colors[i]
+        colors[i] = (r / 255., g / 255., b / 255.)
+     
+    return colors
+
     tableau20 = [(31, 119, 180), (174, 199, 232), (255, 187, 120), (255, 127, 14),
                 (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
                 (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),
@@ -130,12 +139,62 @@ def plot_sequence(plt, xs, counter, messages):
 messages = ["Start feasible", "Always accept better proposals", "Accept wors proposals with probability", "Terminate if good enough"]
 counter = plot_sequence(plt, [-2, -3, 1.3, 3.5], counter, messages)
 
-annealing_data_1 = csvtools.read_csv("%sheuristics/plots/annealing_history.csv"%PROJECT_PATH, "x", "y")["y"]
-annealing_data_2 = csvtools.read_csv("%sheuristics/plots/annealing_best.csv"%PROJECT_PATH, "x", "y")["y"]
-annealing_data_3 = csvtools.read_csv("%sheuristics/plots/annealing_accept.csv"%PROJECT_PATH, "x", "y")["y"]
+max_iter = 10000
+beta_0 = 100
 
-annealing_data_1 = [ (int(float(x)), float(annealing_data_1[x])) for x in annealing_data_1 ]
-print annealing_data_1
+ad_1 = csvtools.read_csv("%sheuristics/plots/annealing_history_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+ad_2 = csvtools.read_csv("%sheuristics/plots/annealing_best_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+ad_3 = csvtools.read_csv("%sheuristics/plots/annealing_accept_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+
+max_iter = 10000
+beta_0 = 1
+bd_1 = csvtools.read_csv("%sheuristics/plots/annealing_history_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+bd_2 = csvtools.read_csv("%sheuristics/plots/annealing_best_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+bd_3 = csvtools.read_csv("%sheuristics/plots/annealing_accept_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+
+
+max_iter = 10000
+beta_0 = 0.5
+cd_1 = csvtools.read_csv("%sheuristics/plots/annealing_history_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+cd_2 = csvtools.read_csv("%sheuristics/plots/annealing_best_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+cd_3 = csvtools.read_csv("%sheuristics/plots/annealing_accept_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), "x", "y")["y"]
+
+ads = [ad_1, ad_2, ad_3]
+bds = [bd_1, bd_2, bd_3]
+cds = [cd_1, cd_2, cd_3]
+
+for ad, bd, cd in zip(ads, bds, cds):
+    ad = sorted([ (int(float(x)), float(ad[x])) for x in ad ], key=lambda x:x[0])
+    adx = [ x for x, y in ad ]
+    ady = [ y for x, y in ad ]
+    
+    bd = sorted([ (int(float(x)), float(bd[x])) for x in bd ], key=lambda x:x[0])
+    bdx = [ x for x, y in bd ]
+    bdy = [ y for x, y in bd ]
+
+    cd = sorted([ (int(float(x)), float(cd[x])) for x in cd ], key=lambda x:x[0])
+    cdx = [ x for x, y in cd ]
+    cdy = [ y for x, y in cd ]
+
+    x_min, x_max = min(adx), max(adx)
+    y_min, y_max = min( min(y) for y in [ady, bdy, cdy] ) - 0.1, max( max(y) for y in [ady, bdy, cdy] ) + 0.1
+
+    # prepare new plot
+    plt.clf()
+    plt.figure(figsize=(12, 9))
+    ax = plt.subplot(111)
+    prepare_axes(ax, x_min, x_max, y_min, y_max)
+
+    plot1, = plt.plot(adx, ady, lw=2.5, color=colors[0], label="ad")
+    plot2, = plt.plot(bdx, bdy, lw=2.5, color=colors[1], label="bd")
+    plot3, = plt.plot(cdx, cdy, lw=2.5, color=colors[2], label="cd")
+    
+    plt.legend([plot1, plot2, plot3], ["100", "1", "0.1"])
+
+    plt.savefig("%sannealing_plot_%d.png" %(plotdir, counter), bbox_inches="tight");
+    counter += 1
+
+
 # matplotlib's title() call centers the title on the plot, but not the graph,
 # so I used the text() call to customize where the title goes.
  
