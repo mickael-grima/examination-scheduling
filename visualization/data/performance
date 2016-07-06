@@ -14898,3 +14898,1851 @@ Running time: 239.847712994
 Objective value: 764.258438819
 -------------------------------------
 
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:04:51
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 241.765963078
+Objective value: 754.288326301
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:09:01
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 246.906616926
+Objective value: 757.468706048
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:12:59
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 236.098025084
+Objective value: 755.0302391
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:17:06
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 244.179054022
+Objective value: 758.201476793
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:21:29
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 260.779816866
+Objective value: 753.010900141
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:25:42
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 250.178155184
+Objective value: 756.48628692
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:29:57
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 251.7148211
+Objective value: 756.268284107
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:38:15
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 495.31119895
+Objective value: 753.73488045
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:46:13
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 475.817857981
+Objective value: 751.352320675
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 14:54:04
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 468.449093819
+Objective value: 756.054500703
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 15:02:56
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 529.612107992
+Objective value: 757.323488045
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 15:12:10
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 549.841287851
+Objective value: 758.914908579
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 15:29:38
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 1041.65300393
+Objective value: 753.966596343
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 15:42:47
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 785.507349968
+Objective value: 749.614978903
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 15:53:27
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 636.362247944
+Objective value: 752.185654008
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:03:03
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 573.104237795
+Objective value: 757.611462729
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:13:15
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 608.701910973
+Objective value: 753.973277075
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:13:58
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 39.5085029602
+Objective value: 747.378340366
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:14:41
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 40.1900830269
+Objective value: 753.188115331
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:15:24
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 39.2556130886
+Objective value: 751.553094233
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:16:07
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 39.7917668819
+Objective value: 752.575246132
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:16:50
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 39.9631118774
+Objective value: 754.602672293
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:17:39
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 45.2786910534
+Objective value: 753.983825598
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:18:27
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 44.0906989574
+Objective value: 755.182489451
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:19:11
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 40.8639819622
+Objective value: 747.084388186
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:19:54
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 40.4179542065
+Objective value: 755.201476793
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 16:20:37
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 10
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 39.6640789509
+Objective value: 755.802742616
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:21:36
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 55.8178529739
+Objective value: 752.297819972
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:22:53
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 73.2328410149
+Objective value: 750.097046414
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:23:45
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 48.7966771126
+Objective value: 763.726793249
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:24:50
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 61.4867360592
+Objective value: 766.579465541
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:25:50
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 56.7342400551
+Objective value: 761.652601969
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:27:12
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 79.2841141224
+Objective value: 753.711673699
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:28:32
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 75.1525371075
+Objective value: 765.992616034
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:29:47
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 72.5555529594
+Objective value: 766.318917018
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:30:48
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 57.8599119186
+Objective value: 749.440576653
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:31:52
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 1
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 60.2276568413
+Objective value: 765.631504923
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:36:28
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 272.509850979
+Objective value: 757.739803094
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:41:46
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 315.589231014
+Objective value: 756.064697609
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:47:19
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 329.365989208
+Objective value: 748.735232068
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:52:33
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 310.207088947
+Objective value: 763.023558368
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 16:58:41
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 364.636255026
+Objective value: 750.161040788
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:03:41
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 296.791898966
+Objective value: 750.434599156
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:08:42
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 297.74354887
+Objective value: 756.225738397
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:13:51
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 305.490159035
+Objective value: 754.901195499
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:19:14
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 319.262504101
+Objective value: 760.32559775
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:24:00
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 5
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 282.500113964
+Objective value: 759.371659634
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:32:54
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 531.585533142
+Objective value: 753.205344585
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:41:25
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 508.342154026
+Objective value: 749.929676512
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:49:03
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 455.119922876
+Objective value: 750.176160338
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 17:57:20
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 494.163087845
+Objective value: 757.191631505
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 18:05:30
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 488.284171104
+Objective value: 750.447609001
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 18:13:37
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 484.327872992
+Objective value: 751.359353024
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 18:21:34
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 474.235085964
+Objective value: 755.324894515
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 18:29:30
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 473.250013113
+Objective value: 755.523909986
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 18:37:41
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 487.714857817
+Objective value: 754.54395218
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 18:45:30
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 466.505432129
+Objective value: 754.528129395
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 19:01:57
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 984.624593973
+Objective value: 753.853375527
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 19:17:34
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 934.351786852
+Objective value: 750.286919831
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 19:33:27
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 950.56665206
+Objective value: 751.64697609
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 19:48:42
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 912.560849905
+Objective value: 741.614978903
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 20:04:37
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 952.560027122
+Objective value: 751.580872011
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 21:26:09
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 4889.05480099
+Objective value: 752.335794655
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 21:42:17
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 966.264095068
+Objective value: 753.9092827
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 21:57:34
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 914.339568138
+Objective value: 754.226090014
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 22:12:48
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 911.25340414
+Objective value: 750.244022504
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_AC
+Date: 06/07/2016 - 22:28:20
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 20
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 928.930828094
+Objective value: 750.89978903
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:29:22
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.7049307823
+Objective value: 754.648734177
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:30:25
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 60.1771659851
+Objective value: 753.639592124
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:31:27
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 60.0255258083
+Objective value: 753.078059072
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:32:30
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.8023178577
+Objective value: 754.519690577
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:33:32
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.7041051388
+Objective value: 751.732419128
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:34:34
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.6265628338
+Objective value: 751.458157525
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:35:37
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.6747322083
+Objective value: 753.416315049
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:36:39
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.4899420738
+Objective value: 755.095991561
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:37:41
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.5575380325
+Objective value: 747.888888889
+-------------------------------------
+
+-------------------------------------
+@@@ GENERAL @@@
+Problem: main_heuristic_johnson
+Date: 06/07/2016 - 22:38:43
+
+@@@ DATA @@@
+dimensions: n=711, p=145, r=60
+conflicts average per exam: 19.8734177215
+opening hours average per room: 143.233333333
+
+@@@ PARAMETER @@@
+gamma = 1.0
+annealing iterations = 1000
+number of ants = 20
+epochs = 10
+
+@@@ TEST @@@
+Test result: SUCCEED
+
+@@@ PERFORMANCE @@@
+Running time: 59.5920689106
+Objective value: 752.288326301
+-------------------------------------
+
