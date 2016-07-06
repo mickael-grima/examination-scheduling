@@ -29,10 +29,10 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 1
+    n_colorings = 5
     epochs = 40
-    annealing_iterations = 5000
-    annealing_beta_0 = 100
+    annealing_iterations = 1000
+    annealing_beta_0 = 0.5
     
     rd.seed(42)
     
@@ -44,9 +44,9 @@ if __name__ == '__main__':
     from heuristics.johnson import Johnson
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #epochs = 1
-    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = AC(data, num_ants = n_colorings)
+    Heuristic = AC(data, num_ants = n_colorings)
     
     debug = True
     verbose = False

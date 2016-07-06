@@ -134,8 +134,7 @@ if __name__ == '__main__':
     
     gamma = 1.0
     
-    data = examination_data.read_data(semester = "15W", threshold = 0, relax_total=False)
-    data['similar_periods'] = tools.get_similar_periods(data)
+    data = examination_data.load_data(dataset = "3", threshold = 5, verbose = True)
     
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
