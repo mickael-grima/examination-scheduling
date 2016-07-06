@@ -147,12 +147,15 @@ def compare(data):
                             count_rooms += 1
                             file.write('%s %g' % (v.varName, v.x))
                             file.write('\n')
-
-            with open("%sresults\pickle_x_ikl.pickle" % (PROJECT_PATH), "wb") as pckl:
-                pickle.dump(x_ikl, pckl)
-            with open("%sresults\pickle_y_il.pickle" % (PROJECT_PATH), "wb") as pckl:
-                pickle.dump(y_il, pckl)
-            
+                            
+                            
+            file.write("Room Objective: %f" %obj_room(x_ikl))
+            file.write('\n')
+            file.write("Time Objective: %f" %obj_time_y(y_il, data))
+            file.write('\n')
+            file.write("Full Objective: %f" %obj(x_ikl, y_il, data))
+            file.write('\n')
+                
             file.write('\n')
             file.write('\n')
             file.write("Number of rooms used: %s" % (count_rooms))
