@@ -233,7 +233,6 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         
         if verbose:
             print epoch
-        #print epoch
         xs, ys, obj_vals = dict(), dict(), dict()
         color_schedules = dict()
 
@@ -291,9 +290,6 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             x, y, obj_val = xs[best_index], ys[best_index], best_value    
             
             best_value_duration = 0
-            
-        if best_value != sys.maxint and best_value_duration > lazy_threshold * epochs:
-            break
         
     if log_history:
         return x, y, obj_val, logger
