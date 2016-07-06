@@ -468,9 +468,9 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         import matplotlib.pyplot as plt
         import inputData.tools as csvtools
         
-        csvtools.write_csv("%sheuristics/plots/annealing_history.csv"%PROJECT_PATH, {"x":range(len(history)), "y":history})
-        csvtools.write_csv("%sheuristics/plots/annealing_best.csv"%PROJECT_PATH, {"x":range(len(history)), "y":history})
-        csvtools.write_csv("%sheuristics/plots/annealing_accept.csv"%PROJECT_PATH, {"x":range(len(history)), "y":history})
+        csvtools.write_csv("%sheuristics/plots/annealing_history_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), {"x":range(len(history)), "y":history})
+        csvtools.write_csv("%sheuristics/plots/annealing_best_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), {"x":range(len(history)), "y":best_history})
+        csvtools.write_csv("%sheuristics/plots/annealing_accept_%d_%d.csv"%(PROJECT_PATH, max_iter, beta_0), {"x":range(len(history)), "y":acceptance_rates})
         
         plt.clf()
         plt.plot(history)
