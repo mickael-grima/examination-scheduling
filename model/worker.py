@@ -56,7 +56,7 @@ from GurobiModel.GurobiLinear_v_23_data import build_model as build_linear_model
 
 
 
-
+from evaluation.objectives import *
 
 from model.instance import build_smart_random
 from model.instance import build_real_data
@@ -105,62 +105,66 @@ def compare(data):
         t = time()
         #problem.params.cuts = 0
         problem.optimize()
-        problem.computeIIS()
+        try:
+            problem.computeIIS()
+        except:
+            pass
         problem.write("model.lp")
         times[prob_name] = time() - t
 
         count_rooms = 0
 
 
-        try:
-            today = datetime.datetime.today()
-            file = open("%sresults\Result_%s_%s_%s_%s_%s_%s.txt" % (PROJECT_PATH, today.year, today.month, today.day, today.hour, today.minute, prob_name ), 'a+')
+        #try:
+        today = datetime.datetime.today()
+        file = open("%sresults\Result_%s_%s_%s_%s_%s_%s.txt" % (PROJECT_PATH, today.year, today.month, today.day, today.hour, today.minute, prob_name ), 'a+')
 
-            file.write("Number of exams: %s" % data['n'])
-            file.write('\n')
-            file.write("Number of rooms: %s" % data['r'])
-            file.write('\n')
-            file.write("Number of periods: %s" % data['p'])
-            file.write('\n')
-            file.write("Students per Exam: %s" % data['s'])
-            file.write('\n')
-            file.write("capacity per Room: %s" % data['c'])
-            file.write('\n')
-            file.write("Conflicts: %s" % data['Q'])
-            file.write('\n')
-            file.write("locking times: %s" % data['T'])
-            file.write('\n')
+        file.write("Number of exams: %s" % data['n'])
+        file.write('\n')
+        file.write("Number of rooms: %s" % data['r'])
+        file.write('\n')
+        file.write("Number of periods: %s" % data['p'])
+        file.write('\n')
+        file.write("Students per Exam: %s" % data['s'])
+        file.write('\n')
+        file.write("capacity per Room: %s" % data['c'])
+        file.write('\n')
+        file.write("Conflicts: %s" % data['Q'])
+        file.write('\n')
+        file.write("locking times: %s" % data['T'])
+        file.write('\n')
 
-            x_ikl = defaultdict(int)
-            y_il = defaultdict(int)
-            
-            for i in range(data['n']):
-                for l in range(data['p']):
-                    v = problem.getVarByName('y_%s_%s' % (i,l))
+        x_ikl = defaultdict(int)
+        y_il = defaultdict(int)
+        
+        print "DATA"
+        for i in range(data['n']):
+            for l in range(data['p']):
+                v = problem.getVarByName('y_%s_%s' % (i,l))
+                if not v is None and v.x == 1:
+                    y_il[i,l] = 1
+                    
+                for k in range(data['r']):
+                    v = problem.getVarByName('x_%s_%s_%s' % (i,k,l))
                     if not v is None and v.x == 1:
-                        y_il[i,l] = 1
+                        x_ikl[i,k,l] = 1
+                        count_rooms += 1
+                        file.write('%s %g' % (v.varName, v.x))
+                        file.write('\n')
                         
-                    for k in range(data['r']):
-                        v = problem.getVarByName('x_%s_%s_%s' % (i,k,l))
-                        if not v is None and v.x == 1:
-                            x_ikl[i,k,l] = 1
-                            count_rooms += 1
-                            file.write('%s %g' % (v.varName, v.x))
-                            file.write('\n')
-                            
-                            
-            file.write("Room Objective: %f" %obj_room(x_ikl))
-            file.write('\n')
-            file.write("Time Objective: %f" %obj_time_y(y_il, data))
-            file.write('\n')
-            file.write("Full Objective: %f" %obj(x_ikl, y_il, data))
-            file.write('\n')
-                
-            file.write('\n')
-            file.write('\n')
-            file.write("Number of rooms used: %s" % (count_rooms))
-        except:
-            print "Couldnt write data"
+                        
+        file.write("Room Objective: %f" %obj_room(x_ikl))
+        file.write('\n')
+        file.write("Time Objective: %f" %obj_time_y(y_il, data))
+        file.write('\n')
+        file.write("Full Objective: %f" %obj(x_ikl, y_il, data))
+        file.write('\n')
+            
+        file.write('\n')
+        file.write('\n')
+        file.write("Number of rooms used: %s" % (count_rooms))
+    #except:
+        #print "Couldnt write data"
 
         # Save objective value
         try:
@@ -184,7 +188,7 @@ def test_compare():
     #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
     #data = examination_data.read_data(semester = "15W", threshold = 0)
     #data['similar_periods'] = tools.get_similar_periods(data)
-    data = examination_data.load_data(dataset = "3", threshold = 0, verbose = True)
+    data = examination_data.load_data(dataset = "2", threshold = 0, verbose = True)
     
     time, objectives = compare(data)
 
