@@ -495,9 +495,9 @@ def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n
         Schedule times using simulated annealing
         TODO: Description
     '''
-    debug = True
+    #debug = True
     log_hist = False
-    log_hist = True
+    #log_hist = True
     if debug:
         log_hist = True
     color_schedules = []
