@@ -73,6 +73,8 @@ coverage.xml
 *,cover
 .hypothesis/
 
+*.txt
+
 # Translations
 *.mo
 *.pot
