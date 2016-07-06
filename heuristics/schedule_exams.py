@@ -39,7 +39,6 @@ def build_statespace_similar_periods(coloring, data):
     # refactor dicts
     color_exams = tools.swap_color_dictionary(coloring)
     
-    # empty statespace -> init
     statespace = { color: [] for color in color_exams }
     
     # get similar periods
@@ -79,6 +78,9 @@ def build_statespace_exam_slots(coloring, data):
     
     # refactor dicts
     color_exams = tools.swap_color_dictionary(coloring)
+    
+    print color_exams
+    print sorted(coloring.values())
     
     # empty statespace -> init
     statespace = { color: [] for color in color_exams }
@@ -239,6 +241,11 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         # Generate colourings
         if debug: print "Building Colorings"
         colorings = meta_heuristic.generate_colorings()
+        
+        for coloring in colorings:
+            
+            assert len(set(coloring.values())) == max(coloring.values())+1, sorted(set(coloring.values()))
+            
         
         if len(colorings) == 0:
             print "Infeasible colorings"

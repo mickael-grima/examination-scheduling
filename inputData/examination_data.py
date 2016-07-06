@@ -544,7 +544,7 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True, math_
     faculty_black_list = []#'ME', 'ED', 'SP', 'BV', 'SG']
     
     if math_only:
-        faculty_weeks['MA'] = [0, 1, 2, 3, 7, 8]
+        faculty_weeks['MA'] = [0, 1, 2]
         faculty_black_list = [ faculty for faculty in faculty_weeks if faculty != "MA" ]
         
     
@@ -734,9 +734,6 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     # filter exams which are considered with examination period
     exams = sorted([ exam for exam in exams if exam in exam_slots ])
     
-    #if math_only:
-        #exams = sorted([ exam for exam in exams if exam != "MA1101 2/23/2016O" ])
-        
     # make subproblem
     if type(max_exams) == int:
         rd.shuffle(exams)
@@ -778,14 +775,13 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     locking_times = read_locked_rooms(semester, rooms, h)
     
     # If we dont plan the exam then we lock the room.
-    if not math_only:
-        for k, room in enumerate(rooms):
-            for exam in [e for e in result_times if e not in exams]:
-                if exam in result_rooms and room in result_rooms[exam] and result_times[exam] in h:
-                    l = h.index(result_times[exam])
-                    if l not in locking_times[k]:
-                        locking_times[k].append(l)
-    
+    for k, room in enumerate(rooms):
+        for exam in [e for e in result_times if e not in exams]:
+            if exam in result_rooms and room in result_rooms[exam] and result_times[exam] in h:
+                l = h.index(result_times[exam])
+                if l not in locking_times[k]:
+                    locking_times[k].append(l)
+
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
     
     # remove locking times for all exams we found and which are planned in moses illegally
@@ -853,7 +849,7 @@ def load_data(dataset = "1", threshold = 0, verbose = False):
 
 if __name__ == "__main__":
     
-    data = load_data(dataset = "3", threshold = 0, verbose = True)
+    data = load_data(dataset = "2", threshold = 0, verbose = True)
     
         
     print "n, r, p"
