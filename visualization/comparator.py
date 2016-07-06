@@ -75,7 +75,7 @@ def call_heuristic(problem_name, data, **kwards):
                                              lazy_threshold=kwards.get('lazy_threshold', 1.0),
                                              verbose=kwards.get('verbose', False),
                                              log_history=kwards.get('log_history', False),
-                                             parallel=kwards.get('parallel') or True)
+                                             parallel=kwards.get('parallel', False))
     elif problem_name == 'main_heuristic_johnson':
         x, y, _, _ = main_heuristic.optimize(Johnson(data, n_colorings=kwards.get('num_ants', 10), n_colors=data['p']),
                                              data, epochs=1, gamma=kwards.get('gamma', 1.0),
@@ -83,7 +83,7 @@ def call_heuristic(problem_name, data, **kwards):
                                              lazy_threshold=kwards.get('lazy_threshold', 1.0),
                                              verbose=kwards.get('verbose', False),
                                              log_history=kwards.get('log_history', False),
-                                             parallel=kwards.get('parallel') or True)
+                                             parallel=kwards.get('parallel', False))
     elif problem_name == 'greedy_heuristic':
         x, y = greedy_heuristic.generate_starting_solution_by_maximal_time_slot_filling(data)
     elif problem_name == 'groups_heuristic':
@@ -130,7 +130,7 @@ def compute_performance(problem_name, data, with_test=True, **kwards):
                               verbose=kwards.get('verbose', False),
                               log_history=kwards.get('log_history', False),
                               num_ants=kwards.get('num_ants', 10),
-                              parallel=kwards.get('parallel') or True)
+                              parallel=kwards.get('parallel', False))
         delta_t = time.time() - t_start
         x, y = transform_variables(x, y, n=data['n'], r=data['r'], p=data['p'])
 
@@ -194,7 +194,7 @@ def main():
     if args.type == 'smart':
         data = build_smart_random(n=int(args.n), r=int(args.r), p=int(args.p), tseed=1)
     elif args.type == 'real':
-        data = examination_data.read_data(semester="16S")
+        data = examination_data.read_data(semester="15W")
     else:
         logging.warning("%s doesn't exist")
         return
@@ -216,10 +216,10 @@ def compare_gamma(data_type='real', **dimensions):
         print "AC, gamma=%s" % gamma
         compute_performance('main_heuristic_AC', data, gamma=gamma,
                             annealing_iterations=1000, num_ants=20,
-                            epochs=20)
+                            epochs=20, parallel=False)
         print "Johnson, gamma=%s" % gamma
         compute_performance('main_heuristic_johnson', data, gamma=gamma,
-                            annealing_iterations=1000, num_ants=20)
+                            annealing_iterations=1000, num_ants=20, parallel=False)
 
 
 def compare_AC_johnson_performance(data_type='real', **dimensions):
@@ -235,13 +235,22 @@ def compare_AC_johnson_performance(data_type='real', **dimensions):
         for epochs in [1, 5, 10, 20]:
             for _ in range(10):
                 print "AC, epoch=%s" % epochs
-                compute_performance('main_heuristic_AC', data, gamma=1.0,
-                                    annealing_iterations=1000, num_ants=num_ants,
-                                    epochs=epochs)
+                try:
+                    compute_performance('main_heuristic_AC', data, gamma=1.0,
+                                        annealing_iterations=1000, num_ants=num_ants,
+                                        epochs=epochs, parallel=False)
+                except Exception as e:
+                    logging.warning('compare_AC_johnson_performance: %s' % str(e))
+                    continue
         for _ in range(10):
             print "Johnson"
-            compute_performance('main_heuristic_johnson', data, gamma=1.0,
-                                annealing_iterations=1000, num_ants=num_ants)
+            try:
+                compute_performance('main_heuristic_johnson', data, gamma=1.0,
+                                    annealing_iterations=1000, num_ants=num_ants,
+                                    parallel=False)
+            except Exception as e:
+                logging.warning('compare_AC_johnson_performance: %s' % str(e))
+                continue
 
 
 if __name__ == '__main__':
