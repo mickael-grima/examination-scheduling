@@ -466,6 +466,12 @@ def simulated_annealing(exam_colors, data, beta_0 = 0.3, max_iter = 1e4, lazy_th
         #print "Opt hist:", best_history
         
         import matplotlib.pyplot as plt
+        import inputData.tools as csvtools
+        
+        csvtools.write_csv("%sheuristics/plots/annealing_history.csv"%PROJECT_PATH, {"x":range(len(history)), "y":history})
+        csvtools.write_csv("%sheuristics/plots/annealing_best.csv"%PROJECT_PATH, {"x":range(len(history)), "y":history})
+        csvtools.write_csv("%sheuristics/plots/annealing_accept.csv"%PROJECT_PATH, {"x":range(len(history)), "y":history})
+        
         plt.clf()
         plt.plot(history)
         plt.ylabel('obj values')
@@ -489,9 +495,9 @@ def schedule_times(coloring, data, beta_0 = 10, max_iter = 1000, n_chains = 1, n
         Schedule times using simulated annealing
         TODO: Description
     '''
-    #debug = True
+    debug = True
     log_hist = False
-    #log_hist = True
+    log_hist = True
     if debug:
         log_hist = True
     color_schedules = []

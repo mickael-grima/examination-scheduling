@@ -130,10 +130,12 @@ def plot_sequence(plt, xs, counter, messages):
 messages = ["Start feasible", "Always accept better proposals", "Accept wors proposals with probability", "Terminate if good enough"]
 counter = plot_sequence(plt, [-2, -3, 1.3, 3.5], counter, messages)
 
+annealing_data_1 = csvtools.read_csv("%sheuristics/plots/annealing_history.csv"%PROJECT_PATH, "x", "y")["y"]
+annealing_data_2 = csvtools.read_csv("%sheuristics/plots/annealing_best.csv"%PROJECT_PATH, "x", "y")["y"]
+annealing_data_3 = csvtools.read_csv("%sheuristics/plots/annealing_accept.csv"%PROJECT_PATH, "x", "y")["y"]
 
-annealing_data_1 = csvtools.read_csv("%sannealing_1.csv" %datadir, "x", "y")
-print annealing_data_1["x"]
-
+annealing_data_1 = [ (int(float(x)), float(annealing_data_1[x])) for x in annealing_data_1 ]
+print annealing_data_1
 # matplotlib's title() call centers the title on the plot, but not the graph,
 # so I used the text() call to customize where the title goes.
  

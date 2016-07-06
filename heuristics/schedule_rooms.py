@@ -38,11 +38,11 @@ def schedule_greedy(exams_to_schedule, period, data, verbose = False):
         rooms = set()
         for exam in exams_to_schedule:
             for room in exam_rooms[exam]:
-                if data['T'][room][period] == 1:
+                if period == -1 or data['T'][room][period] == 1:
                     rooms.add(room)
         rooms = list(rooms)
     else:
-        rooms = [ k for k in range(data['r']) if data['T'][k][period] == 1 ]
+        rooms = [ k for k in range(data['r']) if period == -1 or data['T'][k][period] == 1 ]
     
     capacities = [ c[k] for k in rooms ]
     
@@ -179,7 +179,7 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     # z[i,k] = if exam i is written in room k
     for k in range(r):
         #print k, period
-        if T[k][period] == 1:
+        if period == -1 or T[k][period] == 1:
             for i in exams_to_schedule:
                 z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
 
@@ -189,11 +189,11 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     
     # c1: seats for all students
     for i in exams_to_schedule:
-        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) if T[k][period] == 1 ]) >= s[i], "c1")
+        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) if period == -1 or T[k][period] == 1 ]) >= s[i], "c1")
     
     # c2: only one exam per room
     for k in range(r):
-            if T[k][period] == 1:
+            if period == -1 or T[k][period] == 1:
                 model.addConstr( quicksum([ z[i, k] for i in exams_to_schedule  ]) <= 1, "c2")    
 
     # objective: minimize number of used rooms
@@ -211,7 +211,7 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     try:       
         z=defaultdict(int)
         for k in range(r):
-            if T[k][period] == 1:
+            if period == -1 or T[k][period] == 1:
                 for i in exams_to_schedule:
                     v = model.getVarByName("z_%s_%s" % (i,k)) 
                     z[i,k]  = v.x

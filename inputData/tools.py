@@ -15,6 +15,19 @@ sys.path.append(PROJECT_PATH)
 from collections import defaultdict
 import re
 
+def write_csv(filename, columns, sep=","):
+    
+    assert type(columns) == dict
+    colnames = [name for name in columns]
+    
+    with open(filename, "w") as csvfile:
+        line = sep.join([ "%s" %name for name in colnames ])
+        csvfile.write('%s\n'%line) 
+        for i in range(len(columns[colnames[0]])):
+            line = sep.join([ "%f" %columns[name][i] for name in colnames ])
+            csvfile.write('%s\n'%line) 
+    
+
 def read_csv(filename, key, cols, sep=","):
 
     '''

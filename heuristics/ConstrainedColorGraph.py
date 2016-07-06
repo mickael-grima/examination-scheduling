@@ -61,7 +61,7 @@ class ConstrainedColorGraph(ColorGraph):
         """
         assert mode > 0 and mode < 3, mode
         
-        period = 0
+        period = -1
         if periods is not None and color < len(periods):
             period = periods[color]
         

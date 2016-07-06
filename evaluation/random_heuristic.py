@@ -31,7 +31,8 @@ if __name__ == '__main__':
     gamma = 1.0
     n_colorings = 1
     epochs = 15
-    annealing_iterations = 2
+    annealing_iterations = 5000
+    annealing_beta_0 = 100
     
     rd.seed(42)
     
@@ -52,7 +53,7 @@ if __name__ == '__main__':
     parallel = not True
     
     t = time()
-    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 10, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
+    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = annealing_beta_0, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
     print "Time:", time()-t
     if y is None:
         print "INFEASIBLE!!"
