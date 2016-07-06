@@ -837,10 +837,13 @@ def load_data(dataset = "1", threshold = 0, verbose = False):
     print "Loading data set", dataset
     
     if dataset == "1":
+        # all exams relaxed
         data = read_data(semester = "15W", threshold = threshold, relax_total=True, math_only = False, verbose = verbose)
     elif dataset == "2":
+        # all exams with time constraints
         data = read_data(semester = "15W", threshold = threshold, relax_total=False, math_only = False, verbose = verbose)
     elif dataset == "3":
+        # math exams with time constraints only
         data = read_data(semester = "15W", threshold = threshold, relax_total=False, math_only = True, verbose = verbose)
     
     #data['similar_periods'] = htools.get_similar_periods(data) # not necessary since we have exam_slots
@@ -849,7 +852,7 @@ def load_data(dataset = "1", threshold = 0, verbose = False):
 
 if __name__ == "__main__":
     
-    data = load_data(dataset = "2", threshold = 0, verbose = True)
+    data = load_data(dataset = "1", threshold = 0, verbose = True)
     
         
     print "n, r, p"

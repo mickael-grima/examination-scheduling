@@ -30,12 +30,13 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 1
-    epochs = 15
-    annealing_iterations = 2
+    epochs = 10
+    annealing_iterations = 1000
+    annealing_beta_0 = 0.5
     
     rd.seed(42)
     
-    data = examination_data.load_data(dataset = "3", threshold = 5, verbose = True)
+    data = examination_data.load_data(dataset = "1", threshold = 0, verbose = True)
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
@@ -43,16 +44,16 @@ if __name__ == '__main__':
     from heuristics.johnson import Johnson
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #epochs = 1
-    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = AC(data, num_ants = n_colorings)
+    Heuristic = AC(data, num_ants = n_colorings)
     
     debug = True
     verbose = False
     parallel = not True
     
     t = time()
-    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = 10, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
+    x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = annealing_beta_0, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
     print "Time:", time()-t
     if y is None:
         print "INFEASIBLE!!"
