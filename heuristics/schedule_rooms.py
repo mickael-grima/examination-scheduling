@@ -115,7 +115,7 @@ def schedule_rooms(coloring, color_schedule, data, greedy = False):
     
     # get exams for each color
     color_exams = swap_color_dictionary(coloring)
-
+    
     periods = [data['h'].index(color) for color in color_schedule]
     
     z = defaultdict(int)
@@ -165,7 +165,8 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     # TODO: Initialise using meaningful values
     # ...
 
-
+    #verbose = True
+    
     n = len(exams_to_schedule)
     r = data['r']
     c = data['c']
