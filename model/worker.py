@@ -182,9 +182,10 @@ def test_compare():
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
     #data = build_real_data(tseed=tseed)
     #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
-    data = examination_data.read_data(semester = "15W", threshold = 0)
+    #data = examination_data.read_data(semester = "15W", threshold = 0)
     #data['similar_periods'] = tools.get_similar_periods(data)
-
+    data = examination_data.load_data(dataset = "3", threshold = 0, verbose = True)
+    
     time, objectives = compare(data)
 
     print("")
