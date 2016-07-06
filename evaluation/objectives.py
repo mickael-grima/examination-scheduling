@@ -34,9 +34,14 @@ def obj_time(times, data):
             j = np.argmin(d_i)
             distances.append(d_i[j])
 
-    return np.mean(distances)
+    return np.sum(distances) / float(data['n'])
+
+
+def obj_time_y(y, data):
+    #times = {i: data['h'][l] for i in range(data['n']) for l in range(data['p']) if (y.get(i, l) or 0.0) == 1.0}
+    times = {i: data['h'][l] for i in range(data['n']) for l in range(data['p']) if (i,l) in y and y[i, l] == 1.0}
+    return obj_time(times, data)
 
 
 def obj(x, y, data, gamma=1.0):
-    times = {i: data['h'][l] for i in range(data['n']) for l in range(data['p']) if (y.get(i, l) or 0.0) == 1.0}
-    return obj_room(x) - gamma * obj_time(times, data)
+    return obj_room(x) - gamma * obj_time_y(y, data)

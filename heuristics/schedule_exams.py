@@ -191,7 +191,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
         return None, None, None, sys.maxint
     
     if debug:
-        print color_schedule
+        #print color_schedule
         print constraints.time_feasible(y_binary, data)
     
     # create room schedule

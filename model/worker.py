@@ -18,6 +18,8 @@ sys.path.append(PROJECT_PATH)
 from time import time
 import datetime
 import random 
+from collections import defaultdict
+import pickle
 
 from GurobiModel.GurobiLinear_v_1 import build_model as build_linear_model_1
 from GurobiModel.GurobiLinear_v_2_Q import build_model as build_linear_model_2
@@ -129,16 +131,28 @@ def compare(data):
             file.write("locking times: %s" % data['T'])
             file.write('\n')
 
-
+            x_ikl = defaultdict(int)
+            y_il = defaultdict(int)
+            
             for i in range(data['n']):
-                for k in range(data['r']):
-                    for l in range(data['p']):
+                for l in range(data['p']):
+                    v = problem.getVarByName('y_%s_%s' % (i,l))
+                    if not v is None and v.x == 1:
+                        y_il[i,l] = 1
+                        
+                    for k in range(data['r']):
                         v = problem.getVarByName('x_%s_%s_%s' % (i,k,l))
                         if not v is None and v.x == 1:
+                            x_ikl[i,k,l] = 1
                             count_rooms += 1
                             file.write('%s %g' % (v.varName, v.x))
                             file.write('\n')
 
+            with open("%sresults\pickle_x_ikl.pickle" % (PROJECT_PATH), "wb") as pckl:
+                pickle.dump(x_ikl, pckl)
+            with open("%sresults\pickle_y_il.pickle" % (PROJECT_PATH), "wb") as pckl:
+                pickle.dump(y_il, pckl)
+            
             file.write('\n')
             file.write('\n')
             file.write("Number of rooms used: %s" % (count_rooms))
@@ -165,7 +179,7 @@ def test_compare():
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
     #data = build_real_data(tseed=tseed)
     #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
-    data = examination_data.read_data(semester = "15W", threshold = 0)
+    data = examination_data.read_data(semester = "15W", threshold = 0, max_exams = 50)
     #data['similar_periods'] = tools.get_similar_periods(data)
 
     time, objectives = compare(data)

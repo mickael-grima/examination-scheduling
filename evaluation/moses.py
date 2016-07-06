@@ -19,7 +19,7 @@ import numpy as np
 from inputData import examination_data
 from heuristics import tools
 
-from evaluation.objectives import obj_time, obj_room
+from evaluation.objectives import obj_time, obj_room, obj_time_y
 
 import model.constraints_handler as constraints
     
@@ -44,6 +44,7 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
     
     # for each exam the room
     result_rooms = data['result_rooms']
+    
     # for each room index the name
     room_names = data['room_names']
     
@@ -60,7 +61,7 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
             k = room_names.index(room)
             x[i,k] = 1.0
             
-    print constraints.is_feasible(x, y, data)
+    #print constraints.is_feasible(x, y, data)
     
     S = 0.0
     for i in range(n):
@@ -68,6 +69,24 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
             if y[i, l] == 1.0:
                 S += sum([y[j, l] for j in conflicts[i]])
     print "Number of conflicts:", S
+    
+    too_large = 0
+    for i in range(n):
+        exam_sum = sum( c[k]*x[i,k] for k in range(r) )
+        if exam_sum < s[i]:
+            too_large += 1
+            
+    print "Exceeding room capacities ", too_large, "times"
+    
+    locked_rooms = 0
+    for k in range(r):
+        for l in locking_times[k]:
+            if sum( x[i,k] * y[i,l] for i in range(n) ) == 1 and data['T'][k][l] == 0:
+                locked_rooms += 1
+                
+    print "Locked rooms:", locked_rooms
+    
+    
     #count_illegal_planned = 0
     #for i, exam in enumerate(exams):
         #for k in range(r):
@@ -105,7 +124,7 @@ def get_moses_representation(data, gamma=1.0, verbose = False):
     
     
     times = [result_times[exam] for exam in exams]
-    print obj_time(times, data)
+    #print obj_time(times, data)
     v = obj_room(x) - gamma * obj_time(times, data)
     
     return x, y, v
@@ -121,8 +140,10 @@ if __name__ == '__main__':
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time(times, data)
+    print "TIME_OBJ:", obj_time_y(y, data)
     print "VALUE:", v
+    
+    
     
     # get rooms for which we dont have data
     #if False:
