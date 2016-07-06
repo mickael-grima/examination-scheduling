@@ -134,7 +134,7 @@ if __name__ == '__main__':
     
     gamma = 1.0
     
-    data = examination_data.load_data(dataset = "3", threshold = 5, verbose = True)
+    data = examination_data.load_data(dataset = "1", threshold = 0, verbose = True)
     
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }

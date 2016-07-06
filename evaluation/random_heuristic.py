@@ -29,14 +29,14 @@ from evaluation.moses import get_moses_representation
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 5
-    epochs = 40
+    n_colorings = 1
+    epochs = 10
     annealing_iterations = 1000
     annealing_beta_0 = 0.5
     
     rd.seed(42)
     
-    data = examination_data.load_data(dataset = "3", threshold = 5, verbose = True)
+    data = examination_data.load_data(dataset = "1", threshold = 0, verbose = True)
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
