@@ -230,7 +230,7 @@ def compare_AC_johnson_performance(data_type='real', **dimensions):
                                   r=dimensions.get('r') or 0.0,
                                   p=dimensions.get('p') or 0.0)
     print "Start compare_AC_johnson_performance:"
-    for num_ants in [1, 5, 10, 20]:
+    for num_ants in [5, 10, 20]:
         print '@@@ num_ants=%s' % num_ants
         for epochs in [1, 5, 10, 20]:
             for _ in range(10):
@@ -238,7 +238,7 @@ def compare_AC_johnson_performance(data_type='real', **dimensions):
                 try:
                     compute_performance('main_heuristic_AC', data, gamma=1.0,
                                         annealing_iterations=1000, num_ants=num_ants,
-                                        epochs=epochs, parallel=False)
+                                        epochs=epochs, parallel=False, verbose=True)
                 except Exception as e:
                     logging.warning('compare_AC_johnson_performance: %s' % str(e))
                     continue

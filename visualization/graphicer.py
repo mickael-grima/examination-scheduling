@@ -84,12 +84,16 @@ def generate_file(x, y, data, name=None, with_room_label=True, with_exam_label=T
     nb_time_per_week = nb_days * nb_timeslots
 
     # we give to each room a name
-    if with_room_label:
-        rooms_name = get_rooms_name_from_file('%sutils/data/Raumuebersicht.csv' % PROJECT_PATH)
-        if len(rooms_name) > r:
-            rooms_name = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
+    if 'rooms_name' in data:
+        rooms_name = sorted(map(lambda i: (data['rooms_name'][i], c[i]), range(r)),
+                            key=lambda x: x[1], reverse=True)
     else:
-        rooms_name = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
+        if with_room_label:
+            rooms_name = get_rooms_name_from_file('%sutils/data/Raumuebersicht.csv' % PROJECT_PATH)
+            if len(rooms_name) > r:
+                rooms_name = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
+        else:
+            rooms_name = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
     rooms_sorted = sorted([(k, c[k]) for k in range(r)], key=lambda x: x[1], reverse=True)
     rooms_by_name, ind = {}, 0
     for i, _ in rooms_sorted:
@@ -98,7 +102,10 @@ def generate_file(x, y, data, name=None, with_room_label=True, with_exam_label=T
 
     # We give to each exam a name
     # TODO: improve it with data from Pruefungsamt
-    exams_by_name = {i: 'P%s' % i for i in range(n)}
+    if 'exam_names' in data:
+        exams_by_name = {i: data['exam_names'][i].split()[0] % i for i in range(n)}
+    else:
+        exams_by_name = {i: 'P%s' % i for i in range(n)}
 
     # for each week we check wich room is used
     rooms_week = []
