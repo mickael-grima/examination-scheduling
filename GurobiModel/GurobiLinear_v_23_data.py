@@ -43,6 +43,7 @@ def build_model(data, n_cliques = 0, verbose = True):
     #for i in range(n):
         #exam_rooms_index[i] = [k for k in range(r)]
 
+#Test
     
     
     if verbose:
