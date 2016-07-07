@@ -105,11 +105,11 @@ def compare(data):
         t = time()
         #problem.params.cuts = 0
         problem.optimize()
-        try:
-            problem.computeIIS()
-        except:
-            pass
-        problem.write("model.lp")
+        # try:
+        #     problem.computeIIS()
+        # except:
+        #     pass
+        # problem.write("model.lp")
         times[prob_name] = time() - t
 
         count_rooms = 0
