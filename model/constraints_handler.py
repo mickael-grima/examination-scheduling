@@ -151,7 +151,7 @@ def room_feasible(x, data):
         For each room constraint return if it is feasible or not
     """
     return {
-        'enough seat': test_enough_seat(x, c=data['c'], s=data['s'], n=data['n'], r=data['r'])
+        'enough seats': test_enough_seat(x, c=data['c'], s=data['s'], n=data['n'], r=data['r'])
     }
 
 
@@ -215,5 +215,5 @@ def check_feasability_ILP(exams_to_schedule, period, data, verbose=False):
     try:
         return model.objval
     except GurobiError:
-        logging.warning('check_feasability_ILP: model has no oobjVal')
+        logging.warning('check_feasability_ILP: model has no objVal')
         return None
