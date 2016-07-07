@@ -31,7 +31,7 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 1
-    epochs = 3
+    epochs = 10
     annealing_iterations = 100
     annealing_beta_0 = 0.5
     
@@ -52,8 +52,8 @@ if __name__ == '__main__':
     #epochs = 1
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = AC(data, num_ants = n_colorings)
-    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
+    Heuristic = AC(data, num_ants = n_colorings)
+    #Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     
     debug = True
     verbose = False
