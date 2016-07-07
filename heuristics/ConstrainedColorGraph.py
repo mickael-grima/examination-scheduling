@@ -319,9 +319,9 @@ class AnotherColorGraph(ConstrainedColorGraph):
         
         used_colors = [c for c in self.color_weeks]
         if len(used_colors) > 0 and max(used_colors) + 1 not in self.ALL_COLOURS:
-            print "RESTART"
-            exit(0)
-            return false
+            print "RESTART", len(used_colors)
+            #exit(0)
+            return False
         if len(used_colors) == 0:
             used_colors = [0]
         
@@ -346,7 +346,7 @@ class AnotherColorGraph(ConstrainedColorGraph):
                         print "STRANGE!", color, sorted(set(self.colours.values()))
                         exit(0)
                     if color in self.colours.values():
-                        if rd.uniform(0,1) <= 0.95:
+                        if rd.uniform(0,1) <= 0.9:
                             continue
                     #if color == 0:
                         #print node, color, self.color_slots[color]

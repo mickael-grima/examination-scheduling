@@ -669,7 +669,7 @@ def get_exam_rooms(result_rooms, room_campus_id):
     
     
 @force_data_format
-def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None, relax_total = True, math_only = False):
+def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_intersection=True, verbose=False, max_periods = None, max_exams = None, relax_total = True, math_only = False, raumsperren = True):
     '''
         @ Param make_intersection: Use exams which are in tumonline AND in szenarioergebnis
     '''
@@ -735,11 +735,12 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     exams = sorted([ exam for exam in exams if exam in exam_slots ])
     
     # filter impossible exams (found by hand)
-    impossibles = ['BV000001 2/26/2016', 'CH0115 2/17/2016', 'IN0015 2/13/2016', 'IN0019 2/11/2016', 'MA9301 2/24/2016', 'MA9302 2/18/2016', 'MA9305 3/1/2016', 'MA9711 2/8/2016', 'MW0084 3/8/2016', 'MW0104 3/22/2016', 'MW1108 3/1/2016', 'MW1911 2/23/2016', 'MW2021 3/11/2016', 'MW2023 2/25/2016', 'PH0001 4/7/2016', 'PH9009 2/15/2016', 'WI000021 2/15/2016', 'WI000027 2/22/2016', 'WI001056 2/12/2016', 'BV000013 3/4/2016', 'CH1102 2/18/2016', 'IN0015 4/5/2016', 'IN2062 2/8/2016', 'MA9409 4/4/2016', 'MA9413 2/23/2016', 'MW0102 3/11/2016', 'MW1919 3/2/2016', 'MW1937-1 3/3/2016', 'MW2015 2/23/2016', 'PH0003 2/18/2016', 'SG120020 2/13/2016', 'SG160013 2/12/2016', 'WI000178 2/19/2016', 'WI000219 2/9/2016', 'WI000820 2/10/2016', 'CH0128 4/1/2016', 'MA9201 2/19/2016', 'MA9202 4/5/2016', 'MA9511 3/8/2016', 'MW1586 3/21/2016', 'WI001059 2/18/2016', 'MA9202 2/9/2016', 'MA9517 3/9/2016', 'MW0612 3/29/2016', 'MW1921 2/18/2016', 'MW1939-1 3/8/2016', 'PH0001 2/11/2016', 'SG120022 2/17/2016', 'MA9411 2/18/2016', 'MW1980 2/9/2016', 'MW2129 2/29/2016', 'SG110200 2/26/2016', 'SG120024 2/19/2016', 'WI000275 2/22/2016', 'WI000728 2/11/2016', 'BGU55027 3/1/2016', 'EI0611 2/8/2016', 'EI1182 3/10/2016', 'IN0008 2/24/2016', 'IN0009 2/22/2016', 'MA9201 3/31/2016', 'MW1938-1 2/26/2016', 'PH9009 3/29/2016', 'WI000729 2/11/2016', 'IN0021 2/22/2016', 'MW1694 3/2/2016', 'SG110230 2/25/2016', 'BGU51017 2/29/2016']
-    exams = [exam for exam in exams if exam not in impossibles]
-    
-    if verbose: print "Drop the impossible", len(impossibles)
-    if verbose: print "Number of exams", len(exams)
+    if not raumsperren:
+        impossibles = ['BV000001 2/26/2016', 'CH0115 2/17/2016', 'IN0015 2/13/2016', 'IN0019 2/11/2016', 'MA9301 2/24/2016', 'MA9302 2/18/2016', 'MA9305 3/1/2016', 'MA9711 2/8/2016', 'MW0084 3/8/2016', 'MW0104 3/22/2016', 'MW1108 3/1/2016', 'MW1911 2/23/2016', 'MW2021 3/11/2016', 'MW2023 2/25/2016', 'PH0001 4/7/2016', 'PH9009 2/15/2016', 'WI000021 2/15/2016', 'WI000027 2/22/2016', 'WI001056 2/12/2016', 'BV000013 3/4/2016', 'CH1102 2/18/2016', 'IN0015 4/5/2016', 'IN2062 2/8/2016', 'MA9409 4/4/2016', 'MA9413 2/23/2016', 'MW0102 3/11/2016', 'MW1919 3/2/2016', 'MW1937-1 3/3/2016', 'MW2015 2/23/2016', 'PH0003 2/18/2016', 'SG120020 2/13/2016', 'SG160013 2/12/2016', 'WI000178 2/19/2016', 'WI000219 2/9/2016', 'WI000820 2/10/2016', 'CH0128 4/1/2016', 'MA9201 2/19/2016', 'MA9202 4/5/2016', 'MA9511 3/8/2016', 'MW1586 3/21/2016', 'WI001059 2/18/2016', 'MA9202 2/9/2016', 'MA9517 3/9/2016', 'MW0612 3/29/2016', 'MW1921 2/18/2016', 'MW1939-1 3/8/2016', 'PH0001 2/11/2016', 'SG120022 2/17/2016', 'MA9411 2/18/2016', 'MW1980 2/9/2016', 'MW2129 2/29/2016', 'SG110200 2/26/2016', 'SG120024 2/19/2016', 'WI000275 2/22/2016', 'WI000728 2/11/2016', 'BGU55027 3/1/2016', 'EI0611 2/8/2016', 'EI1182 3/10/2016', 'IN0008 2/24/2016', 'IN0009 2/22/2016', 'MA9201 3/31/2016', 'MW1938-1 2/26/2016', 'PH9009 3/29/2016', 'WI000729 2/11/2016', 'IN0021 2/22/2016', 'MW1694 3/2/2016', 'SG110230 2/25/2016', 'BGU51017 2/29/2016']
+        exams = [exam for exam in exams if exam not in impossibles]
+
+        if verbose: print "Drop the impossible", len(impossibles)
+        if verbose: print "Number of exams", len(exams)
     
     # make subproblem
     if type(max_exams) == int:
@@ -775,7 +776,9 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
         exam_rooms_index[exam] = [ rooms.index(room) for room in exam_rooms[exam] ]
         
     # Load locking rooms from table
-    locking_times = read_locked_rooms(semester, rooms, h)
+    locking_times = defaultdict(list)
+    if raumsperren:
+        locking_times = read_locked_rooms(semester, rooms, h)
     
     # If we dont plan the exam then we lock the room.
     for k, room in enumerate(rooms):
