@@ -509,10 +509,10 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True, math_
     faculty_weeks['SG'] = [0, 1, 2, 8]
     faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 6, 7, 8]
 
-    faculty_weeks['ME'] = [0, 1, 2, 3, 4]
+    faculty_weeks['ME'] = [1, 2, 3]
     faculty_weeks['CH'] = [0, 1, 2, 3, 4, 6, 7, 8]
-    faculty_weeks['MA'] = [0, 1, 2, 3, 4, 6, 7, 8]
-    faculty_weeks['ED'] = [0, 1, 2, 3, 4]
+    faculty_weeks['MA'] = [0, 1, 2, 3, 4, 7, 8]
+    faculty_weeks['ED'] = [0, 1, 2, 3]
     faculty_weeks['SP'] = [0, 1, 3, 3, 4, 6, 7, 8]
     faculty_weeks['BV'] = [0, 1, 2, 3, 4]
     faculty_weeks['WI'] = [0, 1, 2, 3, 4, 6, 7, 8]
@@ -520,8 +520,8 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True, math_
     faculty_weeks['BGU'] = [0, 1, 2, 3, 4, 5]
     faculty_weeks['IN'] = [0, 1, 2, 3, 4, 6, 7, 8]
     faculty_weeks['EI'] = [0, 1, 2, 3, 4, 6, 7, 8]
-    faculty_weeks['PH'] = [0, 1, 2, 3, 4, 6, 7, 8]
-    faculty_weeks['SG'] = [0, 1, 2, 3, 4, 6, 7, 8]
+    faculty_weeks['PH'] = [0, 1, 2, 3, 6, 7, 8]
+    faculty_weeks['SG'] = [0, 1, 2, 3, 7, 8]
     faculty_weeks['WZ'] = [0, 1, 2, 3, 4, 6, 7, 8]
 
     if relax_total:

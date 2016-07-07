@@ -221,6 +221,73 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
 
 
 
+def schedule_rooms_in_period_raumsperren(exams_to_schedule, period, data, verbose = False):
+    #print period
+    '''
+        schedule_rooms needs to be called for every single period
+        schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
+    '''
+    
+    # TODO: Initialise using meaningful values
+    # ...
+
+    #verbose = True
+    
+    n = len(exams_to_schedule)
+    r = data['r']
+    c = data['c']
+    T = data['T']
+    s = data['s']
+    z = {}
+
+    exam_rooms_index = data['exam_rooms_index']
+    
+    model = Model("RoomPlanner")
+
+    # z[i,k] = if exam i is written in room k
+    for i in exams_to_schedule:
+        for k in exam_rooms_index[i]:
+            if period == -1 or T[k][period] == 1:
+                z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
+
+    model.update()
+
+    # Building constraints...    
+    
+    # c1: seats for all students
+    for i in exams_to_schedule:
+        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) if period == -1 or T[k][period] == 1 ]) >= s[i], "c1")
+    
+    # c2: only one exam per room
+    for k in range(r):
+            if period == -1 or T[k][period] == 1:
+                model.addConstr( quicksum([ z[i, k] for i in exams_to_schedule  ]) <= 1, "c2")    
+
+    # objective: minimize number of used rooms
+    obj1 = quicksum([ z[i,k] for i in exams_to_schedule for k in exam_rooms_index[i] if T[k][period] == 1 ]) 
+
+    model.setObjective( obj1, GRB.MINIMIZE)
+    
+    if not verbose:
+        model.params.OutputFlag = 0
+    
+    model.optimize()
+
+    
+    # return best room schedule
+    try:       
+        z=defaultdict(int)
+        for i in exams_to_schedule:
+            for k in exam_rooms_index[i]:
+                if period == -1 or T[k][period] == 1:
+                    v = model.getVarByName("z_%s_%s" % (i,k)) 
+                    z[i,k]  = v.x
+                    
+        return z
+    except GurobiError:
+        return None
+
+
 
 if __name__ == '__main__':
     

@@ -35,7 +35,7 @@ if __name__ == '__main__':
     annealing_iterations = 1000
     annealing_beta_0 = 0.5
     
-    dataset = "2"
+    dataset = "3"
     rd.seed(42)
     
     try:
@@ -52,12 +52,12 @@ if __name__ == '__main__':
     #epochs = 1
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    Heuristic = AC(data, num_ants = n_colorings)
-    #Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
+    #Heuristic = AC(data, num_ants = n_colorings)
+    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     
     debug = True
     verbose = False
-    parallel = not True
+    parallel =  True
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = annealing_beta_0, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
