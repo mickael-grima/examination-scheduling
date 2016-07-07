@@ -31,8 +31,8 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 1
-    epochs = 10
-    annealing_iterations = 100
+    epochs = 25
+    annealing_iterations = 1000
     annealing_beta_0 = 0.5
     
     dataset = "2"
