@@ -132,9 +132,7 @@ class EqualizedColorGraph(ConstrainedColorGraph):
             if colour not in self.color_slots:
                 return(True)
             #print len([slot for slot in exam_slots[node] if slot in self.color_slots[colour]])
-            #if len([slot for slot in exam_slots[node] if slot in self.color_slots[colour]]) <= 1:
-            #    return(False)
-            if exam_slots[node] != self.color_slots[colour]:
+            if len([slot for slot in exam_slots[node] if slot in self.color_slots[colour]]) <= 1:
                 return(False)
         return(True)
 
@@ -181,11 +179,6 @@ class EqualizedColorGraph(ConstrainedColorGraph):
             # we check whether any other neighbor has color
             if self.check_neighbours(node, color, data):
                 if mode == 0 or self.check_room_constraints(node, color, data, mode = mode, periods = periods):
-                    
-                    if color in self.colours.values():
-                        if rd.uniform(0,1) <= 0.4:
-                            continue
-                    
                     self.colours[node] = color
                     
                     if color not in self.color_count: self.color_count[color] = 0
@@ -196,12 +189,11 @@ class EqualizedColorGraph(ConstrainedColorGraph):
                     if 'exam_slots' in data and len(data['exam_slots']) > 0:
                         if color not in self.color_slots:
                             self.color_slots[color] = data['exam_slots'][node]
-                        #else:
-                            #self.color_slots[color] = [slot for slot in self.color_slots[color] if slot in data['exam_slots'][node]]
-                            
-                            ## break if feasibility vanished in the above line of code
-                            #if len(self.color_slots[color]) == 0:
-                                #return False
+                        else:
+                            self.color_slots[color] = [slot for slot in self.color_slots[color] if slot in data['exam_slots'][node]]
+                            # break if feasibility vanished in the above line of code
+                            if len(self.color_slots[color]) == 0:
+                                return False
                     
                     #break afer node was chosen
                     break
@@ -210,8 +202,6 @@ class EqualizedColorGraph(ConstrainedColorGraph):
             return False
         else:
             return True
-        
-        
 
 class AnotherColorGraph(ConstrainedColorGraph):
     '''
@@ -319,9 +309,9 @@ class AnotherColorGraph(ConstrainedColorGraph):
         
         used_colors = [c for c in self.color_weeks]
         if len(used_colors) > 0 and max(used_colors) + 1 not in self.ALL_COLOURS:
-            print "RESTART"
-            exit(0)
-            return false
+            print "RESTART", len(used_colors)
+            #exit(0)
+            return False
         if len(used_colors) == 0:
             used_colors = [0]
         
@@ -346,7 +336,7 @@ class AnotherColorGraph(ConstrainedColorGraph):
                         print "STRANGE!", color, sorted(set(self.colours.values()))
                         exit(0)
                     if color in self.colours.values():
-                        if rd.uniform(0,1) <= 0.6:
+                        if rd.uniform(0,1) <= 0.94:
                             continue
                     #if color == 0:
                         #print node, color, self.color_slots[color]

@@ -83,7 +83,7 @@ def build_statespace_exam_slots(coloring, data):
     for color in color_exams:
         for exam in color_exams[color]:
             #color_slots[color].update(exam_slots[exam])
-            color_slots[color].update([ slot for slot in exam_slots[exam] if slot in color_slots[color] ])
+            color_slots[color].update([ slot for slot in exam_slots[exam] if len(color_slots[color]) == 0 or slot in color_slots[color] ])
         
     #print color_exams
     #print sorted(coloring.values())
@@ -91,18 +91,9 @@ def build_statespace_exam_slots(coloring, data):
     # empty statespace -> init
     statespace = { color: [] for color in color_exams }
     for color in color_exams:
-        #print color, color_slots[color]
-        #if color == 0:
-            #print color_exams[color]
-            #for exam in color_exams[color]:
-                #print data['exam_slots_index'][exam]
-                #print data['exam_slots'][exam][0:10]
         
-            
         for time in color_slots[color]:
-            
             period = h.index(time)
-            
             
             greedy_schedule = schedule_greedy(color_exams[color], period, data)
             if greedy_schedule is not None:
@@ -117,14 +108,6 @@ def build_statespace_exam_slots(coloring, data):
                     #print "denied, ILP"
                 
         if len(statespace[color]) == 0:
-            
-            
-            print color, period, schedule_rooms_in_period(color_exams[color], period, data, verbose=False) is not None
-            
-            #for exam in color_exams[color]:
-                #print data['exam_slots_index'][exam]
-            
-            exit(0)
             return None, None
 
     return statespace, color_exams
@@ -210,7 +193,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     if debug: print "TOBINARY"
     y_binary = tools.to_binary(coloring, color_schedule, data['h'])
     
-    if y_binary is None:
+    if y_binary is None or not all(constraints.time_feasible(y_binary, data)):
         if debug: print constraints.time_feasible(y_binary, data)
         return None, None, None, sys.maxint
     

@@ -31,17 +31,18 @@ if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 1
-    epochs = 100
-    annealing_iterations = 100
+    epochs = 25
+    annealing_iterations = 1000
     annealing_beta_0 = 0.5
     
+    dataset = "2"
     rd.seed(42)
     
     try:
-        data = pickle.load(file=open("%sdata.pickle" %PROJECT_PATH, "r"))
+        data = pickle.load(file=open("%sdata_%s.pickle" %(PROJECT_PATH, dataset), "r"))
     except:
-        data = examination_data.load_data(dataset = "2", threshold = 0, verbose = True)
-        pickle.dump(data, file=open("%sdata.pickle" %PROJECT_PATH, "w+"))
+        data = examination_data.load_data(dataset = dataset, threshold = 0, verbose = True)
+        pickle.dump(data, file=open("%sdata_%s.pickle" %(PROJECT_PATH, dataset), "w+"))
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
@@ -51,8 +52,8 @@ if __name__ == '__main__':
     #epochs = 1
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = AC(data, num_ants = n_colorings)
-    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
+    Heuristic = AC(data, num_ants = n_colorings)
+    #Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     
     debug = True
     verbose = False
