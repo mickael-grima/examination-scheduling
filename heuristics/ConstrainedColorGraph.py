@@ -345,9 +345,9 @@ class AnotherColorGraph(ConstrainedColorGraph):
                     if color > max(self.colours.values())+1:
                         print "STRANGE!", color, sorted(set(self.colours.values()))
                         exit(0)
-                    if color in self.colours.values():
-                        if rd.uniform(0,1) <= 0.6:
-                            continue
+                    #if color in self.colours.values():
+                        #if rd.uniform(0,1) <= 0.95:
+                            #continue
                     #if color == 0:
                         #print node, color, self.color_slots[color]
                         #print data['exam_slots_index'][node]

@@ -76,7 +76,10 @@ class RandomHeuristic(MetaHeuristic):
                 if not feasible: 
                     break
                 
-            assert counter < 100 or feasible, "Too many iterations for one coloring"
+            if counter > 100 and not feasible:
+                if counter % 200 == 0:
+                    print "Warning: Stuck in a loop generating colorings!"
+                #feasible = True
                 
             #print feasible
             if feasible: 

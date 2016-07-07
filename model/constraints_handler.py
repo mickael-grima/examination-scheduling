@@ -38,6 +38,27 @@ def test_one_exam_per_period(y, n=0, p=0, **indices):
     return False
 
 
+#def test_period(y, exam_slots_index = None, n=0, p=0, **indices):
+    #"""
+        #Test here the constraint: one exam per period
+    #"""
+    #if exam_slots_index is None:
+        #return True
+    
+    #if y is not None:
+        #(n, p) = tools.get_dimensions_from_y(y) if not n * p else (n, p)
+
+        #res = True
+        #if indices.get('i') is not None:
+            #i = indices.get('i')
+            #res = sum([y[i, l] for l in range(p)]) == 1
+        #else:
+            #for i in range(n):
+                #res = res and (sum([y[i, l] for l in range(p)]) == 1)
+        #return res
+    #return False
+
+
 def test_conflicts(y, n=0, p=0, conflicts={}, **indices):
     """
         Test here the constraint: no student has to write two exams or more at the same time
