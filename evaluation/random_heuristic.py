@@ -35,7 +35,7 @@ if __name__ == '__main__':
     annealing_iterations = 100
     annealing_beta_0 = 0.5
     
-    dataset = "1"
+    dataset = "2"
     rd.seed(42)
     
     try:
@@ -50,10 +50,10 @@ if __name__ == '__main__':
     from heuristics.johnson import Johnson
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #epochs = 1
-    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
     #Heuristic = AC(data, num_ants = n_colorings)
-    #Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
+    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     
     debug = True
     verbose = False
