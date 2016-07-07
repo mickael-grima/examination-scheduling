@@ -74,6 +74,7 @@ coverage.xml
 .hypothesis/
 
 *.txt
+*.pickle
 
 # Translations
 *.mo
