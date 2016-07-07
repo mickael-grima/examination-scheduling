@@ -82,7 +82,8 @@ def build_statespace_exam_slots(coloring, data):
     color_slots = collections.defaultdict(set)
     for color in color_exams:
         for exam in color_exams[color]:
-            color_slots[color].update(exam_slots[exam])
+            #color_slots[color].update(exam_slots[exam])
+            color_slots[color].update([ slot for slot in exam_slots[exam] if slot in color_slots[color] ])
         
     #print color_exams
     #print sorted(coloring.values())
@@ -101,15 +102,7 @@ def build_statespace_exam_slots(coloring, data):
         for time in color_slots[color]:
             
             period = h.index(time)
-            #if color == 0:
-                #print [time in exam_slots[exam] for exam in color_exams[color]]
-                
-            #if not all( time in exam_slots[exam] for exam in color_exams[color] ):
-                ##print "no", any( time in exam_slots[exam] for exam in color_exams[color] )
-                ##print "no", all( time in exam_slots[exam] for exam in color_exams[color] )
-                ##for exam in color_exams[color]:
-                    ##print exam, exam_slots[exam]
-                #continue
+            
             
             greedy_schedule = schedule_greedy(color_exams[color], period, data)
             if greedy_schedule is not None:
