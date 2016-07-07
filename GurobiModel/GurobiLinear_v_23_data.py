@@ -39,8 +39,8 @@ def build_model(data, n_cliques = 0, verbose = True):
     
     model = Model("ExaminationScheduling")
 
-    for i in range(n):
-        exam_rooms[i] = [k for k in range(r)]
+    # for i in range(n):
+    #     exam_rooms[i] = [k for k in range(r)]
     
     
     if verbose:
