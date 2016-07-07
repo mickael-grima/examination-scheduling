@@ -16,7 +16,7 @@ import random as rd
 from collections import defaultdict
 
 from inputData import examination_data
-from heuristics.MetaHeuristic import RandomHeuristic, RandomHeuristicAdvanced
+from heuristics.MetaHeuristic import RandomHeuristic, RandomHeuristicAdvanced, AnotherRandomHeuristic
 import heuristics.schedule_exams as scheduler
 from heuristics.johnson import Johnson
 from heuristics.AC import AC
@@ -25,18 +25,23 @@ import heuristics.tools as tools
 from evaluation.objectives import obj_time, obj_room, obj
 
 from evaluation.moses import get_moses_representation
+import pickle
 
 if __name__ == '__main__':
     
     gamma = 1.0
     n_colorings = 1
-    epochs = 10
-    annealing_iterations = 1000
+    epochs = 100
+    annealing_iterations = 100
     annealing_beta_0 = 0.5
     
     rd.seed(42)
     
-    data = examination_data.load_data(dataset = "1", threshold = 0, verbose = True)
+    try:
+        data = pickle.load(file=open("%sdata.pickle" %PROJECT_PATH, "r"))
+    except:
+        data = examination_data.load_data(dataset = "2", threshold = 0, verbose = True)
+        pickle.dump(data, file=open("%sdata.pickle" %PROJECT_PATH, "w+"))
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
@@ -46,7 +51,8 @@ if __name__ == '__main__':
     #epochs = 1
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    Heuristic = AC(data, num_ants = n_colorings)
+    #Heuristic = AC(data, num_ants = n_colorings)
+    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     
     debug = True
     verbose = False

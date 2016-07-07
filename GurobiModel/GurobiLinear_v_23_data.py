@@ -33,14 +33,16 @@ def build_model(data, n_cliques = 0, verbose = True):
     conflicts = data['conflicts']
     exam_slots = data['exam_slots']
     exam_slots_index = data['exam_slots_index']
-    exam_rooms = data['exam_rooms']
+    exam_rooms_index = data['exam_rooms_index']
     locking_times = data['locking_times']
     T = data['T']
     
     model = Model("ExaminationScheduling")
 
-    # for i in range(n):
-    #     exam_rooms[i] = [k for k in range(r)]
+
+    #for i in range(n):
+        #exam_rooms_index[i] = [k for k in range(r)]
+
     
     
     if verbose:
@@ -52,7 +54,7 @@ def build_model(data, n_cliques = 0, verbose = True):
         for l in range(p):
             if T[k][l] == 1:
                 for i in range(n):
-                    if k in exam_rooms[i]:
+                    if k in exam_rooms_index[i]:
                         x[i,k,l] = model.addVar(vtype=GRB.BINARY, name="x_%s_%s_%s" % (i,k,l))
     
     # y[i,l] = 1 if exam i is at time l
@@ -100,7 +102,7 @@ def build_model(data, n_cliques = 0, verbose = True):
             c1 = LinExpr()
             c3 = LinExpr()
             for k in range(r):
-                if T[k][l] == 1 and k in exam_rooms[i]:
+                if T[k][l] == 1 and k in exam_rooms_index[i]:
                     c1.addTerms(1, x[i, k, l])
                     c4.addTerms(c[k],x[i,k,l])
             obj += c1
@@ -125,7 +127,7 @@ def build_model(data, n_cliques = 0, verbose = True):
                 sumrooms[l] += 1
                 c5 = LinExpr()
                 for i in range(n):
-                    if k in exam_rooms[i]:
+                    if k in exam_rooms_index[i]:
                         c5.addTerms(1,x[i,k,l])
                 model.addConstr( c5 <= 1, "c5")  
                 cover_inequalities += c5
