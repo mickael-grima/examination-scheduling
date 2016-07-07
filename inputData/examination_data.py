@@ -649,7 +649,7 @@ def get_exam_slots(result_times, verbose=False, math_only=False,relax_total=True
         #else:
             #print exam, len(exam_slots[exam])
     
-    return exam_slots
+    return exam_slots, exam_weeks
     
     
 def get_exam_rooms(result_rooms, room_campus_id):
@@ -729,16 +729,24 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     exam_rooms = get_exam_rooms(result_rooms, room_campus_id)
     
     # for each exam determine the possible slots according to examination periods
-    exam_slots = get_exam_slots(result_times, relax_total = relax_total, math_only = math_only, verbose=verbose)
+    exam_slots, exam_weeks = get_exam_slots(result_times, relax_total = relax_total, math_only = math_only, verbose=verbose)
     
     # filter exams which are considered with examination period
     exams = sorted([ exam for exam in exams if exam in exam_slots ])
+    
+    # filter impossible exams (found by hand)
+    impossibles = ['BV000001 2/26/2016', 'CH0115 2/17/2016', 'IN0015 2/13/2016', 'IN0019 2/11/2016', 'MA9301 2/24/2016', 'MA9302 2/18/2016', 'MA9305 3/1/2016', 'MA9711 2/8/2016', 'MW0084 3/8/2016', 'MW0104 3/22/2016', 'MW1108 3/1/2016', 'MW1911 2/23/2016', 'MW2021 3/11/2016', 'MW2023 2/25/2016', 'PH0001 4/7/2016', 'PH9009 2/15/2016', 'WI000021 2/15/2016', 'WI000027 2/22/2016', 'WI001056 2/12/2016', 'BV000013 3/4/2016', 'CH1102 2/18/2016', 'IN0015 4/5/2016', 'IN2062 2/8/2016', 'MA9409 4/4/2016', 'MA9413 2/23/2016', 'MW0102 3/11/2016', 'MW1919 3/2/2016', 'MW1937-1 3/3/2016', 'MW2015 2/23/2016', 'PH0003 2/18/2016', 'SG120020 2/13/2016', 'SG160013 2/12/2016', 'WI000178 2/19/2016', 'WI000219 2/9/2016', 'WI000820 2/10/2016', 'CH0128 4/1/2016', 'MA9201 2/19/2016', 'MA9202 4/5/2016', 'MA9511 3/8/2016', 'MW1586 3/21/2016', 'WI001059 2/18/2016', 'MA9202 2/9/2016', 'MA9517 3/9/2016', 'MW0612 3/29/2016', 'MW1921 2/18/2016', 'MW1939-1 3/8/2016', 'PH0001 2/11/2016', 'SG120022 2/17/2016', 'MA9411 2/18/2016', 'MW1980 2/9/2016', 'MW2129 2/29/2016', 'SG110200 2/26/2016', 'SG120024 2/19/2016', 'WI000275 2/22/2016', 'WI000728 2/11/2016', 'BGU55027 3/1/2016', 'EI0611 2/8/2016', 'EI1182 3/10/2016', 'IN0008 2/24/2016', 'IN0009 2/22/2016', 'MA9201 3/31/2016', 'MW1938-1 2/26/2016', 'PH9009 3/29/2016', 'WI000729 2/11/2016', 'IN0021 2/22/2016', 'MW1694 3/2/2016', 'SG110230 2/25/2016', 'BGU51017 2/29/2016']
+    exams = [exam for exam in exams if exam not in impossibles]
+    if verbose: print "Drop the impossible", len(impossibles)
+    if verbose: print "Number of exams", len(exams)
     
     # make subproblem
     if type(max_exams) == int:
         rd.shuffle(exams)
         exams = sorted(exams[0:max_exams])
         
+    exams = sorted(exams)
+    
     # get names of all used rooms
     rooms = sorted(set([ room for exam in exams for room in exam_rooms[exam] ]))
     
@@ -761,16 +769,10 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     exam_rooms_index = defaultdict(list)
     exam_slots_index = defaultdict(list)
     for exam in exams:
+        
         exam_slots_index[exam] = [ h.index(slot) for slot in exam_slots[exam] ]
         exam_rooms_index[exam] = [ rooms.index(room) for room in exam_rooms[exam] ]
-    
-    
-    # read conflict data from tumonline
-    if verbose: print "Read conflicts..."
-    Q, conflicts, K = read_conflicts(semester, exams = exams, threshold = threshold)
-    if verbose: print "Mean number of conflicts", np.mean([ len(conflicts[i]) for i, e in enumerate(exams)])
-    
-    
+        
     # Load locking rooms from table
     locking_times = read_locked_rooms(semester, rooms, h)
     
@@ -795,13 +797,28 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     if verbose: print "Locking times", sum( len(locking_times[k]) for k in range(len(rooms)) )
      
      
+    # read conflict data from tumonline
+    if verbose: print "Read conflicts..."
+    Q, conflicts, K = read_conflicts(semester, exams = exams, threshold = threshold)
+    if verbose: print "Mean number of conflicts", np.mean([ len(conflicts[i]) for i, e in enumerate(exams)])
+    
     
     # convert to list of lists 
-    exam_slots = exam_slots.values()
-    exam_slots_index = exam_slots_index.values()
-    exam_rooms = exam_rooms.values()
-    exam_rooms_index = exam_rooms_index.values()
-    exam_rooms = exam_rooms_index # Due to backward compatibility
+    exam_slots_list = []
+    exam_slots_index_list = []
+    exam_rooms_list = []
+    exam_rooms_index_list = []
+    exam_weeks_list = []
+    
+    for exam in exams:
+        exam_slots_list.append(exam_slots[exam])
+        exam_slots_index_list.append(exam_slots_index[exam])
+        exam_rooms_list.append(exam_rooms[exam])
+        exam_rooms_index_list.append(exam_rooms_index[exam])
+        exam_weeks_list.append(exam_weeks[exam])
+        
+    exam_rooms_list = exam_rooms_index_list
+    
     
     data = {}
     
@@ -818,9 +835,11 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     
     data['data_version'] = semester
     data['exam_names'] = exams
-    data['exam_slots'] = exam_slots
-    data['exam_slots_index'] = exam_slots_index
-    data['exam_rooms'] = exam_rooms
+    data['exam_slots'] = exam_slots_list
+    data['exam_slots_index'] = exam_slots_index_list
+    data['exam_rooms'] = exam_rooms_list
+    data['exam_rooms_index'] = exam_rooms_index_list
+    data['exam_weeks'] = exam_weeks_list
     
     data['result_times'] = result_times
     data['result_dates'] = result_dates
@@ -852,7 +871,7 @@ def load_data(dataset = "1", threshold = 0, verbose = False):
 
 if __name__ == "__main__":
     
-    data = load_data(dataset = "1", threshold = 0, verbose = True)
+    data = load_data(dataset = "2", threshold = 0, verbose = True)
     
         
     print "n, r, p"

@@ -182,6 +182,12 @@ def make_proposal(color_schedule, statespace, n_colors, log=False):
         
         # draw color to change
         color = rd.randint(0, n_colors-1)
+        if len(statespace[color]) == 1:
+            print "no use"
+            continue
+        elif len(statespace[color]) == 0:
+            print "impossible!"
+            
         color, new_slot, color2, old_slot = propose_color(color, color_schedule, statespace)
         
         feasible = True

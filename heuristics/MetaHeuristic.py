@@ -18,7 +18,7 @@ import random as rd
 import logging
 from collections import defaultdict
 
-from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph, AnotherColorGraph
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary
@@ -68,14 +68,20 @@ class RandomHeuristic(MetaHeuristic):
             rd.shuffle(nodes)
             
             feasible = True
+            nodes_check = 0
             for node in nodes:
                 feasible = self.graph.color_node(node, data=self.data, mode = self.mode, periods = self.periods[i])
-                #print node, feasible
+                nodes_check += 1
+                #print nodes_check / float(len(nodes))
                 if not feasible: 
                     break
-            
+                
+            assert counter < 100 or feasible, "Too many iterations for one coloring"
+                
+            #print feasible
             if feasible: 
-                colorings.append({n: c for n, c in self.graph.colours.iteritems()})      
+                colorings.append({n: c for n, c in self.graph.colours.iteritems()})    
+                print self.data['p'], len(set(colorings[-1].values()))
                 i += 1
                 
         return colorings
@@ -110,6 +116,30 @@ class RandomHeuristicAdvanced(RandomHeuristic):
         for i in range(len(values)):
             if time_slots[i] is not None:
                 self.periods[i] = [self.data['h'].index(color) for color in time_slots[i]]
+            
+            
+   
+class AnotherRandomHeuristic(RandomHeuristic):
+    '''
+        A variant of the random heuristic, which uses color equalization and constraint checking
+    '''
+    def __init__(self, data, n_colorings=50):
+        RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
+        self.graph = AnotherColorGraph(n_colours = int(data['p']*1.0) - 0)
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])   
+        self.periods = { i: None for i in range(n_colorings) }
+        self.mode = 1
+        
+    #def update(self, values, best_index = None, time_slots = None):
+        #'''
+            #We use periods when checking constraints. Get them from time_solots color dict.
+        #'''
+        #if self.periods is None:
+            #self.periods = defaultdict(list)
+        
+        #for i in range(len(values)):
+            #if time_slots[i] is not None:
+                #self.periods[i] = [self.data['h'].index(color) for color in time_slots[i]]
             
     
     

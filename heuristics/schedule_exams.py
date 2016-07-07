@@ -79,33 +79,59 @@ def build_statespace_exam_slots(coloring, data):
     # refactor dicts
     color_exams = tools.swap_color_dictionary(coloring)
     
+    color_slots = collections.defaultdict(set)
+    for color in color_exams:
+        for exam in color_exams[color]:
+            color_slots[color].update(exam_slots[exam])
+        
     #print color_exams
     #print sorted(coloring.values())
     
     # empty statespace -> init
     statespace = { color: [] for color in color_exams }
-    
     for color in color_exams:
-        for period, time in enumerate(h):
+        #print color, color_slots[color]
+        #if color == 0:
+            #print color_exams[color]
+            #for exam in color_exams[color]:
+                #print data['exam_slots_index'][exam]
+                #print data['exam_slots'][exam][0:10]
+        
             
-            feasible_slot = True
-            for exam in color_exams[color]:
-                if not feasible_slot: break
-                feasible_slot = time in exam_slots[exam]
-                if not feasible_slot:
-                    break
+        for time in color_slots[color]:
+            
+            period = h.index(time)
+            #if color == 0:
+                #print [time in exam_slots[exam] for exam in color_exams[color]]
                 
-            if not feasible_slot:
-                continue
+            #if not all( time in exam_slots[exam] for exam in color_exams[color] ):
+                ##print "no", any( time in exam_slots[exam] for exam in color_exams[color] )
+                ##print "no", all( time in exam_slots[exam] for exam in color_exams[color] )
+                ##for exam in color_exams[color]:
+                    ##print exam, exam_slots[exam]
+                #continue
             
             greedy_schedule = schedule_greedy(color_exams[color], period, data)
             if greedy_schedule is not None:
                 statespace[color].append(time)
-            elif schedule_rooms_in_period(color_exams[color], period, data) is not None:
-                statespace[color].append(time)
+                #print color, period, "appended"
+            #else:
+                #ILP_schedule = schedule_rooms_in_period(color_exams[color], period, data)
+                #if ILP_schedule is not None:
+                    #statespace[color].append(time)
+                    #print color, period, "appended, ILP"
+                #else:
+                    #print "denied, ILP"
                 
-        if len(statespace[color]) <= 1:
-            #print color, color_exams[color], data['exam_names'][color_exams[color][0]], schedule_rooms_in_period(color_exams[color], period, data, verbose=True)
+        if len(statespace[color]) == 0:
+            
+            
+            print color, period, schedule_rooms_in_period(color_exams[color], period, data, verbose=False) is not None
+            
+            #for exam in color_exams[color]:
+                #print data['exam_slots_index'][exam]
+            
+            exit(0)
             return None, None
 
     return statespace, color_exams
@@ -197,7 +223,7 @@ def heuristic(coloring, data, gamma = 1, max_iter = 100, beta_0 = 10, debug=Fals
     
     # create room schedule
     if debug: print "SCHDULE ROOMS"
-    room_schedule, room_value = schedule_rooms(coloring, color_schedule, data, greedy = False)
+    room_schedule, room_value = schedule_rooms(coloring, color_schedule, data, greedy = True)
     
     if debug: print "DONE"
     
