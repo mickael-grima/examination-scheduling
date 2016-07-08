@@ -855,7 +855,11 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
 
 def load_data(dataset = "1", threshold = 0, verbose = False):
 
-    assert dataset in ["1", "2", "3"], "We only have three different verisons of the data set"
+    if type(dataset) == int:
+        dataset = "%d"%dataset
+    if type(dataset) == float:
+        dataset = "%d" %int(dataset)
+    assert dataset in ["1", "2", "3"], "We only have three different verisons of the data set: 1, 2 and 3"
     
     print "Loading data set", dataset
     
