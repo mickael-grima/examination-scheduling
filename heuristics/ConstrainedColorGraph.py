@@ -220,10 +220,10 @@ class AnotherColorGraph(ConstrainedColorGraph):
         
         self.color_weeks = dict()
         self.color_slots = defaultdict(list)
+        
+        # color blockers: If a color is found to be full, then we don't check it all over again
         self.color_blockers = []
         
-        self.color_count = defaultdict(int)
-        self.min_colors = deepcopy(self.ALL_COLOURS)
         self.randomization = randomization
         
         
@@ -238,15 +238,14 @@ class AnotherColorGraph(ConstrainedColorGraph):
         
         if color in neighbor_colors:
             return(False)
+
+        if color not in self.color_slots:
+            return(True)
         
-        if 'exam_weeks' in data and len(data['exam_weeks']) > 0:
-            exam_slots = data['exam_weeks']
-            if color not in self.color_weeks:
-                return(True)
-            elif data['exam_weeks'][node] != self.color_weeks[color]:
-                return False
-            elif data['exam_slots_index'][node] != self.color_slots[color]:
-                return False
+        # If the slots differ, dont take this color!
+        elif data['exam_slots_index'][node] != self.color_slots[color]:
+            return False
+
         return(True)
 
 
@@ -266,12 +265,7 @@ class AnotherColorGraph(ConstrainedColorGraph):
         
         nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
         
-        #print "per", periods, nodes
         for period in periods:
-            #print period
-            #print schedule_greedy(nodes, period, data) is not None
-            #print schedule_greedy([node], -1, data) is not None
-            ##print "PER", period
             if mode == 1: # greedy scheduling heuristic
                 if schedule_greedy(nodes, period, data) is not None:
                     return True
@@ -288,12 +282,9 @@ class AnotherColorGraph(ConstrainedColorGraph):
         for col in self.colours:
             self.colours[col] = self.WHITE
         
-        self.color_weeks = dict()
-        self.color_slots = defaultdict(list)
+        self.color_slots = dict()
         
         self.color_blockers = []
-        self.color_count = dict()
-        self.min_colors = deepcopy(self.ALL_COLOURS)
         
     
     def color_node(self, node, data={}, mode=0, periods=None):
@@ -306,17 +297,18 @@ class AnotherColorGraph(ConstrainedColorGraph):
                 2 - Use ILP feasibility
                 3 - Use hand picked heuristic
         """
-        #rd.shuffle(self.ALL_COLOURS)
-        prev_color = -1
+        assert 'exam_slots_index' in data and len(data['exam_slots_index']) > 0, "This heuristic is designed to consider color slots. Please provide the exam_slots_index dict!"
         
-        used_colors = [c for c in self.color_weeks]
-        if len(used_colors) > 0 and max(used_colors) + 1 not in self.ALL_COLOURS:
-            print "RESTART", len(used_colors)
-            #exit(0)
-            return False
+        used_colors = [c for c in self.color_slots]
         if len(used_colors) == 0:
             used_colors = [0]
+            
+        # we used too many colors already. Infeasible!
+        if len(used_colors) >= len(self.ALL_COLOURS):
+            print "RESTART", len(used_colors)
+            return False
         
+        # iterate all colors; add one new color
         for color in used_colors + [max(used_colors) + 1]:
             
             if color in self.color_blockers:
@@ -325,66 +317,52 @@ class AnotherColorGraph(ConstrainedColorGraph):
             # we check if every other neighbors don't have col as color
             if self.check_neighbours(node, color, data):
                 
+                # check feasibility for that node
                 feasible = False
+                
                 if mode != 0:
-                    feasible = self.check_room_constraints(node, color, data, mode = mode, periods = self.color_slots[color])
-                    #print node, color, feasible
+                    if color not in self.color_slots:
+                        periods = data['exam_slots_index'][node]
+                    else:
+                        periods = self.color_slots[color]
+                    feasible = self.check_room_constraints(node, color, data, mode = mode, periods = periods)
+                
                 if mode == 0 or feasible:
                     
-                    if color in self.color_weeks:
-                        assert data['exam_slots_index'][node] == self.color_slots[color], (data['exam_slots_index'][node], data['exam_weeks'][node], self.color_slots[color], self.color_weeks[color])
+                    # assert we don't add exams with different time periods!
+                    if color in self.color_slots:
+                        assert data['exam_slots_index'][node] == self.color_slots[color], (data['exam_slots_index'][node], self.color_slots[color])
                     
+                    # TODO: This should not happen, but remains to be tested
                     if color > max(self.colours.values())+1:
                         print "STRANGE!", color, sorted(set(self.colours.values()))
                         exit(0)
+                    
+                    # see if we can accept the color. This is used to spread out the colors evenly and needs to be hand_picked
+                    # we did not have time to think of something more fancy and elegant.
                     if color in self.colours.values():
                         if rd.uniform(0,1) <= self.randomization:
                             continue
-                    #if color == 0:
-                        #print node, color, self.color_slots[color]
-                        #print data['exam_slots_index'][node]
-                        #nodes = [nod for nod, col in self.colours.iteritems() if col == color] + [node]
-                        #print nodes
-                        #assert len(self.color_slots[color]) == 0 or any( schedule_greedy(nodes, period, data) is not None for period in self.color_slots[color] )
-                            
+        
+                    # save the exam slots for that color. We will only color other exams with the same slots with this color
+                    if color not in self.color_slots:
+                        self.color_slots[color] = data['exam_slots_index'][node]
+        
+                    # finally color node
                     self.colours[node] = color
                     
-                    #print node, color
-                    #print ([c for c in self.colours.values() if c != -1])
-                    #print used_colors
-                    #print [c for c in self.color_weeks]
-                    #print 'exam_weeks' in data and len(data['exam_weeks']) > 0
-                    
-                    if 'exam_weeks' in data and len(data['exam_weeks']) > 0:
-                        if color not in self.color_weeks:
-                            self.color_weeks[color] = data['exam_weeks'][node]
-                            self.color_slots[color] = data['exam_slots_index'][node]
-        
-                    #if color in self.color_weeks:
-                        #print node, color
-                        #print self.color_weeks[color]
-                        #print data['exam_weeks'][node]
-                        #print data['exam_weeks']
-                        #exit(0)
+                    # break since we have found our color!
                     break
-                #else:
-                    #print "WUT!", node, color, feasible
+                
+                # save blocking list. This is a bit fuzzy but speeds up the process.
+                # TODO: Maybe think about doing something more fancy here. 
+                # Maybe even removing this functionality will give better results?
                 if mode != 0 and not feasible and self.color_slots[color] is not None and len(self.color_slots[color]) > 0:
                     #print self.color_blockers
                     self.color_blockers.append(color)
-            prev_color = color
-            
+                    
+        # if we did not find an appropriate color, then we are infeasible for sure!
         if self.colours[node] == self.WHITE:
-            #print "NODE", node, max(used_colors) + 1
-            #print self.color_blockers
-            #print "_________________"
-            #impossibles = []
-            #for node in range(data['n']):
-                #if not any(schedule_greedy([node], l, data) is not None for l in range(-1, data['p'])):
-                    #impossibles.append(data['exam_names'][node])
-            #print impossibles
-            #exit(0)
-            
             return False
         else:
             return True

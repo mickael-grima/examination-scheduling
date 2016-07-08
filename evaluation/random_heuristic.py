@@ -30,12 +30,12 @@ import pickle
 if __name__ == '__main__':
     
     gamma = 1.0
-    epochs = 10
+    epochs = 1
     n_colorings = 4
     annealing_iterations = 4000
     annealing_beta_0 = 10
     
-    dataset = "1"
+    dataset = "2"
     
     #rd.seed(42)
     
@@ -52,10 +52,10 @@ if __name__ == '__main__':
     #from heuristics.johnson import Johnson
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #epochs = 1
-    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
     #Heuristic = AC(data, num_ants = n_colorings)
-    #Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
+    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     
     
     # run options
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = annealing_beta_0, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
-    print "Time:", time()-t
+    print "\nTime:", time()-t
     if y is None:
         print "INFEASIBLE!!"
         exit(0)
