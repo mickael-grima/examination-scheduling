@@ -14,6 +14,8 @@ import random
 from gurobipy import Model, quicksum, GRB, GurobiError
 from model.instance import build_random_data
 
+#test
+
 # Create variables
 def build_model(data):
     
