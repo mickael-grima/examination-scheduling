@@ -25,6 +25,7 @@ import heuristics.tools as tools
 from evaluation.objectives import obj_time, obj_room, obj
 
 from evaluation.moses import get_moses_representation
+from heuristics.johnson import Johnson
 import pickle
 
 if __name__ == '__main__':
@@ -48,15 +49,14 @@ if __name__ == '__main__':
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
     
-    
-    #from heuristics.johnson import Johnson
-    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
-    #epochs = 1
-    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
-    #Heuristic = AC(data, num_ants = n_colorings)
-    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
-    
+    if dataset == "2":
+        Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
+    else:
+        Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+        #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
+        #epochs = 1
+        #Heuristic = AC(data, num_ants = n_colorings)
+        
     
     # run options
     debug = True

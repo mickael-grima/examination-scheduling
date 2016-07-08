@@ -73,6 +73,14 @@ coverage.xml
 *,cover
 .hypothesis/
 
+# data folders
+inputData/15W/
+inputData/16S/
+inputData/Conflicts/
+inputData/Teilnehmer/
+inputData/Rooms/
+
+# temporary formats
 *.txt
 *.pickle
 
