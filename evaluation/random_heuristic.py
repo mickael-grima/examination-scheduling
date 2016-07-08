@@ -36,9 +36,7 @@ if __name__ == '__main__':
     annealing_iterations = 4000
     annealing_beta_0 = 10
     
-    dataset = "2"
-    
-    #rd.seed(42)
+    dataset = 2
     
     try:
         data = pickle.load(file=open("%sdata_%s.pickle" %(PROJECT_PATH, dataset), "r"))
@@ -49,12 +47,11 @@ if __name__ == '__main__':
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
     
-    if dataset == "2":
+    if dataset == 2:
         Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     else:
         Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-        #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
-        #epochs = 1
+        #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p']); epochs = 1
         #Heuristic = AC(data, num_ants = n_colorings)
         
     
@@ -62,6 +59,7 @@ if __name__ == '__main__':
     debug = True
     verbose = False
     parallel =  True
+    rd.seed(42)
     
     
     t = time()
