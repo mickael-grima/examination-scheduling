@@ -43,11 +43,24 @@ def build_model(data, n_cliques = 0, verbose = True):
     
     if verbose:
         print("Building variables...")
-    
+
+
+    # Calculate Orbits
+    rs = 5
+    es = 10
+
+    orbit = {}
+    for l in range(p):
+        for k in range(r):
+            if k % rs == 0:
+                for i in range(n):
+                    if i % es == 0:
+                        orbit[i,k,l] = [ (i2,k2,l) for i2 in range(i,min(i+es,n)) for k2 in range(k,min(k+rs,r)) if T[k2][l] == 1 if conflicts[i] <= conflicts[i2] ]
+
+
     # x[i,k,l] = 1 if exam i is at time l in room k
     x = {}
     for k in range(r):
-        print k
         for l in range(p):
             if T[k][l] == 1:
                 for i in range(n):
@@ -58,16 +71,23 @@ def build_model(data, n_cliques = 0, verbose = True):
     y = {}
     for i in range(n):
         for l in range(p):
-            y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))    
+            y[i, l] = model.addVar(vtype=GRB.BINARY, name="y_%s_%s" % (i,l))
+
+
+    #Orbit variable for orbital branching
+    o = {}
+    for key in orbit:
+        if orbit[key]:
+            o[key] = model.addVar(vtype=GRB.BINARY, name="o_%s_%s_%s" % (key[0],key[1],key[2]))     
 
     # integrate new variables
     model.update() 
 
-    for i in range(p):
-        for l in range(i):
-            y[i, l].setAttr("BranchPriority", s[i])
+    for key in orbit:
+        if orbit[key]:
+            o[key].setAttr("BranchPriority", 1000000)
 
-    model.update() 
+
 
 
     start = timeit.default_timer()
@@ -84,13 +104,13 @@ def build_model(data, n_cliques = 0, verbose = True):
     for i in range(n):
         sumconflicts[i] = sum(conflicts[i])
         if s[i] <= 50:
-            maxrooms[i] = 1
-        elif s[i] <= 100:
             maxrooms[i] = 2
+        elif s[i] <= 100:
+            maxrooms[i] = 4
         elif s[i] <= 400:
-            maxrooms[i] = 7
-        elif s[i] <= 700:
             maxrooms[i] = 9
+        elif s[i] <= 700:
+            maxrooms[i] = 12
         else:
             maxrooms[i] = 12
         c2 = LinExpr()
@@ -111,7 +131,8 @@ def build_model(data, n_cliques = 0, verbose = True):
 
             for j in conflicts[i]:
                 c3.addTerms(1,y[j,l])
-            model.addConstr(c3 <= (1 - y[i,l])*sumconflicts[i], "c3")
+            if not conflicts[i]:
+                model.addConstr(c3 <= (1 - y[i,l])*sumconflicts[i], "c3")
 
             c2.addTerms(1,y[i,l])
         model.addConstr( c2 == 1 , "c2")
@@ -133,12 +154,32 @@ def build_model(data, n_cliques = 0, verbose = True):
         model.addConstr(cover_inequalities <= sumrooms[l], "cover_inequalities")
 
 
+    for key in orbit:
+        if orbit[key]:
+            model.addConstr(quicksum( x[i,k,l] for i,k,l in orbit[key]  ) <= o[key]*len(orbit[key]), "symmetrie break")
+
+    # for l in range(p):
+    #     print l
+    #     for k in range(r):
+    #         print k
+    #         if T[k][l] == 1:
+    #             for i in range(n):
+    #                 c6 = LinExpr()
+    #                 for i2 in similare[i]:
+    #                     for k2 in similarr[k]:
+    #                         if k2 >= 0:
+    #                             c6.addTerms(1,x[i2,k,l])
+    #                 model.addConstr(c6 <= o[i,k,l]*n, "symmetrie break")
+
+    # for i in range(p-2):
+    #     for l in range(p):
+    #         model.addConstr(y[i,l] <= quicksum( y[i+1,sim] for sim in similarp[l]), "s1")
 
 
     model.setObjective( obj, GRB.MINIMIZE)
 
 
-    model.write("CPLEX.mps")
+    #model.write("CPLEX.mps")
 
     print timeit.default_timer()-start
  
@@ -158,14 +199,16 @@ def build_model(data, n_cliques = 0, verbose = True):
     # max presolve agressivity
     #model.params.presolve = 2
     # Choosing root method 3= concurrent = run barrier and dual simplex in parallel
-    model.params.symmetrie = 2
+    #model.params.symmetrie = 2
     model.params.method = 3
+    #model.params.presolve = 0
     #model.params.MIPFocus = 1
 
     model.params.OutputFlag = 1
-    model.params.MIPFocus = 1
+    #model.params.MIPFocus = 1
 
-
+    model.params.heuristics = 0
+    model.params.cuts = 0
 
 
     return(model)
@@ -174,9 +217,9 @@ def build_model(data, n_cliques = 0, verbose = True):
 
 if __name__ == "__main__":
     
-    n = 150
-    r = 20
-    p = 20  
+    n = 200
+    r = 30
+    p = 30  
 
     # generate data
     random.seed(42)

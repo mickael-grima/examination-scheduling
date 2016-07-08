@@ -17,7 +17,7 @@ import networkx as nx
 import random as rd
 import logging
 
-from ConstrainedColorGraph import ConstrainedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph, AnotherColorGraph
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary
@@ -77,7 +77,7 @@ class Ant(object):
                 return nod
         return None
 
-    def generate_coloring(self, graph, edges_weight, data={}, check_constraints=False):
+    def generate_coloring(self, graph, edges_weight, data={}, mode=0):
         """ @param graph: graph to color
             @param edges_weight: weight on the edges for each node
             @cparam capacities: capacities of the rooms. If empty, we don't consider them
@@ -85,7 +85,8 @@ class Ant(object):
         """
         # for each connex component
         if not self.starting_nodes:
-            logging.warning("%s.generate_coloring: try to colour graph, but no starting nodes found")
+            logging.warning("%s.generate_coloring: try to colour graph, but no starting nodes found"
+                            % self.__class__.__name__)
         count_node = {}
         for node, neighbors in self.starting_nodes.iteritems():
             # start to visit the graph for one ant
@@ -95,7 +96,7 @@ class Ant(object):
                 if current_node is None:
                     raise Exception("current_node is None")
                 if current_node in not_seen:
-                    graph.color_node(current_node, data=data, check_constraints=check_constraints)
+                    graph.color_node(current_node, data=data, mode=mode)
                     not_seen.remove(current_node)
                 count_node.setdefault(current_node, 0)
                 count_node[current_node] += 1
@@ -104,7 +105,7 @@ class Ant(object):
         res = {}
         for n, c in graph.colours.iteritems():
             if c < 0:
-                raise Exception('Color negative found: colour=%s, node=%s' % (c, n))
+                return {}
             res[n] = c
         return res
 
@@ -120,12 +121,15 @@ class AC:
 
         returns x_ik y_il, objVal
     '''
-    def __init__(self, data, gamma=1.0, num_ants=50):
+    def __init__(self, data, gamma=1.0, num_ants=50, n_colors=2000):
         self.data = data
         self.gamma = gamma
         self.ants = [Ant(name='Ant%s' % i) for i in range(num_ants)]
         self.num_ants = num_ants
-        self.graph = ConstrainedColorGraph()
+        print "AC: setting n_colors to data['p']!"
+        n_colors = data['p']
+        self.graph = EqualizedColorGraph(n_colours=n_colors)
+        #self.graph = AnotherColorGraph(n_colours = int(data['p']*0.9) - 0)
         self.edges_weight = {}  # weight on the edges
 
         self.initialize()
@@ -147,17 +151,17 @@ class AC:
             self.edges_weight.setdefault(node, {})
             for neighbor in self.graph.graph.neighbors(node):
                 if node != neighbor:
-                    self.edges_weight[node][neighbor] = 1.0
+                    self.edges_weight[node][neighbor] = 100.0
 
-    def generate_colorings(self, check_constraints=False):
+    def generate_colorings(self, mode=0):
         """ Generate a feasible coloring for each ant
         """
         colorings = []
         for ant in self.ants:
             colorings.append(ant.generate_coloring(self.graph, self.edges_weight, self.data,
-                             check_constraints=check_constraints))
+                             mode=mode))
             self.graph.reset_colours()
-        return colorings
+        return filter(bool, colorings)
 
     def update(self, values, best_index=None, time_slots=None, max_speed=1.1, nb_ants=-1, evaporating_factor=0.5):
         """ @param values: for each ant, we provide an obj value. The best ant is the one with the minimal obj value

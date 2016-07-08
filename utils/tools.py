@@ -32,18 +32,36 @@ def convert_to_table(variables, *dim):
     return res
 
 
+def get_dimensions_from_x(x):
+    """ @param variables: variable from gurobi
+        return the maximal number or each rank in the tuple key
+    """
+    n, r = set(), set()
+    for key, _ in x.iteritems():
+        n.add(key[0])
+        r.add(key[1])
+    return len(n), len(r)
+
+
+def get_dimensions_from_y(y):
+    """ @param variables: variable from gurobi
+        return the maximal number or each rank in the tuple key
+    """
+    n, p = set(), set()
+    for key, _ in y.iteritems():
+        n.add(key[0])
+        p.add(key[1])
+    return len(n), len(p)
+
+
 def get_dimensions_from(x, y):
     """ @param variables: variable from gurobi
         return the maximal number or each rank in the tuple key
     """
-    n, r, p = set(), set(), set()
-    for key, _ in x.iteritems():
-        n.add(key[0])
-        r.add(key[1])
-    for key, _ in y.iteritems():
-        n.add(key[0])
-        p.add(key[1])
-    return len(n), len(r), len(p)
+    n1, r = get_dimensions_from_x(x)
+    n2, p = get_dimensions_from_y(y)
+    assert n1 - n2 == 0
+    return n1, r, p
 
 
 def get_value(var):
@@ -99,8 +117,8 @@ def update_variable(problem, **dimensions):
                     x = {(i, k): 1.0 if sum([problem.getVarByName("x_%s_%s_%s" % (i, k, l)).X > 0 for l in range(p)]) else 0.0
                          for i in range(n) for k in range(r)}
                 except:
-                    x = {(i, k): problem.getVarByName("x_%s_%s" % (i, k)) for i in range(n) for k in range(r)}
-                y = {(i, l): problem.getVarByName("y_%s_%s" % (i, l)).X for i in range(n) for l in range(p)}
+                    x = {(i, k): problem.getVarByName("x_%s_%s" % (i, k)).X or 0.0 for i in range(n) for k in range(r)}
+                y = {(i, l): problem.getVarByName("y_%s_%s" % (i, l)).X or 0.0 for i in range(n) for l in range(p)}
             except:
                 logging.warning("update_variable: problem %s has not been solved" % problem.ModelName)
                 x = {(i, k): 0.0 for i in range(n) for k in range(r)}
@@ -123,14 +141,21 @@ def transform_variables(x, y, **dimensions):
     n = dimensions.get('n', 0)
     r = dimensions.get('r', 0)
     p = dimensions.get('p', 0)
+    if x is None or y is None:
+        logging.warning('dict x or y is None')
+        x = {(i, k): 0.0 for i in range(n) for k in range(r)}
+        y = {(i, l): 0.0 for i in range(n) for l in range(p)}
+        return x, y
     if len(x.keys()) == 0:
         logging.warning('dict x contains no variables')
-        return {}, {}
+        x = {(i, k): 0.0 for i in range(n) for k in range(r)}
+        y = {(i, l): 0.0 for i in range(n) for l in range(p)}
+        return x, y
     if len(x.keys()[0]) == 3:
         x_ = {(i, k): 1.0 if sum([x[i, k, l] > 0 for l in range(p)]) else 0.0 for i in range(n) for k in range(r)}
-        y_ = {(i, l): y.get((i, l), 0.0) for i in range(n) for l in range(p)}
+        y_ = {(i, l): y.get((i, l)) or 0.0 for i in range(n) for l in range(p)}
         return x_, y_
     else:
-        x_ = {(i, k): x.get((i, k), 0.0) for i in range(n) for k in range(r)}
-        y_ = {(i, l): y.get((i, l), 0.0) for i in range(n) for l in range(p)}
+        x_ = {(i, k): x.get((i, k)) or 0.0 for i in range(n) for k in range(r)}
+        y_ = {(i, l): y.get((i, l)) or 0.0 for i in range(n) for l in range(p)}
         return x_, y_

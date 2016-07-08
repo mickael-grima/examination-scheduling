@@ -32,7 +32,18 @@ def schedule_greedy(exams_to_schedule, period, data, verbose = False):
     s = data['s']
     c = data['c']
     students = [ s[i] for i in exams_to_schedule ]
-    rooms = [ k for k in range(data['r']) if data['T'][k][period] == 1 ]
+    if 'exam_rooms_index' in data and len(data['exam_rooms_index']) > 0:
+        
+        exam_rooms_index = data['exam_rooms_index']
+        rooms = set()
+        for exam in exams_to_schedule:
+            for room in exam_rooms_index[exam]:
+                if period == -1 or data['T'][room][period] == 1:
+                    rooms.add(room)
+        rooms = list(rooms)
+    else:
+        rooms = [ k for k in range(data['r']) if period == -1 or data['T'][k][period] == 1 ]
+    
     capacities = [ c[k] for k in rooms ]
     
     if len(rooms) < len(exams_to_schedule):
@@ -84,8 +95,8 @@ def schedule_greedy(exams_to_schedule, period, data, verbose = False):
         room_perm.pop(0)
     
     if verbose:
-        for key in exams_to_rooms:
-            print key, exams_to_rooms[key]
+        for exam in exams_to_rooms:
+            print exam, exams_to_rooms[exam]
     
     return exams_to_rooms
     
@@ -100,11 +111,11 @@ def obj1(x):
     return sum( x[key] for key in x ) 
 
 
-def schedule_rooms(coloring, color_schedule, data):
+def schedule_rooms(coloring, color_schedule, data, greedy = False):
     
     # get exams for each color
     color_exams = swap_color_dictionary(coloring)
-
+    
     periods = [data['h'].index(color) for color in color_schedule]
     
     z = defaultdict(int)
@@ -117,7 +128,15 @@ def schedule_rooms(coloring, color_schedule, data):
     
         x = defaultdict(int)
         
-        x = schedule_rooms_in_period(color_exams[color], periods[color], data)
+        if greedy:
+            exams_to_rooms = schedule_greedy(color_exams[color], periods[color], data)
+            if exams_to_rooms is None:
+                return None, sys.maxint
+            for exam in exams_to_rooms:
+                for room in exams_to_rooms[exam]:
+                    x[exam, room] = 1
+        else:
+            x = schedule_rooms_in_period(color_exams[color], periods[color], data)
         #print "SOL"
         #for key in x:
         #    print key, x[key]
@@ -146,7 +165,8 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     # TODO: Initialise using meaningful values
     # ...
 
-
+    #verbose = True
+    
     n = len(exams_to_schedule)
     r = data['r']
     c = data['c']
@@ -159,7 +179,7 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     # z[i,k] = if exam i is written in room k
     for k in range(r):
         #print k, period
-        if T[k][period] == 1:
+        if period == -1 or T[k][period] == 1:
             for i in exams_to_schedule:
                 z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
 
@@ -169,11 +189,11 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     
     # c1: seats for all students
     for i in exams_to_schedule:
-        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) if T[k][period] == 1 ]) >= s[i], "c1")
+        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) if period == -1 or T[k][period] == 1 ]) >= s[i], "c1")
     
     # c2: only one exam per room
     for k in range(r):
-            if T[k][period] == 1:
+            if period == -1 or T[k][period] == 1:
                 model.addConstr( quicksum([ z[i, k] for i in exams_to_schedule  ]) <= 1, "c2")    
 
     # objective: minimize number of used rooms
@@ -191,14 +211,81 @@ def schedule_rooms_in_period(exams_to_schedule, period, data, verbose = False):
     try:       
         z=defaultdict(int)
         for k in range(r):
-            if T[k][period] == 1:
+            if period == -1 or T[k][period] == 1:
                 for i in exams_to_schedule:
                     v = model.getVarByName("z_%s_%s" % (i,k)) 
-                    z[i,k]  = v.x    
+                    z[i,k]  = v.x
         return z
     except GurobiError:
         return None
 
+
+
+def schedule_rooms_in_period_raumsperren(exams_to_schedule, period, data, verbose = False):
+    #print period
+    '''
+        schedule_rooms needs to be called for every single period
+        schedule_rooms tries to schedule a given set of exams which are written in the same period on the rooms avialable for the given period
+    '''
+    
+    # TODO: Initialise using meaningful values
+    # ...
+
+    #verbose = True
+    
+    n = len(exams_to_schedule)
+    r = data['r']
+    c = data['c']
+    T = data['T']
+    s = data['s']
+    z = {}
+
+    exam_rooms_index = data['exam_rooms_index']
+    
+    model = Model("RoomPlanner")
+
+    # z[i,k] = if exam i is written in room k
+    for i in exams_to_schedule:
+        for k in exam_rooms_index[i]:
+            if period == -1 or T[k][period] == 1:
+                z[i,k] = model.addVar(vtype=GRB.BINARY, name="z_%s_%s" % (i,k))
+
+    model.update()
+
+    # Building constraints...    
+    
+    # c1: seats for all students
+    for i in exams_to_schedule:
+        model.addConstr( quicksum([ z[i, k] * c[k] for k in range(r) if period == -1 or T[k][period] == 1 ]) >= s[i], "c1")
+    
+    # c2: only one exam per room
+    for k in range(r):
+            if period == -1 or T[k][period] == 1:
+                model.addConstr( quicksum([ z[i, k] for i in exams_to_schedule  ]) <= 1, "c2")    
+
+    # objective: minimize number of used rooms
+    obj1 = quicksum([ z[i,k] for i in exams_to_schedule for k in exam_rooms_index[i] if T[k][period] == 1 ]) 
+
+    model.setObjective( obj1, GRB.MINIMIZE)
+    
+    if not verbose:
+        model.params.OutputFlag = 0
+    
+    model.optimize()
+
+    
+    # return best room schedule
+    try:       
+        z=defaultdict(int)
+        for i in exams_to_schedule:
+            for k in exam_rooms_index[i]:
+                if period == -1 or T[k][period] == 1:
+                    v = model.getVarByName("z_%s_%s" % (i,k)) 
+                    z[i,k]  = v.x
+                    
+        return z
+    except GurobiError:
+        return None
 
 
 

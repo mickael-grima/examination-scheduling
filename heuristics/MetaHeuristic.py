@@ -18,7 +18,7 @@ import random as rd
 import logging
 from collections import defaultdict
 
-from ConstrainedColorGraph import ConstrainedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph, AnotherColorGraph
 
 from heuristics.schedule_times import schedule_times
 from heuristics.tools import to_binary
@@ -40,14 +40,15 @@ class MetaHeuristic:
         raise NotImplementedError()
     
     
-
 class RandomHeuristic(MetaHeuristic):
     
     def __init__(self, data, n_colorings=50):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = ConstrainedColorGraph()
-        self.graph.build_graph(self.data['n'], self.data['conflicts'])        
-
+        self.graph = ConstrainedColorGraph(n_colours = int(data['p']*0.8))
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])   
+        self.periods = [None] * self.n_colorings
+        self.mode = 0
+        
     
     def generate_colorings(self):
         '''
@@ -55,13 +56,37 @@ class RandomHeuristic(MetaHeuristic):
         '''
         colorings = []
         nodes = self.graph.nodes()
-        for i in range(self.n_colorings):
-            rd.shuffle(nodes)
+        
+        i = 0
+        counter = 0
+        while len(colorings) < self.n_colorings:
+            counter += 1
+            if counter % 10 == 0:
+                print len(colorings)
+                
             self.graph.reset_colours()
+            rd.shuffle(nodes)
+            
+            feasible = True
+            nodes_check = 0
             for node in nodes:
-                self.graph.color_node(node, data=self.data, check_constraints = False)
-            colorings.append({n: c for n, c in self.graph.colours.iteritems()})      
-            #print self.graph.colours.values()
+                feasible = self.graph.color_node(node, data=self.data, mode = self.mode, periods = self.periods[i])
+                nodes_check += 1
+                #print nodes_check / float(len(nodes))
+                if not feasible: 
+                    break
+                
+            if counter > 100 and not feasible:
+                if counter % 200 == 0:
+                    print "Warning: Stuck in a loop generating colorings!"
+                #feasible = True
+                
+            #print feasible
+            if feasible: 
+                colorings.append({n: c for n, c in self.graph.colours.iteritems()})    
+                print self.data['p'], len(set(colorings[-1].values()))
+                i += 1
+                
         return colorings
     
     
@@ -71,32 +96,19 @@ class RandomHeuristic(MetaHeuristic):
         ''' 
         pass
 
+
     
 class RandomHeuristicAdvanced(RandomHeuristic):
-    
+    '''
+        A variant of the random heuristic, which uses color equalization and constraint checking
+    '''
     def __init__(self, data, n_colorings=50):
         RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
-        self.graph = ConstrainedColorGraph()
-        self.graph.build_graph(self.data['n'], self.data['conflicts'])      
+        self.graph = EqualizedColorGraph(n_colours = int(data['p']*1.0) - 0)
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])   
         self.periods = { i: None for i in range(n_colorings) }
-    
-    
-    def generate_colorings(self):
-        '''
-            Generate colorings in purely random fashion. Check room constraints using ILP
-        '''
-        colorings = []
-        nodes = self.graph.nodes()
-        for i in range(self.n_colorings):
-            rd.shuffle(nodes)
-            self.graph.reset_colours()
-            for node in nodes:
-            #    print self.periods
-                self.graph.color_node(node, data=self.data, check_constraints = True, periods = self.periods[i])
-            colorings.append({n: c for n, c in self.graph.colours.iteritems()})
-        return colorings
-    
-    
+        self.mode = 1
+        
     def update(self, values, best_index = None, time_slots = None):
         '''
             We use periods when checking constraints. Get them from time_solots color dict.
@@ -108,9 +120,34 @@ class RandomHeuristicAdvanced(RandomHeuristic):
             if time_slots[i] is not None:
                 self.periods[i] = [self.data['h'].index(color) for color in time_slots[i]]
             
-        
-    
+            
+   
+class AnotherRandomHeuristic(RandomHeuristic):
     '''
+        A variant of the random heuristic, which uses color equalization and constraint checking
+    '''
+    def __init__(self, data, n_colorings=50):
+        RandomHeuristic.__init__(self, data, n_colorings = n_colorings)
+        self.graph = AnotherColorGraph(n_colours = int(data['p']*1.0) - 0)
+        self.graph.build_graph(self.data['n'], self.data['conflicts'])   
+        self.periods = { i: None for i in range(n_colorings) }
+        self.mode = 1
+        
+    #def update(self, values, best_index = None, time_slots = None):
+        #'''
+            #We use periods when checking constraints. Get them from time_solots color dict.
+        #'''
+        #if self.periods is None:
+            #self.periods = defaultdict(list)
+        
+        #for i in range(len(values)):
+            #if time_slots[i] is not None:
+                #self.periods[i] = [self.data['h'].index(color) for color in time_slots[i]]
+            
+    
+    
+    
+'''
 class ForestHeuristic:
         Use Random Forest Regression in coloring step.
     def __init__(self, data, n_colorings=50):
@@ -163,11 +200,12 @@ class ForestHeuristic:
         #print "Do nothing. Value is", values[best_index]
         pass
     '''
-
+    
+'''
 class SAHeuristic(MetaHeuristic):
-    '''
-        Use simulated annealing for optimizing the coloring step.
-    '''
+ #   ''
+   #     Use simulated annealing for optimizing the coloring step.
+  #  ''
     def __init__(self, data, n_colorings=50):
         MetaHeuristic.__init__(self, data, n_colorings = n_colorings)
         self.graph = ConstrainedColorGraph()
@@ -229,3 +267,4 @@ class SAHeuristic(MetaHeuristic):
             else: # reject -> roll back
                 self.visiting[i] = self.visiting_old[i]
     
+'''

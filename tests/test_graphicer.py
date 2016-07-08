@@ -14,7 +14,7 @@ sys.path.append(path)
 from model.instance import build_smart_random
 from heuristics.generate_starting_solution import generate_starting_solution_by_maximal_time_slot_filling
 from utils.tools import transform_variables
-from utils.graphicer import generate_file
+from visualization.graphicer import generate_file
 
 
 class TestGraphicer():

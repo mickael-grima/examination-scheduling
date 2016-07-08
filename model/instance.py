@@ -20,80 +20,11 @@ import random as rd
 import numpy as np
 # from load_rooms import get_random_room_capacity
 from collections import defaultdict
+
+from model.data_format import force_data_format
+
+
 from inputData.read import read_real_data
-
-
-def force_data_format(func):
-    """ decorator that force the format of data
-    """
-    def correct_format(**kwards):
-        data = func(**kwards)
-
-        n = data.get('n', 0)
-        r = data.get('r', 0)
-        p = data.get('p', 0)
-        w = data.get('w', [["0"] for i in range(n)])
-        location = data.get('location', ["0" for k in range(r)])
-        similarp = data.get('similiarp', [[-1] for l in range(p)])
-        similare = data.get('similiare', [[-1] for i in range(n)])
-        similarr = data.get('similiarr', [[-1] for k in range(r)])
-
-        Q = data.get('Q')
-        conflicts = data.get('conflicts', defaultdict(list))
-
-        if not conflicts:
-            conflicts = {}
-            for i in range(n):
-                conflicts[i] = [j for j in range(n) if Q[i][j]]
-
-        # make sure the conflicts are symmetric!
-        for k in conflicts:
-            if len(conflicts[k]) > 0:
-                assert max(conflicts[k]) < n
-            for l in conflicts[k]:
-                if k not in conflicts[l]:
-                    conflicts[l] += [k]
-            conflicts[k] = sorted(conflicts[k])
-
-        # conflicts matrix dense format (dont build if option is set)
-        if 'build_Q' in data and not data['build_Q']:
-            Q = None
-        else:
-            if not Q:
-                Q = [[1 * (j in conflicts[i] or i in conflicts[j]) for j in range(n)] for i in range(n)]
-            else:
-                for i in range(n):
-                    Q[i][i] = 0
-                for i in range(n):
-                    for j in range(i + 1, n):
-                        Q[j][i] = Q[i][j]
-
-        # locking times sparse and dense format
-        locking_times = data.get('locking_times', {})
-        if locking_times:
-            T = [[1 * (l not in locking_times[k]) for l in range(p)] for k in range(r)]
-        else:
-            T = data.get('T', [])
-
-        res = {
-            'n': n,
-            'r': r,
-            'p': p,
-            'Q': Q,
-            'T': T,
-            'conflicts': conflicts,
-            'locking_times': locking_times,
-            's': list(data.get('s', [])),
-            'c': list(data.get('c', [])),
-            'h': list(data.get('h', [])),
-            'w': w,
-            'location' : location,
-            'similarp' : similarp,
-            'similare' : similare,
-            'similarr' : similarr
-        }
-        return res
-    return correct_format
 
 
 @force_data_format
@@ -141,8 +72,8 @@ def build_small_input():
               [1, 1, 1, 0, 1],
               [1, 0, 1, 1, 0]],  # Conflicts matrix
         'T': [[1, 0, 1],
-              [1, 1, 0],
-              [1, 1, 0]],  # Opening times for rooms
+              [1, 1, 1],
+              [1, 1, 1]],  # Opening times for rooms
         'h': [0, 2, 4]  # number of hours before period
     }
     return small_input
@@ -202,7 +133,7 @@ def build_smart_random(**kwards):
     # create a conflict by probybility 1/5
     data['conflicts'] = defaultdict(list)
     for i in range(n):
-        data['conflicts'][i] = [ j for j in range(i+1,n) if rd.random() <= 0.1 ]
+        data['conflicts'][i] = [ j for j in range(i+1,n) if rd.random() <= 0.05 ]
     
     #close some rooms by probability 1/10
     data['locking_times'] = defaultdict(list)
@@ -213,29 +144,30 @@ def build_smart_random(**kwards):
     
     return data
 
+
 @force_data_format
 def build_real_data(**kwards):
 
     print "Reading data..."
     data = read_real_data()
-
-    data['p'] = kwards.get('p', 40)
+    
+    #data['p'] = kwards.get('p', 40)
+    data['p'] = kwards.get('p', 60)
 
     np.random.seed(kwards.get('tseed', 1))
     rd.seed(kwards.get('tseed', 1))
+    
+    print data['n']
+    print data['r']
+    print data['p']
 
     #close some rooms by probability 10/100
     data['locking_times'] = defaultdict(list)
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
-
-    print data['n']
-    print data['r']
-    print data['p']
-
-    #data = detect_similarities(data)
    
     return data
+
 
 @force_data_format
 def build_real_data_sample(**kwards):
@@ -253,6 +185,7 @@ def build_real_data_sample(**kwards):
 
 
     choose_exams = sorted(np.random.choice(range(data['n']), n, replace=False))
+    print choose_exams
     choose_rooms = sorted(np.random.choice(range(data['r']), r, replace=False))
 
     data['c'] = [data['c'][i] for i in choose_rooms]
@@ -262,18 +195,13 @@ def build_real_data_sample(**kwards):
 
     data['Q'] = [ [data['Q'][i][j] for j in choose_exams] for i in choose_exams]
 
-
-
-
-
     #close some rooms by probability 10/100
     data['locking_times'] = defaultdict(list)
     for k in range(data['r']):
         data['locking_times'][k] = [ l for l in range(data['p']) if np.random.random(1) <= 0.1 ]
-
-    data = detect_similarities(data)
    
     return data
+
 
 def detect_similarities(data):
     data = detect_similar_periods(detect_similar_exams(detect_similar_rooms(data)))
@@ -289,7 +217,7 @@ def detect_similar_periods(data):
     
     data['similarp'] = defaultdict(list)
     for l in range(data['p']):
-        data['similarp'][l] = [l2 for l2 in range(data['p']) if (roomnumber[l2] <= roomnumber[l]+2 and roomnumber[l2] >= roomnumber[l]-2) and (roomcapacities[l2] <= roomcapacities[l]+100 and roomcapacities[l2] >= roomcapacities[l]-100) and l != l2 ]  
+        data['similarp'][l] = [l2 for l2 in range(data['p']) if (roomnumber[l2] <= roomnumber[l]+2 and roomnumber[l2] >= roomnumber[l]-2) and (roomcapacities[l2] <= roomcapacities[l]+100 and roomcapacities[l2] >= roomcapacities[l]-100) ]  
     
 
     return data
@@ -301,10 +229,11 @@ def detect_similar_exams(data):
     data['similare'] = defaultdict(list)
 
     for i in range(data['n']):
-        data['similare'][i] = [j for j in range(data['n']) if i != j and data['s'][j] <= data['s'][i]+10 ]  
+        data['similare'][i] = [j for j in range(data['n']) if data['s'][j] >= data['s'][i] -20 and data['s'][j] <= data['s'][i]+20 and data['conflicts'][i] <= data['conflicts'][j] ]  
     
 
     return data
+
 
 def detect_similar_rooms(data):
     # We use an extended notion of similar two exams A and B count as similiar if A has similar or less students participation in a it than B
@@ -312,7 +241,7 @@ def detect_similar_rooms(data):
     data['similarr'] = defaultdict(list)
 
     for k in range(data['r']):
-        data['similarr'][k] = [k2 for k2 in range(data['r']) if k != k2 and data['c'][k2] <= data['c'][k] +20 and data['c'][k2] >= data['c'][k] -20  ]  
+        data['similarr'][k] = [k2 for k2 in range(data['r']) if data['c'][k2] <= data['c'][k] +20 and data['c'][k2] >= data['c'][k] -20  ] 
     
 
     return data

@@ -75,14 +75,26 @@ def to_binary(coloring, color_schedule, h):
     if color_schedule is None:
         return None
     
+    hdict = dict()
+    for i, hi in enumerate(h):
+        hdict[hi] = i
+        
     y = defaultdict(int)
     for i in coloring:
-        l = h.index(color_schedule[coloring[i]])
+        l = hdict[color_schedule[coloring[i]]]
         y[i,l] = 1.0
+    
     return y
 
 
-
+def log_epoch(logger, epoch, **kwargs):
+    ''' 
+        Save epoch data in logger.
+        Logger[key] is a dictionary!
+    '''
+    for key in kwargs:
+        logger[key][epoch] = kwargs[key]
+        
 
 
 if __name__ == '__main__':

@@ -18,6 +18,8 @@ sys.path.append(PROJECT_PATH)
 from time import time
 import datetime
 import random 
+from collections import defaultdict
+import pickle
 
 from GurobiModel.GurobiLinear_v_1 import build_model as build_linear_model_1
 from GurobiModel.GurobiLinear_v_2_Q import build_model as build_linear_model_2
@@ -48,15 +50,20 @@ from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linea
 from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_model_16
 from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
 from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_linear_model_18
-from GurobiModel.GurobiLinear_v_20_orbital import build_model as build_linear_model_20
+
+from GurobiModel.GurobiLinear_v_23_data import build_model as build_linear_model_23
 
 
 
 
+from evaluation.objectives import *
 
 from model.instance import build_smart_random
 from model.instance import build_real_data
 from model.instance import build_real_data_sample
+from model.instance import detect_similarities
+
+from inputData.examination_data import read_data
 
 
 
@@ -66,11 +73,12 @@ def compare(data):
     """
     # Select models to compare
     problems = {
+        'Data Evaluate' : build_linear_model_23,
     #    'Linear orbital': build_linear_model_20,
     #    'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
-       'Linear more covers': build_linear_model_15,
+    #   'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
@@ -95,14 +103,21 @@ def compare(data):
         problem = problems[prob_name](data)
         # Optimize selected model
         t = time()
+        #problem.params.cuts = 0
         problem.optimize()
+        # try:
+        #     problem.computeIIS()
+        # except:
+        #     pass
+        # problem.write("model.lp")
         times[prob_name] = time() - t
 
         count_rooms = 0
 
+
+        #try:
         today = datetime.datetime.today()
         file = open("%sresults\Result_%s_%s_%s_%s_%s_%s.txt" % (PROJECT_PATH, today.year, today.month, today.day, today.hour, today.minute, prob_name ), 'a+')
-        print PROJECT_PATH
 
         file.write("Number of exams: %s" % data['n'])
         file.write('\n')
@@ -119,19 +134,37 @@ def compare(data):
         file.write("locking times: %s" % data['T'])
         file.write('\n')
 
-
+        x_ikl = defaultdict(int)
+        y_il = defaultdict(int)
+        
+        print "DATA"
         for i in range(data['n']):
-            for k in range(data['r']):
-                for l in range(data['p']):
+            for l in range(data['p']):
+                v = problem.getVarByName('y_%s_%s' % (i,l))
+                if not v is None and v.x == 1:
+                    y_il[i,l] = 1
+                    
+                for k in range(data['r']):
                     v = problem.getVarByName('x_%s_%s_%s' % (i,k,l))
                     if not v is None and v.x == 1:
+                        x_ikl[i,k,l] = 1
                         count_rooms += 1
                         file.write('%s %g' % (v.varName, v.x))
                         file.write('\n')
-
+                        
+                        
+        file.write("Room Objective: %f" %obj_room(x_ikl))
+        file.write('\n')
+        file.write("Time Objective: %f" %obj_time_y(y_il, data))
+        file.write('\n')
+        file.write("Full Objective: %f" %obj(x_ikl, y_il, data))
+        file.write('\n')
+            
         file.write('\n')
         file.write('\n')
         file.write("Number of rooms used: %s" % (count_rooms))
+    #except:
+        #print "Couldnt write data"
 
         # Save objective value
         try:
@@ -143,25 +176,28 @@ def compare(data):
     return times, objectives
 
 
+from inputData import examination_data
 def test_compare():
-    n = 800 
-    r = 60
-    p = 40
-    tseed = 5656
+    n = 100
+    r = 20
+    p = 20
+    tseed = 34534
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
-    data = build_real_data(tseed=tseed)
-    #data = build_real_data_sample(n=n,r=r,p=p,tseed=tseed)
-    print data['c']
-    print data['s']
+    #data = build_real_data(tseed=tseed)
+    #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
+    #data = examination_data.read_data(semester = "15W", threshold = 0)
+    #data['similar_periods'] = tools.get_similar_periods(data)
+    data = examination_data.load_data(dataset = "2", threshold = 0, verbose = True)
+    
     time, objectives = compare(data)
 
     print("")
-    print("n: %s" % (n))
+    print("n: %s" % (data['n']))
     print("r: %s" % (r))
     print("p: %s" % (p))
     print("seed: %s" % (tseed))
-    print("Percentage conflicts: %s" % (sum( sum(data['conflicts'][i]) for i in range(n))/(2*n*(n-1))))
+    print("Percentage conflicts: %s" % (sum( len(data['conflicts'][i]) for i in range(n)) /(2*n*(n-1))))
     print("")
     for key in time:
         print key

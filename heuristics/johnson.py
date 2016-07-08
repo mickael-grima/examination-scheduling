@@ -10,13 +10,13 @@ sys.path.append(PROJECT_PATH)
 
 import networkx as nx
 import numpy as np
+import time
 
 from operator import itemgetter
 
-from ConstrainedColorGraph import ConstrainedColorGraph
+from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
 from heuristics.MetaHeuristic import MetaHeuristic
 # from heuristics.graph_coloring import greedy_coloring
-
 
 #
 # TODO: ALEX
@@ -33,6 +33,7 @@ class Johnson(MetaHeuristic):
         # Generate colourings using Johnson's rule: 
         # Order the exams by alpha*s_i + conf_num
 
+        #start_time = time.time()
         colorings = []
         conflicts = self.data['conflicts']
 
@@ -43,8 +44,8 @@ class Johnson(MetaHeuristic):
         for i in conflicts:
             conf_num[i] = len(conflicts[i])
             
-        start = -1
-        end = 1
+        start = -0.25
+        end = 0.75
         alpha = list(np.arange(start=start, stop=end, step = (end-start)/float(self.n_colorings)))
         for j in range(self.n_colorings):
             # reset node ordering and coloring
@@ -52,19 +53,24 @@ class Johnson(MetaHeuristic):
             self.graph.reset_colours()
 
             # set parameter alpha and compute exam value for ordering
-            #print alpha[j]
             vals = np.array(self.data['s'])*alpha[j] + np.array(conf_num)
-            #print map(lambda x: "%0.2f"%x, sorted(vals))
 
             # sort nodes by vals
             nodes = [elmts[0] for elmts in sorted(zip(nodes, vals), key=itemgetter(1), reverse=True)]
-            #print nodes
             
             # compute coloring
+            fail = False
             for node in nodes:
-                self.graph.color_node(node, data=self.data, check_constraints = False, check_max_rooms_and_slots = True)
+                self.graph.color_node(node, data=self.data, mode=0, periods=None)
+                if self.graph.colours[node] == self.graph.WHITE:
+                    fail = True
+                    break
+            if fail:
+                break
             colorings.append({n: c for n, c in self.graph.colours.iteritems()}) 
-            #print self.graph.colours.values()
+
+        #end_time = time.time()
+        #print(end_time - start_time)
         #print len(colorings)
         return colorings
         
@@ -77,13 +83,14 @@ if __name__ == '__main__':
     
     n = 10
     r = 10
-    p = 10
+    p = 5
     tseed = 200
 
     from model.instance import build_smart_random
     data = build_smart_random(n=n, r=r, p=p, tseed=tseed) 
 
-    js = Johnson(data)
+    js = Johnson(data, n_colorings = 2, n_colors = p)
     colorings = js.generate_colorings()
     print colorings
+    
     

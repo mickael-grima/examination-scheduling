@@ -6,14 +6,18 @@ This project consist in finding a solution to the examination scheduling at TUM 
 
 Python
 
+# Using the Real Data
+
+For installing the real data please refer to the file "inputData/README.txt"!
+
 # Conventions
 
-** Probelms **
+**Problems**
 Two way have to be considered when creating a problem:  
   - create a class inheriting of class `BaseProblem` and complete method `build_constants`, `build_variables`, `build_constraints` and `build_dimensions`  
   - create a method that returns a model `guroby.Model`. Variable names are in this case: `"x_%s_%s_%s" % (i, j, k)` or `"x_%s_%s" % (i, j)`. `x` may be replaced by `y`. Only `x` and `y` can be used.
 
-** Variables **
+**Variables**
 Two way to create new variables:  
   - if the variable is contained in a guroby model, its name has to be: `"x_%s_%s_%s" % (i, j, k)` or `"x_%s_%s" % (i, j)`. `x` may be replaced by `y`. Only `x` and `y` can be used  
   - if not x and y have to be dictionaries: `x = {(i, k): 0.0 for ...}` or `x = {(i, k, l): 0.0 for ..}`. `x` may be replaced by `y`. Only `x` and `y` can be used 

@@ -28,8 +28,8 @@ class ColorGraph(object):
         self.DIRECTORY = "%sbooth/plots/" % PROJECT_PATH
         self.plotname = "graphcolouring"
 
-        self.n_colours = n.colours
-        self.ALL_COLOURS = [i for i in range(n_colours)]
+        self.n_colours = n_colours
+        self.ALL_COLOURS = [i for i in range(self.n_colours)]
         self.WHITE = -1
 
         self.graph = nx.Graph()
@@ -95,7 +95,7 @@ class ColorGraph(object):
     def get_chromatic_number(self):
         """ return the number of colours used
         """
-        return len(set([self.colours[x] for x in self.colours]))
+        return len(set(self.colours.values()))
 
     def get_max_ind_set(self):
         """ for the given colouring give the maximum independant set size
@@ -178,6 +178,7 @@ class ColorGraph(object):
             for j in conflicts[i]:
                 if i != j:
                     self.add_edge(i, j)
+                    self.add_edge(j, i)
 
     def build_rand_graph(self, nb_nodes=16, probability=0.5):
         """ @param nb_nodes: number of nodes of the constructed graph
@@ -298,3 +299,9 @@ class ColorGraph(object):
         self.colours = colours
         self.history = history
         return colours
+
+    def is_coloring_right(self):
+        for node, colour in self.colours.iteritems():
+            if colour in [self.colours[n] for n in self.graph.neighbors(node)]:
+                return False
+        return True
