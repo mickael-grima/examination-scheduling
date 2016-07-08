@@ -69,6 +69,7 @@ def prepare_axes(ax, x_min, x_max, y_min, y_max, labelon = "off"):
     # Avoid unnecessary whitespace.
     plt.ylim(y_min, y_max)
     plt.xlim(x_min, x_max)
+    
     # Make sure your axis ticks are large enough to be easily read.
     # You don't want your viewers squinting to read your plot.
     plt.yticks(fontsize=14)
@@ -111,11 +112,12 @@ prepare_axes(ax, x_min, x_max, y_min, y_max)
 # plot each line
 colors = get_colors()
 counter = 0
-for rank, y_vals in enumerate(values):
+for i, y_vals in enumerate(values):
     #ax.bar(x_vals, y_vals, lw=2.5, color=colors[rank])
-    plt.plot(x_vals, y_vals, lw=2.5, color=colors[rank])
-    plt.savefig("%sannealing_plot_%d.png" %(plotdir, counter), bbox_inches="tight");
-    counter += 1
+    plt.plot(x_vals, y_vals, lw=2.5, color=colors[i])
+    if i == len(values)-1:
+        plt.savefig("%sannealing_plot_%d.png" %(plotdir, counter), bbox_inches="tight");
+        counter += 1
 
 plt.clf()
 plt.figure(figsize=(12, 9))
@@ -127,12 +129,15 @@ prepare_axes(ax, x_min, x_max, y_min, max(values[1]) + 0.1)
 def plot_sequence(plt, xs, counter, messages):
 
     for i,x in enumerate(xs):
+        
         #plt.title(messages[i])
         plt.plot(x_vals, values[1], lw=2.5, color=colors[0])
         plt.plot( [x, x], [0,fs[1](x)/integrate.quad(fs[1], leftroot, rightroot)[0]], color = colors[2] , lw=2)
-        plt.savefig("%sannealing_plot_%d.png" %(plotdir, counter), bbox_inches="tight");
+        if i == len(xs)-1:
+            plt.savefig("%sannealing_plot_%d.png" %(plotdir, counter), bbox_inches="tight");
+            counter += 1
         plt.plot( [x, x], [0,fs[1](x)/integrate.quad(fs[1], leftroot, rightroot)[0]], color = colors[1] , lw=2)
-        counter += 1
+            
 
     return counter
 
@@ -164,7 +169,7 @@ bds = [bd_1, bd_2, bd_3]
 cds = [cd_1, cd_2, cd_3]
 
 def mean_series(y):
-    slide = 10
+    slide = 3
     ym = []
     for i in range(len(y)):
         if i <= slide:
@@ -172,43 +177,52 @@ def mean_series(y):
         elif i >= len(y) - slide - 1:
             ym.append(y[i])
         else:
-            ym.append( np.mean(y[i-slide:i+slide]) )
+            ym.append( np.median(y[i-slide:i+slide]) )
     return ym
 
-for ad, bd, cd in zip(ads, bds, cds):
-    ad = sorted([ (int(float(x)), float(ad[x])) for x in ad ], key=lambda x:x[0])
-    adx = [ x for x, y in ad ]
-    ady = [ y for x, y in ad ]
-    
-    bd = sorted([ (int(float(x)), float(bd[x])) for x in bd ], key=lambda x:x[0])
-    bdx = [ x for x, y in bd ]
-    bdy = [ y for x, y in bd ]
+ad = bd_2
+bd = bd_1
+cd = cd_1
 
-    cd = sorted([ (int(float(x)), float(cd[x])) for x in cd ], key=lambda x:x[0])
-    cdx = [ x for x, y in cd ]
-    cdy = [ y for x, y in cd ]
-    
-    ady = mean_series(ady)
-    bdy = mean_series(bdy)
-    cdy = mean_series(cdy)
-    
-    x_min, x_max = min(adx), max(adx)
-    y_min, y_max = min( min(y) for y in [ady, bdy, cdy] ) - 0.1, max( max(y) for y in [ady, bdy, cdy] ) + 0.1
+#for ad, bd, cd in zip(ads, bds, cds):
+ad = sorted([ (int(float(x)), float(ad[x])) for x in ad ], key=lambda x:x[0])
+adx = [ x for x, y in ad ]
+ady = [ y for x, y in ad ]
 
-    # prepare new plot
-    plt.clf()
-    plt.figure(figsize=(12, 9))
-    ax = plt.subplot(111)
-    prepare_axes(ax, x_min, x_max, y_min, y_max, labelon = "on")
+bd = sorted([ (int(float(x)), float(bd[x])) for x in bd ], key=lambda x:x[0])
+bdx = [ x for x, y in bd ]
+bdy = [ y for x, y in bd ]
 
-    plot1, = plt.plot(adx, ady, lw=2.5, color=colors[0], label="ad")
-    plot2, = plt.plot(bdx, bdy, lw=2.5, color=colors[1], label="bd")
-    plot3, = plt.plot(cdx, cdy, lw=2.5, color=colors[2], label="cd")
-    
-    plt.legend([plot1, plot2, plot3], ["100", "1", "0.1"])
+cd = sorted([ (int(float(x)), float(cd[x])) for x in cd ], key=lambda x:x[0])
+cdx = [ x for x, y in cd ]
+cdy = [ y for x, y in cd ]
 
-    plt.savefig("%sannealing_plot_%d.png" %(plotdir, counter), bbox_inches="tight");
-    counter += 1
+ady = mean_series(ady)
+bdy = mean_series(bdy)
+cdy = mean_series(cdy)
+
+x_min, x_max = min(adx), max(adx)
+y_min, y_max = min( min(y) for y in [ady, bdy, cdy] ) - 0.1, max( max(y) for y in [ady, bdy, cdy] ) + 0.1
+
+y_min = 150
+
+# prepare new plot
+plt.clf()
+plt.figure(figsize=(12, 9))
+ax = plt.subplot(111)
+prepare_axes(ax, x_min, x_max, y_min, y_max, labelon = "off")
+
+ax.spines["bottom"].set_visible(True)
+ax.spines["left"].set_visible(True)
+
+plot1, = plt.plot(adx, ady, lw=2.5, color=colors[0], label="ad")
+plot2, = plt.plot(bdx, bdy, lw=2.5, color=colors[1], label="bd")
+plot3, = plt.plot(cdx, cdy, lw=2.5, color=colors[2], label="cd")
+
+#plt.legend([plot1, plot2, plot3], ["100", "1", "0.1"])
+
+plt.savefig("%sannealing_plot_%d.png" %(plotdir, counter), bbox_inches="tight");
+counter += 1
 
 
 # matplotlib's title() call centers the title on the plot, but not the graph,

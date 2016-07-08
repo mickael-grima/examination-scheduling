@@ -135,14 +135,14 @@ def read_result_rooms(semester):
 def read_rooms():
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
-    room_overview = read_columns("Data/Raumuebersicht.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
+    room_overview = read_columns("Rooms/Raumuebersicht.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
         
     return room_overview["Klausurplaetze_eng"], room_overview["ID_Campus"]
     
 def read_rooms_zusatz():
     
     # Name;Name_lang;Sitzplaetze;Klausurplaetze_eng;ID_Raum;ID_Gebaeude;Gebaeude;ID_Raumgruppe;ID_Campus;Campus
-    room_overview = read_columns("Data/Raumuebersicht_Zusatz.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
+    room_overview = read_columns("Rooms/Raumuebersicht_Zusatz.csv", "ID_Raum", ["Klausurplaetze_eng", "ID_Campus"], sep=";")
     
     return room_overview["Klausurplaetze_eng"], room_overview["ID_Campus"]
     

@@ -33,9 +33,9 @@ if __name__ == '__main__':
     n_colorings = 1
     epochs = 25
     annealing_iterations = 1000
-    annealing_beta_0 = 0.5
+    annealing_beta_0 = 10
     
-    dataset = "3"
+    dataset = "2"
     rd.seed(42)
     
     try:
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
     
-    from heuristics.johnson import Johnson
+    #from heuristics.johnson import Johnson
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #epochs = 1
     #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)

@@ -129,7 +129,7 @@ class AC:
         print "AC: setting n_colors to data['p']!"
         n_colors = data['p']
         self.graph = EqualizedColorGraph(n_colours=n_colors)
-        #self.graph = AnotherColorGraph(n_colours=n_colors)
+        #self.graph = AnotherColorGraph(n_colours = int(data['p']*0.9) - 0)
         self.edges_weight = {}  # weight on the edges
 
         self.initialize()

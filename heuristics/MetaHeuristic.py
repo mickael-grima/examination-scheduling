@@ -61,8 +61,8 @@ class RandomHeuristic(MetaHeuristic):
         counter = 0
         while len(colorings) < self.n_colorings:
             counter += 1
-            #if counter % 10 == 0:
-                #print len(colorings)
+            if counter % 10 == 0:
+                print len(colorings)
                 
             self.graph.reset_colours()
             rd.shuffle(nodes)
