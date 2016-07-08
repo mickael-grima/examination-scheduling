@@ -97,8 +97,8 @@ class ConstrainedColorGraph(ColorGraph):
 
 class EqualizedColorGraph(ConstrainedColorGraph):
     '''
-        The EqualizedColorGraph combines the ideas of the EqualizedColorGraph 
-        with the intruduction of time feasibility of exams and examination periods.
+        The EqualizedColorGraph uses as many colors as possible. 
+        It introduces of time feasibility of exams and examination periods.
         A node is only colored, if there remains some time for the exams of the color.
         
         Differences to color_node of ConstrainedColorGraph
@@ -203,18 +203,19 @@ class EqualizedColorGraph(ConstrainedColorGraph):
         else:
             return True
 
+
+
 class AnotherColorGraph(ConstrainedColorGraph):
     '''
-        The EqualizedColorGraph combines the ideas of the EqualizedColorGraph 
-        with the intruduction of time feasibility of exams and examination periods.
-        A node is only colored, if there remains some time for the exams of the color.
+        The AnotherColorGraph is actually a Constrained Color Graph with 
+        acceptance rate. It tries to consider the time constraints as strictly as possible.
         
         Differences to color_node of ConstrainedColorGraph
-        - checks for max. number of available periods directly
+        - checks for max. number of available periods directly and strictly
         - checks for max. number of available rooms directly
-        - tries to fill colors evenly with exams 
+        - has a randomization factor for coloring a node. This is senible and hand chosen.
     '''
-    def __init__(self, n_colours=2000):
+    def __init__(self, n_colours=2000, randomization = 0.89):
         super(AnotherColorGraph, self).__init__(n_colours=n_colours)
         
         self.color_weeks = dict()
@@ -223,6 +224,7 @@ class AnotherColorGraph(ConstrainedColorGraph):
         
         self.color_count = defaultdict(int)
         self.min_colors = deepcopy(self.ALL_COLOURS)
+        self.randomization = randomization
         
         
     def check_neighbours(self, node, color, data):
@@ -336,7 +338,7 @@ class AnotherColorGraph(ConstrainedColorGraph):
                         print "STRANGE!", color, sorted(set(self.colours.values()))
                         exit(0)
                     if color in self.colours.values():
-                        if rd.uniform(0,1) <= 0.89:
+                        if rd.uniform(0,1) <= self.randomization:
                             continue
                     #if color == 0:
                         #print node, color, self.color_slots[color]

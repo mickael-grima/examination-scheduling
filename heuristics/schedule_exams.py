@@ -257,6 +257,7 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
         cores = 1
         if parallel == True:
             cores = multiprocessing.cpu_count()
+            print "Using", cores, "processes"
             pool = multiprocessing.Pool(cores)
             
             # pack colorings in pickable format
@@ -264,8 +265,11 @@ def optimize(meta_heuristic, data, epochs=10, gamma = 1, annealing_iterations = 
             for index, coloring in enumerate(colorings):
                 data_chunks.append({"coloring": coloring, "index": index, "data": data, "gamma":gamma, "max_iter": annealing_iterations, "beta_0": annealing_beta_0, "debug": debug})
                 
-            results = pool.map(execute_heuristic, data_chunks)
-            del data_chunks
+            results = pool.map_async(execute_heuristic, data_chunks)
+            results = results.get()
+            
+            pool.close()
+            pool.join()
             
         else:
             results = map(lambda x: heuristic(x, data, gamma = gamma, max_iter = annealing_iterations, beta_0 = annealing_beta_0, debug=debug), colorings)

@@ -30,13 +30,14 @@ import pickle
 if __name__ == '__main__':
     
     gamma = 1.0
-    n_colorings = 1
-    epochs = 25
-    annealing_iterations = 1000
+    epochs = 10
+    n_colorings = 4
+    annealing_iterations = 4000
     annealing_beta_0 = 10
     
-    dataset = "2"
-    rd.seed(42)
+    dataset = "1"
+    
+    #rd.seed(42)
     
     try:
         data = pickle.load(file=open("%sdata_%s.pickle" %(PROJECT_PATH, dataset), "r"))
@@ -47,17 +48,21 @@ if __name__ == '__main__':
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
     
+    
     #from heuristics.johnson import Johnson
     #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
     #epochs = 1
-    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+    Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
     #Heuristic = RandomHeuristic(data, n_colorings = n_colorings)
     #Heuristic = AC(data, num_ants = n_colorings)
-    Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
+    #Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     
+    
+    # run options
     debug = True
     verbose = False
     parallel =  True
+    
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, annealing_beta_0 = annealing_beta_0, verbose = verbose, log_history = True, debug=debug, parallel=parallel)
@@ -71,7 +76,7 @@ if __name__ == '__main__':
     print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", obj(x, y, data, gamma=gamma)
     
-    print "Moses result:"
+    print "\nMoses result:"
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=False)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
