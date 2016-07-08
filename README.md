@@ -6,6 +6,10 @@ This project consist in finding a solution to the examination scheduling at TUM 
 
 Python
 
+# Using the Real Data
+
+For installing the real data please refer to the file "inputData/README.txt"!
+
 # Conventions
 
 **Problems**
@@ -19,9 +23,6 @@ Two way to create new variables:
   - if not x and y have to be dictionaries: `x = {(i, k): 0.0 for ...}` or `x = {(i, k, l): 0.0 for ..}`. `x` may be replaced by `y`. Only `x` and `y` can be used 
 
 **Data**
-
----> For installing the data read the file "inputData/README.txt"!
-
 The main data are:  
   - `c` for room capacities  
   - `s` for students capacities (for each exam)  
@@ -34,13 +35,6 @@ The main data are:
   - `r` the number of rooms  
 Upper cases are matrix `[[]]` and lower cases are lists `[]`  
 Other data can be introduced, however they must be linked to the main data.  
-
-**Usig the real data**
-
-from inputData import examination_data
-data = examination_data.read_data(semester = "15W")
-
-Available Semesters: "15W" and "16S"
 
 ** Test **  
 In the script `test_constraints.py`, in the method `SetUp(self)`, create the problem, solve it and add it to the lists depending which constraints you want to solve.  
