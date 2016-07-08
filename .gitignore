@@ -79,6 +79,7 @@ inputData/16S/
 inputData/Conflicts/
 inputData/Teilnehmer/
 inputData/Rooms/
+inputData/*.pickle
 
 # temporary formats
 *.txt

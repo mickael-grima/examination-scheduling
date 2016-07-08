@@ -39,10 +39,10 @@ if __name__ == '__main__':
     dataset = 2
     
     try:
-        data = pickle.load(file=open("%sdata_%s.pickle" %(PROJECT_PATH, dataset), "r"))
+        data = pickle.load(file=open("inputData/%sdata_%s.pickle" %(PROJECT_PATH, dataset), "r"))
     except:
         data = examination_data.load_data(dataset = dataset, threshold = 0, verbose = True)
-        pickle.dump(data, file=open("%sdata_%s.pickle" %(PROJECT_PATH, dataset), "w+"))
+        pickle.dump(data, file=open("inputData/%sdata_%s.pickle" %(PROJECT_PATH, dataset), "w+"))
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
