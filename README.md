@@ -8,7 +8,7 @@ Python
 
 # Using the Real Data
 
-For installing the real data please refer to the file "inputData/README.txt"!
+For installing the real data please refer to the file **inputData/README.md** !
 
 # Conventions
 
