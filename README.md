@@ -18,7 +18,7 @@ Two way to create new variables:
   - if the variable is contained in a guroby model, its name has to be: `"x_%s_%s_%s" % (i, j, k)` or `"x_%s_%s" % (i, j)`. `x` may be replaced by `y`. Only `x` and `y` can be used  
   - if not x and y have to be dictionaries: `x = {(i, k): 0.0 for ...}` or `x = {(i, k, l): 0.0 for ..}`. `x` may be replaced by `y`. Only `x` and `y` can be used 
 
-** Data **
+**Data**
 The main data are:  
   - `c` for room capacities  
   - `s` for students capacities (for each exam)  
