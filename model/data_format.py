@@ -97,6 +97,7 @@ def force_data_format(func):
         result_dates = data.get('result_dates', dict())
         result_rooms = data.get('result_rooms', dict())
         room_names = data.get('room_names', dict())
+        faculty_weeks = data.get('faculty_weeks', dict())
         
         Q, K, conflicts = correct_conflicts_format(data, n)
         
@@ -139,6 +140,7 @@ def force_data_format(func):
             'result_dates': result_dates,
             'result_rooms': result_rooms,
             'room_names': room_names,
+            'faculty_weeks': faculty_weeks,
         }
         return res
     return correct_format
