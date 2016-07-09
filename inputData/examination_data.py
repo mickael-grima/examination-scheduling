@@ -623,7 +623,7 @@ def get_exam_slots(result_times, verbose=False, math_only=False,relax_total=True
         All exams with more or equal to week_threshold weeks are considered
     '''
 
-    exam_weeks, week_slots = get_possible_exam_weeks(result_times, verbose=verbose, math_only = math_only,relax_total = relax_total)
+    exam_weeks, week_slots, faculty_weeks = get_possible_exam_weeks(result_times, verbose=verbose, math_only = math_only,relax_total = relax_total)
 
     #for exam in exam_weeks:
         #exam_weeks[exam].append(max(exam_weeks[exam])+1)
@@ -649,7 +649,7 @@ def get_exam_slots(result_times, verbose=False, math_only=False,relax_total=True
         #else:
             #print exam, len(exam_slots[exam])
     
-    return exam_slots, exam_weeks
+    return exam_slots, exam_weeks, faculty_weeks
     
     
 def get_exam_rooms(result_rooms, room_campus_id):
