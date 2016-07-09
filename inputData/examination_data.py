@@ -615,7 +615,7 @@ def get_possible_exam_weeks(exam_times, verbose=False, relax_total = True, math_
         if debug_name in exam:
             print exam, exam_weeks[exam]
             
-    return exam_weeks, week_slots
+    return exam_weeks, week_slots, faculty_weeks
     
 def get_exam_slots(result_times, verbose=False, math_only=False,relax_total=True):
     '''
@@ -623,7 +623,7 @@ def get_exam_slots(result_times, verbose=False, math_only=False,relax_total=True
         All exams with more or equal to week_threshold weeks are considered
     '''
 
-    exam_weeks, week_slots = get_possible_exam_weeks(result_times, verbose=verbose, math_only = math_only,relax_total = relax_total)
+    exam_weeks, week_slots, faculty_weeks = get_possible_exam_weeks(result_times, verbose=verbose, math_only = math_only,relax_total = relax_total)
 
     #for exam in exam_weeks:
         #exam_weeks[exam].append(max(exam_weeks[exam])+1)
@@ -649,7 +649,7 @@ def get_exam_slots(result_times, verbose=False, math_only=False,relax_total=True
         #else:
             #print exam, len(exam_slots[exam])
     
-    return exam_slots, exam_weeks
+    return exam_slots, exam_weeks, faculty_weeks
     
     
 def get_exam_rooms(result_rooms, room_campus_id):
@@ -729,7 +729,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     exam_rooms = get_exam_rooms(result_rooms, room_campus_id)
     
     # for each exam determine the possible slots according to examination periods
-    exam_slots, exam_weeks = get_exam_slots(result_times, relax_total = relax_total, math_only = math_only, verbose=verbose)
+    exam_slots, exam_weeks, faculty_weeks = get_exam_slots(result_times, relax_total = relax_total, math_only = math_only, verbose=verbose)
     
     # filter exams which are considered with examination period
     exams = sorted([ exam for exam in exams if exam in exam_slots ])
@@ -849,6 +849,7 @@ def read_data(semester = "16S", threshold = 0, pre_year_data = False, make_inter
     data['result_dates'] = result_dates
     data['result_rooms'] = result_rooms
     data['room_names'] = rooms
+    data['faculty_weeks'] = faculty_weeks
     
     return data
 
