@@ -28,21 +28,23 @@ from evaluation.moses import get_moses_representation
 from heuristics.johnson import Johnson
 import pickle
 
+import evaluation.tools as eval_tools
+
 if __name__ == '__main__':
     
     gamma = 1.0
-    epochs = 1
-    n_colorings = 4
+    epochs = 3
+    n_colorings = 12
     annealing_iterations = 4000
     annealing_beta_0 = 10
     
     dataset = 2
     
     try:
-        data = pickle.load(file=open("inputData/%sdata_%s.pickle" %(PROJECT_PATH, dataset), "r"))
+        data = pickle.load(file=open("%sinputData/data_%s.pickle" %(PROJECT_PATH, dataset), "r"))
     except:
         data = examination_data.load_data(dataset = dataset, threshold = 0, verbose = True)
-        pickle.dump(data, file=open("inputData/%sdata_%s.pickle" %(PROJECT_PATH, dataset), "w+"))
+        pickle.dump(data, file=open("%sinputData/data_%s.pickle" %(PROJECT_PATH, dataset), "w+"))
     
     n, r, p = data['n'], data['r'], data['p']
     print n, r, p
@@ -59,7 +61,7 @@ if __name__ == '__main__':
     debug = True
     verbose = False
     parallel =  True
-    rd.seed(42)
+    #rd.seed(42)
     
     
     t = time()
@@ -73,6 +75,8 @@ if __name__ == '__main__':
     print "ROOM_OBJ:", obj_room(x)
     print "TIME_OBJ:", obj_time(times, data)
     print "VALUE:", obj(x, y, data, gamma=gamma)
+    
+    eval_tools.write_result(x, y, data, prob_name = "AnotherRandom")
     
     print "\nMoses result:"
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=False)
