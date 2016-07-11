@@ -20,7 +20,7 @@ v_18: Different lexicographic order
 v_19: trying out setting branch priority ont the periods first
 v_20: rudimentary try to implement Orbital branching in gurobi using some pretty simple grouping idea and constraint branching - doesnt work well grouping fails because of conflicts
 v_21: some more lexicograpic ordering constraints test
-v_22: again some more lexicograpic ordering constraints test
+v_22: again some more lexicograpic ordering constraints test - strengthening the constraint from v_22
 v_23: Implementing that some examc cannot be in a given period to test real data
 
 Q_v_1,Q_v_2 implementing quadratic model, geting used to python, Gurobi
