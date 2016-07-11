@@ -120,7 +120,7 @@ def compare(data, timeL=0):
 
         problem = problems[prob_name](data)
         #problem.params.OutputFlag = 0
-        problem.params.cuts = 0
+        #problem.params.cuts = 0
         problem.params.heuristics = 0
         # Optimize selected model
         t = time()
