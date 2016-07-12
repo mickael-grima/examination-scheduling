@@ -224,20 +224,20 @@ def compare_gamma(data_type='real', **dimensions):
 
 def compare_AC_johnson_performance(data_type='real', **dimensions):
     if data_type == 'real':
-        data = examination_data.read_data(semester="15W")
+        data = examination_data.load_data(dataset='1')
     elif data_type == 'random':
         data = build_smart_random(n=dimensions.get('n') or 0.0,
                                   r=dimensions.get('r') or 0.0,
                                   p=dimensions.get('p') or 0.0)
     print "Start compare_AC_johnson_performance:"
-    for num_ants in [5, 10, 20]:
+    for num_ants in [1, 10]:
         print '@@@ num_ants=%s' % num_ants
-        for epochs in [1, 5, 10, 20]:
-            for _ in range(10):
+        for epochs in [1, 10]:
+            for _ in range(5):
                 print "AC, epoch=%s" % epochs
                 try:
                     compute_performance('main_heuristic_AC', data, gamma=1.0,
-                                        annealing_iterations=1000, num_ants=num_ants,
+                                        annealing_iterations=3000, num_ants=num_ants,
                                         epochs=epochs, parallel=False, verbose=True)
                 except Exception as e:
                     logging.warning('compare_AC_johnson_performance: %s' % str(e))
@@ -246,7 +246,23 @@ def compare_AC_johnson_performance(data_type='real', **dimensions):
             print "Johnson"
             try:
                 compute_performance('main_heuristic_johnson', data, gamma=1.0,
-                                    annealing_iterations=1000, num_ants=num_ants,
+                                    annealing_iterations=3000, num_ants=num_ants,
+                                    parallel=False)
+            except Exception as e:
+                logging.warning('compare_AC_johnson_performance: %s' % str(e))
+                continue
+
+
+def compare_johnson():
+    data = examination_data.load_data(dataset='1')
+    print "Start compare_johnson:"
+    for num_ants in [1, 20]:
+        print '@@@ num_ants=%s' % num_ants
+        for _ in range(10):
+            print "Johnson"
+            try:
+                compute_performance('main_heuristic_johnson', data, gamma=1.0,
+                                    annealing_iterations=3000, num_ants=num_ants,
                                     parallel=False)
             except Exception as e:
                 logging.warning('compare_AC_johnson_performance: %s' % str(e))
@@ -257,3 +273,4 @@ if __name__ == '__main__':
     # compare_gamma(data_type='random', n=785, p=173, r=62)
     compare_AC_johnson_performance(data_type='real')
     # main()
+    # compare_johnson()

@@ -76,7 +76,7 @@ def generate_file(x, y, data, name=None, with_room_label=True, with_exam_label=T
 
     # Some special name to use: for days, timeslots, rooms and exams
     days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    timeslots = ['9:00 - 11:00', '12:00 - 14:00', '15:00 - 17:00']
+    timeslots = ['07:30 - 10:15', '10:15 - 13:00', '13:00 - 15:45']
 
     # we split the time slots into days and weeks
     nb_weeks = p / len(days) / len(timeslots) + (p % (len(days) * len(timeslots)) > 0)
@@ -84,8 +84,8 @@ def generate_file(x, y, data, name=None, with_room_label=True, with_exam_label=T
     nb_time_per_week = nb_days * nb_timeslots
 
     # we give to each room a name
-    if 'rooms_name' in data:
-        rooms_name = sorted(map(lambda i: (data['rooms_name'][i], c[i]), range(r)),
+    if 'room_names' in data:
+        rooms_name = sorted(map(lambda i: (data['room_names'][i], c[i]), range(r)),
                             key=lambda x: x[1], reverse=True)
     else:
         if with_room_label:
@@ -103,7 +103,7 @@ def generate_file(x, y, data, name=None, with_room_label=True, with_exam_label=T
     # We give to each exam a name
     # TODO: improve it with data from Pruefungsamt
     if 'exam_names' in data:
-        exams_by_name = {i: data['exam_names'][i].split()[0] % i for i in range(n)}
+        exams_by_name = {i: data['exam_names'][i].split()[0] for i in range(n)}
     else:
         exams_by_name = {i: 'P%s' % i for i in range(n)}
 

@@ -16,6 +16,7 @@ import numpy as np
 import networkx as nx
 import random as rd
 import logging
+import math
 
 from ConstrainedColorGraph import ConstrainedColorGraph, EqualizedColorGraph
 
@@ -44,7 +45,11 @@ def compute_weight(value, **kwards):
     """
     if kwards.get('max_value') is not None:
         max_value = kwards['max_value']
-        return max_value - value
+        min_value = kwards['min_value']
+        try:
+            return 2 * (max_value - value) / (max_value - min_value)
+        except ZeroDivisionError:
+            return 0
 
 
 class Ant(object):
@@ -176,6 +181,7 @@ class AC:
         # We add the objective value we found to the edges' weight
         nb_iter = min(nb_ants if nb_ants >= 0 else sys.maxint, len(self.ants), len(values))
         max_value = max([v for v in values])
+        min_value = min([v for v in values])
         for i in range(nb_iter):
             ant, value = self.ants[i], values[i]
             if ant.has_feasible_colouring:
@@ -185,7 +191,7 @@ class AC:
                     if self.graph.graph.has_edge(node, next_node) and (node, next_node) not in visited:
                         visited.add((node, next_node))
                         visited.add((next_node, node))
-                        self.edges_weight[node][next_node] += compute_weight(value, max_value=max_value)
+                        self.edges_weight[node][next_node] += math.exp(compute_weight(value, max_value=max_value, min_value=min_value)) - 1
 
     def optimize_time(self, epochs=100, gamma=1, reinitialize=False):
         # init best values
