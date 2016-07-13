@@ -1,4 +1,4 @@
-This Readme explains how to start the different programms
+This Readme explains how to start the different programs
 
 # ILP
 
