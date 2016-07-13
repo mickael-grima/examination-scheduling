@@ -18,26 +18,6 @@ import timeit
 from gurobipy import Model, quicksum, GRB, GurobiError, LinExpr
 from model.instance import build_random_data
 
-'''
-
-    -Model GurobiLinear_v_3 has fewer variables since it doesnt create x_(i,k,l) if room k is closed in period l
-    -Model GurobiLinear_v_4_Cliques adds Clique constraints for conflicts only one exam in a clique conflict can take place at a time
-    -Model GurobiLinear_v_4_Cliques changed r in BIG-M-Method  to 12 so far
-
-'''
-
-'''
-    ***************  POSSIBLE IMPROVEMENTS    ***************
-    
-    -Add an option that such that courses in Garching are only schedule in rooms in Garchin and vice versa -> Removes lots of variables
-    -Change in "c6: any multi room exam takes place at one moment in time" the r in big M-Method from r to min{10, ceil(si/75)} or similar [to discuss]
-    -Idea for linking variables x and y
-        *c1b creates l*i constraints this could be reduced to only i constraints
-        *reaso
-            +"c1a" says if one exam takes place in some period than y_i,l cannot be zero 
-            + then constraint c2 forces all other y_i,l to be 0 anyway
-            + now say for all i sum(x_i,k,l for all k and for all l) >= 1 this forces at least one y_i,l to be 1 - this only has i constraints but more columns
-'''
 
              
     

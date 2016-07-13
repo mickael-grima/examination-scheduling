@@ -50,6 +50,11 @@ from GurobiModel.GurobiLinear_v_15_more_covers import build_model as build_linea
 from GurobiModel.GurobiLinear_v_16_symmetry import build_model as build_linear_model_16
 from GurobiModel.GurobiLinear_v_17_pertubate import build_model as build_linear_model_17
 from GurobiModel.GurobiLinear_v_18_lexicographic import build_model as build_linear_model_18
+from GurobiModel.GurobiLinear_v_19_Branch_Priority import build_model as build_linear_model_19
+from GurobiModel.GurobiLinear_v_20_orbital import build_model as build_linear_model_20
+from GurobiModel.GurobiLinear_v_21_l2 import build_model as build_linear_model_21
+from GurobiModel.GurobiLinear_v_22_l3 import build_model as build_linear_model_22
+
 
 from GurobiModel.GurobiLinear_v_23_data import build_model as build_linear_model_23
 
@@ -77,17 +82,19 @@ import pickle
 from evaluation.objectives import *
 from evaluation import tools as eval_tools
 
-def compare(data):
+def compare(data, timeL=0):
     """ we compare for some problems how many time we need to solve each problem
     """
     # Select models to compare
     problems = {
-        'Data Evaluate' : build_linear_model_23,
+    #    'Data Evaluate' : build_linear_model_23,
+         'Data L3' : build_linear_model_22,
+         'Data L2' : build_linear_model_21,
     #    'Linear orbital': build_linear_model_20,
     #    'Linear Lexicographic': build_linear_model_18,
     #    'Linear Pertubate': build_linear_model_17,
     #    'Linear symmetrie': build_linear_model_16,
-    #   'Linear more covers': build_linear_model_15,
+         'Linear more covers': build_linear_model_15,
     #    'Linear Cover inequalities': build_linear_model_13,
     #    'Linear smaller M': build_linear_model_12,
     #    'Linear model speed': build_linear_model_11,
@@ -104,15 +111,22 @@ def compare(data):
 
     objectives = dict()
 
+    nodeCount = dict()
+
     for prob_name in problems:
         print(prob_name)
         # Build selected model
         random.seed(42)
 
         problem = problems[prob_name](data)
+        #problem.params.OutputFlag = 0
+        #problem.params.cuts = 0
+        problem.params.heuristics = 0
         # Optimize selected model
         t = time()
         #problem.params.cuts = 0
+        if timeL != 0:
+            problem.params.TimeLimit = timeL
         problem.optimize()
         # try:
         #     problem.computeIIS()
@@ -154,24 +168,25 @@ def compare(data):
 
             objectives[prob_name] = 0
 
-    return times, objectives
+        nodeCount[prob_name] = problem.NodeCount
+
+    return times, objectives, nodeCount
 
 
 from inputData import examination_data
-def test_compare():
-    n = 100
-    r = 20
-    p = 20
-    tseed = 34534
+
+
+def test_compare(n,r,p,tseed,timeL):
+
 
     #data = build_smart_random(n=n,r=r,p=p,tseed=tseed)
     #data = build_real_data(tseed=tseed)
-    #data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
+    data = detect_similarities(build_real_data_sample(n=n,r=r,p=p,tseed=tseed))
     #data = examination_data.read_data(semester = "15W", threshold = 0)
     #data['similar_periods'] = tools.get_similar_periods(data)
-    data = examination_data.load_data(dataset = "3", threshold = 0, verbose = True)
+    #data = examination_data.load_data(dataset = "3", threshold = 0, verbose = True)
     
-    time, objectives = compare(data)
+    time, objectives, nodeCount = compare(data,timeL)
 
     print("")
     print("n: %s" % (data['n']))
@@ -186,8 +201,17 @@ def test_compare():
         print(time[key])
         print("value:")
         print(objectives[key])
+        print("nodeCount:")
+        print(nodeCount[key])
         print("")
 
 
 if __name__ == '__main__':
-    test_compare()
+    n = 300
+    r = 60
+    p = 50
+    tseed = 3684
+    timeL = [8000]
+    for t in timeL:
+        print t
+        test_compare(n,r,p,tseed,t)
