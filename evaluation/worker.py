@@ -207,10 +207,10 @@ def test_compare(n,r,p,tseed,timeL):
 
 
 if __name__ == '__main__':
-    n = 400
+    n = 300
     r = 60
-    p = 40
-    tseed = 83
+    p = 50
+    tseed = 3684
     timeL = [8000]
     for t in timeL:
         print t
