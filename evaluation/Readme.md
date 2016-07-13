@@ -1,5 +1,10 @@
 This Readme explains how to start the different programs
 
+# Evaluate MOSES
+
+- call python evaluation/moses.py
+- inside the file specify the dataset to use (cf. inputData/Readme.md)
+
 # ILP
 
 - use python evaluation/worker.py
@@ -10,5 +15,5 @@ This Readme explains how to start the different programs
 # Random
 
 - call python evaluation/random_heuristic.py
-- In the file you can specify which dataset to use. Default is 2 (cf. inputData/Readme.md)
+- In the file you can specify which dataset to use. Default is 2.
 - Optimizes using purely random coloring vertex order.
