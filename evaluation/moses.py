@@ -135,10 +135,12 @@ if __name__ == '__main__':
     gamma = 1.0
     
     data = examination_data.load_data(dataset = "2", threshold = 0, verbose = True)
-    
-    x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
+
+    print "\nMoses result:"
+    x, y, v = get_moses_representation(data, gamma=gamma, verbose=False)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
-    print "TIME_OBJ:", obj_time_y(y, data)
-    print "VALUE:", v
+    print "TIME_OBJ:", obj_time(times, data)
+    print "VALUE:", obj(x, y, data, gamma=gamma)
+
     
