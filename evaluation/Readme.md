@@ -1,9 +1,10 @@
 This Readme explains how to start the different programs
 
-# Evaluate MOSES
+# MOSES
 
 - call python evaluation/moses.py
 - inside the file specify the dataset to use (cf. inputData/Readme.md)
+- receive an evaluation of the MOSES result for the dataset
 
 # ILP
 
