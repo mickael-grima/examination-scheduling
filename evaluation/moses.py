@@ -134,27 +134,11 @@ if __name__ == '__main__':
     
     gamma = 1.0
     
-    data = examination_data.load_data(dataset = "1", threshold = 0, verbose = True)
+    data = examination_data.load_data(dataset = "2", threshold = 0, verbose = True)
     
     x, y, v = get_moses_representation(data, gamma=gamma, verbose=True)
     times = { i: data['h'][l] for (i,l) in y if y[i,l] == 1 }
     print "ROOM_OBJ:", obj_room(x)
     print "TIME_OBJ:", obj_time_y(y, data)
     print "VALUE:", v
-    
-    
-    
-    # get rooms for which we dont have data
-    #if False:
-        
-        #print "Rooms of which we have data:"
-        #print sorted(room_names)
-        #print "Rooms in moses:"
-        #r1 = set([ room for rooms in result_rooms.values() for room in rooms ])
-        #print sorted(r1)
-        #print "Rooms of which we don't have data:"
-        #r2 = set(room_names)
-        #print sorted([r for r in r1 if r not in r2])
-        
-    
     
