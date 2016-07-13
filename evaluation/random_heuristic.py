@@ -33,8 +33,8 @@ import evaluation.tools as eval_tools
 if __name__ == '__main__':
     
     gamma = 1.0
-    epochs = 3
-    n_colorings = 12
+    epochs = 20
+    n_colorings = 8
     annealing_iterations = 4000
     annealing_beta_0 = 10
     
@@ -52,9 +52,9 @@ if __name__ == '__main__':
     if dataset == 2:
         Heuristic = AnotherRandomHeuristic(data, n_colorings = n_colorings)
     else:
-        Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
+        #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
         #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p']); epochs = 1
-        #Heuristic = AC(data, num_ants = n_colorings)
+        Heuristic = AC(data, num_ants = n_colorings)
         
     
     # run options
