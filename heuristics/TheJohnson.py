@@ -1,3 +1,11 @@
+'''
+This file implements the original Johnson algorithm from the paper
+Johnsons - Timetabling University Examinations' from 1990 by Johnson. 
+
+The approach was scrapped for time reasons and because the performance was below par.
+'''
+
+
 import sys
 import os
 PATHS = os.getcwd().split('/')

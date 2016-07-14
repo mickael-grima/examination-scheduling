@@ -33,10 +33,9 @@ if __name__ == '__main__':
     
     print data['n'], data['r'], data['p']
 
-    #Heuristic = RandomHeuristicAdvanced(data, n_colorings = n_colorings)
-    #Heuristic = RandomHeuristicEqualized(data, n_colorings = n_colorings)
-    #Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
-    #Heuristic = AC(data, num_ants = n_colorings, n_colors = data['p'])
+    Heuristic = RandomHeuristicEqualized(data, n_colorings = n_colorings)
+    Heuristic = Johnson(data, n_colorings = n_colorings, n_colors = data['p'])
+    Heuristic = AC(data, num_ants = n_colorings, n_colors = data['p'])
     
     t = time()
     x, y, v, logger = scheduler.optimize(Heuristic, data, epochs = epochs, gamma = gamma, annealing_iterations = annealing_iterations, verbose = False, log_history = True)

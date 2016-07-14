@@ -18,3 +18,9 @@ This Readme explains how to start the different programs
 - call python evaluation/random_heuristic.py
 - In the file you can specify which dataset to use. Default is 2.
 - Optimizes using purely random coloring vertex order.
+
+# Compare AC, Johnson and Random Performance
+
+- call python evaluation/comparison_tests.py
+- In the file specify which Heuristic to use (lines 36-38)
+- also specify the parameters of the run (lines 24-28)
